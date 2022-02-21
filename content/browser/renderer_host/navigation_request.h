@@ -374,6 +374,9 @@ class CONTENT_EXPORT NavigationRequest
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   PrerenderTriggerType GetPrerenderTriggerType() override;
   std::string GetPrerenderEmbedderHistogramSuffix() override;
+#if BUILDFLAG(IS_ANDROID)
+  const base::android::JavaRef<jobject>& GetJavaNavigationHandle() override;
+#endif
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);
@@ -556,14 +559,6 @@ class CONTENT_EXPORT NavigationRequest
     DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
     return navigation_type_;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  // Returns a reference to |navigation_handle_| Java counterpart. It is used
-  // by Java WebContentsObservers.
-  base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle() {
-    return navigation_handle_proxy_->java_navigation_handle();
-  }
-#endif
 
   const std::string& post_commit_error_page_html() {
     return post_commit_error_page_html_;

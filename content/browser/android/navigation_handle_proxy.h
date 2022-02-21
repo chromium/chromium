@@ -25,7 +25,8 @@ class NavigationHandleProxy final {
   NavigationHandle* cpp_navigation_handle() const {
     return cpp_navigation_handle_;
   }
-  base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle() const {
+  const base::android::ScopedJavaGlobalRef<jobject>& java_navigation_handle()
+      const {
     return java_navigation_handle_;
   }
 

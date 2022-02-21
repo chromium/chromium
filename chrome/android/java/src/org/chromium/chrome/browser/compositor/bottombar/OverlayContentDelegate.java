@@ -5,7 +5,8 @@
 package org.chromium.chrome.browser.compositor.bottombar;
 
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.url.GURL;
 
 /**
  * An base class for tracking events on the overlay panel.
@@ -48,11 +49,11 @@ public class OverlayContentDelegate {
     /**
      * Determine if a particular navigation should be intercepted.
      * @param externalNavHandler External navigation handler for the activity the panel is in.
-     * @param navigationParams The navigation params for the current navigation.
+     * @param navigationHandle The NavigationHandle for the current navigation.
      * @return True if the navigation should be intercepted.
      */
     public boolean shouldInterceptNavigation(ExternalNavigationHandler externalNavHandler,
-            NavigationParams navigationParams) {
+            NavigationHandle navigationHandle, GURL escapedUrl) {
         return true;
     }
 

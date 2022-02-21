@@ -10,17 +10,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/navigation_interception/navigation_params.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
 class NavigationHandle;
-class WebContents;
 }
 
 namespace navigation_interception {
-
-class NavigationParams;
 
 enum class SynchronyMode {
   // Support async interception in some cases (See ShouldCheckAsynchronously).
@@ -34,8 +30,7 @@ enum class SynchronyMode {
 class InterceptNavigationThrottle : public content::NavigationThrottle {
  public:
   typedef base::RepeatingCallback<bool(
-      content::WebContents* /* source */,
-      const NavigationParams& /* navigation_params */)>
+      content::NavigationHandle* /* navigation_handle */)>
       CheckCallback;
 
   static const base::Feature kAsyncCheck;
@@ -58,12 +53,9 @@ class InterceptNavigationThrottle : public content::NavigationThrottle {
 
  private:
   ThrottleCheckResult CheckIfShouldIgnoreNavigation();
-  void RunCheckAsync(const NavigationParams& params);
+  void RunCheckAsync();
 
   bool ShouldCheckAsynchronously() const;
-
-  // Constructs NavigationParams for this navigation.
-  NavigationParams GetNavigationParams() const;
 
   // This callback should be called at the start of navigation and every
   // redirect, until |should_ignore_| is true.

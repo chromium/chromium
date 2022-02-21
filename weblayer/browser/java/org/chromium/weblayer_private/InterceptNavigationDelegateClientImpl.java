@@ -16,7 +16,6 @@ import org.chromium.components.external_intents.ExternalNavigationHandler.Overri
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -107,9 +106,10 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationParams params) {
-        NavigationImpl navigation =
-                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
+    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(
+            NavigationHandle navigationHandle) {
+        NavigationImpl navigation = mTab.getNavigationControllerImpl().getNavigationImplFromId(
+                navigationHandle.getNavigationId());
         if (navigation == null) return false;
 
         return navigation.areIntentLaunchesAllowedInBackground();
@@ -141,17 +141,17 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public void onNavigationStarted(NavigationParams params) {
-        if (params.hasUserGesture) {
+    public void onNavigationStarted(NavigationHandle navigationHandle) {
+        if (navigationHandle.hasUserGesture()) {
             mLastNavigationWithUserGestureTime = SystemClock.elapsedRealtime();
         }
     }
 
     @Override
     public void onDecisionReachedForNavigation(
-            NavigationParams params, OverrideUrlLoadingResult overrideUrlLoadingResult) {
-        NavigationImpl navigation =
-                mTab.getNavigationControllerImpl().getNavigationImplFromId(params.navigationId);
+            NavigationHandle navigationHandle, OverrideUrlLoadingResult overrideUrlLoadingResult) {
+        NavigationImpl navigation = mTab.getNavigationControllerImpl().getNavigationImplFromId(
+                navigationHandle.getNavigationId());
 
         // As the navigation is still ongoing at this point there should be a NavigationImpl
         // instance for it.

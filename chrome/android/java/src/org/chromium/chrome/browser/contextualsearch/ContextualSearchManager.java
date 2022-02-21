@@ -66,10 +66,10 @@ import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationEntry;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.WebContents;
@@ -1229,27 +1229,27 @@ public class ContextualSearchManager
         }
 
         @Override
-        public boolean shouldInterceptNavigation(
-                ExternalNavigationHandler externalNavHandler, NavigationParams navigationParams) {
+        public boolean shouldInterceptNavigation(ExternalNavigationHandler externalNavHandler,
+                NavigationHandle navigationHandle, GURL escapedUrl) {
             assert mSearchPanel != null;
-            mRedirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
-                    navigationParams.isRedirect, navigationParams.hasUserGesture,
+            mRedirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
+                    navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
                     mLastUserInteractionTimeSupplier.get(),
                     RedirectHandler.NO_COMMITTED_ENTRY_INDEX, true /* isInitialNavigation */);
             ExternalNavigationParams params =
                     new ExternalNavigationParams
-                            .Builder(navigationParams.url, false, navigationParams.referrer,
-                                    navigationParams.pageTransitionType,
-                                    navigationParams.isRedirect)
+                            .Builder(escapedUrl, false, navigationHandle.getReferrerUrl(),
+                                    navigationHandle.pageTransition(),
+                                    navigationHandle.isRedirect())
                             .setApplicationMustBeInForeground(true)
                             .setRedirectHandler(mRedirectHandler)
-                            .setIsMainFrame(navigationParams.isMainFrame)
+                            .setIsMainFrame(navigationHandle.isInPrimaryMainFrame())
                             .build();
             if (externalNavHandler.shouldOverrideUrlLoading(params).getResultType()
                     != OverrideUrlLoadingResultType.NO_OVERRIDE) {
                 return false;
             }
-            return !navigationParams.isExternalProtocol;
+            return !navigationHandle.isExternalProtocol();
         }
     }
 

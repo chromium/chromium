@@ -64,29 +64,25 @@ InterceptNavigationThrottle::CheckIfShouldIgnoreNavigation() {
   if (ShouldCheckAsynchronously()) {
     pending_checks_++;
     ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
-                       weak_factory_.GetWeakPtr(), GetNavigationParams()));
+        FROM_HERE, base::BindOnce(&InterceptNavigationThrottle::RunCheckAsync,
+                                  weak_factory_.GetWeakPtr()));
     return content::NavigationThrottle::PROCEED;
   }
   // No need to set |should_ignore_| since if it is true, we'll cancel the
   // navigation immediately.
-  return should_ignore_callback_.Run(navigation_handle()->GetWebContents(),
-                                     GetNavigationParams())
+  return should_ignore_callback_.Run(navigation_handle())
              ? content::NavigationThrottle::CANCEL_AND_IGNORE
              : content::NavigationThrottle::PROCEED;
   // Careful, |this| can be deleted at this point.
 }
 
-void InterceptNavigationThrottle::RunCheckAsync(
-    const NavigationParams& params) {
+void InterceptNavigationThrottle::RunCheckAsync() {
   DCHECK(base::FeatureList::IsEnabled(kAsyncCheck));
   DCHECK_GT(pending_checks_, 0);
   pending_checks_--;
   bool final_deferred_check = deferring_ && pending_checks_ == 0;
   auto weak_this = weak_factory_.GetWeakPtr();
-  bool should_ignore = should_ignore_callback_.Run(
-      navigation_handle()->GetWebContents(), params);
+  bool should_ignore = should_ignore_callback_.Run(navigation_handle());
   if (!weak_this)
     return;
 
@@ -113,20 +109,6 @@ bool InterceptNavigationThrottle::ShouldCheckAsynchronously() const {
          !navigation_handle()->IsPost() &&
          navigation_handle()->GetURL().SchemeIsHTTPOrHTTPS() &&
          base::FeatureList::IsEnabled(kAsyncCheck);
-}
-
-NavigationParams InterceptNavigationThrottle::GetNavigationParams() const {
-  return NavigationParams(navigation_handle()->GetURL(),
-                          content::Referrer(navigation_handle()->GetReferrer()),
-                          navigation_handle()->GetNavigationId(),
-                          navigation_handle()->HasUserGesture(),
-                          navigation_handle()->IsPost(),
-                          navigation_handle()->GetPageTransition(),
-                          navigation_handle()->WasServerRedirect(),
-                          navigation_handle()->IsExternalProtocol(), true,
-                          navigation_handle()->IsRendererInitiated(),
-                          navigation_handle()->GetBaseURLForDataURL(),
-                          navigation_handle()->GetInitiatorOrigin());
 }
 
 }  // namespace navigation_interception

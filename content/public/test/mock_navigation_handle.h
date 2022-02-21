@@ -201,6 +201,12 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(PrerenderTriggerType, GetPrerenderTriggerType, ());
   MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
 
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(const base::android::JavaRef<jobject>&,
+              GetJavaNavigationHandle,
+              ());
+#endif
+
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {
     previous_main_frame_url_ = previous_main_frame_url;

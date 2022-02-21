@@ -243,24 +243,28 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         WebContents webContents = tab.getWebContents();
         if (webContents == null) return;
 
-        mCustomTabNavigationDelegate = (navParams) -> {
-            if (DomDistillerUrlUtils.isDistilledPage(navParams.url)
-                    || navParams.isExternalProtocol) {
-                return false;
+        mCustomTabNavigationDelegate = new InterceptNavigationDelegate() {
+            @Override
+            public boolean shouldIgnoreNavigation(
+                    NavigationHandle navigationHandle, GURL escapedUrl) {
+                if (DomDistillerUrlUtils.isDistilledPage(navigationHandle.getUrl())
+                        || navigationHandle.isExternalProtocol()) {
+                    return false;
+                }
+
+                Intent returnIntent =
+                        new Intent(Intent.ACTION_VIEW, Uri.parse(escapedUrl.getSpec()));
+                returnIntent.setClassName(activity, ChromeLauncherActivity.class.getName());
+
+                // Set the parent ID of the tab to be created.
+                returnIntent.putExtra(EXTRA_READER_MODE_PARENT,
+                        IntentUtils.safeGetInt(activity.getIntent().getExtras(),
+                                EXTRA_READER_MODE_PARENT, Tab.INVALID_TAB_ID));
+
+                activity.startActivity(returnIntent);
+                activity.finish();
+                return true;
             }
-
-            Intent returnIntent =
-                    new Intent(Intent.ACTION_VIEW, Uri.parse(navParams.url.getSpec()));
-            returnIntent.setClassName(activity, ChromeLauncherActivity.class.getName());
-
-            // Set the parent ID of the tab to be created.
-            returnIntent.putExtra(EXTRA_READER_MODE_PARENT,
-                    IntentUtils.safeGetInt(activity.getIntent().getExtras(),
-                            EXTRA_READER_MODE_PARENT, Tab.INVALID_TAB_ID));
-
-            activity.startActivity(returnIntent);
-            activity.finish();
-            return true;
         };
 
         DomDistillerTabUtils.setInterceptNavigationDelegate(

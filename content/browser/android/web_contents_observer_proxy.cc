@@ -147,14 +147,14 @@ void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
   Java_WebContentsObserverProxy_didStartNavigation(
       AttachCurrentThread(), java_observer_,
-      NavigationRequest::From(navigation_handle)->java_navigation_handle());
+      navigation_handle->GetJavaNavigationHandle());
 }
 
 void WebContentsObserverProxy::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   Java_WebContentsObserverProxy_didRedirectNavigation(
       AttachCurrentThread(), java_observer_,
-      NavigationRequest::From(navigation_handle)->java_navigation_handle());
+      navigation_handle->GetJavaNavigationHandle());
 }
 
 void WebContentsObserverProxy::DidFinishNavigation(
@@ -164,7 +164,7 @@ void WebContentsObserverProxy::DidFinishNavigation(
 
   Java_WebContentsObserverProxy_didFinishNavigation(
       AttachCurrentThread(), java_observer_,
-      NavigationRequest::From(navigation_handle)->java_navigation_handle());
+      navigation_handle->GetJavaNavigationHandle());
 }
 
 void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,

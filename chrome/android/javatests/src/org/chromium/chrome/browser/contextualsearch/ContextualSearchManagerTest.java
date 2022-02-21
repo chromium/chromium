@@ -99,7 +99,7 @@ import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -2119,18 +2119,22 @@ public class ContextualSearchManagerTest {
                                         sActivityTestRule.getActivity().getActivityTab()));
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
-        final NavigationParams navigationParams = new NavigationParams(
-                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
-                GURL.emptyGURL(), 0 /* navigationId */, false /* isPost */,
-                true /* hasUserGesture */, PageTransition.LINK, false /* isRedirect */,
-                true /* isExternalProtocol */, true /* isMainFrame */,
-                true /* isRendererInitiated */, null /* initiatorOrigin */);
+        GURL url = new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
+        final NavigationHandle navigationHandle =
+                new NavigationHandle(0 /* nativeNavigationHandleProxy*/,
+                        new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
+                        GURL.emptyGURL() /* referrerUrl */, null /* baseUrlForDataUrl */,
+                        true /* isInPrimaryMainFrame */, false /* isSameDocument*/,
+                        true /* isRendererInitiated */, null /* initiatorOrigin */,
+                        null /* impressionData */, PageTransition.LINK, false /* isPost */,
+                        true /* hasUserGesture */, false /* isRedirect */,
+                        true /* isExternalProtocol */, 0 /* navigationId */);
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
                 sActivityTestRule.getActivity().onUserInteraction();
                 Assert.assertFalse(mManager.getOverlayContentDelegate().shouldInterceptNavigation(
-                        externalNavHandler, navigationParams));
+                        externalNavHandler, navigationHandle, url));
             }
         });
         Assert.assertEquals(1, mActivityMonitor.getHits());
@@ -2155,17 +2159,24 @@ public class ContextualSearchManagerTest {
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
 
-        final NavigationParams initialNavigationParams = new NavigationParams(
-                new GURL("http://test.com"), GURL.emptyGURL(), 0 /* navigationId */,
-                false /* isPost */, true /* hasUserGesture */, PageTransition.LINK,
-                false /* isRedirect */, false /* isExternalProtocol */, true /* isMainFrame */,
-                true /* isRendererInitiated */, null /* initiatorOrigin */);
-        final NavigationParams redirectedNavigationParams = new NavigationParams(
-                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
-                GURL.emptyGURL(), 0 /* navigationId */, false /* isPost */,
-                false /* hasUserGesture */, PageTransition.LINK, true /* isRedirect */,
-                true /* isExternalProtocol */, true /* isMainFrame */,
-                true /* isRendererInitiated */, null /* initiatorOrigin */);
+        GURL initialUrl = new GURL("http://test.com");
+        final NavigationHandle initialNavigationHandle = new NavigationHandle(
+                0 /* nativeNavigationHandleProxy*/, initialUrl, GURL.emptyGURL() /* referrerUrl */,
+                null /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
+                false /* isSameDocument*/, true /* isRendererInitiated */,
+                null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
+                false /* isPost */, true /* hasUserGesture */, false /* isRedirect */,
+                false /* isExternalProtocol */, 0 /* navigationId */);
+
+        GURL redirectUrl =
+                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
+        final NavigationHandle redirectedNavigationHandle = new NavigationHandle(
+                0 /* nativeNavigationHandleProxy*/, redirectUrl, GURL.emptyGURL() /* referrerUrl */,
+                null /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
+                false /* isSameDocument*/, true /* isRendererInitiated */,
+                null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
+                false /* isPost */, false /* hasUserGesture */, true /* isRedirect */,
+                true /* isExternalProtocol */, 0 /* navigationId */);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
@@ -2173,9 +2184,9 @@ public class ContextualSearchManagerTest {
                 sActivityTestRule.getActivity().onUserInteraction();
                 OverlayContentDelegate delegate = mManager.getOverlayContentDelegate();
                 Assert.assertTrue(delegate.shouldInterceptNavigation(
-                        externalNavHandler, initialNavigationParams));
+                        externalNavHandler, initialNavigationHandle, initialUrl));
                 Assert.assertFalse(delegate.shouldInterceptNavigation(
-                        externalNavHandler, redirectedNavigationParams));
+                        externalNavHandler, redirectedNavigationHandle, redirectUrl));
             }
         });
         Assert.assertEquals(1, mActivityMonitor.getHits());
@@ -2197,18 +2208,21 @@ public class ContextualSearchManagerTest {
                                         sActivityTestRule.getActivity().getActivityTab()));
         final ExternalNavigationHandler externalNavHandler =
                 new ExternalNavigationHandler(delegate);
-        final NavigationParams navigationParams = new NavigationParams(
-                new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end"),
-                GURL.emptyGURL(), 0 /* navigationId */, false /* isPost */,
-                false /* hasUserGesture */, PageTransition.LINK, false /* isRedirect */,
-                true /* isExternalProtocol */, true /* isMainFrame */,
-                true /* isRendererInitiated */, null /* initiatorOrigin */);
+        GURL url = new GURL("intent://test/#Intent;scheme=test;package=com.chrome.test;end");
+        final NavigationHandle navigationHandle = new NavigationHandle(
+                0 /* nativeNavigationHandleProxy*/, url, GURL.emptyGURL() /* referrerUrl */,
+                null /* baseUrlForDataUrl */, true /* isInPrimaryMainFrame */,
+                false /* isSameDocument*/, true /* isRendererInitiated */,
+                null /* initiatorOrigin */, null /* impressionData */, PageTransition.LINK,
+                false /* isPost */, false /* hasUserGesture */, false /* isRedirect */,
+                true /* isExternalProtocol */, 0 /* navigationId */);
+
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
                 sActivityTestRule.getActivity().onUserInteraction();
                 Assert.assertFalse(mManager.getOverlayContentDelegate().shouldInterceptNavigation(
-                        externalNavHandler, navigationParams));
+                        externalNavHandler, navigationHandle, url));
             }
         });
         Assert.assertEquals(0, mActivityMonitor.getHits());

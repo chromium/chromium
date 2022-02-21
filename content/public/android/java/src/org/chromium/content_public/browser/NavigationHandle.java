@@ -29,6 +29,7 @@ public class NavigationHandle {
     private @PageTransition int mPageTransition;
     private GURL mUrl;
     private GURL mReferrerUrl;
+    private GURL mBaseUrlForDataUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
@@ -46,13 +47,14 @@ public class NavigationHandle {
 
     @CalledByNative
     public NavigationHandle(long nativeNavigationHandleProxy, GURL url, GURL referrerUrl,
-            boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
-            Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition,
-            boolean isPost, boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
-            long navigationId) {
+            GURL baseUrlForDataUrl, boolean isInPrimaryMainFrame, boolean isSameDocument,
+            boolean isRendererInitiated, Origin initiatorOrigin, ByteBuffer impressionData,
+            @PageTransition int transition, boolean isPost, boolean hasUserGesture,
+            boolean isRedirect, boolean isExternalProtocol, long navigationId) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
+        mBaseUrlForDataUrl = baseUrlForDataUrl;
         mIsInPrimaryMainFrame = isInPrimaryMainFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
@@ -116,6 +118,13 @@ public class NavigationHandle {
     /** The referrer URL for the navigation. */
     public GURL getReferrerUrl() {
         return mReferrerUrl;
+    }
+
+    /**
+     * Used for specifying a base URL for pages loaded via data URLs.
+     */
+    public GURL getBaseUrlForDataUrl() {
+        return mBaseUrlForDataUrl;
     }
 
     /**

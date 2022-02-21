@@ -28,7 +28,6 @@ import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndr
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
-import org.chromium.components.navigation_interception.NavigationParams;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -151,7 +150,7 @@ public class OverlayPanelContent {
     // Used to intercept intent navigations.
     // TODO(jeremycho): Consider creating a Tab with the Panel's WebContents.
     // which would also handle functionality like long-press-to-paste.
-    private class InterceptNavigationDelegateImpl implements InterceptNavigationDelegate {
+    private class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate {
         final ExternalNavigationHandler mExternalNavHandler;
 
         public InterceptNavigationDelegateImpl() {
@@ -162,14 +161,14 @@ public class OverlayPanelContent {
         }
 
         @Override
-        public boolean shouldIgnoreNavigation(NavigationParams navigationParams) {
+        public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
             // If either of the required params for the delegate are null, do not call the
             // delegate and ignore the navigation.
-            if (mExternalNavHandler == null || navigationParams == null) return true;
+            if (mExternalNavHandler == null || navigationHandle == null) return true;
             // TODO(mdjones): Rather than passing the two navigation params, instead consider
             // passing a boolean to make this API simpler.
-            return !mContentDelegate.shouldInterceptNavigation(mExternalNavHandler,
-                    navigationParams);
+            return !mContentDelegate.shouldInterceptNavigation(
+                    mExternalNavHandler, navigationHandle, escapedUrl);
         }
     }
 

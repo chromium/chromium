@@ -33,6 +33,10 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
+
 class GURL;
 
 namespace net {
@@ -547,6 +551,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns whether this navigation is currently deferred.
   virtual bool IsDeferredForTesting() = 0;
   virtual bool IsCommitDeferringConditionDeferredForTesting() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a reference to NavigationHandle Java counterpart.
+  virtual const base::android::JavaRef<jobject>& GetJavaNavigationHandle() = 0;
+#endif
 };
 
 }  // namespace content

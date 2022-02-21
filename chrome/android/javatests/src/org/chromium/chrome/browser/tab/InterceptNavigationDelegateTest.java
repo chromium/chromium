@@ -33,10 +33,11 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
-import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class InterceptNavigationDelegateTest {
     private static final long LONG_MAX_TIME_TO_WAIT_IN_MS = 20000;
 
     private ChromeActivity mActivity;
-    private List<NavigationParams> mNavParamHistory = new ArrayList<>();
+    private List<NavigationHandle> mNavParamHistory = new ArrayList<>();
     private List<ExternalNavigationParams> mExternalNavParamHistory = new ArrayList<>();
     private EmbeddedTestServer mTestServer;
 
@@ -110,9 +111,10 @@ public class InterceptNavigationDelegateTest {
                     new InterceptNavigationDelegateClientImpl(tab);
             InterceptNavigationDelegateImpl delegate = new InterceptNavigationDelegateImpl(client) {
                 @Override
-                public boolean shouldIgnoreNavigation(NavigationParams navigationParams) {
-                    mNavParamHistory.add(navigationParams);
-                    return super.shouldIgnoreNavigation(navigationParams);
+                public boolean shouldIgnoreNavigation(
+                        NavigationHandle navigationHandle, GURL escapedUrl) {
+                    mNavParamHistory.add(navigationHandle);
+                    return super.shouldIgnoreNavigation(navigationHandle, escapedUrl);
                 }
             };
             client.initializeWithDelegate(delegate);
@@ -134,7 +136,7 @@ public class InterceptNavigationDelegateTest {
         Assert.assertEquals(1, mNavParamHistory.size());
 
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
-        Assert.assertFalse(mNavParamHistory.get(1).hasUserGesture);
+        Assert.assertFalse(mNavParamHistory.get(1).hasUserGesture());
     }
 
     @Test
@@ -145,7 +147,7 @@ public class InterceptNavigationDelegateTest {
 
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
-        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture);
+        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
     }
 
     @Test
@@ -157,7 +159,7 @@ public class InterceptNavigationDelegateTest {
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
-        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture);
+        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
     }
 
     @Test
@@ -170,7 +172,7 @@ public class InterceptNavigationDelegateTest {
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
-        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture);
+        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
     }
 
     @Test
@@ -182,7 +184,7 @@ public class InterceptNavigationDelegateTest {
 
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, LONG_MAX_TIME_TO_WAIT_IN_MS);
-        Assert.assertFalse(mNavParamHistory.get(1).hasUserGesture);
+        Assert.assertFalse(mNavParamHistory.get(1).hasUserGesture());
     }
 
     @Test
@@ -194,7 +196,7 @@ public class InterceptNavigationDelegateTest {
         TouchCommon.singleClickView(mActivity.getActivityTab().getView());
         waitTillExpectedCallsComplete(2, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
 
-        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture);
+        Assert.assertTrue(mNavParamHistory.get(1).hasUserGesture());
     }
 
     @Test
@@ -207,8 +209,8 @@ public class InterceptNavigationDelegateTest {
         waitTillExpectedCallsComplete(3, DEFAULT_MAX_TIME_TO_WAIT_IN_MS);
         Assert.assertEquals(3, mExternalNavParamHistory.size());
 
-        Assert.assertTrue(mNavParamHistory.get(2).isExternalProtocol);
-        Assert.assertFalse(mNavParamHistory.get(2).isMainFrame);
+        Assert.assertTrue(mNavParamHistory.get(2).isExternalProtocol());
+        Assert.assertFalse(mNavParamHistory.get(2).isInPrimaryMainFrame());
         Assert.assertTrue(
                 mExternalNavParamHistory.get(2).getRedirectHandler().shouldStayInApp(true, false));
     }

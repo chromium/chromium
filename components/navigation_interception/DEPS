@@ -3,6 +3,7 @@ include_rules = [
   "+net",
   "+ui/base",
 
+  "+content/public/android",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",

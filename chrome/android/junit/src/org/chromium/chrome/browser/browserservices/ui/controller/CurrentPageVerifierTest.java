@@ -185,7 +185,8 @@ public class CurrentPageVerifierTest {
         GURL gurl = createMockGurl(url);
         when(mTab.getUrl()).thenReturn(gurl);
         NavigationHandle navigation = new NavigationHandle(0 /* navigationHandleProxy */, gurl,
-                null /* referrerUrl */, true /* isInPrimaryMainFrame */, false /* isSameDocument */,
+                null /* referrerUrl */, null /* baseUrlForDataUrl */,
+                true /* isInPrimaryMainFrame */, false /* isSameDocument */,
                 false /* isRendererInitiated */, null /* initiatorOrigin */,
                 null /* impressionData */, 0 /* pageTransition */, false /* isPost */,
                 false /* hasUserGesture */, false /* isRedirect */, false /* isExternalProtocol */,

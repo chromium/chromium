@@ -7480,4 +7480,12 @@ std::string NavigationRequest::GetPrerenderEmbedderHistogramSuffix() {
   return prerender_embedder_histogram_suffix_;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+const base::android::JavaRef<jobject>&
+NavigationRequest::GetJavaNavigationHandle() {
+  DCHECK_GE(state_, WILL_START_REQUEST);
+  return navigation_handle_proxy_->java_navigation_handle();
+}
+#endif
+
 }  // namespace content
