@@ -39,8 +39,8 @@
 
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/credit_card_issuer_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/virtual_card_enrollment_dialog_card_art_width"
+            android:layout_height="@dimen/virtual_card_enrollment_dialog_card_art_height"
             android:layout_alignTop="@id/virtual_card_text"
             android:layout_alignBottom="@id/credit_card_identifier"
             android:layout_marginEnd="@dimen/virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end"
