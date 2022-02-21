@@ -728,8 +728,8 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
   MockAutofillClient mock_autofill_client;
 
   EXPECT_CALL(mock_autofill_client,
-              HideAutofillPopup(
-                  autofill::PopupHidingReason::kOverlappingWithAnotherPrompt));
+              HideAutofillPopup(autofill::PopupHidingReason::
+                                    kOverlappingWithPasswordGenerationPopup));
 
   UserTriggeredManualGenerationFromContextMenu(&stub_password_client,
                                                &mock_autofill_client);

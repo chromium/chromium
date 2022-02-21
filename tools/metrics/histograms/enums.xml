@@ -7045,6 +7045,9 @@ others/histograms.xml -->
       label="The anchor element for which the popup would be shown is not
              visible in the content area."/>
   <int value="16" label="The frame holds a pointer lock."/>
+  <int value="17"
+      label="The password generation popup would overlap and hide autofill
+             popup."/>
 </enum>
 
 <enum name="AutofillPredictionSource">

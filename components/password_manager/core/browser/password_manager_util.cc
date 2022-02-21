@@ -155,7 +155,7 @@ void UserTriggeredManualGenerationFromContextMenu(
     autofill::AutofillClient* autofill_client) {
   if (autofill_client) {
     autofill_client->HideAutofillPopup(
-        autofill::PopupHidingReason::kOverlappingWithAnotherPrompt);
+        autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
   }
   if (!password_manager_client->GetPasswordFeatureManager()
            ->ShouldShowAccountStorageOptIn()) {

@@ -60,7 +60,9 @@ enum class PopupHidingReason {
   kElementOutsideOfContentArea = 15,
   // The frame holds a pointer lock.
   kMouseLocked = 16,
-  kMaxValue = kMouseLocked
+  // The password generation popup would overlap and hide autofill popup.
+  kOverlappingWithPasswordGenerationPopup = 17,
+  kMaxValue = kOverlappingWithPasswordGenerationPopup
 };
 
 }  // namespace autofill
