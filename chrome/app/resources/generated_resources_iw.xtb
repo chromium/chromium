@@ -1227,7 +1227,6 @@
 <translation id="2195729137168608510">הגנת אימייל </translation>
 <translation id="2198625180564913276">הוספת הפרופיל מתבצעת. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="2199298570273670671">שגיאה</translation>
-<translation id="2199719347983604670">‏נתונים מסנכרון Chrome</translation>
 <translation id="2200094388063410062">אימייל</translation>
 <translation id="2200356397587687044">‏Chrome צריך הרשאה כדי להמשיך</translation>
 <translation id="2203088913459920044">שם יכול לכלול אותיות, ספרות ותווים מיוחדים</translation>
@@ -3255,6 +3254,7 @@
 <translation id="4252035718262427477">‏דף אינטרנט, קובץ יחיד (Web Bundle)</translation>
 <translation id="4252899949534773101">‏Bluetooth מושבת</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - תוכן הכרטיסייה שותף</translation>
+<translation id="4253168017788158739">הערה</translation>
 <translation id="4253183225471855471">‏לא נמצאה רשת. לפני שמנסים שוב, יש להכניס את כרטיס ה-SIM ולהפעיל את המכשיר מחדש.</translation>
 <translation id="4254813446494774748">שפת התרגום:</translation>
 <translation id="425573743389990240">שיעור פריקת סוללה בוואט (המשמעות של ערך שלילי היא שהסוללה בטעינה)</translation>
@@ -5578,7 +5578,6 @@
     <ph name="BR" />
     אם ל<ph name="SUPERVISED_USER_NAME" /> נדרשת עזרה בקריאה, אפשר להציע לילד או לילדה לחזור על הביטוי אחריך. צריך ללחוש הרחק מהמיקרופון כדי ש-Assistant תלמד להכיר את הקול של הילד או הילדה ולא את הקול שלך.</translation>
 <translation id="6690659332373509948">לא ניתן לנתח את הקובץ: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">‏ניהול נתונים מסוכרנים במרכז השליטה של Google</translation>
 <translation id="6691541770654083180">כדור הארץ</translation>
 <translation id="6691936601825168937">&amp;קדימה</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{עמוד אחד}two{{COUNT} עמודים}many{{COUNT} עמודים}other{{COUNT} עמודים}}</translation>

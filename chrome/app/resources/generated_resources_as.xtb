@@ -1231,7 +1231,6 @@
 <translation id="2195729137168608510">ইমেইল সুৰক্ষা</translation>
 <translation id="2198625180564913276">প্ৰ’ফাইল যোগ দি থকা হৈছে। এই কামত কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="2199298570273670671">আসোঁৱাহ</translation>
-<translation id="2199719347983604670">Chrome ছিংকৰ ডেটা</translation>
 <translation id="2200094388063410062">ইমেইল</translation>
 <translation id="2200356397587687044">অব্যাহত ৰাখিবলৈ Chromeক অনুমতিৰ প্ৰয়োজন হয়</translation>
 <translation id="2203088913459920044">নামত আখৰ, সংখ্যা আৰু বিশেষ বৰ্ণ থাকিব পাৰে</translation>
@@ -3288,6 +3287,7 @@
 <translation id="4252035718262427477">ৱেবপৃষ্ঠা, একক ফাইল (ৱেব বাণ্ডল)</translation>
 <translation id="4252899949534773101">ব্লুটুথ অক্ষম কৰা হ’ল</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - টেবৰ সমল শ্বেয়াৰ কৰা হৈছে</translation>
+<translation id="4253168017788158739">টোকা</translation>
 <translation id="4253183225471855471">কোনো নেটৱৰ্ক বিচাৰি পোৱা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ ছিমখন ভৰাওক আৰু পুনৰ চেষ্টা কৰাৰ আগতে আপোনাৰ ডিভাইচটো ৰিবুট কৰক।</translation>
 <translation id="4254813446494774748">অনুবাদৰ ভাষা:</translation>
 <translation id="425573743389990240">চ্চাৰ্জ খৰচ হোৱাৰ হাৰ ৱাট এককত ( ঋণাত্মক মানে বেটাৰী চ্চার্জ হৈ থকাটো বুজাব)</translation>
@@ -5648,7 +5648,6 @@
     <ph name="BR" />
     যদি <ph name="SUPERVISED_USER_NAME" />ক পঢ়াৰ ক্ষেত্ৰ সহায় লাগে, আপোনাৰ শিশুটিক আপুনি পঢ়ি যোৱাৰ লগে লগে কৈ যাবলৈ দিয়ক। মাইকটোৰ পৰা আঁতৰি সৰুকৈ কওক যাতে Assistantএ আপোনাৰ সলনি আপোনাৰ শিশুৰ কণ্ঠধ্বনি জানিব পাৰে।</translation>
 <translation id="6690659332373509948">ফাইল পার্ছ কৰিব পৰা নগ’ল: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google Dashboardত ছিংক কৰা ডেটা পৰিচালনা কৰক</translation>
 <translation id="6691541770654083180">পৃথিৱী</translation>
 <translation id="6691936601825168937">&amp;ফৰৱাৰ্ড কৰক</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{১ খন পৃষ্ঠা}one{{COUNT} খন পৃষ্ঠা}other{{COUNT} খন পৃষ্ঠা}}</translation>

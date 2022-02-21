@@ -1228,7 +1228,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2195729137168608510">Bảo vệ Email</translation>
 <translation id="2198625180564913276">Đang thêm hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="2199298570273670671">Lỗi</translation>
-<translation id="2199719347983604670">Dữ liệu từ Chrome Sync</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200356397587687044">Để tiếp tục, Chrome cần được cấp quyền</translation>
 <translation id="2203088913459920044">Tên có thể bao gồm chữ cái, chữ số và các ký tự đặc biệt</translation>
@@ -3255,6 +3254,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4252035718262427477">Trang web, Tệp đơn (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth đã bị tắt</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Đã chia sẻ nội dung thẻ</translation>
+<translation id="4253168017788158739">Lưu ý</translation>
 <translation id="4253183225471855471">Không tìm thấy mạng. Vui lòng lắp SIM và khởi động lại thiết bị của bạn rồi thử lại.</translation>
 <translation id="4254813446494774748">Ngôn ngữ dịch:</translation>
 <translation id="425573743389990240">Tốc độ phóng điện của pin tính bằng Watt (giá trị âm có nghĩa là đang sạc pin)</translation>
@@ -5578,7 +5578,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
     <ph name="BR" />
     Nếu <ph name="SUPERVISED_USER_NAME" /> cần trợ giúp về việc đọc, thì hãy để con bạn lặp lại theo bạn. Thì thầm cách xa micrô để Trợ lý nhận biết giọng nói của con bạn thay vì giọng nói của bạn.</translation>
 <translation id="6690659332373509948">Không thể phân tích cú pháp tệp: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Quản lý dữ liệu đã đồng bộ hóa trên Trang tổng quan của Google</translation>
 <translation id="6691541770654083180">Trái đất</translation>
 <translation id="6691936601825168937">Chuyển &amp;tiếp</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 trang}other{{COUNT} trang}}</translation>

@@ -1218,7 +1218,6 @@
 <translation id="2195729137168608510">Защита электронной почты</translation>
 <translation id="2198625180564913276">Профиль добавляется. Это может занять несколько минут.</translation>
 <translation id="2199298570273670671">Ошибка</translation>
-<translation id="2199719347983604670">Данные, сохраненные с помощью синхронизации Chrome</translation>
 <translation id="2200094388063410062">Электронная почта</translation>
 <translation id="2200356397587687044">Браузеру Chrome требуется разрешение</translation>
 <translation id="2203088913459920044">В названии можно использовать буквы, цифры и специальные символы.</translation>
@@ -3241,6 +3240,7 @@
 <translation id="4252035718262427477">Веб-страница, один файл (Web Bundle)</translation>
 <translation id="4252899949534773101">Включите Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: доступ к содержимому вкладки открыт</translation>
+<translation id="4253168017788158739">Примечание</translation>
 <translation id="4253183225471855471">Сеть не найдена. Установите SIM-карту и перезагрузите устройство.</translation>
 <translation id="4254813446494774748">Перевести на:</translation>
 <translation id="425573743389990240">Скорость разрядки батареи в ваттах (при зарядке значение отрицательное)</translation>
@@ -5563,7 +5563,6 @@
     <ph name="BR" />
     Если <ph name="SUPERVISED_USER_NAME" /> не может читать самостоятельно, предложите повторять за вами. Произносите слова шепотом, отвернувшись от микрофона, чтобы Ассистент запомнил голос ребенка, а не ваш.</translation>
 <translation id="6690659332373509948">Не удалось проанализировать файл <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Управление синхронизированными данными в Личном кабинете Google</translation>
 <translation id="6691541770654083180">Планета Земля</translation>
 <translation id="6691936601825168937">&amp;Вперед</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}one{{COUNT} страница}few{{COUNT} страницы}many{{COUNT} страниц}other{{COUNT} страницы}}</translation>

@@ -1213,7 +1213,6 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2195729137168608510">E-Mail-Schutz</translation>
 <translation id="2198625180564913276">Profil wird hinzugefügt. Das kann einige Minuten dauern.</translation>
 <translation id="2199298570273670671">Fehler</translation>
-<translation id="2199719347983604670">Daten aus der Chrome-Synchronisierung</translation>
 <translation id="2200094388063410062">E-Mail</translation>
 <translation id="2200356397587687044">Chrome benötigt eine Berechtigung, um fortzufahren</translation>
 <translation id="2203088913459920044">Der Name darf aus Buchstaben, Ziffern und Sonderzeichen bestehen</translation>
@@ -3237,6 +3236,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4252035718262427477">Webseite, Einzeldatei (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth ist deaktiviert</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Tabinhalte geteilt</translation>
+<translation id="4253168017788158739">Notiz</translation>
 <translation id="4253183225471855471">Kein Netzwerk gefunden. Legen Sie Ihre SIM-Karte ein und starten Sie das Gerät neu, bevor Sie es noch einmal versuchen.</translation>
 <translation id="4254813446494774748">Zielsprache:</translation>
 <translation id="425573743389990240">Entladerate des Akkus in Watt. Ein negativer Wert bedeutet, dass der Akku gerade aufgeladen wird.</translation>
@@ -5557,7 +5557,6 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
     <ph name="BR" />
     Falls <ph name="SUPERVISED_USER_NAME" /> Hilfe beim Lesen braucht, lesen Sie vor und lassen Sie Ihr Kind den Text wiederholen. Flüstern Sie dabei und sprechen Sie nicht in Richtung des Mikrofons, damit Assistant die Stimme Ihres Kindes lernt und nicht Ihre.</translation>
 <translation id="6690659332373509948">Datei kann nicht geparst werden: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Synchronisierte Daten im Google Dashboard verwalten</translation>
 <translation id="6691541770654083180">Erde</translation>
 <translation id="6691936601825168937">&amp;Vorwärts</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 Seite}other{{COUNT} Seiten}}</translation>

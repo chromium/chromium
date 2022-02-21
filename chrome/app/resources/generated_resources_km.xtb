@@ -1228,7 +1228,6 @@
 <translation id="2195729137168608510">ការការពារអ៊ីម៉ែល</translation>
 <translation id="2198625180564913276">កំពុងបញ្ចូល​កម្រងព័ត៌មាន។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="2199298570273670671">បញ្ហា</translation>
-<translation id="2199719347983604670">ទិន្នន័យពី Chrome សមកាលកម្ម</translation>
 <translation id="2200094388063410062">អ៊ីមែល</translation>
 <translation id="2200356397587687044">Chrome ត្រូវ​ការ​ការ​អនុញ្ញាត​ដើម្បី​បន្ត</translation>
 <translation id="2203088913459920044">ឈ្មោះ​អាចប្រើអក្សរ លេខ និង​តួអក្សរ​ពិសេស</translation>
@@ -3255,6 +3254,7 @@
 <translation id="4252035718262427477">ទំព័រ​បណ្ដាញ ឯកសារ​តែមួយ (កញ្ចប់​បណ្ដាញ)</translation>
 <translation id="4252899949534773101">បានបិទប៊្លូធូស</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - បានចែករំលែកមាតិការបស់ផ្ទាំង</translation>
+<translation id="4253168017788158739">កំណត់ត្រា</translation>
 <translation id="4253183225471855471">រកបណ្ដាញមិនឃើញទេ។ សូមបញ្ចូលស៊ីមរបស់អ្នក រួចចាប់ផ្ដើមឧបករណ៍របស់អ្នកឡើងវិញ មុនពេលព្យាយាមម្ដងទៀត។</translation>
 <translation id="4254813446494774748">ភាសាបកប្រែ៖</translation>
 <translation id="425573743389990240">កម្រិតទាញយកថាមពលជាវ៉ាត់ (តម្លៃអវិជ្ជមាន មានន័យថ្មកំពុងសាក)</translation>
@@ -5579,7 +5579,6 @@
     <ph name="BR" />
     ប្រសិនបើ <ph name="SUPERVISED_USER_NAME" /> ត្រូវការ​ជំនួយ​ក្នុងការអាន សូមឱ្យកូន​របស់អ្នក​អានតាមអ្នក។ ខ្សឹបឱ្យឆ្ងាយ​ពីមីក្រូហ្វូន ដើម្បីឱ្យ​ជំនួយការ​រៀនពី​សំឡេង​របស់កូន​អ្នក ជំនួសឱ្យ​សំឡេងរបស់អ្នក។</translation>
 <translation id="6690659332373509948">មិនអាចវិភាគឯកសារ៖ <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">គ្រប់គ្រងទិន្នន័យដែលបានធ្វើសមកាលកម្មនៅលើ Google ផ្ទាំងព័ត៌មាន</translation>
 <translation id="6691541770654083180">ផែនដី</translation>
 <translation id="6691936601825168937">ទៅមុខ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ទំព័រ}other{{COUNT} ទំព័រ}}</translation>

@@ -1222,7 +1222,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2195729137168608510">E-poçt Müdafiəsi</translation>
 <translation id="2198625180564913276">Profil əlavə edilir. Bu, bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="2199298570273670671">Xəta</translation>
-<translation id="2199719347983604670">Chrome sinxronizasiya datası</translation>
 <translation id="2200094388063410062">E-poçt</translation>
 <translation id="2200356397587687044">Chrome davam etmək üçün icazə tələb edir</translation>
 <translation id="2203088913459920044">Adda hərflər, rəqəmlər və xüsusi simvollar ola bilər</translation>
@@ -3279,6 +3278,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4252035718262427477">Veb səhifə, Tək Fayl (Veb Paket)</translation>
 <translation id="4252899949534773101">Bluetooth deaktivdir</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Panel məzmunu paylaşıldı</translation>
+<translation id="4253168017788158739">Qeyd</translation>
 <translation id="4253183225471855471">Şəbəkə tapılmadı. Yenidən cəhd etmədən əvvəl SIM kartınızı daxil edin və cihazınızı yenidən başladın.</translation>
 <translation id="4254813446494774748">Tərcümə Dili:</translation>
 <translation id="425573743389990240">Batareyanın boşalması dəyəri Vatt ilə (Mənfi dəyər batareyanın doldurulmasını bildirir)</translation>
@@ -5640,7 +5640,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin oxumaqla bağlı köməyə ehtiyacı olsa, övladınızdan cümlələri sizdən sonra təkrar etməsini xahiş edin. Mikrofondan uzaqda pıçıltı ilə danışın ki, Assistent övladınızın əvəzinə sizin səsinizi öyrənməsin.</translation>
 <translation id="6690659332373509948">Faylı təhlil etmək alınmır: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google İdarə panelində sinxronizasiya olunmuş datanı idarə edin</translation>
 <translation id="6691541770654083180">Yer</translation>
 <translation id="6691936601825168937">İrəli</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 səhifə}other{{COUNT} səhifə}}</translation>

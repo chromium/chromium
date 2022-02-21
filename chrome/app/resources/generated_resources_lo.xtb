@@ -1225,7 +1225,6 @@
 <translation id="2195729137168608510">ການປົກປ້ອງອີເມວ</translation>
 <translation id="2198625180564913276">ກຳລັງເພີ່ມໂປຣໄຟລ໌. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="2199298570273670671">ຜິດພາດ</translation>
-<translation id="2199719347983604670">ຂໍ້ມູນຈາກ Chrome sync</translation>
 <translation id="2200094388063410062">ອີເມວ</translation>
 <translation id="2200356397587687044">Chrome ຕ້ອງການມີການອະນຸຍາດເພື່ອສືບຕໍ່</translation>
 <translation id="2203088913459920044">ຊື່ສາມາດໃຊ້ຕົວອັກສອນ, ຕົວເລກ ແລະ ຕົວອັກສອນພິເສດໄດ້</translation>
@@ -3252,6 +3251,7 @@
 <translation id="4252035718262427477">ໜ້າເວັບ, ໄຟລ໌ດຽວ (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth ປິດນຳໃຊ້ຢູ່</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ແບ່ງປັນເນື້ອຫາແຖບແລ້ວ</translation>
+<translation id="4253168017788158739">ບັນທຶກ</translation>
 <translation id="4253183225471855471">ບໍ່ພົບເຄືອຂ່າຍ. ກະລຸນາໃສ່ SIM ຂອງທ່ານແລ້ວປິດ​ເປີດ​ອຸປະກອນຂອງທ່ານໃໝ່ກ່ອນລອງອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="4254813446494774748">ພາ​ສາ​ທີ່ຈະແປເປັນ:</translation>
 <translation id="425573743389990240">ອັດຕາປ່ອຍໃນແບັດເຕີຣີເປັນວັດຕ໌ (ຄ່າລົບໝາຍຄວາມວ່າ ແບັດເຕີຣີກໍາລັງສາກຢູ່)</translation>
@@ -5574,7 +5574,6 @@
     <ph name="BR" />
     ຫາກ <ph name="SUPERVISED_USER_NAME" /> ຕ້ອງການຄວາມຊ່ວຍເຫຼືອໃນການອ່ານ, ໃຫ້ລູກຂອງທ່ານອ່ານຊ້ຳຫຼັງຈາກທ່ານ. ໃຫ້ເວົ້າຄ່ອຍໆຫ່າງຈາກໄມເພື່ອໃຫ້ຜູ້ຊ່ວຍສາມາດຮຽນຮູ້ສຽງຂອງລູກທ່ານແທນທີ່ຈະເປັນສຽງທ່ານ.</translation>
 <translation id="6690659332373509948">ບໍ່ສາມາດກະຈາຍໄຟລ໌ໄດ້: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">ຈັດການຂໍ້ມູນທີ່ຊິ້ງໃນ Google Dashboard</translation>
 <translation id="6691541770654083180">ໂລກ</translation>
 <translation id="6691936601825168937">ສົ່ງຕໍ່</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ໜ້າ}other{{COUNT} ໜ້າ}}</translation>

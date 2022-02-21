@@ -2393,6 +2393,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           Además, los usuarios no podrán cambiarla ni anularla.
 
           Si no se le asigna ningún valor, la función Enunciar selección se inhabilitará al inicio, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="3587482841069643663">Todo</translation>
 <translation id="3589193811812796052">Evitar que los módulos de WebAssembly se envíen a otros orígenes</translation>
 <translation id="3591527072193107424">Habilitar la función de compatibilidad con navegadores antiguos.</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>

@@ -1227,7 +1227,6 @@
 <translation id="2195729137168608510">ईमेल संरक्षण</translation>
 <translation id="2198625180564913276">प्रोफाइल जोडत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="2199298570273670671">एरर</translation>
-<translation id="2199719347983604670">Chrome सिंक मधील डेटा</translation>
 <translation id="2200094388063410062">ईमेल</translation>
 <translation id="2200356397587687044">सुरू ठेवण्यासाठी Chrome ला परवानगीची आवश्यकता आहे</translation>
 <translation id="2203088913459920044">नावामध्ये अक्षरे, अंक आणि विशेष वर्ण वापरू शकता</translation>
@@ -3252,6 +3251,7 @@
 <translation id="4252035718262427477">वेबपेज, एकच फाइल (वेब बंडल)</translation>
 <translation id="4252899949534773101">ब्लूटूथ बंद केले आहे</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - टॅब आशय शेअर केली</translation>
+<translation id="4253168017788158739">टीप</translation>
 <translation id="4253183225471855471">कोणतेही नेटवर्क आढळले नाही. कृपया तुमचे सिम घाला आणि पुन्हा प्रयत्न करण्यापूर्वी तुमचे डिव्हाइस रीबूट करा.</translation>
 <translation id="4254813446494774748">भाषांतर भाषा:</translation>
 <translation id="425573743389990240">बॅटरी डिस्चार्ज रेट वॉट्स मध्ये (ऋण मूल्य म्हणजे बॅटरी चार्ज होत आहे)</translation>
@@ -5576,7 +5576,6 @@
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> ला वाचताना मदत हवी असल्यास, तुमच्या लहान मुलाला तुमच्या पाठोपाठ म्हणायला सांगा. माइकपासून लांब हळू आवाजात बोला जेणेकरून, Assistant हे तुमच्या लहान मुलाचा आवाज ओळखायला शिकेल, तुमचा नाही.</translation>
 <translation id="6690659332373509948">फाइल पार्स करता आली नाही: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google डॅशबोर्डवरील सिंक डेटा व्यवस्थापित करा</translation>
 <translation id="6691541770654083180">पृथ्वी</translation>
 <translation id="6691936601825168937">&amp;पुढील</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{एक पेज}other{{COUNT} पेज}}</translation>

@@ -1227,7 +1227,6 @@
 <translation id="2195729137168608510">電郵保護</translation>
 <translation id="2198625180564913276">正在新增設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="2199298570273670671">錯誤</translation>
-<translation id="2199719347983604670">從 Chrome 同步的資料</translation>
 <translation id="2200094388063410062">電郵</translation>
 <translation id="2200356397587687044">Chrome 需要權限才能繼續</translation>
 <translation id="2203088913459920044">名稱可以使用字母、數字和特殊字元</translation>
@@ -3254,6 +3253,7 @@
 <translation id="4252035718262427477">單一檔案網頁 (網絡組合)</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享分頁內容</translation>
+<translation id="4253168017788158739">注意事項</translation>
 <translation id="4253183225471855471">找不到網絡。請插入 SIM 卡並重新啟動裝置，然後再試一次。</translation>
 <translation id="4254813446494774748">翻譯語言：</translation>
 <translation id="425573743389990240">電池放電速率 (瓦特) (如為負值，表示電池正在充電)</translation>
@@ -5578,7 +5578,6 @@
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />在朗讀過程中需要協助，請讓子女跟著您朗讀。您需要遠離麥克風並降低音量，這樣「Google 助理」才能學習辨識您子女的聲音，而非您的聲音。</translation>
 <translation id="6690659332373509948">無法解析檔案：<ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">在 Google 資訊主頁上管理已同步的資料</translation>
 <translation id="6691541770654083180">地球</translation>
 <translation id="6691936601825168937">下一頁(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 頁}other{{COUNT} 頁}}</translation>

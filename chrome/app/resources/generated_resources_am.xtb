@@ -1229,7 +1229,6 @@
 <translation id="2195729137168608510">የኢሜይል መከላከያ</translation>
 <translation id="2198625180564913276">መገለጫን በማከል ላይ። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="2199298570273670671">ስህተት</translation>
-<translation id="2199719347983604670">ውሂብ ከChrome ስምረት</translation>
 <translation id="2200094388063410062">ኢሜይል</translation>
 <translation id="2200356397587687044">Chrome ለመቀጠል ፈቃድ ያስፈልገዋል</translation>
 <translation id="2203088913459920044">ስም ፊደላትን፣ ቁጥሮችን እና ልዩ ቁምፊዎችን መጠቀም ይችላል</translation>
@@ -3284,6 +3283,7 @@
 <translation id="4252035718262427477">ድረ-ገጽ፣ ነጠላ ፋይል (የድር ቅርቅብ)</translation>
 <translation id="4252899949534773101">ብሉቱዝ ተሰናክሏል</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - የትር ይዘት ተጋርቷል</translation>
+<translation id="4253168017788158739">ማስታወሻ</translation>
 <translation id="4253183225471855471">ምንም አውታረ መረብ አልተገኘም። እባክዎ እንደገና ከመሞከርዎ በፊት ሲምዎን ያስገቡ እና መሣሪያዎን እንደገና ያስነሱ።</translation>
 <translation id="4254813446494774748">የትርጉም ቋንቋ፦</translation>
 <translation id="425573743389990240">የባትሪ ትፋት ፍጥነት በዋት (አሉታዊ እሴት ማለት ባትሪ እየሞላ ነው)</translation>
@@ -5643,7 +5643,6 @@
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> በንባብ ላይ እገዛ ከፈለጉ ልጅዎ ከእርስዎ በኋላ እንዲደግሙት ያድርጉ። ረዳቱ ከእርስዎ ይልቅ የልጅዎን ድምፅ እንዲማር ከማይክሮፎኑ ራቅ ብለው ያንሾካሹኩ።</translation>
 <translation id="6690659332373509948">ይህን ፋይል መተንተን አልተቻለም፦ <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">በGoogle ዳሽቦርድ ላይ የሰመረ ውሂብን ያቀናብሩ</translation>
 <translation id="6691541770654083180">ምድር</translation>
 <translation id="6691936601825168937">&amp;ወደ ፊት</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ገጽ}one{{COUNT} ገጾች}other{{COUNT} ገጾች}}</translation>

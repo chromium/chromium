@@ -354,6 +354,7 @@
 <translation id="3029276696788198026">گزینه پیش‌بارگیری وجود ندارد</translation>
 <translation id="3029704984691124060">عبارت‌های عبور مطابقت ندارند</translation>
 <translation id="3031225630520268969">میانای کاربر رضایت برای جستجوی گفتاری «دستیار»</translation>
+<translation id="3034163383943672781">بارگیری <ph name="DATE" /> شروع خواهد شد.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />دریافت راهنمایی<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037517125981011456">‏درخواست‌هایی برای ورود به سیستم Chrome نشان می‌دهد</translation>
@@ -1402,6 +1403,7 @@
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9065383040763568503">‏داده‌های ذخیره‌شده‌ای که ازنظر Chrome مهم نیستند، (مثل سایت‌هایی که هیچ تنظیماتی ذخیره نکرده‌اند یا سایت‌هایی که زیاد از آن‌ها بازدید نمی‌کنید)</translation>
 <translation id="906781307897697745">در <ph name="PRODUCT_NAME" /></translation>
+<translation id="9069543557624799859">بارگیری ساعت <ph name="TIME" /> شروع خواهد شد.</translation>
 <translation id="9069999660519089861">صفحه خوانده‌نشده‌ای وجود ندارد</translation>
 <translation id="9070377983101773829">شروع جستجوی گفتاری</translation>
 <translation id="9074336505530349563">‏برای اینکه Google محتوای شخصی‌شده به شما پیشنهاد دهد، به سیستم وارده شوید و همگام‌سازی را روشن کنید</translation>

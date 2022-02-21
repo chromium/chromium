@@ -1218,7 +1218,6 @@
 <translation id="2195729137168608510">Էլփոստի պաշտպանություն</translation>
 <translation id="2198625180564913276">Պրոֆիլն ավելացվում է։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="2199298570273670671">Սխալ</translation>
-<translation id="2199719347983604670">Տվյալներ Chrome Sync-ից</translation>
 <translation id="2200094388063410062">Էլփոստ</translation>
 <translation id="2200356397587687044">Շարունակելու համար Chrome-ին անհրաժեշտ է թույլտվություն</translation>
 <translation id="2203088913459920044">Անվանման մեջ կարող են օգտագործվել տառեր, թվեր և հատուկ նշաններ</translation>
@@ -3241,6 +3240,7 @@
 <translation id="4252035718262427477">Կայքէջ, մեկ ֆայլ (վեբ փաթեթ)</translation>
 <translation id="4252899949534773101">Bluetooth-ն անջատված է</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Ներդիրի բովանդակությունը հրապարակվում է</translation>
+<translation id="4253168017788158739">Նշում</translation>
 <translation id="4253183225471855471">Ցանց չի գտնվել։ Նորից փորձելուց առաջ տեղադրեք ձեր SIM քարտը և վերագործարկեք սարքը։</translation>
 <translation id="4254813446494774748">Թարգմանության լեզուն՝</translation>
 <translation id="425573743389990240">Մարտկոցի լիցքաթափման արագությունը վատտերով (բացասական արժեքը նշանակում է, որ մարտկոցը լիցքավորվում է)</translation>
@@ -5566,7 +5566,6 @@
     <ph name="BR" />
     Եթե <ph name="SUPERVISED_USER_NAME" />-ին օգնելու կարիք լինի, առաջարկեք նրան կրկնել ձեր հետևից։ Ասեք բառերը շշուկով՝ շրջվելով խոսափողից, որպեսզի Օգնականը հիշի երեխայի, այլ ոչ թե ձեր ձայնը։</translation>
 <translation id="6690659332373509948">Հնարավոր չէ վերլուծել ֆայլը՝ <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Համաժամացված տվյալների կառավարում Google-ի կառավարման վահանակում</translation>
 <translation id="6691541770654083180">Երկիր մոլորակ</translation>
 <translation id="6691936601825168937">&amp;Առաջ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 էջ}one{{COUNT} էջ}other{{COUNT} էջ}}</translation>

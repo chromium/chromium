@@ -1229,7 +1229,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2195729137168608510">Mail-beskyttelse</translation>
 <translation id="2198625180564913276">Profilen tilføjes. Dette kan tage et par minutter.</translation>
 <translation id="2199298570273670671">Fejl</translation>
-<translation id="2199719347983604670">Data fra Chrome-synkronisering</translation>
 <translation id="2200094388063410062">Mail</translation>
 <translation id="2200356397587687044">Chrome skal have tilladelse til at fortsætte</translation>
 <translation id="2203088913459920044">Navne må indeholde bogstaver, tal og specialtegn</translation>
@@ -3256,6 +3255,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4252035718262427477">Webside, enkelt fil (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth er deaktiveret</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – faneindholdet deles</translation>
+<translation id="4253168017788158739">Note</translation>
 <translation id="4253183225471855471">Der blev ikke fundet nogen netværk. Indsæt dit SIM-kort, og genstart din enhed, før du prøver igen.</translation>
 <translation id="4254813446494774748">Sprog, der skal oversættes til:</translation>
 <translation id="425573743389990240">Batteriets afladningshastighed i watt (en negativ værdi betyder, at batteriet oplader)</translation>
@@ -5579,7 +5579,6 @@ Flere kontakter kan tildeles denne handling.</translation>
     <ph name="BR" />
     Hvis <ph name="SUPERVISED_USER_NAME" /> har brug for hjælp til at læse sætningerne, kan du bede dit barn om at gentage det, du siger. Hvisk sætningerne et stykke væk fra mikrofonen, så Google Assistent lærer dit barns stemme og ikke din.</translation>
 <translation id="6690659332373509948">Filen kan ikke parses: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Administrer synkroniserede data i Google Kontrolpanel</translation>
 <translation id="6691541770654083180">Jorden</translation>
 <translation id="6691936601825168937">&amp;Frem</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 side}one{{COUNT} side}other{{COUNT} sider}}</translation>

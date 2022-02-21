@@ -1217,7 +1217,6 @@
 <translation id="2195729137168608510">ඊමේල් ආරක්ෂාව</translation>
 <translation id="2198625180564913276">පැතිකඩ එක් කිරීම මෙයට මිනිත්තු කිහිපයක් ගත විය හැකිය.</translation>
 <translation id="2199298570273670671">දෝෂය</translation>
-<translation id="2199719347983604670">Chrome සමමුහුර්තයෙන් දත්ත</translation>
 <translation id="2200094388063410062">ඉ-තැපෑල</translation>
 <translation id="2200356397587687044">දිගටම කරගෙන යාමට Chrome අවසරය අවශ්‍යයි</translation>
 <translation id="2203088913459920044">නමට අකුරු, අංක සහ විශේෂ අනුලකුණු භාවිත කළ හැකිය</translation>
@@ -3244,6 +3243,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4252035718262427477">වෙබ් පිටුව, තනි ගොනුව (වෙබ් පොදිය)</translation>
 <translation id="4252899949534773101">බ්ලූටූත් අබලයි</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ටැබ අන්තර්ගතය බෙදා ගත්</translation>
+<translation id="4253168017788158739">සටහන</translation>
 <translation id="4253183225471855471">ජාලයක් හමු නොවිණි. නැවත උත්සාහ කිරීමට පෙර කරුණාකර ඔබගේ SIM පත ඇතුළු කර ඔබගේ උපාංගය නැවත පණ ගන්වන්න.</translation>
 <translation id="4254813446494774748">පරිවර්තන භාෂාව:</translation>
 <translation id="425573743389990240">බැටරිය බැසීමේ වේගය වොට්වලින් (ඍණ අගය යනු බැටරිය චාජ් වන බවයි)</translation>
@@ -5565,7 +5565,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> හට කියවීම සම්බන්ධව උදවු අවශ්‍ය නම්, ඔබගේ දරුවා ලවා ඔබට පසු කියවන්න. මයික් එකට ඈතින් මුමුණන්න, එවිට සහායක ඔබගේ කටහඬ වෙනුවට ඔබගේ දරුවාගේ කටහඬ ඉගෙන ගනී.</translation>
 <translation id="6690659332373509948">ගොනුව විග්‍රහ කළ නොහැක:<ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google Dashboard මත සමමුහුර්ත කළ දත්ත කළමනාකරණය කරන්න</translation>
 <translation id="6691541770654083180">පෘථිවිය</translation>
 <translation id="6691936601825168937">&amp;ඉදිරියට යන්න</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 පිටුවක්}one{පිටු {COUNT} ක්}other{පිටු {COUNT} ක්}}</translation>

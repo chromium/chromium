@@ -354,6 +354,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3029276696788198026">Oldindan yuklanmaydi</translation>
 <translation id="3029704984691124060">Kodli iboralar bir xil emas</translation>
 <translation id="3031225630520268969">Assistent ovozli qidiruv paneli interfeysi</translation>
+<translation id="3034163383943672781">Yuklab olish <ph name="DATE" /> sanasida ishga tushadi.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Yordam markazi<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3037517125981011456">Chrome orqali kirish oynasi chiqadi</translation>
@@ -1402,6 +1403,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9065383040763568503">Chrome muhim deb hisoblamaydigan saqlangan maʼlumotlar (masalan, saqlanish xususiyatga ega boʻlmagan va kam kiriladigan saytlar)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /></translation>
+<translation id="9069543557624799859">Yuklab olish boshlanadi: <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Hech narsa topilmadi</translation>
 <translation id="9070377983101773829">Ovozli qidiruv</translation>
 <translation id="9074336505530349563">Bildirgilar Google tomonidan faqat sizning qiziqishlaringiz bo‘yicha taklif qilinishi uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>

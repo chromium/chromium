@@ -1227,7 +1227,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2195729137168608510">E-mail védelem</translation>
 <translation id="2198625180564913276">A profil hozzáadása folyamatban van. Ez eltarthat néhány percig.</translation>
 <translation id="2199298570273670671">Hiba</translation>
-<translation id="2199719347983604670">A Chrome-szinkronizálás adatai</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">A Chrome-nak szüksége van egy engedélyre a folytatáshoz</translation>
 <translation id="2203088913459920044">A név betűket, számokat és speciális karaktereket tartalmazhat</translation>
@@ -3252,6 +3251,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4252035718262427477">Weboldal, egy fájlként (web bundle)</translation>
 <translation id="4252899949534773101">Bluetooth kikapcsolva</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Megosztott laptartalom</translation>
+<translation id="4253168017788158739">Jegyzet</translation>
 <translation id="4253183225471855471">Nem található hálózat. Helyezze be a SIM-kártyát, indítsa újra az eszközt, majd próbálja újra.</translation>
 <translation id="4254813446494774748">A fordítás nyelve</translation>
 <translation id="425573743389990240">Akkumulátor kisütési teljesítménye wattban (a negatív érték azt jelenti, hogy az akkumulátor töltődik)</translation>
@@ -5577,7 +5577,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
     <ph name="BR" />
     Ha <ph name="SUPERVISED_USER_NAME" /> segítségre szorul a felolvasáshoz, kérje meg, hogy ismételje Ön után. Suttogjon a mikrofontól távol, hogy a Segéd gyermeke hangját tanulja meg, ne az Önét.</translation>
 <translation id="6690659332373509948">Nem sikerült a fájl szintaktikai elemzése: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Szinkronizált adatok kezelése a Google Irányítópulton</translation>
 <translation id="6691541770654083180">Föld</translation>
 <translation id="6691936601825168937">&amp;Következő</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 oldal}other{{COUNT} oldal}}</translation>

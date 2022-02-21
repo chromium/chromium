@@ -1231,7 +1231,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2195729137168608510">E-poštna zaščita</translation>
 <translation id="2198625180564913276">Dodajanje profila. To lahko traja nekaj minut.</translation>
 <translation id="2199298570273670671">Napaka</translation>
-<translation id="2199719347983604670">Podatki iz Sinhronizacije za Chrome</translation>
 <translation id="2200094388063410062">E-pošta</translation>
 <translation id="2200356397587687044">Chrome potrebuje dovoljenje za nadaljevanje</translation>
 <translation id="2203088913459920044">Za ime se lahko uporabijo črke, številke in posebni znaki.</translation>
@@ -3258,6 +3257,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="4252035718262427477">Spletna stran, ena datoteka (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth je onemogočen</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – vsebina zavihka deljena z drugimi</translation>
+<translation id="4253168017788158739">Opomba</translation>
 <translation id="4253183225471855471">Ni omrežja. Vstavite kartico SIM in znova zaženite napravo, preden poskusite znova.</translation>
 <translation id="4254813446494774748">Jezik prevoda:</translation>
 <translation id="425573743389990240">Hitrost praznjenja akumulatorja v vatih (negativna vrednost pomeni, da se akumulator polni)</translation>
@@ -5583,7 +5583,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
     <ph name="BR" />
     Če <ph name="SUPERVISED_USER_NAME" /> potrebuje pomoč pri branju, naj otrok ponovi za vami. Šepetajte proč od mikrofona, da se bo Pomočnik naučil otrokovega glasu, ne pa vašega.</translation>
 <translation id="6690659332373509948">Ni mogoče razčleniti datoteke: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Upravljanje sinhroniziranih podatkov na Google Nadzorni plošči</translation>
 <translation id="6691541770654083180">Zemlja</translation>
 <translation id="6691936601825168937">&amp;Posreduj</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stran}one{{COUNT} stran}two{{COUNT} strani}few{{COUNT} strani}other{{COUNT} strani}}</translation>

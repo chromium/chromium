@@ -1216,7 +1216,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2195729137168608510">Posta elektronikoaren babesa</translation>
 <translation id="2198625180564913276">Profila gehitzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="2199298570273670671">Errorea</translation>
-<translation id="2199719347983604670">Chrome-ren sinkronizazioaren datuak</translation>
 <translation id="2200094388063410062">Posta elektronikoa</translation>
 <translation id="2200356397587687044">Chrome-k aurrera egiteko baimena behar du</translation>
 <translation id="2203088913459920044">Hizkiak, zenbakiak eta karaktere bereziak izan ditzake izenak</translation>
@@ -3239,6 +3238,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4252035718262427477">Web-orria, fitxategi bakarra (web sorta)</translation>
 <translation id="4252899949534773101">Bluetooth-a desgaituta dago</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Fitxako edukia partekatzen da</translation>
+<translation id="4253168017788158739">Oharra</translation>
 <translation id="4253183225471855471">Ez da aurkitu sarerik. Berriro saiatu aurretik, sartu SIM txartela eta berrabiarazi gailua.</translation>
 <translation id="4254813446494774748">Itzulpenaren hizkuntza:</translation>
 <translation id="425573743389990240">Bateriaren deskarga-abiadura wattetan (balioa negatiboa bada, bateria kargatzen ari dela esan nahi du)</translation>
@@ -5561,7 +5561,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> erabiltzaileak irakurtzen ez badaki, eska iezaiozu zuk esandakoa errepika dezala. Xuxurla iezaiozu zer esan behar duen mikrofonotik urrun, Laguntzailea zerbitzuak haurraren ahotsa ikas dezan, eta ez zurea.</translation>
 <translation id="6690659332373509948">Ezin izan da <ph name="FILE_NAME" /> fitxategia analizatu</translation>
-<translation id="6691331417640343772">Kudeatu sinkronizatutako datuak Google-ren Panela atalean</translation>
 <translation id="6691541770654083180">Lurra</translation>
 <translation id="6691936601825168937">&amp;Aurrera</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 orri}other{{COUNT} orri}}</translation>

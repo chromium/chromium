@@ -1216,7 +1216,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2195729137168608510">Protecció del correu electrònic</translation>
 <translation id="2198625180564913276">S'està afegint el perfil. Aquest procés pot tardar uns minuts.</translation>
 <translation id="2199298570273670671">Error</translation>
-<translation id="2199719347983604670">Dades de la sincronització de Chrome</translation>
 <translation id="2200094388063410062">Correu electrònic</translation>
 <translation id="2200356397587687044">Chrome necessita permís per continuar</translation>
 <translation id="2203088913459920044">El nom pot incloure lletres, números i caràcters especials</translation>
@@ -3239,6 +3238,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4252035718262427477">Pàgina web, un únic fitxer (paquet web)</translation>
 <translation id="4252899949534773101">El Bluetooth està desactivat</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: el contingut de les pestanyes es comparteix</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">No s'ha trobat cap xarxa. Insereix la SIM i reinicia el dispositiu abans de tornar-ho a provar.</translation>
 <translation id="4254813446494774748">Idioma de traducció:</translation>
 <translation id="425573743389990240">Velocitat de descàrrega de la bateria en watts (un valor negatiu significa que la bateria s'està carregant)</translation>
@@ -5563,7 +5563,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necessita ajuda per llegir les frases, digues-li que les repeteixi després de tu. Parla baix i lluny del micròfon perquè l'Assistent no aprengui la teva veu, sinó la del teu fill.</translation>
 <translation id="6690659332373509948">No es pot analitzar el fitxer: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Gestiona les dades sincronitzades des del Tauler de control de Google</translation>
 <translation id="6691541770654083180">La Terra</translation>
 <translation id="6691936601825168937">&amp;Reenvia</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pàgina}other{{COUNT} pàgines}}</translation>

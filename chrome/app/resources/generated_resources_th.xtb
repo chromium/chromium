@@ -1226,7 +1226,6 @@
 <translation id="2195729137168608510">การป้องกันอีเมล </translation>
 <translation id="2198625180564913276">กำลังเพิ่มโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="2199298570273670671">ข้อผิดพลาด</translation>
-<translation id="2199719347983604670">ข้อมูลจากการซิงค์ของ Chrome</translation>
 <translation id="2200094388063410062">อีเมล</translation>
 <translation id="2200356397587687044">Chrome ต้องการสิทธิ์ในการดำเนินการต่อ</translation>
 <translation id="2203088913459920044">ชื่อมีตัวอักษร ตัวเลข และสัญลักษณ์พิเศษได้</translation>
@@ -3282,6 +3281,7 @@
 <translation id="4252035718262427477">หน้าเว็บ ไฟล์เดียว (Web Bundle)</translation>
 <translation id="4252899949534773101">บลูทูธปิดอยู่</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - แชร์เนื้อหาในแท็บอยู่</translation>
+<translation id="4253168017788158739">หมายเหตุ</translation>
 <translation id="4253183225471855471">ไม่พบเครือข่าย โปรดใส่ซิมและรีบูตอุปกรณ์ก่อนลองอีกครั้ง</translation>
 <translation id="4254813446494774748">ภาษาที่แปล:</translation>
 <translation id="425573743389990240">อัตราการใช้แบตเตอรี่เป็นวัตต์ (ค่าลบหมายถึงแบตเตอรี่กำลังชาร์จ)</translation>
@@ -5645,7 +5645,6 @@
     <ph name="BR" />
     หาก <ph name="SUPERVISED_USER_NAME" /> ยังอ่านหนังสือไม่คล่อง ให้บุตรหลานอ่านตามคุณ ให้คุณอ่านเบาๆ และห่างจากไมค์ เพื่อให้ Assistant จดจำเสียงของบุตรหลานไม่ใช่เสียงของคุณ</translation>
 <translation id="6690659332373509948">ไม่สามารถแยกวิเคราะห์ไฟล์: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">จัดการข้อมูลที่ซิงค์ใน Google แดชบอร์ด</translation>
 <translation id="6691541770654083180">โลก</translation>
 <translation id="6691936601825168937">&amp;ส่งต่อ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 หน้า}other{{COUNT} หน้า}}</translation>

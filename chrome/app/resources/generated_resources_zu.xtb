@@ -1227,7 +1227,6 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2195729137168608510">Ukuvikelwa kwe-imeyili</translation>
 <translation id="2198625180564913276">Ingeza Iphrofayela. Lokhu kungathatha imizuzu embalwa.</translation>
 <translation id="2199298570273670671">Iphutha</translation>
-<translation id="2199719347983604670">Idatha esuka ekuvumelaniseni kwe-Chrome</translation>
 <translation id="2200094388063410062">I-imeyili</translation>
 <translation id="2200356397587687044">I-Chrome idinga imvume ukuze iqhubeke</translation>
 <translation id="2203088913459920044">Igama lingasebenzisa izinhlamvu, izinombolo, nezinhlamvu ezikhethekile</translation>
@@ -3253,6 +3252,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4252035718262427477">Ikhasi lewebhu, Ifayela Elilodwa (Inqwaba Yewebhu)</translation>
 <translation id="4252899949534773101">I-Bluetooth ikhutshaziwe</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Okuqukethwe kwethebhu okwabiwe</translation>
+<translation id="4253168017788158739">Yazi</translation>
 <translation id="4253183225471855471">Ayikho inethiwekhi etholakele. Sicela ufake i-SIM yakho bese uqalisa idivayisi yakho ngaphambi kokuzama futhi.</translation>
 <translation id="4254813446494774748">Ulimi lokuhumusha:</translation>
 <translation id="425573743389990240">Ukulinganisela kokukhishwa kwebhethri ngama-watt (inani elingelihle lisho ukuthi ibhethri liyashaja)</translation>
@@ -5579,7 +5579,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
     <ph name="BR" />
     Uma u-<ph name="SUPERVISED_USER_NAME" /> edinga usizo ngokufunda, tshela ingane yakho ukuthi iphinde lokho okushoyo. Hleba ukude nemakrofoni ukuze Umsizi azi izwi lengane yakho esikhundleni selakho.</translation>
 <translation id="6690659332373509948">Ayikwazi ukudlulisa ifayela: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Phatha idatha evumelanisiwe kudeshibhodi ye-Google</translation>
 <translation id="6691541770654083180">Umhlaba</translation>
 <translation id="6691936601825168937">Dlulisela</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{Ikhasi eli-1}one{Amakhasi {COUNT}}other{Amakhasi {COUNT}}}</translation>

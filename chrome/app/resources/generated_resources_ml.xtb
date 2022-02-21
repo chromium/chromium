@@ -1215,7 +1215,6 @@
 <translation id="2195729137168608510">ഇമെയില്‍‌ പരിരക്ഷണം</translation>
 <translation id="2198625180564913276">പ്രൊഫെെൽ ചേർക്കുന്നു. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="2199298570273670671">പിശക്</translation>
-<translation id="2199719347983604670">Chrome സമന്വയത്തിൽ നിന്നുള്ള ഡാറ്റ</translation>
 <translation id="2200094388063410062">ഇമെയില്‍</translation>
 <translation id="2200356397587687044">Chrome-ന് തുടരാൻ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="2203088913459920044">പേരിൽ അക്ഷരങ്ങളും അക്കങ്ങളും പ്രത്യേക അക്ഷരങ്ങളും ഉപയോഗിക്കാം</translation>
@@ -3238,6 +3237,7 @@
 <translation id="4252035718262427477">വെബ്‌പേജ്, ഒരൊറ്റ ഫയൽ (വെബ് ബണ്ടിൽ)</translation>
 <translation id="4252899949534773101">Bluetooth പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ടാബ് ഉള്ളടക്കം പങ്കിട്ടു</translation>
+<translation id="4253168017788158739">കുറിപ്പ്</translation>
 <translation id="4253183225471855471">നെറ്റ്‌വർക്കുകളൊന്നും കണ്ടെത്തിയില്ല. വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ്, സിം ഇട്ടതിന് ശേഷം നിങ്ങളുടെ ഉപകരണം റീബൂട്ട് ചെയ്യുക.</translation>
 <translation id="4254813446494774748">വിവർത്തന ഭാഷ:</translation>
 <translation id="425573743389990240">ബാറ്ററി ഡിസ്‌ചാർജ്ജ് നിരക്ക് വാട്‌സിൽ (നെഗറ്റീവ് മൂല്യം അർത്ഥമാക്കുന്നത് ബാറ്ററി ചാർജ്ജുചെയ്യുന്നു എന്നാണ്)</translation>
@@ -5562,7 +5562,6 @@
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> എന്ന കുട്ടിക്ക് വായിക്കാൻ സഹായം വേണമെങ്കിൽ, നിങ്ങൾ വായിച്ചതിനുശേഷം ആവർത്തിക്കാൻ അവരോട് ആവശ്യപ്പെടുക. മൈക്കിൽ നിന്നും അകലെ മാറി നിന്ന് പതുക്കെ സംസാരിക്കുക, അതുവഴി നിങ്ങളുടെ ശബ്ദത്തിന് പകരം കുട്ടിയുടെ ശബ്ദം Assistant പഠിക്കും.</translation>
 <translation id="6690659332373509948">ഫയൽ പാഴ്‌സ് ചെയ്യാനായില്ല: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google ഡാഷ്ബോര്‍ഡിലെ സമന്വയിപ്പിച്ച ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
 <translation id="6691541770654083180">Earth</translation>
 <translation id="6691936601825168937">&amp;മുന്നോട്ട്</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{ഒരു പേജ്}other{{COUNT} പേജുകൾ}}</translation>

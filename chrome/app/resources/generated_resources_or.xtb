@@ -1213,7 +1213,6 @@
 <translation id="2195729137168608510">ଇମେଲ୍ ସୁରକ୍ଷା</translation>
 <translation id="2198625180564913276">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି। ଏଥିପାଇଁ କିଛି ସମୟ ଲାଗିପାରେ।</translation>
 <translation id="2199298570273670671">ତ୍ରୁଟି</translation>
-<translation id="2199719347983604670">Chrome ସିଙ୍କରୁ ଡାଟା</translation>
 <translation id="2200094388063410062">ଇ-ମେଲ୍‌</translation>
 <translation id="2200356397587687044">ଜାରି ରଖିବା ପାଇଁ Chrome ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="2203088913459920044">ନାମରେ ଅକ୍ଷର, ସଂଖ୍ୟା ଏବଂ ବିଶେଷ ଅକ୍ଷରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରେ</translation>
@@ -3237,6 +3236,7 @@
 <translation id="4252035718262427477">ୱେବ୍ ପୃଷ୍ଠା, ଗୋଟିଏ ଫାଇଲ୍ (ୱେବ୍ ବଣ୍ଡଲ୍)</translation>
 <translation id="4252899949534773101">ବ୍ଲୁଟୁଥ୍‍ ଅକ୍ଷମ ଅଛି</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ଟାବ୍ ବିଷୟବସ୍ତୁ ସେୟାର୍ କରାଗଲା</translation>
+<translation id="4253168017788158739">ନୋଟ୍</translation>
 <translation id="4253183225471855471">କୌଣସି ନେଟୱାର୍କ ମିଳିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରିବା ପୂର୍ବରୁ ଦୟାକରି ଆପଣଙ୍କ SIMକୁ ଇନସାର୍ଟ କରି ଆପଣଙ୍କ ଡିଭାଇସକୁ ରିବୁଟ୍ କରନ୍ତୁ।</translation>
 <translation id="4254813446494774748">ଅନୁବାଦ ଭାଷା:</translation>
 <translation id="425573743389990240">ବ୍ୟାଟେରୀର ଡିସ୍‍ଚାର୍ଜ ହାର, ୱାଟ୍‍‍ରେ (ଋଣାତ୍ମକ ମୂଲ୍ୟ ମାନେ ବ୍ୟାଟେରୀ ଚାର୍ଜ ହେଉଛି)</translation>
@@ -5562,7 +5562,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
     <ph name="BR" />
 ଯଦି ପଢ଼ିବା ପାଇଁ <ph name="SUPERVISED_USER_NAME" /> ସାହାଯ୍ୟ ଆବଶ୍ୟକ କରେ, ତେବେ ଆପଣ ପଢ଼ିଲା ପରେ ଆପଣଙ୍କ ପିଲାକୁ ତାହା ରିପିଟ୍ କରିବାକୁ ଦିଅନ୍ତୁ। ମାଇକଠାରୁ ଦୂରରେ ରହି ଧୀର ସ୍ୱରରେ କୁହନ୍ତୁ ଯାହାଫଳରେ Assistant ଆପଣଙ୍କ ପରିବର୍ତ୍ତେ ଆପଣଙ୍କ ପିଲାର ଭଏସକୁ ଚିହ୍ନିବା ଶିଖିଥାଏ।</translation>
 <translation id="6690659332373509948">ଫାଇଲ୍‍କୁ ପାର୍ସ କରିବାରେ ଅକ୍ଷମ: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google ଡ୍ୟାସ୍‌ବୋର୍ଡରେ ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6691541770654083180">ପୃଥିବୀ</translation>
 <translation id="6691936601825168937">&amp;ଅଗ୍ରଗତି</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1ଟି ପୃଷ୍ଠା}other{{COUNT}ଟି ପୃଷ୍ଠା}}</translation>

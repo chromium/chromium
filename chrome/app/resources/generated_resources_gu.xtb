@@ -1218,7 +1218,6 @@
 <translation id="2195729137168608510">ઇમેઇલ સુરક્ષા</translation>
 <translation id="2198625180564913276">પ્રોફાઇલ ઉમેરી રહ્યાં છીએ. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="2199298570273670671">ભૂલ</translation>
-<translation id="2199719347983604670">Chrome સિંકમાંનો ડેટા</translation>
 <translation id="2200094388063410062">ઇ-મેઇલ</translation>
 <translation id="2200356397587687044">Chromeને આગળ વધવા મંજૂરીની જરૂર છે</translation>
 <translation id="2203088913459920044">નામમાં અક્ષર, સંખ્યા અને વિશેષ વર્ણનો ઉપયોગ થઈ શકે છે</translation>
@@ -3275,6 +3274,7 @@
 <translation id="4252035718262427477">વેબપેજ, એક જ ફાઇલ (વેબ બંડલ)</translation>
 <translation id="4252899949534773101">બ્લૂટૂથ બંધ છે</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ટૅબની સામગ્રી શેર કરી</translation>
+<translation id="4253168017788158739">નોંધ</translation>
 <translation id="4253183225471855471">કોઈ નેટવર્ક મળ્યું નથી. કૃપા કરીને તમારું સિમ કાર્ડ નાખીને ફરી પ્રયાસ કરતા પહેલાં તમારું ડિવાઇસ રીબૂટ કરો.</translation>
 <translation id="4254813446494774748">અનુવાદ ભાષા:</translation>
 <translation id="425573743389990240">બેટરી ડિસ્ચાર્જ દર વોટ્સમાં (ઋણ મૂલ્યનો અર્થ છે બેટરી ચાર્જ થઈ રહી છે)</translation>
@@ -5636,7 +5636,6 @@ USB ડિવાઇસ</translation>
     <ph name="BR" />
     જો <ph name="SUPERVISED_USER_NAME" />ને વાંચવામાં સહાય જોઈએ, તો તમારા બાળકને તમારા પછી બોલવા માટે કહો. માઇકથી થોડે દૂર હળવેથી બોલો, એટલે Assistant તમારા બદલે તમારા બાળકનો વૉઇસ પારખે.</translation>
 <translation id="6690659332373509948">ફાઇલ વિશ્લેષિત કરવામાં અસમર્થ: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google ડૅશબોર્ડ પર સિંક કરેલ ડેટા મેનેજ કરો</translation>
 <translation id="6691541770654083180">પૃથ્વી</translation>
 <translation id="6691936601825168937">&amp;ફોર્વર્ડ કરો</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 પેજ}one{{COUNT} પેજ}other{{COUNT} પેજ}}</translation>

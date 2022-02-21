@@ -1214,7 +1214,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2195729137168608510">Ochrona poczty e-mail</translation>
 <translation id="2198625180564913276">Dodaję profil. Może to potrwać kilka minut.</translation>
 <translation id="2199298570273670671">Błąd</translation>
-<translation id="2199719347983604670">Dane synchronizacji Chrome</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">Chrome wymaga pozwolenia na kontynuację</translation>
 <translation id="2203088913459920044">Nazwa może zawierać litery, cyfry i znaki specjalne</translation>
@@ -3237,6 +3236,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4252035718262427477">Strona internetowa, pojedynczy plik (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth jest wyłączony</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – udostępniono zawartość karty</translation>
+<translation id="4253168017788158739">Uwaga</translation>
 <translation id="4253183225471855471">Nie znaleziono sieci. Zanim spróbujesz ponownie, włóż kartę SIM i zrestartuj urządzenie.</translation>
 <translation id="4254813446494774748">Język tłumaczenia:</translation>
 <translation id="425573743389990240">Szybkość rozładowywania akumulatora w watach (wartość ujemna oznacza, że akumulator się ładuje)</translation>
@@ -5558,7 +5558,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
     <ph name="BR" />
     Jeśli <ph name="SUPERVISED_USER_NAME" /> potrzebuje pomocy w czytaniu, niech powtarza za Tobą. Mów szeptem z dala od mikrofonu, aby Asystent nauczył się głosu dziecka, a nie Twojego.</translation>
 <translation id="6690659332373509948">Nie można przeanalizować pliku: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Zarządzaj synchronizowanymi danymi w Panelu Google</translation>
 <translation id="6691541770654083180">Ziemia</translation>
 <translation id="6691936601825168937">&amp;Dalej</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 strona}few{{COUNT} strony}many{{COUNT} stron}other{{COUNT} strony}}</translation>

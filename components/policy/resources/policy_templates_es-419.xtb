@@ -2383,6 +2383,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si estableces esta política, los usuarios no podrán cambiarla ni anularla.
 
           Si no la estableces, la función estará inicialmente inhabilitada, pero el usuario podrá habilitarla en cualquier momento.</translation>
+<translation id="3587482841069643663">Todos</translation>
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>

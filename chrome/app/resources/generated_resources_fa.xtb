@@ -1225,7 +1225,6 @@
 <translation id="2195729137168608510">محافظت از ایمیل</translation>
 <translation id="2198625180564913276">درحال افزودن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="2199298570273670671">خطا</translation>
-<translation id="2199719347983604670">‏داده‌های مربوط به همگام‌سازی Chrome</translation>
 <translation id="2200094388063410062">ایمیل</translation>
 <translation id="2200356397587687044">‏Chrome برای ادامه به مجوز نیاز دارد</translation>
 <translation id="2203088913459920044">برای نام می‌توانید از حروف، اعداد، و نویسه‌های خاص استفاده کنید</translation>
@@ -3252,6 +3251,7 @@
 <translation id="4252035718262427477">صفحه وب، فایل تکی (دسته وب)</translation>
 <translation id="4252899949534773101">بلوتوث غیرفعال است</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - محتوای برگه به اشتراک گذاشته شده است</translation>
+<translation id="4253168017788158739">یادداشت</translation>
 <translation id="4253183225471855471">شبکه‌ای پیدا نشد. لطفاً سیم‌کارت را وارد کنید، دستگاه را راه‌اندازی مجدد کنید، و سپس دوباره امتحان کنید.</translation>
 <translation id="4254813446494774748">زبان ترجمه:</translation>
 <translation id="425573743389990240">نسبت تخلیه باتری به وات (مقدار منفی به معنی این است که باتری در حال شارژ شدن است)</translation>
@@ -5575,7 +5575,6 @@
     <ph name="BR" />
     اگر <ph name="SUPERVISED_USER_NAME" /> هنگام خواندن به کمک نیاز داشت، از او بخواهید عبارات را بعداز شما تکرار کند. از میکروفون فاصله بگیرید تا «دستیار» به‌جای صدای شما، صدای فرزندتان را یاد بگیرد.</translation>
 <translation id="6690659332373509948">این فایل تجزیه نمی‌شود: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">‏مدیریت داده‌های همگام‌سازی‌شده در داشبورد Google</translation>
 <translation id="6691541770654083180">Earth</translation>
 <translation id="6691936601825168937">&amp;ارسال کردن</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{۱ صفحه}one{{COUNT} صفحه}other{{COUNT} صفحه}}</translation>

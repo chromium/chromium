@@ -2341,6 +2341,7 @@
           設定這項政策後，使用者即無法變更或覆寫。
 
           如果不設定這項政策，系統預設會停用隨選朗讀功能，但使用者可以隨時啟用這項功能。</translation>
+<translation id="3587482841069643663">全部</translation>
 <translation id="3589193811812796052">禁止跨來源傳送 WebAssembly 模組</translation>
 <translation id="3591527072193107424">啟用「舊版瀏覽器支援」功能。</translation>
 <translation id="3591584750136265240">設定登入驗證行為</translation>

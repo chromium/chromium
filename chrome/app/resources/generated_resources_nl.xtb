@@ -1216,7 +1216,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2195729137168608510">E-mail beveiligen</translation>
 <translation id="2198625180564913276">Profiel toevoegen. Dit kan een paar minuten duren.</translation>
 <translation id="2199298570273670671">Fout</translation>
-<translation id="2199719347983604670">Gegevens van Chrome-synchronisatie</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">Chrome heeft rechten nodig om verder te gaan</translation>
 <translation id="2203088913459920044">De naam mag letters, cijfers en speciale tekens bevatten</translation>
@@ -3239,6 +3238,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4252035718262427477">Webpagina, één bestand (webbundel)</translation>
 <translation id="4252899949534773101">Bluetooth staat uit</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: content van tabblad gedeeld</translation>
+<translation id="4253168017788158739">Opmerking</translation>
 <translation id="4253183225471855471">Geen netwerk gevonden. Plaats je simkaart en start je apparaat opnieuw op voordat je het nog een keer probeert.</translation>
 <translation id="4254813446494774748">Doeltaal:</translation>
 <translation id="425573743389990240">Batterij-ontlading in Watt (een negatieve waarde betekent dat de batterij wordt opgeladen)</translation>
@@ -5559,7 +5559,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
     <ph name="BR" />
 Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je kind jou dan nazeggen. Fluister weg van de microfoon zodat de Assistent de stem van je kind leert herkennen in plaats van die van jou.</translation>
 <translation id="6690659332373509948">Fout bij het parseren van dit bestand: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Gesynchroniseerde gegevens beheren in Google Dashboard</translation>
 <translation id="6691541770654083180">Aarde</translation>
 <translation id="6691936601825168937">&amp;Vooruit</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pagina}other{{COUNT} pagina's}}</translation>

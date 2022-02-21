@@ -1213,7 +1213,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2195729137168608510">Mbrojtja e mail-it</translation>
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="2199298570273670671">Gabim</translation>
-<translation id="2199719347983604670">Të dhënat nga "Sinkronizimi i Chrome"</translation>
 <translation id="2200094388063410062">Email-i</translation>
 <translation id="2200356397587687044">Chrome ka nevojë për leje për të vazhduar</translation>
 <translation id="2203088913459920044">Emri mund të përdorë shkronja, numra dhe karaktere të veçanta</translation>
@@ -3237,6 +3236,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4252035718262427477">Faqja e uebit, një skedar (paketa për ueb)</translation>
 <translation id="4252899949534773101">Bluetooth-i është çaktivizuar</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - përmbajtja e skedës është ndarë</translation>
+<translation id="4253168017788158739">Shënim</translation>
 <translation id="4253183225471855471">Nuk u gjet asnjë rrjet. Fut kartën tënde SIM dhe rinis pajisjen përpara se të provosh përsëri.</translation>
 <translation id="4254813446494774748">Gjuha e përkthimit:</translation>
 <translation id="425573743389990240">Norma e shkarkimit të baterisë në vat (vlera negative do të thotë se bateria po ngarkohet)</translation>
@@ -5559,7 +5559,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
     <ph name="BR" />
     Nëse <ph name="SUPERVISED_USER_NAME" /> ka nevojë për ndihmë për të lexuar, kërkoji fëmijës ta përsëritë pas teje. Pëshpëriti larg mikrofonit që "Asistenti" të mësojë zërin e fëmijës tënd në vend të zërit tënd.</translation>
 <translation id="6690659332373509948">Analiza e skedarit ishte e pamundur: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Menaxho të dhënat e sinkronizuara në "Panelin analitik të Google"</translation>
 <translation id="6691541770654083180">Toka</translation>
 <translation id="6691936601825168937">&amp;Përpara</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 faqe}other{{COUNT} faqe}}</translation>

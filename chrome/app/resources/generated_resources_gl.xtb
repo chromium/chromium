@@ -1215,7 +1215,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
 <translation id="2198625180564913276">Engadindo perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="2199298570273670671">Erro</translation>
-<translation id="2199719347983604670">Datos procedentes da Sincronización de Chrome</translation>
 <translation id="2200094388063410062">Correo electrónico</translation>
 <translation id="2200356397587687044">Chrome precisa que lle concedas permiso para poder continuar</translation>
 <translation id="2203088913459920044">O nome pode conter letras, números e caracteres especiais</translation>
@@ -3238,6 +3237,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4252035718262427477">Páxina web, ficheiro único (Web Bundle)</translation>
 <translation id="4252899949534773101">O Bluetooth está desactivado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: compartindo o contido da pestana</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">Non se atopou ningunha rede. Insire a tarxeta SIM e reinicia o dispositivo antes de tentalo de novo.</translation>
 <translation id="4254813446494774748">Idioma da tradución:</translation>
 <translation id="425573743389990240">Taxa de descarga da batería en watts (se o valor é negativo, significa que a batería se está cargando)</translation>
@@ -5560,7 +5560,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
     <ph name="BR" />
 Se <ph name="SUPERVISED_USER_NAME" /> precisa axuda para ler, dille que repita o que ti digas. Bisba as frases lonxe do micrófono para que o Asistente aprenda a voz do teu fillo ou filla en vez da túa.</translation>
 <translation id="6690659332373509948">Non se pode analizar o ficheiro: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Xestionar os datos sincronizados no Panel de control de Google</translation>
 <translation id="6691541770654083180">Terra</translation>
 <translation id="6691936601825168937">&amp;Reenviar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 páxina}other{{COUNT} páxinas}}</translation>

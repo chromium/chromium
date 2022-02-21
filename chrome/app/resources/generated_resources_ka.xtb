@@ -1216,7 +1216,6 @@
 <translation id="2195729137168608510">ელფოსტის დაცვა</translation>
 <translation id="2198625180564913276">მიმდინარეობს პროფილის დამატება. ამას შეიძლება რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="2199298570273670671">შეცდომა</translation>
-<translation id="2199719347983604670">Chrome-ის სინქრონიზაციის მონაცემები</translation>
 <translation id="2200094388063410062">ელფოსტის გაგზავნა</translation>
 <translation id="2200356397587687044">გასაგრძელებლად Chrome საჭიროებს ნებართვას</translation>
 <translation id="2203088913459920044">სახელი შეიძლება შეიცავდეს ასოებს, ციფრებსა და საგანგებო სიმბოლოებს</translation>
@@ -3240,6 +3239,7 @@
 <translation id="4252035718262427477">ვებგვერდი, ერთი ფაილი (ვებ-ნაკრები)</translation>
 <translation id="4252899949534773101">Bluetooth გათიშულია</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> — ჩანართის შიგთავსი გაზიარებულია</translation>
+<translation id="4253168017788158739">შენიშვნა</translation>
 <translation id="4253183225471855471">ქსელი ვერ მოიძებნა. ხელახლა ცდამდე ჩასვით SIM ბარათი და გადატვირთეთ მოწყობილობა.</translation>
 <translation id="4254813446494774748">თარგმანის ენა:</translation>
 <translation id="425573743389990240">აკუმულატორის დაცლის მაჩვენებელი ვატებში (უარყოფითი სიდიდე ნიშნავს იმას, რომ აკუმულატორი იტენება)</translation>
@@ -5562,7 +5562,6 @@
     <ph name="BR" />
     თუ <ph name="SUPERVISED_USER_NAME" /> კითხვაში დახმარებას საჭიროებს, სთხოვეთ, თქვენ მიერ წარმოთქმული გაიმეოროს. ჩაუჩურჩულეთ მას მიკროფონისგან მოშორებით, რომ ასისტენტმა თქვენი შვილის ხმის ამოცნობა ისწავლოს და არა თქვენი.</translation>
 <translation id="6690659332373509948">ფაილის გაანალიზება ვერ ხერხდება: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">სინქრონიზებული მონაცემების მართვა Google Dashboard-ში</translation>
 <translation id="6691541770654083180">დედამიწა</translation>
 <translation id="6691936601825168937">&amp;გადამისამართება</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 გვერდი}other{{COUNT} გვერდი}}</translation>

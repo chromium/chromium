@@ -1213,7 +1213,6 @@
 <translation id="2195729137168608510">电子邮件保护</translation>
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
 <translation id="2199298570273670671">错误</translation>
-<translation id="2199719347983604670">Chrome 同步的数据</translation>
 <translation id="2200094388063410062">电子邮件</translation>
 <translation id="2200356397587687044">Chrome 需要获得相应权限才能继续</translation>
 <translation id="2203088913459920044">名称可以使用字母、数字和特殊字符</translation>
@@ -3235,6 +3234,7 @@
 <translation id="4252035718262427477">网页，单个文件 (Web Bundle)</translation>
 <translation id="4252899949534773101">已停用蓝牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享标签页内容</translation>
+<translation id="4253168017788158739">备注</translation>
 <translation id="4253183225471855471">找不到任何网络。请插入 SIM 卡并重新启动设备，然后重试。</translation>
 <translation id="4254813446494774748">翻译语言：</translation>
 <translation id="425573743389990240">电池放电率（单位为瓦，负值表示电池正在充电）</translation>
@@ -5557,7 +5557,6 @@
     <ph name="BR" />
     如果<ph name="SUPERVISED_USER_NAME" />有阅读障碍，请让孩子跟着您读。记得要远离麦克风轻声耳语，以便 Google 助理能够了解您孩子（而非您）的语音。</translation>
 <translation id="6690659332373509948">无法解析文件：<ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
 <translation id="6691541770654083180">地球</translation>
 <translation id="6691936601825168937">前进(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 页}other{{COUNT} 页}}</translation>

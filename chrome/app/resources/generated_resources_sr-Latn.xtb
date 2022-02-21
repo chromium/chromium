@@ -1215,7 +1215,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
 <translation id="2198625180564913276">Dodaje se profil. To može da potraje nekoliko minuta.</translation>
 <translation id="2199298570273670671">Greška</translation>
-<translation id="2199719347983604670">Podaci iz Chrome sinhronizacije</translation>
 <translation id="2200094388063410062">Pošalji imejlom</translation>
 <translation id="2200356397587687044">Chrome traži dozvolu da nastavi</translation>
 <translation id="2203088913459920044">Slova, brojevi i specijalni znakovi mogu da se koriste u nazivu</translation>
@@ -3239,6 +3238,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4252035718262427477">Veb-stranica, jedna datoteka (veb-skup)</translation>
 <translation id="4252899949534773101">Bluetooth je onemogućen</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Deli se sadržaj kartice</translation>
+<translation id="4253168017788158739">Napomena</translation>
 <translation id="4253183225471855471">Nije pronađena nijedna mreža. Ubacite SIM karticu i restartujte uređaj pre nego što probate ponovo.</translation>
 <translation id="4254813446494774748">Jezik na koji se prevodi:</translation>
 <translation id="425573743389990240">Nivo potrošnje baterije u vatima (negativna vrednost znači da se baterija puni)</translation>
@@ -5561,7 +5561,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
     <ph name="BR" />
     Ako je detetu <ph name="SUPERVISED_USER_NAME" /> potrebna pomoć sa čitanjem, neka ponavlja za vama. Šapućite dalje od mikrofona da bi Pomoćnik naučio detetov, a ne vaš glas.</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti datoteku: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Upravljajte sinhronizovanim podacima na Google kontrolnoj tabli</translation>
 <translation id="6691541770654083180">Zemlja</translation>
 <translation id="6691936601825168937">&amp;Prosledi</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stranica}one{{COUNT} stranica}few{{COUNT} stranice}other{{COUNT} stranica}}</translation>

@@ -1229,7 +1229,6 @@
 <translation id="2195729137168608510">ইমেল আইডির সুরক্ষা</translation>
 <translation id="2198625180564913276">প্রোফাইল যোগ করা হচ্ছে। এর জন্য কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="2199298570273670671">সমস্যা</translation>
-<translation id="2199719347983604670">Chrome সিঙ্ক থেকে ডেটা</translation>
 <translation id="2200094388063410062">ইমেল</translation>
 <translation id="2200356397587687044">কাজটি চালিয়ে যাওয়ার জন্য Chrome কে অনুমতি দিতে হবে</translation>
 <translation id="2203088913459920044">নামে অক্ষর, সংখ্যা ও বিশেষ অক্ষর ব্যবহার করা যেতে পারে</translation>
@@ -3254,6 +3253,7 @@
 <translation id="4252035718262427477">ওয়েবপেজ, সিঙ্গেল ফাইল (ওয়েব বান্ডেল)</translation>
 <translation id="4252899949534773101">ব্লুটুথ বন্ধ করা আছে</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ট্যাব কন্টেন্ট শেয়ার করা হয়েছে</translation>
+<translation id="4253168017788158739">টিকা</translation>
 <translation id="4253183225471855471">কোনও নেটওয়ার্ক পাওয়া যায়নি। আবার চেষ্টা করে দেখার আগে সিম যোগ করে ডিভাইস রিবুট করুন।</translation>
 <translation id="4254813446494774748">অনুবাদের ভাষা:</translation>
 <translation id="425573743389990240">ওয়াটে ব্যাটারি ডিসচার্জের হার (ঋণাত্মক মানের অর্থ হল ব্যাটারি চার্জ হচ্ছে)</translation>
@@ -5578,7 +5578,6 @@
     <ph name="BR" />
     পড়ার সময় <ph name="SUPERVISED_USER_NAME" />-এর সাহায্যের প্রয়োজন হলে, আপনি প্রথমে রিডিং পড়ুন এবং সেটি শুনে তারপর তাকে বলতে বলুন। আপনি মাইকের সামনে পড়বেন না, যাতে Assistant আপনার সন্তানের ভয়েস শুনে সেভ করে রাখতে পারে, আপনারটা নয়।</translation>
 <translation id="6690659332373509948">ফাইল বিশ্লেষণ করতে বন্ধ: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google ড্যাশবোর্ডে সিঙ্ক হওয়া ডেটা পরিচালনা করুন</translation>
 <translation id="6691541770654083180">পৃথিবী</translation>
 <translation id="6691936601825168937">&amp;ফরওয়ার্ড</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{১টি পৃষ্ঠা}one{{COUNT}টি পৃষ্ঠা}other{{COUNT}টি পৃষ্ঠা}}</translation>

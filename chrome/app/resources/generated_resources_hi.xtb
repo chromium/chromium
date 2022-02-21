@@ -1229,7 +1229,6 @@
 <translation id="2195729137168608510">ईमेल सुरक्षा</translation>
 <translation id="2198625180564913276">प्रोफ़ाइल जोड़ी जा रही है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="2199298570273670671">गड़बड़ी</translation>
-<translation id="2199719347983604670">Chrome सिंक का डेटा</translation>
 <translation id="2200094388063410062">ई-मेल</translation>
 <translation id="2200356397587687044">जारी रखने के लिए Chrome को अनुमति चाहिए</translation>
 <translation id="2203088913459920044">नाम में अक्षर, संख्याएं, और विशेष वर्ण इस्तेमाल किए जा सकते हैं</translation>
@@ -3254,6 +3253,7 @@
 <translation id="4252035718262427477">वेबपेज, एक फ़ाइल (वेब बंडल)</translation>
 <translation id="4252899949534773101">ब्लूटूथ बंद है</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - टैब सामग्री शेयर की गई</translation>
+<translation id="4253168017788158739">नोट</translation>
 <translation id="4253183225471855471">कोई भी नेटवर्क नहीं मिला. दोबारा कोशिश करने से पहले, कृपया अपना सिम कार्ड डालें और अपने डिवाइस को फिर से चालू करें.</translation>
 <translation id="4254813446494774748">अनुवाद की भाषा:</translation>
 <translation id="425573743389990240">बैटरी डिस्चार्ज दर वॉट में (ऋणात्मक मान का अर्थ है कि बैटरी चार्ज हो रही है)</translation>
@@ -5577,7 +5577,6 @@
     <ph name="BR" />
     अगर <ph name="SUPERVISED_USER_NAME" /> को पढ़ने में मदद चाहिए, तो उन्हें अपने बाद वाक्यांश दोहराने को कहें. माइक से दूर होकर धीरे बोलें, ताकि Assistant आपके बजाय आपके बच्चे की आवाज़ जानें.</translation>
 <translation id="6690659332373509948">इस फ़ाइल को पार्स करने में असमर्थ: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google डैशबोर्ड पर सिंक किया गया डेटा प्रबंधित करें</translation>
 <translation id="6691541770654083180">पृथ्वी</translation>
 <translation id="6691936601825168937">&amp;अग्रेषित करें</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 पेज}one{{COUNT} पेज}other{{COUNT} पेज}}</translation>

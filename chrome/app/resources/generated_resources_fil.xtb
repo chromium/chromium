@@ -1229,7 +1229,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2195729137168608510">Proteksyon sa Email</translation>
 <translation id="2198625180564913276">Idinaragdag ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="2199298570273670671">Nagka-error</translation>
-<translation id="2199719347983604670">Data mula sa Chrome sync</translation>
 <translation id="2200094388063410062">I-email</translation>
 <translation id="2200356397587687044">Kailangan ng Chrome ng pahintulot upang magpatuloy</translation>
 <translation id="2203088913459920044">Puwedeng gumamit ang pangalan ng mga titik, numero, at special character</translation>
@@ -3256,6 +3255,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4252035718262427477">Webpage, Isang File (Web Bundle)</translation>
 <translation id="4252899949534773101">Naka-disable ang Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Nakabahagi ang content ng tab</translation>
+<translation id="4253168017788158739">Tala</translation>
 <translation id="4253183225471855471">Walang nakitang network. Pakilagay ang iyong SIM at i-reboot ang device mo bago subukan ulit.</translation>
 <translation id="4254813446494774748">Wika ng Pagsasalin:</translation>
 <translation id="425573743389990240">Rate ng Pagdiskarga ng Baterya sa Watts (Ang ibig sabihin ng negatibong halaga ay nagcha-charge ang baterya)</translation>
@@ -5579,7 +5579,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
     <ph name="BR" />
     Kung kailangan ni <ph name="SUPERVISED_USER_NAME" /> ng tulong sa pagbabasa, utusan ang iyong anak na gayahin ang sasabihin mo. Bumulong nang malayo sa mikropono para boses ng iyong anak sa halip na boses mo ang matutunan ng Assistant.</translation>
 <translation id="6690659332373509948">Hindi magawang i-parse ang file: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Pamahalaan ang naka-sync na data sa Google Dashboard</translation>
 <translation id="6691541770654083180">Mundo</translation>
 <translation id="6691936601825168937">&amp;Sumulong</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 page}one{{COUNT} page}other{{COUNT} na page}}</translation>

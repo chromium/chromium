@@ -1218,7 +1218,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
 <translation id="2198625180564913276">Přidávání profilu. Může to trvat několik minut.</translation>
 <translation id="2199298570273670671">Chyba</translation>
-<translation id="2199719347983604670">Data ze synchronizace Chromu</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">Chrome k pokračování potřebuje oprávnění</translation>
 <translation id="2203088913459920044">V názvu lze použít písmena, číslice a zvláštní znaky</translation>
@@ -3240,6 +3239,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4252035718262427477">Webová stránka, jeden soubor (webový balíček)</translation>
 <translation id="4252899949534773101">Rozhraní Bluetooth je zakázáno</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – obsah karty se sdílí</translation>
+<translation id="4253168017788158739">Poznámka</translation>
 <translation id="4253183225471855471">Nebyla nalezena žádná síť. Vložte do zařízení SIM kartu a restartujte ho. Pak to zkuste znovu.</translation>
 <translation id="4254813446494774748">Jazyk překladu:</translation>
 <translation id="425573743389990240">Rychlost vybíjení baterie ve wattech (záporná hodnota znamená nabíjení baterie)</translation>
@@ -5562,7 +5562,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
     <ph name="BR" />
     Pokud uživatel <ph name="SUPERVISED_USER_NAME" /> potřebuje se čtením pomoct, ať věty opakuje po vás. Šeptejte je dál od mikrofonu, aby Asistent zaznamenal hlas dítěte a ne váš.</translation>
 <translation id="6690659332373509948">Soubor nelze analyzovat: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Spravovat synchronizovaná data na Hlavním panelu Google</translation>
 <translation id="6691541770654083180">Země</translation>
 <translation id="6691936601825168937">&amp;Vpřed</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 stránka}few{{COUNT} stránky}many{{COUNT} stránky}other{{COUNT} stránek}}</translation>

@@ -1227,7 +1227,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2195729137168608510">Sähköpostin suojaus</translation>
 <translation id="2198625180564913276">Lisätään profiilia… Tämä voi kestää muutaman minuutin.</translation>
 <translation id="2199298570273670671">Virhe</translation>
-<translation id="2199719347983604670">Chromen synkronoinnista saatu data</translation>
 <translation id="2200094388063410062">Sähköposti</translation>
 <translation id="2200356397587687044">Chrome tarvitsee luvan jatkamiseen</translation>
 <translation id="2203088913459920044">Nimessä voi olla kirjaimia, numeroita ja erikoismerkkejä</translation>
@@ -3251,6 +3250,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4252035718262427477">Verkkosivu, SingleFile (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth on poistettu käytöstä</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – välilehden sisältö jaettu</translation>
+<translation id="4253168017788158739">Huomautus</translation>
 <translation id="4253183225471855471">Verkkoa ei löytynyt. Aseta SIM-kortti laitteeseen ja käynnistä se uudelleen ennen uutta yritystä.</translation>
 <translation id="4254813446494774748">Käännöksen kieli:</translation>
 <translation id="425573743389990240">Akun purkautumisnopeus watteina (negatiivinen arvo tarkoittaa, että akkua ladataan)</translation>
@@ -5574,7 +5574,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
     <ph name="BR" />
     Jos <ph name="SUPERVISED_USER_NAME" /> tarvitsee apua lukemiseen, pyydä häntä toistamaan perässäsi. Kuiskaa lauseet poispäin mikrofonista, jotta Assistant oppii lapsen äänen sinun äänesi sijaan.</translation>
 <translation id="6690659332373509948">Tiedoston jäsennys epäonnistui: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Synkronoidun datan valinnat Google Hallintapaneelissa</translation>
 <translation id="6691541770654083180">Maapallo</translation>
 <translation id="6691936601825168937">S&amp;euraava</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sivu}other{{COUNT} sivua}}</translation>

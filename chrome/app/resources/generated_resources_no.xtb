@@ -1222,7 +1222,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2195729137168608510">Beskyttelse av e-post </translation>
 <translation id="2198625180564913276">Legger til profil. Dette kan ta noen minutter.</translation>
 <translation id="2199298570273670671">Feil</translation>
-<translation id="2199719347983604670">Data fra Chrome-synkronisering</translation>
 <translation id="2200094388063410062">E-post</translation>
 <translation id="2200356397587687044">Chrome trenger tillatelse for å fortsette</translation>
 <translation id="2203088913459920044">Navnet kan inneholde bokstaver, tall og spesialtegn</translation>
@@ -3247,6 +3246,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4252035718262427477">Nettside, én fil (nettpakke)</translation>
 <translation id="4252899949534773101">Bluetooth er slått av</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – faneinnholdet er delt</translation>
+<translation id="4253168017788158739">Merknad</translation>
 <translation id="4253183225471855471">Fant ingen nettverk. Sett inn SIM-kortet og start enheten på nytt før du prøver igjen.</translation>
 <translation id="4254813446494774748">Språket siden skal oversettes til:</translation>
 <translation id="425573743389990240">Batteriets utladningshastighet i watt (negativ verdi indikerer at batteriet lades)</translation>
@@ -5568,7 +5568,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
     <ph name="BR" />
     Hvis <ph name="SUPERVISED_USER_NAME" /> trenger hjelp med å lese, kan du få barnet til å gjenta etter deg. Hvisk bort fra mikrofonen, slik at assistenten lærer seg barnets stemme og ikke din.</translation>
 <translation id="6690659332373509948">Kan ikke parse filen: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Administrer synkroniserte data i Google Oversikt</translation>
 <translation id="6691541770654083180">Jorden</translation>
 <translation id="6691936601825168937">&amp;Frem</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 side}other{{COUNT} sider}}</translation>

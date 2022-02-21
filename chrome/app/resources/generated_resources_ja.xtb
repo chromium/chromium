@@ -1215,7 +1215,6 @@
 <translation id="2195729137168608510">電子メールの保護</translation>
 <translation id="2198625180564913276">プロファイルを追加しています。この処理には数分かかることがあります。</translation>
 <translation id="2199298570273670671">エラー</translation>
-<translation id="2199719347983604670">Chrome 同期のデータ</translation>
 <translation id="2200094388063410062">メール</translation>
 <translation id="2200356397587687044">続行するには Chrome に権限が必要です</translation>
 <translation id="2203088913459920044">名前には文字、数字、特殊文字を使用できます</translation>
@@ -3235,6 +3234,7 @@
 <translation id="4252035718262427477">ウェブページ、1 つのファイル（Web Bundle）</translation>
 <translation id="4252899949534773101">Bluetooth が無効です</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - タブのコンテンツが共有されています</translation>
+<translation id="4253168017788158739">メモ</translation>
 <translation id="4253183225471855471">ネットワークが見つかりません。SIM を挿入してデバイスを再起動してから、もう一度お試しください。</translation>
 <translation id="4254813446494774748">翻訳言語:</translation>
 <translation id="425573743389990240">バッテリーの放電率（ワット、負の値の場合は充電中）</translation>
@@ -5547,7 +5547,6 @@
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> さんが声を出して読む際にサポートが必要な場合は、あなたが読んだ後に繰り返してもらうようにします。その際、マイクから離れて小声で読むようにすると、アシスタントがあなたではなくお子様の声を認識できるようになります。</translation>
 <translation id="6690659332373509948">ファイル <ph name="FILE_NAME" /> を解析できません</translation>
-<translation id="6691331417640343772">Google ダッシュボードで同期データを管理</translation>
 <translation id="6691541770654083180">地球</translation>
 <translation id="6691936601825168937">進む(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ページ}other{{COUNT} ページ}}</translation>

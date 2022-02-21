@@ -2344,6 +2344,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de functie 'Selecteer om uitgesproken te worden' in eerste instantie uit. De gebruiker kan de functie echter op elk gewenst moment aanzetten.</translation>
+<translation id="3587482841069643663">Alles</translation>
 <translation id="3589193811812796052">Voorkomen dat WebAssembly-modules cross-origin worden verstuurd</translation>
 <translation id="3591527072193107424">Zet de functie Ondersteuning voor oudere browsers aan.</translation>
 <translation id="3591584750136265240">Het verificatiegedrag voor inloggen configureren</translation>

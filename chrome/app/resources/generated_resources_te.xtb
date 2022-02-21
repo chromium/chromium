@@ -1227,7 +1227,6 @@
 <translation id="2195729137168608510">ఈమెయిల్‌ రక్షణ</translation>
 <translation id="2198625180564913276">ప్రొఫైల్‌ను జోడిస్తోంది. దీనికి కొన్ని నిమిషాలు పట్టవచ్చు.</translation>
 <translation id="2199298570273670671">ఎర్రర్</translation>
-<translation id="2199719347983604670">Chrome సింక్ నుండి డేటా</translation>
 <translation id="2200094388063410062">ఈమెయిల్‌</translation>
 <translation id="2200356397587687044">కొనసాగడానికి Chromeకి అనుమతి అవసరం</translation>
 <translation id="2203088913459920044">పేరులో అక్షరాలు, నంబర్‌లు, ప్రత్యేక అక్షరాలను ఉపయోగించవచ్చు</translation>
@@ -3254,6 +3253,7 @@
 <translation id="4252035718262427477">వెబ్‌పేజీ, ఒక ఫైల్ (వెబ్ బండిల్)</translation>
 <translation id="4252899949534773101">బ్లూటూత్ నిలిపివేయబడింది</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ట్యాబ్ కంటెంట్ షేర్ చేయబడింది</translation>
+<translation id="4253168017788158739">గమనిక</translation>
 <translation id="4253183225471855471">నెట్‌వర్క్ ఏదీ కనుగొనబడలేదు. మళ్లీ ట్రై చేసే ముందు దయచేసి మీ SIMను ఇన్‌సర్ట్ చేసి, పరికరాన్ని రీబూట్ చేయండి.</translation>
 <translation id="4254813446494774748">అనువాద భాష:</translation>
 <translation id="425573743389990240">వాట్‌లలో బ్యాటరీ తరుగుదల రేట్ (నెగెటివ్‌ విలువ ఉందంటే బ్యాటరీ ఛార్జ్ అవుతోందని అర్థం)</translation>
@@ -5577,7 +5577,6 @@
     <ph name="BR" />
     ఒకవేళ <ph name="SUPERVISED_USER_NAME" />కు చదవడంలో సహాయం కావాలంటే మీతో పాటు చిన్నారిని చదివేలా చేయండి. మైక్‌కు దూరంగా మాట్లాడండి, తద్వారా మీ వాయిస్‌కు బదులుగా Assistant మీ చిన్నారి వాయిస్‌ను గ్రహిస్తుంది.</translation>
 <translation id="6690659332373509948">ఈ ఫైల్‌ను అన్వయించడం సాధ్యపడలేదు: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google డాష్‌బోర్డ్‌లో సింక్ చేయ‌బ‌డిన‌ డేటాను నిర్వహించండి</translation>
 <translation id="6691541770654083180">Earth</translation>
 <translation id="6691936601825168937">&amp;ఫార్వార్డ్ చేయి</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 పేజీ}other{{COUNT} పేజీలు}}</translation>

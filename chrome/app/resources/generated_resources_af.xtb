@@ -1228,7 +1228,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2195729137168608510">E-posbeskerming</translation>
 <translation id="2198625180564913276">Voeg tans profiel by. Dit kan 'n paar minute neem.</translation>
 <translation id="2199298570273670671">Fout</translation>
-<translation id="2199719347983604670">Data van Chrome-sinkronisering af</translation>
 <translation id="2200094388063410062">E-pos</translation>
 <translation id="2200356397587687044">Chrome het toestemming nodig om voort te gaan</translation>
 <translation id="2203088913459920044">Naam kan letters, syfers en spesiale karakters gebruik</translation>
@@ -3255,6 +3254,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4252035718262427477">Webbladsy, enkellêer (webbondel)</translation>
 <translation id="4252899949534773101">Bluetooth is gedeaktiveer</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Oortjie-inhoud is gedeel</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">Geen netwerk gekry nie. Sit jou SIM in en laat jou toestel herselflaai voordat jy weer probeer.</translation>
 <translation id="4254813446494774748">Vertaaltaal:</translation>
 <translation id="425573743389990240">Battery-ontladingspoed in Watt (negatiewe waarde beteken battery laai tans)</translation>
@@ -5579,7 +5579,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
     <ph name="BR" />
     As <ph name="SUPERVISED_USER_NAME" /> hulp nodig het om te lees, laat jou kind agter jou aan sê. Fluister weg van die mikrofoon af sodat die Assistent jou kind se stem en nie joune leer nie.</translation>
 <translation id="6690659332373509948">Kan nie lêer ontleed nie: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Bestuur gesinkroniseerde data in Google Dashboard</translation>
 <translation id="6691541770654083180">Aarde</translation>
 <translation id="6691936601825168937">Vorentoe</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 bladsy}other{{COUNT} bladsye}}</translation>

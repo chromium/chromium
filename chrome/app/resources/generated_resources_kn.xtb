@@ -1221,7 +1221,6 @@
 <translation id="2195729137168608510">ಇಮೇಲ್ ಭದ್ರತೆ</translation>
 <translation id="2198625180564913276">ಪ್ರೊಫೈಲ್ ಅನ್ನು ಸೇರಿಸಲಾಗುತ್ತಿದೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="2199298570273670671">ದೋಷ</translation>
-<translation id="2199719347983604670">Chrome ಸಿಂಕ್‌ನಲ್ಲಿನ ಡೇಟಾ</translation>
 <translation id="2200094388063410062">ಇಮೇಲ್‌</translation>
 <translation id="2200356397587687044">ಮುಂದುವರಿಯಲು, Chrome ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="2203088913459920044">ಹೆಸರಿನಲ್ಲಿ ಅಕ್ಷರಗಳು, ಸಂಖ್ಯೆಗಳು ಮತ್ತು ವಿಶೇಷ ಅಕ್ಷರಗಳನ್ನು ಬಳಸಬಹುದು</translation>
@@ -3248,6 +3247,7 @@
 <translation id="4252035718262427477">ವೆಬ್‌ಪುಟ, ಒಂದೇ ಫೈಲ್ (ವೆಬ್ ಬಂಡಲ್)</translation>
 <translation id="4252899949534773101">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ಟ್ಯಾಬ್ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
+<translation id="4253168017788158739">ಟಿಪ್ಪಣಿ</translation>
 <translation id="4253183225471855471">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು, ನಿಮ್ಮ ಸಿಮ್ ಸೇರಿಸಿ ಹಾಗೂ ನಿಮ್ಮ ಸಾಧನವನ್ನು ರೀಬೂಟ್ ಮಾಡಿ.</translation>
 <translation id="4254813446494774748">ಅನುವಾದ ಭಾಷೆ:</translation>
 <translation id="425573743389990240">ವ್ಯಾಟ್‌ಗಳಲ್ಲಿ ಬ್ಯಾಟರಿ ಡಿಸ್‌ಚಾರ್ಜ್ ದರ (ನಕಾರಾತ್ಮಕ ಮೌಲ್ಯ ಎಂದರೆ ಬ್ಯಾಟರಿ ಚಾರ್ಜ್ ಆಗುತ್ತಿದೆ ಎಂದರ್ಥ)</translation>
@@ -5572,7 +5572,6 @@
     <ph name="BR" />
     ಓದುವುದಕ್ಕೆ <ph name="SUPERVISED_USER_NAME" /> ಅವರಿಗೆ ಸಹಾಯದ ಅಗತ್ಯವಿದ್ದರೆ, ನಿಮ್ಮ ನಂತರ ನಿಮ್ಮ ಮಗು ಪುನಾರವರ್ತಿಸಲು ಹೇಳಿ. ಮೈಕ್‌ನಿಂದ ದೂರದಲ್ಲಿ ಪಿಸು ಮಾತಾಡಿ, ಇದರಿಂದಾಗಿ Assistant ನಿಮ್ಮ ಮಗುವಿನ ಧ್ವನಿಯನ್ನು ಕಲಿಯುತ್ತಾರೆ.</translation>
 <translation id="6690659332373509948">ಫೈಲ್ ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">ಸಿಂಕ್ ಆಗಿರುವ ಡೇಟಾವನ್ನು Google ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6691541770654083180">ಭೂಮಿ</translation>
 <translation id="6691936601825168937">&amp;ಮುಂದೆ ತನ್ನಿ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 ಪುಟ}one{{COUNT} ಪುಟಗಳು}other{{COUNT} ಪುಟಗಳು}}</translation>

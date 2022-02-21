@@ -1215,7 +1215,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2195729137168608510">Elektron pochta himoyasi</translation>
 <translation id="2198625180564913276">Profil kiritilmoqda. Bu bir necha daqiqa vaqt olishi mumkin.</translation>
 <translation id="2199298570273670671">Xato</translation>
-<translation id="2199719347983604670">Chrome sync maʼlumotlari</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200356397587687044">Chrome davom etishga ruxsat so‘ramoqda</translation>
 <translation id="2203088913459920044">Nomi harf, raqam va maxsus belgilardan iborat boʻlsin</translation>
@@ -3242,6 +3241,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4252035718262427477">Veb-sahifa, yagona faylda (veb-arxiv)</translation>
 <translation id="4252899949534773101">Bluetooth yoqilmagan</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – varaqni ko‘rishga ruxsat berildi</translation>
+<translation id="4253168017788158739">Eslatma</translation>
 <translation id="4253183225471855471">Hech qanday tarmoq topilmadi. SIM kartani joylang va qaytadan urinishdan oldin qurilmani qayta yoqing.</translation>
 <translation id="4254813446494774748">Qaysi tildan tarjima qilinsin:</translation>
 <translation id="425573743389990240">Batareya quvvatsizlantirish tezligi Vattda (quvvatlanayotganda qiymati teskari ko‘rsatiladi)</translation>
@@ -5566,7 +5566,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
     <ph name="BR" />
     Agar <ph name="SUPERVISED_USER_NAME" /> hali oʻqiy olmasa, iboralarni ortingizdan qaytarsin. Mikrofondan uzoqroq gapiring vs Assistent farzandingiz ovozini siznikidan ajrata oladi.</translation>
 <translation id="6690659332373509948">Faylni tahlil qilib bo‘lmadi bo‘lmadi: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google shaxsiy kabinetidagi sinxronlangan ma’lumotlarni boshqarish</translation>
 <translation id="6691541770654083180">Yer</translation>
 <translation id="6691936601825168937">&amp;Oldinga</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sahifa}other{{COUNT} sahifa}}</translation>

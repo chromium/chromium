@@ -1224,7 +1224,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2195729137168608510">Ulinzi wa Barua Pepe</translation>
 <translation id="2198625180564913276">Inaweka wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="2199298570273670671">Hitilafu</translation>
-<translation id="2199719347983604670">Data kutoka usawazishaji wa Chrome</translation>
 <translation id="2200094388063410062">Barua pepe</translation>
 <translation id="2200356397587687044">Chrome inahitaji ruhusa ili iendelee</translation>
 <translation id="2203088913459920044">Jina linaweza kuwa na herufi, nambari na herufi maalum</translation>
@@ -3249,6 +3248,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4252035718262427477">Ukurasa wa wavuti, Faili Moja (Kifurushi cha Wavuti)</translation>
 <translation id="4252899949534773101">Bluetooth imezimwa</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Maudhui ya kichupo yameshirikiwa</translation>
+<translation id="4253168017788158739">Dokezo</translation>
 <translation id="4253183225471855471">Hakuna mtandao uliopatikana. Tafadhali weka SIM yako kisha uzime na uwashe kifaa chako kabla ya kujaribu tena.</translation>
 <translation id="4254813446494774748">Lugha ya Tafsiri:</translation>
 <translation id="425573743389990240">Kiwango cha Kutumia betri katika kipimo cha Wati (Nambari hasi inamaanisha betri inachaji)</translation>
@@ -5572,7 +5572,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
     <ph name="BR" />
     Iwapo <ph name="SUPERVISED_USER_NAME" /> anahitaji usaidizi wa kusoma, msomee kisha arudie baada yako. Zungumza kwa sauti ya chini mbali na maikrofoni ili programu ya Mratibu ijifunze sauti ya mtoto wako badala ya sauti yako.</translation>
 <translation id="6690659332373509948">Haiwezi kuchanganua faili: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Dhibiti data iliyosawazishwa kwenye Dashibodi ya Google</translation>
 <translation id="6691541770654083180">Dunia</translation>
 <translation id="6691936601825168937">&amp;Mbele</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{Ukurasa moja}other{Kurasa {COUNT}}}</translation>

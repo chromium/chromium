@@ -1219,7 +1219,6 @@
 <translation id="2195729137168608510">Ахова электроннай пошты</translation>
 <translation id="2198625180564913276">Ідзе дадаванне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="2199298570273670671">Памылка</translation>
-<translation id="2199719347983604670">Даныя сінхранізацыі Chrome</translation>
 <translation id="2200094388063410062">Адправіць электронны ліст</translation>
 <translation id="2200356397587687044">Браўзеру Chrome патрабуецца дазвол на працяг</translation>
 <translation id="2203088913459920044">У назве можна выкарыстоўваць літары, лічбы і спецыяльныя сімвалы</translation>
@@ -3242,6 +3241,7 @@
 <translation id="4252035718262427477">Вэб-старонка адным файлам (вэб-пакет)</translation>
 <translation id="4252899949534773101">Bluetooth выключаны</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: змесціва ўкладкі абагулена</translation>
+<translation id="4253168017788158739">Нататка</translation>
 <translation id="4253183225471855471">Сеткі не знойдзены. Устаўце SIM-карту, перазагрузіце прыладу і паўтарыце спробу.</translation>
 <translation id="4254813446494774748">Мова перакладу:</translation>
 <translation id="425573743389990240">Індыкатар разрадкі акумулятара ў ватах (пры зарадцы акумулятара значэнне будзе адмоўным)</translation>
@@ -5562,7 +5562,6 @@
     <ph name="BR" />
 Калі <ph name="SUPERVISED_USER_NAME" /> не ўмее чытаць, няхай паўторыць за вамі. Прашапчыце фразы дзіцяці аддаліўшыся ад мікрафона, каб Памочнік запомніў голас вашага дзіцяці, а не ваш.</translation>
 <translation id="6690659332373509948">Не ўдалося прааналізаваць файл: "<ph name="FILE_NAME" />"</translation>
-<translation id="6691331417640343772">Кіраванне сінхранізаванымі данымі на Панэлі кіравання Google</translation>
 <translation id="6691541770654083180">Зямля</translation>
 <translation id="6691936601825168937">&amp;Наперад</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 старонка}one{{COUNT} старонка}few{{COUNT} старонкі}many{{COUNT} старонак}other{{COUNT} старонкі}}</translation>

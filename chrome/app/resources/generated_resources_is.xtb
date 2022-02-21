@@ -1229,7 +1229,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2195729137168608510">Tölvupóstvörn</translation>
 <translation id="2198625180564913276">Bætir prófíl við. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="2199298570273670671">Villa</translation>
-<translation id="2199719347983604670">Gögn úr Chrome samstillingu</translation>
 <translation id="2200094388063410062">Tölvupóstur</translation>
 <translation id="2200356397587687044">Chrome þarf að fá heimild til að halda áfram</translation>
 <translation id="2203088913459920044">Heitið má innihalda bókstafi, tölur og sérstafi</translation>
@@ -3255,6 +3254,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4252035718262427477">Vefsíða, stök skrá (vefpakki)</translation>
 <translation id="4252899949534773101">Slökkt er á Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – flipaefni deilt</translation>
+<translation id="4253168017788158739">Athugasemd</translation>
 <translation id="4253183225471855471">Ekkert netkerfi fannst. Settu SIM-kortið í og endurræstu tækið áður en þú reynir aftur.</translation>
 <translation id="4254813446494774748">Tungumál þýðingar:</translation>
 <translation id="425573743389990240">Afhleðsluhraði rafhlöðu í vöttum (neikvæði gildi merkja að rafhlaðan er í hleðslu)</translation>
@@ -5578,7 +5578,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
     <ph name="BR" />
     Ef <ph name="SUPERVISED_USER_NAME" /> þarf aðstoð við lesturinn skaltu láta barnið herma eftir þér. Hvíslaðu til að hljóðneminn heyri ekki í þér og Hjálparinn læri inn á rödd barnsins frekar en rödd þína.</translation>
 <translation id="6690659332373509948">Ekki er hægt að þátta skrá: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Stjórna samstilltum gögnum á Google stjórnborðinu</translation>
 <translation id="6691541770654083180">Jörðin</translation>
 <translation id="6691936601825168937">Á&amp;fram</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 síða}one{{COUNT} síða}other{{COUNT} síður}}</translation>

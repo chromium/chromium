@@ -1228,7 +1228,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2195729137168608510">Perlindungan E-mel</translation>
 <translation id="2198625180564913276">Menambah profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="2199298570273670671">Ralat</translation>
-<translation id="2199719347983604670">Data daripada penyegerakan Chrome</translation>
 <translation id="2200094388063410062">E-mel</translation>
 <translation id="2200356397587687044">Chrome memerlukan kebenaran untuk meneruskan</translation>
 <translation id="2203088913459920044">Nama boleh menggunakan huruf, nombor dan aksara khas</translation>
@@ -3255,6 +3254,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4252035718262427477">Halaman Web, Fail Tunggal (Himpunan Web)</translation>
 <translation id="4252899949534773101">Bluetooth dilumpuhkan</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Kandungan tab dikongsi</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">Tiada rangkaian ditemukan. Sila masukkan SIM dan but semula peranti anda sebelum mencuba lagi.</translation>
 <translation id="4254813446494774748">Bahasa Terjemahan:</translation>
 <translation id="425573743389990240">Kadar Nyahcas Bateri dalam Watt (Nilai negatif bermakna bateri sedang dicas)</translation>
@@ -5578,7 +5578,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
     <ph name="BR" />
     Jika <ph name="SUPERVISED_USER_NAME" /> memerlukan bantuan untuk membaca, minta dia ikut selepas anda. Baca dengan perlahan dan jauh dari mikrofon agar Assistant mengecam suara anak anda dan bukannya suara anda.</translation>
 <translation id="6690659332373509948">Tidak dapat menghuraikan fail: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Urus data disegerak pada Papan Pemuka Google</translation>
 <translation id="6691541770654083180">Bumi</translation>
 <translation id="6691936601825168937">&amp;Majukan</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 halaman}other{{COUNT} halaman}}</translation>

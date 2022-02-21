@@ -1218,7 +1218,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
 <translation id="2198625180564913276">Pridáva sa profil. Môže to trvať niekoľko minút.</translation>
 <translation id="2199298570273670671">Chyba</translation>
-<translation id="2199719347983604670">Údaje zo synchronizácie Chromu</translation>
 <translation id="2200094388063410062">E‑mail</translation>
 <translation id="2200356397587687044">Chrome potrebuje na pokračovanie povolenie</translation>
 <translation id="2203088913459920044">Názov môže obsahovať písmená, čísla a špeciálne znaky</translation>
@@ -3242,6 +3241,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4252035718262427477">Webová stránka, jeden súbor (webový balík)</translation>
 <translation id="4252899949534773101">Rozhranie Bluetooth je zakázané</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Bol zdieľaný obsah karty</translation>
+<translation id="4253168017788158739">Poznámka</translation>
 <translation id="4253183225471855471">Nebola nájdená žiadna sieť. Vložte SIM kartu, reštartujte zariadenie a potom to skúste znova.</translation>
 <translation id="4254813446494774748">Jazyk prekladu:</translation>
 <translation id="425573743389990240">Vybíjanie batérie vo Wattoch (záporná hodnota znamená, že batéria sa nabíja)</translation>
@@ -5564,7 +5564,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
     <ph name="BR" />
     Ak bude dieťa <ph name="SUPERVISED_USER_NAME" /> potrebovať pomôcť s čítaním, požiadajte, aby opakovalo po vás. Pošepkajte mu to mimo mikrofónu, aby sa Asistent naučil hlas vášho dieťa, nie váš.</translation>
 <translation id="6690659332373509948">Nepodarilo sa analyzovať súbor: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Spravovať synchronizované dáta v službe Google Dashboard</translation>
 <translation id="6691541770654083180">Zem</translation>
 <translation id="6691936601825168937">&amp;Dopredu</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 strana}few{{COUNT} strany}many{{COUNT} strany}other{{COUNT} strán}}</translation>

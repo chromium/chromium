@@ -1213,7 +1213,6 @@
 <translation id="2195729137168608510">इमेल संरक्षण</translation>
 <translation id="2198625180564913276">प्रोफाइल थपिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="2199298570273670671">त्रुटि</translation>
-<translation id="2199719347983604670">Chrome सिंकको डेटा</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">खाली गर्ने प्रक्रिया जारी राख्न Chrome लाई अनुमति चाहिन्छ</translation>
 <translation id="2203088913459920044">नाममा अक्षर, सङ्ख्या तथा विशेष वर्णहरू प्रयोग गर्न मिल्छ</translation>
@@ -3237,6 +3236,7 @@
 <translation id="4252035718262427477">वेबपृष्ठ, एउटा मात्र फाइल (वेब बन्डल)</translation>
 <translation id="4252899949534773101">ब्लुटुथ असक्षम पारिएको छ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ट्याबको सामग्री आदन-प्रदान गरिएको छ</translation>
+<translation id="4253168017788158739">नोट</translation>
 <translation id="4253183225471855471">कुनै पनि नेटवर्क भेट्टिएन। फेरि प्रयास गर्नुअघि कृपया आफ्नो यन्त्रमा SIM हाल्नुहोस् अनि सो यन्त्र रिबुट गर्नुहोस्।</translation>
 <translation id="4254813446494774748">अनुवादको भाषा:</translation>
 <translation id="425573743389990240">वाटमा ब्याट्री डिस्चार्ज दर (नकारात्मक मानको मतलब ब्याट्री चारज्भइरहेको छ भन्ने हो)</translation>
@@ -5558,7 +5558,6 @@
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" /> लाई वाक्यांश पढ्न सहयोग चाहिन्छ भने तपाईंले बोलेको कुरा दोहोर्‍याउन लगाउनुहोस्। सहायकले तपाईंको आवाज नभई तपाईंको बच्चाको आवाज चिनोस् भन्नाका खातिर माइकको विपरीत दिशातिर फर्केर कानेखुसी गर्नुहोस्।</translation>
 <translation id="6690659332373509948">फाइललाई पदच्छेद गर्न सकिएन: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google ड्याशबोर्डमा सिंक गरिएका डेटाहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="6691541770654083180">पृथ्वी</translation>
 <translation id="6691936601825168937">&amp;अ</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{एउटा पृष्ठ}other{{COUNT} वटा पृष्ठ}}</translation>

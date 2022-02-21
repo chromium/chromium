@@ -1224,7 +1224,6 @@
 <translation id="2195729137168608510">Защита за имейли</translation>
 <translation id="2198625180564913276">Профилът за мобилна мрежа се добавя. Това може да отнеме няколко минути.</translation>
 <translation id="2199298570273670671">Грешка</translation>
-<translation id="2199719347983604670">Данни от синхронизирането в Chrome</translation>
 <translation id="2200094388063410062">Имейл</translation>
 <translation id="2200356397587687044">Chrome се нуждае от разрешение, за да продължи</translation>
 <translation id="2203088913459920044">За името могат да се използват букви, цифри и специални знаци</translation>
@@ -3252,6 +3251,7 @@
 <translation id="4252035718262427477">Уеб страница, един файл (уеб пакет)</translation>
 <translation id="4252899949534773101">Функцията за Bluetooth е деактивирана</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – съдържанието на раздела се споделя</translation>
+<translation id="4253168017788158739">Забележка</translation>
 <translation id="4253183225471855471">Няма намерена мрежа. Моля, поставете SIM карта и рестартирайте устройството си, преди да опитате отново.</translation>
 <translation id="4254813446494774748">Език за превод:</translation>
 <translation id="425573743389990240">Скорост на разреждане на батерията във ватове (отрицателна стойност означава, че батерията се зарежда)</translation>
@@ -5576,7 +5576,6 @@
     <ph name="BR" />
     Ако <ph name="SUPERVISED_USER_NAME" /> се нуждае от помощ с четенето, може да повтаря след вас. Шепнете далеч от микрофона, така че Асистент да научи гласа на детето ви вместо вашия.</translation>
 <translation id="6690659332373509948">Файлът „<ph name="FILE_NAME" />“ не може да се анализира синтактично</translation>
-<translation id="6691331417640343772">Управление на синхронизираните данни чрез Google Табло за управление</translation>
 <translation id="6691541770654083180">Земя</translation>
 <translation id="6691936601825168937">&amp;Препращане</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 страница}other{{COUNT} страници}}</translation>

@@ -2381,6 +2381,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           Se você definir esta política, os usuários não poderão alterá-la ou substituí-la.
 
           Se esta política não for definida, o "Selecionar para ouvir" será desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="3587482841069643663">Tudo</translation>
 <translation id="3589193811812796052">Impedir módulos WebAssembly de serem enviados em origem cruzada</translation>
 <translation id="3591527072193107424">Ativa o recurso "Suporte a navegadores legados".</translation>
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>

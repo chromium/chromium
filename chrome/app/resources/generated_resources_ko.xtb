@@ -1228,7 +1228,6 @@
 <translation id="2195729137168608510">이메일 보호</translation>
 <translation id="2198625180564913276">프로필을 추가하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="2199298570273670671">오류</translation>
-<translation id="2199719347983604670">Chrome 동기화 데이터</translation>
 <translation id="2200094388063410062">이메일</translation>
 <translation id="2200356397587687044">계속하려면 Chrome에 권한이 필요함</translation>
 <translation id="2203088913459920044">이름에는 문자, 숫자, 특수문자를 사용할 수 있습니다</translation>
@@ -3253,6 +3252,7 @@
 <translation id="4252035718262427477">웹페이지, 단일 파일(웹 번들)</translation>
 <translation id="4252899949534773101">블루투스가 사용 중지됨</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 탭 콘텐츠 공유됨</translation>
+<translation id="4253168017788158739">메모</translation>
 <translation id="4253183225471855471">네트워크를 찾을 수 없습니다. SIM을 삽입하고 기기를 재부팅한 다음 다시 시도하세요.</translation>
 <translation id="4254813446494774748">번역 언어:</translation>
 <translation id="425573743389990240">배터리 방전율(와트, 음수 값은 배터리가 충전 중임을 나타냄)</translation>
@@ -5575,7 +5575,6 @@
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" />님이 읽는 데 도움이 필요하다면 먼저 읽어준 후 따라 하라고 하세요. 마이크 멀리서 작게 이야기하여 어시스턴트가 부모님이 아닌 자녀의 음성을 학습하게 하세요.</translation>
 <translation id="6690659332373509948">파일을 파싱할 수 없음: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google 대시보드에서 동기화된 데이터 관리</translation>
 <translation id="6691541770654083180">지구</translation>
 <translation id="6691936601825168937">앞으로(&amp;F)</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{페이지 1쪽}other{페이지 {COUNT}쪽}}</translation>

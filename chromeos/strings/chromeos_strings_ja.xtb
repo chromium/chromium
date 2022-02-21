@@ -182,6 +182,7 @@
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /> ページを印刷しました。</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ページ目をスキャンしています。<ph name="PERCENTAGE_VALUE" />% 完了。</translation>
 <translation id="3459509316159669723">印刷</translation>
+<translation id="346539236881580388">撮り直し</translation>
 <translation id="3484914941826596830">ファームウェアのアップデート中、この外部デバイスを電源から外したり、パソコンをシャットダウンしたりしないでください。このウィンドウは最小化できます。アップデートには数分かかることがあります。その間、外部デバイスは動作しない可能性があります。</translation>
 <translation id="3486220673238053218">定義</translation>
 <translation id="3488065109653206955">一部有効</translation>

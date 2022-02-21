@@ -1216,7 +1216,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2195729137168608510">E-posta Koruması</translation>
 <translation id="2198625180564913276">Profil ekleniyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="2199298570273670671">Hata</translation>
-<translation id="2199719347983604670">Chrome senkronizasyonundan veriler</translation>
 <translation id="2200094388063410062">E-posta</translation>
 <translation id="2200356397587687044">Chrome'un devam edebilmesi için izin gerekiyor</translation>
 <translation id="2203088913459920044">Ad harf, sayı ve özel karakter içerebilir</translation>
@@ -3239,6 +3238,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4252035718262427477">Web Sayfası, Tek Dosya (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth devre dışı</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Sekme içeriği paylaşılıyor</translation>
+<translation id="4253168017788158739">Notlar</translation>
 <translation id="4253183225471855471">Ağ bulunamadı. Tekrar denemeden önce lütfen SIM kartınızı takıp cihazınızı yeniden başlatın.</translation>
 <translation id="4254813446494774748">Çeviri Dili:</translation>
 <translation id="425573743389990240">Vat Cinsinden Pil Boşalma Oranı (Negatif değer, pilin şarj edilmekte olduğu anlamına gelir)</translation>
@@ -5562,7 +5562,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
     <ph name="BR" />
     <ph name="SUPERVISED_USER_NAME" />, okuma konusunda yardıma ihtiyaç duyuyorsa ifadeleri siz okuduktan sonra çocuğunuza tekrar ettirin. Asistan'ın, sizin sesiniz yerine çocuğunuzun sesini öğrenmesi için mikrofondan uzakta fısıldayarak konuşun.</translation>
 <translation id="6690659332373509948">Dosya ayrıştırılamıyor: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Google Hesap Özeti'nde senkronize edilen verileri yönet</translation>
 <translation id="6691541770654083180">Dünya</translation>
 <translation id="6691936601825168937">İle&amp;ri</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 sayfa}other{{COUNT} sayfa}}</translation>

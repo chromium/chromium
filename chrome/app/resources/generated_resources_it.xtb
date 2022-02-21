@@ -1217,7 +1217,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2195729137168608510">Protezione email</translation>
 <translation id="2198625180564913276">Aggiunta del profilo in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="2199298570273670671">Errore</translation>
-<translation id="2199719347983604670">Dati dalla sincronizzazione Chrome</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200356397587687044">Chrome ha bisogno dell'autorizzazione per continuare</translation>
 <translation id="2203088913459920044">Il nome può contenere lettere, numeri e caratteri speciali</translation>
@@ -3241,6 +3240,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="4252035718262427477">Pagina web, file singolo (Web Bundle)</translation>
 <translation id="4252899949534773101">Il Bluetooth è disabilitato</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Contenuti delle schede condivisi</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">Nessuna rete trovata. Prima di riprovare, inserisci la SIM e riavvia il dispositivo.</translation>
 <translation id="4254813446494774748">Lingua della traduzione:</translation>
 <translation id="425573743389990240">Velocità di esaurimento della batteria in watt (un valore negativo indica che la batteria è in carica)</translation>
@@ -5563,7 +5563,6 @@ Puoi assegnare più sensori a questa azione.</translation>
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> ha bisogno di aiuto nella lettura, chiedi di ripetere quello che leggi tu. Rimani a una certa distanza dal microfono, in modo che l'assistente possa identificare la voce di tuo figlio e non la tua.</translation>
 <translation id="6690659332373509948">Impossibile analizzare il file: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Gestisci dati sincronizzati sulla Dashboard di Google</translation>
 <translation id="6691541770654083180">Terra</translation>
 <translation id="6691936601825168937">&amp;Avanti</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 pagina}one{{COUNT} pagine}other{{COUNT} pagine}}</translation>

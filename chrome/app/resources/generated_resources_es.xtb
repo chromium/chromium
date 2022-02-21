@@ -1216,7 +1216,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
 <translation id="2198625180564913276">Añadiendo perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="2199298570273670671">Error</translation>
-<translation id="2199719347983604670">Datos de Sincronización de Chrome</translation>
 <translation id="2200094388063410062">Correo electrónico</translation>
 <translation id="2200356397587687044">Chrome necesita permiso para continuar</translation>
 <translation id="2203088913459920044">El nombre puede contener letras, números y caracteres especiales</translation>
@@ -3239,6 +3238,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4252035718262427477">Página web, archivo único (paquete web)</translation>
 <translation id="4252899949534773101">El Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: contenido de la pestaña compartido</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">No se ha encontrado ninguna red. Inserta tu tarjeta SIM, reinicia el dispositivo y vuelve a intentarlo.</translation>
 <translation id="4254813446494774748">Idioma de traducción:</translation>
 <translation id="425573743389990240">Tasa de descarga de la batería en vatios (si el valor es negativo, significa que la batería se está cargando)</translation>
@@ -5561,7 +5561,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> necesita ayuda para leer, pídele que repita las frases después de ti. Léelas en voz baja y lejos del micrófono para que el Asistente aprenda su voz, no la tuya.</translation>
 <translation id="6690659332373509948">No se puede analizar el archivo: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Gestionar datos sincronizados en el Panel de Control de Google</translation>
 <translation id="6691541770654083180">La Tierra</translation>
 <translation id="6691936601825168937">&amp;Reenviar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}other{{COUNT} páginas}}</translation>

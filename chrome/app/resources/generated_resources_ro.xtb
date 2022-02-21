@@ -1217,7 +1217,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2195729137168608510">Protecție e-mail</translation>
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
 <translation id="2199298570273670671">Eroare</translation>
-<translation id="2199719347983604670">Datele din Sincronizarea Chrome</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">Chrome are nevoie de permisiune pentru a continua</translation>
 <translation id="2203088913459920044">Numele poate să conțină litere, cifre și caractere speciale</translation>
@@ -3241,6 +3240,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4252035718262427477">Pagină web, un singur fișier (Web Bundle)</translation>
 <translation id="4252899949534773101">Bluetooth este dezactivat</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – se permite accesul la conținutul filei</translation>
+<translation id="4253168017788158739">Notă</translation>
 <translation id="4253183225471855471">Nu s-a găsit nicio rețea. Introdu cardul SIM și repornește dispozitivul înainte să încerci din nou.</translation>
 <translation id="4254813446494774748">Limba traducerii:</translation>
 <translation id="425573743389990240">Rata de descărcare a bateriei în wați (valoarea negativă înseamnă că bateria se încarcă)</translation>
@@ -5563,7 +5563,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
     <ph name="BR" />
     Dacă <ph name="SUPERVISED_USER_NAME" /> are nevoie de ajutor la citire, spune-i să repete după tine. Șoptește la distanță de microfon, astfel încât Asistentul să învețe vocea copilului, nu pe a ta.</translation>
 <translation id="6690659332373509948">Fișierul <ph name="FILE_NAME" /> nu poate fi analizat</translation>
-<translation id="6691331417640343772">Gestionează datele sincronizate în Tabloul de bord Google</translation>
 <translation id="6691541770654083180">Pământul</translation>
 <translation id="6691936601825168937">&amp;Înainte</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{O pagină}few{{COUNT} pagini}other{{COUNT} de pagini}}</translation>

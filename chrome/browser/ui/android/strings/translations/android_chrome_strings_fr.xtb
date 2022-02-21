@@ -354,6 +354,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3029276696788198026">Aucun préchargement</translation>
 <translation id="3029704984691124060">Les phrases secrètes ne correspondent pas.</translation>
 <translation id="3031225630520268969">Interface d'autorisation pour la recherche vocale de l'Assistant</translation>
+<translation id="3034163383943672781">Le téléchargement démarrera le <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtenir de l'aide<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Suivi du prix activé</translation>
 <translation id="3037517125981011456">Permet d'afficher des invites de connexion à Chrome</translation>
@@ -1402,6 +1403,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065383040763568503">Données stockées que Chrome ne considère pas comme importantes (par exemple, pour des sites sans paramètres enregistrés ou que vous ne consultez pas souvent)</translation>
 <translation id="906781307897697745">dans <ph name="PRODUCT_NAME" /></translation>
+<translation id="9069543557624799859">Le téléchargement démarrera à <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Aucune page non lue</translation>
 <translation id="9070377983101773829">Démarrer la recherche vocale</translation>
 <translation id="9074336505530349563">Connectez-vous et activez la synchronisation pour obtenir des suggestions de contenu personnalisées de la part de Google</translation>

@@ -1217,7 +1217,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2195729137168608510">Protecção de email</translation>
 <translation id="2198625180564913276">A adicionar o perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="2199298570273670671">Erro</translation>
-<translation id="2199719347983604670">Dados da Sincronização do Chrome</translation>
 <translation id="2200094388063410062">Email:</translation>
 <translation id="2200356397587687044">O Chrome necessita de autorização para continuar</translation>
 <translation id="2203088913459920044">O nome pode utilizar letras, números e carateres especiais</translation>
@@ -3242,6 +3241,7 @@ Pretende pará-lo?</translation>
 <translation id="4252035718262427477">Página Web, ficheiro único (pacote Web)</translation>
 <translation id="4252899949534773101">O Bluetooth está desativado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – conteúdo do separador partilhado</translation>
+<translation id="4253168017788158739">Nota</translation>
 <translation id="4253183225471855471">Nenhuma rede encontrada. Introduza o seu SIM e reinicie o dispositivo antes de tentar novamente.</translation>
 <translation id="4254813446494774748">Idioma de tradução:</translation>
 <translation id="425573743389990240">Taxa de descarga da bateria em Watts (Um valor negativo significa que a bateria está em carregamento)</translation>
@@ -5565,7 +5565,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
     <ph name="BR" />
     Se <ph name="SUPERVISED_USER_NAME" /> precisar de ajuda na leitura, peça-lhe que repita consigo. Afaste-se do microfone para que o Assistente aprenda a voz da criança em vez da sua.</translation>
 <translation id="6690659332373509948">Impossível analisar o ficheiro: <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Gerir dados sincronizados no Painel de Controlo Google</translation>
 <translation id="6691541770654083180">Terra</translation>
 <translation id="6691936601825168937">A&amp;vançar</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 página}one{{COUNT} página(s)}other{{COUNT} páginas}}</translation>

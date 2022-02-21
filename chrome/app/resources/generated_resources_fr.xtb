@@ -1217,7 +1217,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2195729137168608510">Protection du courrier électronique</translation>
 <translation id="2198625180564913276">Ajout du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="2199298570273670671">Erreur</translation>
-<translation id="2199719347983604670">Données de la synchronisation Chrome</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200356397587687044">Google Chrome a besoin de votre autorisation pour continuer</translation>
 <translation id="2203088913459920044">Le nom peut contenir des lettres, des chiffres et des caractères spéciaux</translation>
@@ -3241,6 +3240,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4252035718262427477">Page Web, un seul fichier (format "Web Bundle")</translation>
 <translation id="4252899949534773101">Bluetooth désactivé</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Contenu de l'onglet partagé</translation>
+<translation id="4253168017788158739">Remarque</translation>
 <translation id="4253183225471855471">Aucun réseau trouvé. Veuillez insérer votre carte SIM et redémarrer votre appareil avant de réessayer.</translation>
 <translation id="4254813446494774748">Langue de traduction :</translation>
 <translation id="425573743389990240">Taux de décharge de la batterie en watts (une valeur négative signifie que la batterie est en charge)</translation>
@@ -5564,7 +5564,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
     <ph name="BR" />
     Si <ph name="SUPERVISED_USER_NAME" /> a besoin d'aide pour lire, demandez-lui de répéter après vous. Chuchotez la phrase loin du micro pour que l'Assistant apprenne la voix de votre enfant et non la vôtre.</translation>
 <translation id="6690659332373509948">Impossible d'analyser le fichier : <ph name="FILE_NAME" /></translation>
-<translation id="6691331417640343772">Gérer les données synchronisées dans Google Dashboard</translation>
 <translation id="6691541770654083180">Terre</translation>
 <translation id="6691936601825168937">&amp;Avancer</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{1 page}one{{COUNT} page}other{{COUNT} pages}}</translation>

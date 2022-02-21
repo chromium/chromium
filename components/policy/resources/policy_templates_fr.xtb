@@ -2382,6 +2382,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
 
           Si cette règle n'est pas définie, la fonctionnalité Sélectionner pour prononcer est initialement désactivée, mais les utilisateurs peuvent l'activer à tout moment.</translation>
+<translation id="3587482841069643663">Tous</translation>
 <translation id="3589193811812796052">Empêcher l'envoi des modules WebAssembly en multi-origine</translation>
 <translation id="3591527072193107424">Activer la fonctionnalité Legacy Browser Support.</translation>
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
