@@ -7651,3 +7651,6 @@ crbug.com/1296179 [ Linux Release ] virtual/plz-dedicated-worker/external/wpt/fe
 
 # Flaky due to https://crrev.com/c/3453430
 crbug.com/1298944 virtual/partitioned-cookies/external/wpt/cookies/partitioned-cookies/partitioned-cookies.tentative.https.html [ Failure Pass ]
+
+# Fails flakily on Win
+crbug.com/1173382 [ Win ] virtual/stable/http/tests/navigation/replacestate-base-legal.html [ Failure Pass ]
