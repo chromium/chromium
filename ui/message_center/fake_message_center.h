@@ -37,7 +37,8 @@ class FakeMessageCenter : public MessageCenter {
   bool IsQuietMode() const override;
   bool IsSpokenFeedbackEnabled() const override;
   Notification* FindNotificationById(const std::string& id) override;
-  Notification* FindParentNotification(Notification* notification) override;
+  Notification* FindParentNotificationForOriginUrl(
+      const GURL& origin_url) override;
   Notification* FindPopupNotificationById(const std::string& id) override;
   Notification* FindVisibleNotificationById(const std::string& id) override;
   NotificationList::Notifications FindNotificationsByAppId(

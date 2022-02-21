@@ -123,12 +123,6 @@ MessageView::~MessageView() {
   RemovedFromWidget();
 }
 
-views::View* MessageView::FindGroupNotificationView(
-    const std::string& notification_id) {
-  // Not implemented by default.
-  return nullptr;
-}
-
 void MessageView::UpdateWithNotification(const Notification& notification) {
   pinned_ = notification.pinned();
   std::u16string new_accessible_name = CreateAccessibleName(notification);

@@ -113,21 +113,12 @@ class GroupedNotificationList {
   std::map<std::string, std::set<std::string>> notifications_in_parent_map_;
 };
 
-// Needs to be a static instance because we need a single instance to be shared
-// across multiple instances of `NotificationGroupingController`. When there are
-// multiple screens, each screen has it's own `MessagePopupCollection`,
-// `UnifiedSystemTray`, `NotificationGroupingController` etc.
-GroupedNotificationList& GetGroupedNotificationListInstance() {
-  static base::NoDestructor<GroupedNotificationList> instance;
-  return *instance;
-}
-
 }  // namespace
 
 NotificationGroupingController::NotificationGroupingController(
     UnifiedSystemTray* tray)
     : tray_(tray),
-      grouped_notification_list_(&GetGroupedNotificationListInstance()) {
+      grouped_notification_list_(std::make_unique<GroupedNotificationList>()) {
   observer_.Observe(MessageCenter::Get());
 }
 
@@ -336,7 +327,8 @@ void NotificationGroupingController::OnNotificationAdded(
     return;
 
   Notification* parent_notification =
-      message_center->FindParentNotification(notification);
+      message_center->FindParentNotificationForOriginUrl(
+          notification->origin_url());
   std::string parent_id = parent_notification->id();
 
   // If we are creating a new notification group for this `notifier_id`,

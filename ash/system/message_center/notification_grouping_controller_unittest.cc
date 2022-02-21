@@ -63,14 +63,11 @@ class NotificationGroupingControllerTest : public AshTestBase {
   std::unique_ptr<Notification> MakeNotification(std::string& id_out,
                                                  const GURL& origin_url) {
     id_out = base::StringPrintf(kIdFormat, notifications_counter_);
-    message_center::NotifierId notifier_id;
-    notifier_id.profile_id = "abc@gmail.com";
-    notifier_id.type = message_center::NotifierType::WEB_PAGE;
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id_out,
         u"id" + base::NumberToString16(notifications_counter_),
         u"message" + base::NumberToString16(notifications_counter_),
-        gfx::Image(), u"src", origin_url, notifier_id,
+        gfx::Image(), u"src", origin_url, message_center::NotifierId(),
         message_center::RichNotificationData(), nullptr);
     notifications_counter_++;
     return notification;
@@ -230,28 +227,6 @@ TEST_F(NotificationGroupingControllerTest,
   EXPECT_FALSE(single_notification->group_child() ||
                single_notification->group_parent());
   EXPECT_FALSE(MessageCenter::Get()->FindNotificationById(parent_id));
-}
-
-TEST_F(NotificationGroupingControllerTest,
-       NotificationsGroupingOnMultipleScreens) {
-  UpdateDisplay("800x600,800x600");
-  auto* message_center = MessageCenter::Get();
-  std::string id0, id1, id2;
-  const GURL url(u"http://test-url.com/");
-  id0 = AddNotificationWithOriginUrl(url);
-  id1 = AddNotificationWithOriginUrl(url);
-  id2 = AddNotificationWithOriginUrl(url);
-
-  EXPECT_TRUE(message_center->FindNotificationById(id0)->group_child());
-  EXPECT_TRUE(message_center->FindNotificationById(id1)->group_child());
-  EXPECT_TRUE(message_center->FindNotificationById(id2)->group_child());
-
-  std::string id_parent = id0 + kIdSuffixForGroupContainerNotification;
-  EXPECT_TRUE(message_center->FindNotificationById(id_parent)->group_parent());
-
-  // Make sure there is only a single popup (there would be more popups if
-  // grouping didn't work)
-  EXPECT_EQ(1u, message_center->GetPopupNotifications().size());
 }
 
 }  // namespace ash

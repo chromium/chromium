@@ -69,19 +69,19 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
   }
 
   // Create a test notification. Noted that the notifications are using the same
-  // url and profile id so that they are grouped together.
+  // url so that they are grouped together.
   std::unique_ptr<Notification> CreateTestNotification() {
     message_center::RichNotificationData data;
     data.settings_button_handler =
         message_center::SettingsButtonHandler::INLINE;
-    message_center::NotifierId notifier_id;
-    notifier_id.profile_id = "a@b.com";
-    notifier_id.type = message_center::NotifierType::WEB_PAGE;
+
     return std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_BASE_FORMAT,
         base::NumberToString(current_id_++), u"title", u"message", gfx::Image(),
-        u"display source", GURL(u"http://test-url.com"), notifier_id, data,
-        /*delegate=*/nullptr);
+        u"display source", GURL(u"http://test-url.com"),
+        message_center::NotifierId(message_center::NotifierType::APPLICATION,
+                                   "extension_id"),
+        data, /*delegate=*/nullptr);
   }
 
   // Get the notification view from message center associated with `id`.

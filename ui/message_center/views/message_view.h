@@ -96,11 +96,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void AddGroupNotification(const Notification& notification,
                                     bool newest_first) {}
 
-  // Find the message view associated with a grouped notification id if it
-  // exists.
-  virtual views::View* FindGroupNotificationView(
-      const std::string& notification_id);
-
   // Populates this view with a list of grouped notifications, this is intended
   // to be used for initializing of grouped notifications so it does not
   // explicitly update the size of the view unlike `AddGroupNotification`.

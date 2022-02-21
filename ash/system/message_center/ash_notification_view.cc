@@ -310,7 +310,6 @@ AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
     : NotificationViewBase(notification), shown_in_popup_(shown_in_popup) {
-  message_center_observer_.Observe(message_center::MessageCenter::Get());
   // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -607,10 +606,6 @@ base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
 void AshNotificationView::AddGroupNotification(
     const message_center::Notification& notification,
     bool newest_first) {
-  // Do not add a grouped notification if a view for it already exists.
-  if (FindGroupNotificationView(notification.id()))
-    return;
-
   auto notification_view =
       std::make_unique<AshNotificationView>(notification,
                                             /*shown_in_popup=*/false);
@@ -631,11 +626,7 @@ void AshNotificationView::AddGroupNotification(
 
 void AshNotificationView::PopulateGroupNotifications(
     const std::vector<const message_center::Notification*>& notifications) {
-  // Clear all grouped notifications since we will add all grouped notifications
-  // from scratch.
-  total_grouped_notifications_ = 0;
-  grouped_notifications_container_->RemoveAllChildViews();
-
+  DCHECK(total_grouped_notifications_ == 0);
   for (auto* notification : notifications) {
     auto notification_view =
         std::make_unique<AshNotificationView>(*notification,
@@ -655,12 +646,18 @@ void AshNotificationView::PopulateGroupNotifications(
 
 void AshNotificationView::RemoveGroupNotification(
     const std::string& notification_id) {
-  auto* to_be_deleted = FindGroupNotificationView(notification_id);
+  AshNotificationView* to_be_deleted = nullptr;
+  for (auto* child : grouped_notifications_container_->children()) {
+    AshNotificationView* group_notification =
+        static_cast<AshNotificationView*>(child);
+    if (group_notification->notification_id() == notification_id) {
+      to_be_deleted = group_notification;
+      break;
+    }
+  }
+  if (to_be_deleted)
+    delete to_be_deleted;
 
-  if (!to_be_deleted)
-    return;
-
-  grouped_notifications_container_->RemoveChildView(to_be_deleted);
   total_grouped_notifications_--;
   left_content_->SetVisible(total_grouped_notifications_ == 0);
   expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
@@ -1000,30 +997,6 @@ void AshNotificationView::ActionButtonPressed(size_t index,
         kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
         "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
   }
-}
-
-views::View* AshNotificationView::FindGroupNotificationView(
-    const std::string& notification_id) {
-  auto id_match = [&notification_id](views::View* notification_view) {
-    return notification_id ==
-           static_cast<AshNotificationView*>(notification_view)
-               ->notification_id();
-  };
-  auto notification = std::find_if(
-      grouped_notifications_container_->children().begin(),
-      grouped_notifications_container_->children().end(), id_match);
-  return notification == grouped_notifications_container_->children().end()
-             ? nullptr
-             : *notification;
-}
-
-void AshNotificationView::OnNotificationRemoved(
-    const std::string& notification_id,
-    bool by_user) {
-  if (!is_grouped_parent_view_)
-    return;
-
-  RemoveGroupNotification(notification_id);
 }
 
 void AshNotificationView::CreateOrUpdateSnoozeButton(
