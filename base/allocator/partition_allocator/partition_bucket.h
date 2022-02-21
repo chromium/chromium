@@ -17,11 +17,7 @@
 
 namespace partition_alloc::internal {
 
-namespace {
-
-constexpr int kPartitionNumSystemPagesPerSlotSpanBits = 8;
-
-}  // namespace
+constexpr inline int kPartitionNumSystemPagesPerSlotSpanBits = 8;
 
 template <bool thread_safe>
 struct PartitionBucket {
