@@ -160,8 +160,8 @@ const char* ImeService::GetImeBundleDir() {
   return kBundledInputMethodsDirPath;
 }
 
-const char* ImeService::GetImeGlobalDir() {
-  return "";
+void ImeService::Unused3() {
+  NOTIMPLEMENTED();
 }
 
 const char* ImeService::GetImeUserHomeDir() {

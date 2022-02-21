@@ -88,21 +88,18 @@ class ImeCrosPlatform {
   virtual ~ImeCrosPlatform() = default;
 
  public:
-  // The three methods below are Getters of the local data directories on the
-  // platform. It's possible for the IME service to be running in a mode where
-  // some local directories are unavailable, in which case these directories
-  // will be empty.
-  //
-  // The returned pointer must remain valid until the `Platform` is destroyed.
-
-  // Get the local IME bundle directory, which is read-only.
+  // Get the read-only local IME bundle directory. IME service could be running
+  // in a mode where the directory is unavailable, in which case this will
+  // return empty. Returned pointer remains valid until `Platform` is destroyed.
   virtual const char* GetImeBundleDir() = 0;
 
-  // Get the IME global directory, which is accessible to all users.
-  virtual const char* GetImeGlobalDir() = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused3() = 0;
 
-  // Get the local IME directory in home directory of the active user, which
-  // is only accessible to the user itself.
+  // Get the local IME directory in home directory of the active user, which is
+  // only accessible to the user itself. IME service could be running in a mode
+  // where the directory is unavailable, in which case this will return empty.
+  // Returned pointer remains valid until `Platform` is destroyed.
   virtual const char* GetImeUserHomeDir() = 0;
 
   // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.

@@ -93,9 +93,7 @@ class ImeService : public mojom::ImeService,
   // ImeCrosPlatform overrides:
   const char* GetImeBundleDir() override;
   const char* GetImeUserHomeDir() override;
-  // To be deprecated soon. Do not make a call on it anymore.
-  const char* GetImeGlobalDir() override;
-
+  void Unused3() override;
   void Unused2() override;
   int SimpleDownloadToFileV2(const char* url,
                              const char* file_path,
