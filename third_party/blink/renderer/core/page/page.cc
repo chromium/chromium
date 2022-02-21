@@ -365,6 +365,16 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
   return *spatial_navigation_controller_;
 }
 
+void Page::UsesOverlayScrollbarsChanged() {
+  for (Page* page : AllPages()) {
+    for (Frame* frame = page->MainFrame(); frame;
+         frame = frame->Tree().TraverseNext()) {
+      if (auto* local_frame = DynamicTo<LocalFrame>(frame))
+        local_frame->View()->UsesOverlayScrollbarsChanged();
+    }
+  }
+}
+
 void Page::PlatformColorsChanged() {
   for (const Page* page : AllPages()) {
     for (Frame* frame = page->MainFrame(); frame;

@@ -138,6 +138,9 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // https://html.spec.whatwg.org/C/#unit-of-related-browsing-contexts
   HeapVector<Member<Page>> RelatedPages();
 
+  // Should be called when |GetScrollbarTheme().UsesOverlayScrollbars()|
+  // changes.
+  static void UsesOverlayScrollbarsChanged();
   static void PlatformColorsChanged();
   static void ColorSchemeChanged();
   static void ColorProvidersChanged();

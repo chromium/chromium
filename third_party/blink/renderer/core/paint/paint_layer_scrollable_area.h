@@ -611,6 +611,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return FreezeScrollbarsScope::ScrollbarsAreFrozen();
   }
 
+  // Force scrollbars off for reconstruction.
+  void RemoveScrollbarsForReconstruction();
+
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
   // background paint location.
@@ -660,9 +663,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Returns true iff scrollbar existence changed.
   bool SetHasHorizontalScrollbar(bool has_scrollbar);
   bool SetHasVerticalScrollbar(bool has_scrollbar);
-
-  // Force scrollbars off for reconstruction.
-  void RemoveScrollbarsForReconstruction();
 
   void UpdateScrollCornerStyle();
   LayoutSize MinimumSizeForResizing(float zoom_factor);

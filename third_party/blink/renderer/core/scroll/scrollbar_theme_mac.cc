@@ -31,6 +31,7 @@
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -388,7 +389,10 @@ void ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
       initial_button_delay.value_or(s_initial_button_delay);
   s_autoscroll_button_delay =
       autoscroll_button_delay.value_or(s_autoscroll_button_delay);
-  s_prefer_overlay_scroller_style = prefer_overlay_scroller_style;
+  if (s_prefer_overlay_scroller_style != prefer_overlay_scroller_style) {
+    s_prefer_overlay_scroller_style = prefer_overlay_scroller_style;
+    Page::UsesOverlayScrollbarsChanged();
+  }
   s_jump_on_track_click = jump_on_track_click;
   if (redraw) {
     for (const auto& scrollbar : GetScrollbarSet()) {

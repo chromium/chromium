@@ -342,6 +342,7 @@ void DevToolsEmulator::EnableMobileEmulation() {
   is_overlay_scrollbars_enabled_ =
       ScrollbarThemeSettings::OverlayScrollbarsEnabled();
   ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(true);
+  Page::UsesOverlayScrollbarsChanged();
   is_orientation_event_enabled_ =
       RuntimeEnabledFeatures::OrientationEventEnabled();
   RuntimeEnabledFeatures::SetOrientationEventEnabled(true);
@@ -376,6 +377,7 @@ void DevToolsEmulator::DisableMobileEmulation() {
     return;
   ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(
       is_overlay_scrollbars_enabled_);
+  Page::UsesOverlayScrollbarsChanged();
   RuntimeEnabledFeatures::SetOrientationEventEnabled(
       is_orientation_event_enabled_);
   RuntimeEnabledFeatures::SetMobileLayoutThemeEnabled(

@@ -517,6 +517,20 @@ void LocalFrameView::InvalidateAllCustomScrollbarsOnActiveChanged() {
   }
 }
 
+void LocalFrameView::UsesOverlayScrollbarsChanged() {
+  if (!user_scrollable_areas_)
+    return;
+  for (const auto& scrollable_area : *user_scrollable_areas_) {
+    if (scrollable_area->ScrollsOverflow() || scrollable_area->HasScrollbar()) {
+      scrollable_area->RemoveScrollbarsForReconstruction();
+      if (auto* layout_box = scrollable_area->GetLayoutBox()) {
+        layout_box->SetNeedsLayout(
+            layout_invalidation_reason::kScrollbarChanged);
+      }
+    }
+  }
+}
+
 bool LocalFrameView::DidFirstLayout() const {
   return !first_layout_;
 }

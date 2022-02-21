@@ -262,6 +262,8 @@ class CORE_EXPORT LocalFrameView final
   void PropagateFrameRects() override;
   void InvalidateAllCustomScrollbarsOnActiveChanged();
 
+  void UsesOverlayScrollbarsChanged();
+
   Color BaseBackgroundColor() const;
   void SetBaseBackgroundColor(const Color&);
   void UpdateBaseBackgroundColorRecursively(const Color&);

@@ -114,14 +114,16 @@ class ScrollbarsTest : public PaintTestConfigurations, public SimTest {
   }
 
   void TearDown() override {
-    ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(
-        original_overlay_scrollbars_enabled_);
+    SetOverlayScrollbarsEnabled(original_overlay_scrollbars_enabled_);
     mock_overlay_scrollbars_.reset();
     SimTest::TearDown();
   }
 
-  void SetOverlayScrollbarsEnabled(bool b) {
-    ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(b);
+  void SetOverlayScrollbarsEnabled(bool enabled) {
+    if (enabled != ScrollbarThemeSettings::OverlayScrollbarsEnabled()) {
+      ScrollbarThemeSettings::SetOverlayScrollbarsEnabled(enabled);
+      Page::UsesOverlayScrollbarsChanged();
+    }
   }
 
   HitTestResult HitTest(int x, int y) {
@@ -327,6 +329,25 @@ TEST_P(ScrollbarsTest, DocumentStyleRecalcPreservesScrollbars) {
   Compositor().BeginFrame();
   ASSERT_TRUE(layout_viewport->VerticalScrollbar() &&
               layout_viewport->HorizontalScrollbar());
+}
+
+TEST_P(ScrollbarsTest, ScrollbarsUpdatedOnOverlaySettingsChange) {
+  ENABLE_OVERLAY_SCROLLBARS(true);
+
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style> body { height: 3000px; } </style>)HTML");
+
+  Compositor().BeginFrame();
+  auto* layout_viewport = GetDocument().View()->LayoutViewport();
+  EXPECT_TRUE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
+
+  ENABLE_OVERLAY_SCROLLBARS(false);
+  Compositor().BeginFrame();
+  EXPECT_FALSE(layout_viewport->VerticalScrollbar()->IsOverlayScrollbar());
 }
 
 TEST(ScrollbarsTestWithOwnWebViewHelper, ScrollbarSizeForUseZoomDSF) {
