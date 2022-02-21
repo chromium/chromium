@@ -154,7 +154,7 @@ class PLATFORM_EXPORT MediaStreamComponent final
   MediaConstraints constraints_;
   std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
   // Frame where the referenced platform track was created, if applicable.
-  WebLocalFrame* creation_frame_;
+  WebLocalFrame* creation_frame_ = nullptr;
 };
 
 typedef HeapVector<Member<MediaStreamComponent>> MediaStreamComponentVector;
