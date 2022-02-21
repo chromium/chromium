@@ -178,6 +178,9 @@ source_set("policy_specific_browser_tests") {
     "test/safe_browsing_policy_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
   ]
+  if (is_chromeos) {
+    sources += [ "test/policy_certs_browsertest.cc" ]
+  }
 
   deps = [
     ":test_support",
@@ -192,6 +195,22 @@ source_set("policy_specific_browser_tests") {
     "//content/test:test_support",
     "//testing/gmock",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/policy:onc",
+      "//chromeos:test_utils",
+      "//chromeos/components/onc:test_support",
+      "//components/onc:onc",
+      "//crypto:test_support",
+    ]
+  }
+  if (is_chromeos_ash) {
+    deps += [
+      "//components/session_manager/core:core",
+      "//components/user_manager:user_manager",
+    ]
+  }
 
   if (!is_android) {
     sources += [
