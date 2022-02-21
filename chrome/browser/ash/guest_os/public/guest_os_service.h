@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_SERVICE_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_PUBLIC_GUEST_OS_SERVICE_H_
 
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -24,6 +25,11 @@ class GuestOsService : public KeyedService {
 
   // Helper method to get the service instance for the given profile.
   static GuestOsService* GetForProfile(Profile* profile);
+
+  GuestOsMountProviderRegistry* MountProviderRegistry();
+
+ private:
+  GuestOsMountProviderRegistry mount_provider_registry_;
 };
 
 }  // namespace guest_os

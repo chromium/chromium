@@ -15,4 +15,8 @@ GuestOsService* GuestOsService::GetForProfile(Profile* profile) {
   return GuestOsServiceFactory::GetForProfile(profile);
 }
 
+GuestOsMountProviderRegistry* GuestOsService::MountProviderRegistry() {
+  return &mount_provider_registry_;
+}
+
 }  // namespace guest_os
