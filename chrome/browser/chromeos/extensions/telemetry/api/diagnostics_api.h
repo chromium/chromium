@@ -244,6 +244,25 @@ class OsDiagnosticsRunCpuStressRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunDiskReadRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runDiskReadRoutine",
+                             OS_DIAGNOSTICS_RUNDISKREADROUTINE)
+
+  OsDiagnosticsRunDiskReadRoutineFunction();
+  OsDiagnosticsRunDiskReadRoutineFunction(
+      const OsDiagnosticsRunDiskReadRoutineFunction&) = delete;
+  OsDiagnosticsRunDiskReadRoutineFunction& operator=(
+      const OsDiagnosticsRunDiskReadRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunDiskReadRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunMemoryRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

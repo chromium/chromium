@@ -184,6 +184,21 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runDiskReadRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runDiskReadRoutine(
+              {
+                type: "random",
+                length_seconds: 60,
+                file_size_mb: 200
+              }
+            ),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runDiskReadRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function runMemoryRoutine() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.runMemoryRoutine(),

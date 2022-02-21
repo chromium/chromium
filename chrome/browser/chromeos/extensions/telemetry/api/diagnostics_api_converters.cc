@@ -18,11 +18,14 @@ using MojoRoutineStatus = ::ash::health::mojom::DiagnosticRoutineStatusEnum;
 using MojoRoutineType = ::ash::health::mojom::DiagnosticRoutineEnum;
 using MojoRoutineUserMessageType =
     ash::health::mojom::DiagnosticRoutineUserMessageEnum;
+using MojoDiskReadRoutineType = ash::health::mojom::DiskReadRoutineTypeEnum;
 
 using RoutineCommandType = ::chromeos::api::os_diagnostics::RoutineCommandType;
 using RoutineStatus = ::chromeos::api::os_diagnostics::RoutineStatus;
 using RoutineType = ::chromeos::api::os_diagnostics::RoutineType;
 using RoutineUserMessageType = ::chromeos::api::os_diagnostics::UserMessageType;
+using RoutineDiskReadRoutineType =
+    ::chromeos::api::os_diagnostics::DiskReadRoutineType;
 
 }  // namespace
 
@@ -52,6 +55,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
       return true;
     case MojoRoutineType::kCpuStress:
       *out = RoutineType::ROUTINE_TYPE_CPU_STRESS;
+      return true;
+    case MojoRoutineType::kDiskRead:
+      *out = RoutineType::ROUTINE_TYPE_DISK_READ;
       return true;
     case MojoRoutineType::kMemory:
       *out = RoutineType::ROUTINE_TYPE_MEMORY;
@@ -127,6 +133,22 @@ RoutineUserMessageType ConvertRoutineUserMessage(
     case MojoRoutineUserMessageType::kPlugInACPower:
       return RoutineUserMessageType::USER_MESSAGE_TYPE_PLUG_IN_AC_POWER;
   }
+}
+
+MojoDiskReadRoutineType ConvertDiskReadRoutineType(
+    RoutineDiskReadRoutineType routineType) {
+  switch (routineType) {
+    case RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_LINEAR:
+      return MojoDiskReadRoutineType::kLinearRead;
+    case RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_RANDOM:
+      return MojoDiskReadRoutineType::kRandomRead;
+    case RoutineDiskReadRoutineType::DISK_READ_ROUTINE_TYPE_NONE:
+      break;
+  }
+
+  NOTREACHED() << "Unknown disk read routine type: " << routineType;
+  return static_cast<MojoDiskReadRoutineType>(
+      static_cast<int>(MojoDiskReadRoutineType::kMaxValue) + 1);
 }
 
 }  // namespace converters

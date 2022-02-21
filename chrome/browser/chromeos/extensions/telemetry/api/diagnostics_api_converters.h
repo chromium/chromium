@@ -23,6 +23,9 @@ ash::health::mojom::DiagnosticRoutineCommandEnum ConvertRoutineCommand(
 chromeos::api::os_diagnostics::UserMessageType ConvertRoutineUserMessage(
     ash::health::mojom::DiagnosticRoutineUserMessageEnum userMessage);
 
+ash::health::mojom::DiskReadRoutineTypeEnum ConvertDiskReadRoutineType(
+    chromeos::api::os_diagnostics::DiskReadRoutineType routineType);
+
 }  // namespace converters
 }  // namespace chromeos
 

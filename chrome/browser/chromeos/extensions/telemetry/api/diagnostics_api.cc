@@ -307,6 +307,31 @@ void OsDiagnosticsRunCpuStressRoutineFunction::RunIfAllowed() {
       params->request.length_seconds, std::move(cb));
 }
 
+// OsDiagnosticsRunDiskReadRoutineFunction -------------------------------------
+
+OsDiagnosticsRunDiskReadRoutineFunction::
+    OsDiagnosticsRunDiskReadRoutineFunction() = default;
+OsDiagnosticsRunDiskReadRoutineFunction::
+    ~OsDiagnosticsRunDiskReadRoutineFunction() = default;
+
+void OsDiagnosticsRunDiskReadRoutineFunction::RunIfAllowed() {
+  std::unique_ptr<api::os_diagnostics::RunDiskReadRoutine::Params> params(
+      api::os_diagnostics::RunDiskReadRoutine::Params::Create(args()));
+  if (!params) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunDiskReadRoutine(
+      converters::ConvertDiskReadRoutineType(params->request.type),
+      params->request.length_seconds, params->request.file_size_mb,
+      std::move(cb));
+}
+
 // OsDiagnosticsRunMemoryRoutineFunction ---------------------------------------
 
 OsDiagnosticsRunMemoryRoutineFunction::OsDiagnosticsRunMemoryRoutineFunction() =

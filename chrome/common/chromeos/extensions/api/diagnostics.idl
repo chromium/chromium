@@ -17,6 +17,7 @@ namespace os.diagnostics {
     cpu_floating_point_accuracy,
     cpu_prime_search,
     cpu_stress,
+    disk_read,
     memory,
     nvme_wear_level,
     smartctl_check
@@ -51,6 +52,11 @@ namespace os.diagnostics {
     plug_in_ac_power
   };
 
+  enum DiskReadRoutineType {
+    linear,
+    random
+  };
+
   dictionary GetAvailableRoutinesResponse {
     RoutineType[] routines;
   };
@@ -83,6 +89,12 @@ namespace os.diagnostics {
 
   dictionary RunCpuRoutineRequest {
     long length_seconds;
+  };
+
+  dictionary RunDiskReadRequest {
+    DiskReadRoutineType type;
+    long length_seconds;
+    long file_size_mb;
   };
 
   dictionary RunNvmeWearLevelRequest {
@@ -138,6 +150,10 @@ namespace os.diagnostics {
     // Starts CPU stress routine.
     [supportsPromises] static void runCpuStressRoutine(RunCpuRoutineRequest request,
                                                        RunRoutineCallback callback);
+
+    // Starts disk read routine.
+    [supportsPromises] static void runDiskReadRoutine(RunDiskReadRequest request,
+                                                      RunRoutineCallback callback);
 
     // Starts memory routine.
     [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
