@@ -270,7 +270,7 @@ public class OfflineIndicatorControllerTest {
     @Test
     @MediumTest
     public void testDoNotShowOfflineIndicatorOnPageLoadingWhenOffline() {
-        String testUrl = mTestServer.getURL("/slow?1");
+        String testUrl = mTestServer.getURL("/slow?3");
 
         // Load a page without waiting it to finish.
         loadPageWithoutWaiting(testUrl, null);

@@ -5,24 +5,22 @@
 #include "chrome/browser/android/autofill_assistant/dependencies_chrome.h"
 
 #include "base/android/scoped_java_ref.h"
-#include "base/strings/string_piece.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantStaticDependenciesChrome_jni.h"
 #include "chrome/browser/android/autofill_assistant/annotate_dom_model_service_factory.h"
-#include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
+#include "chrome/browser/android/autofill_assistant/assistant_field_trial_util_chrome.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 
-using ::base::StringPiece;
 using ::base::android::JavaParamRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::content::WebContents;
@@ -43,15 +41,6 @@ DependenciesChrome::DependenciesChrome(
     JNIEnv* env,
     const JavaParamRef<jobject>& jstatic_dependencies)
     : Dependencies(env, jstatic_dependencies) {}
-
-class AssistantFieldTrialUtilChrome : public AssistantFieldTrialUtil {
-  bool RegisterSyntheticFieldTrial(
-      base::StringPiece trial_name,
-      base::StringPiece group_name) const override {
-    return ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        trial_name, group_name);
-  }
-};
 
 std::unique_ptr<AssistantFieldTrialUtil>
 DependenciesChrome::CreateFieldTrialUtil() const {

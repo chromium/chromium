@@ -8,8 +8,8 @@
 #include <memory>
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
-#include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"

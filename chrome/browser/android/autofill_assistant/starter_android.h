@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/autofill_assistant/dependencies.h"
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/starter.h"
@@ -77,6 +78,7 @@ class StarterAndroid : public StarterPlatformDelegate,
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsCustomTab() const override;
   bool GetIsTabCreatedByGSA() const override;
+  std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
 
   // Called by Java to start an autofill-assistant flow for an incoming intent.
   void Start(

@@ -141,6 +141,10 @@ class Starter : public content::WebContentsObserver {
   // |trigger_script_coordinator_|.
   TriggerContext* GetPendingTriggerContext() const;
 
+  // Registers the synthetic field trials for triggering and experiments.
+  void RegisterSyntheticFieldTrials(
+      const TriggerContext& trigger_context) const;
+
   // The UKM source id to use for UKM metrics.
   ukm::SourceId current_ukm_source_id_ = ukm::kInvalidSourceId;
 

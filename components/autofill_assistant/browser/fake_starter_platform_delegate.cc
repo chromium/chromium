@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
+#include "components/autofill_assistant/browser/mock_assistant_field_trial_util.h"
 
 namespace autofill_assistant {
 
@@ -108,6 +109,14 @@ bool FakeStarterPlatformDelegate::GetIsCustomTab() const {
 
 bool FakeStarterPlatformDelegate::GetIsTabCreatedByGSA() const {
   return is_tab_created_by_gsa_;
+}
+
+std::unique_ptr<AssistantFieldTrialUtil>
+FakeStarterPlatformDelegate::CreateFieldTrialUtil() {
+  if (field_trial_util_) {
+    return std::move(field_trial_util_);
+  }
+  return std::make_unique<MockAssistantFieldTrialUtil>();
 }
 
 }  // namespace autofill_assistant

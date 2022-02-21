@@ -19,6 +19,7 @@
 #include "base/time/tick_clock.h"
 #include "components/autofill_assistant/browser/fake_starter_platform_delegate.h"
 #include "components/autofill_assistant/browser/features.h"
+#include "components/autofill_assistant/browser/mock_assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
@@ -91,6 +92,7 @@ class StarterTest : public testing::Test {
     PrepareTriggerScriptRequestSender();
     fake_platform_delegate_.website_login_manager_ =
         &mock_website_login_manager_;
+
     ON_CALL(mock_website_login_manager_, GetLoginsForUrl)
         .WillByDefault(
             RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>()));
@@ -2173,6 +2175,46 @@ TEST_F(StarterPrerenderTest, DoNotAffectRecordUkmDuringPrendering) {
       "Android.AutofillAssistant.FeatureModuleInstallation",
       Metrics::FeatureModuleInstallation::DFM_ALREADY_INSTALLED, 0u);
   EXPECT_THAT(GetUkmRegularScriptOnboarding(ukm_recorder_), IsEmpty());
+}
+
+TEST_F(StarterTest, StartupRegistersTriggerFieldTrial) {
+  auto mock_field_trial_util =
+      std::make_unique<NiceMock<MockAssistantFieldTrialUtil>>();
+  const auto* mock_field_trial_util_ptr = mock_field_trial_util.get();
+  fake_platform_delegate_.field_trial_util_ = std::move(mock_field_trial_util);
+
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantTriggered"),
+                  base::StringPiece("Enabled")));
+
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(), TriggerContext::Options()));
+}
+
+TEST_F(StarterTest, StartupRegistersExperimentFieldTrials) {
+  base::flat_map<std::string, std::string> script_parameters = {
+      {"EXPERIMENT_IDS", "1001,1002"}};
+  auto mock_field_trial_util =
+      std::make_unique<NiceMock<MockAssistantFieldTrialUtil>>();
+  const auto* mock_field_trial_util_ptr = mock_field_trial_util.get();
+  fake_platform_delegate_.field_trial_util_ = std::move(mock_field_trial_util);
+
+  EXPECT_CALL(*mock_field_trial_util_ptr, RegisterSyntheticFieldTrial);
+
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("1001")));
+
+  EXPECT_CALL(*mock_field_trial_util_ptr,
+              RegisterSyntheticFieldTrial(
+                  base::StringPiece("AutofillAssistantExperimentsTrial"),
+                  base::StringPiece("1002")));
+
+  starter_->Start(std::make_unique<TriggerContext>(
+      std::make_unique<ScriptParameters>(script_parameters),
+      TriggerContext::Options()));
 }
 
 }  // namespace autofill_assistant

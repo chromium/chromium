@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_STARTER_PLATFORM_DELEGATE_H_
 
 #include "base/callback_forward.h"
+#include "components/autofill_assistant/browser/assistant_field_trial_util.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/onboarding_result.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
@@ -88,6 +89,8 @@ class StarterPlatformDelegate {
   virtual bool GetIsCustomTab() const = 0;
   // Returns whether the tab was created by GSA or not.
   virtual bool GetIsTabCreatedByGSA() const = 0;
+  // Creates the util for registering synthetic field trials.
+  virtual std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() = 0;
 };
 
 }  // namespace autofill_assistant
