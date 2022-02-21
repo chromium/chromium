@@ -427,9 +427,6 @@ extern const base::Feature kIncognitoNtpRevamp;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kIncognitoBrandConsistencyForDesktop;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kIncognitoClearBrowsingDataDialogForDesktop;
 #endif
 
