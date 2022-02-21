@@ -172,6 +172,7 @@ TEST_F(OriginTest, OpaqueOriginComparison) {
   EXPECT_LT(opaque_a, url::Origin::Create(GURL("http://www.google.com")));
   EXPECT_LT(opaque_b, url::Origin::Create(GURL("http://www.google.com")));
 
+  EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL(), opaque_b));
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:blank"), opaque_b));
   EXPECT_EQ(opaque_b, url::Origin::Resolve(GURL("about:srcdoc"), opaque_b));
   EXPECT_EQ(opaque_b,

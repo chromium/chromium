@@ -60,7 +60,7 @@ Origin Origin::Create(const GURL& url) {
 }
 
 Origin Origin::Resolve(const GURL& url, const Origin& base_origin) {
-  if (url.SchemeIs(kAboutScheme))
+  if (url.SchemeIs(kAboutScheme) || url.is_empty())
     return base_origin;
   Origin result = Origin::Create(url);
   if (!result.opaque())
