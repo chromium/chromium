@@ -57,7 +57,11 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
 
   // apps::AppRegistryCache::Observer overrides.
   void OnAppUpdate(const apps::AppUpdate& update) override {
-    updated_ids_.insert(update.AppId());
+    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+      updated_ids_.insert(update.GetAppId());
+    } else {
+      updated_ids_.insert(update.AppId());
+    }
   }
 
   void UpdateApps() {
@@ -106,8 +110,14 @@ class InitializedObserver : public apps::AppRegistryCache::Observer {
 
 }  // namespace
 
-class AppRegistryCacheTest : public testing::Test {
+class AppRegistryCacheTest : public testing::Test,
+                             public testing::WithParamInterface<bool> {
  public:
+  AppRegistryCacheTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        kAppServiceOnAppUpdateWithoutMojom, IsOnAppUpdateWithoutMojomEnabled());
+  }
+
   void CallForAllApps(AppRegistryCache& cache) {
     cache.ForAllApps([this](const AppUpdate& update) { OnAppUpdate(update); });
   }
@@ -152,14 +162,34 @@ class AppRegistryCacheTest : public testing::Test {
   }
 
   void DisableOnAppTypeInitializedFlag() {
-    scoped_feature_list_.InitAndDisableFeature(
-        kAppServiceOnAppTypeInitializedWithoutMojom);
+    scoped_feature_list_.Reset();
+    if (IsOnAppUpdateWithoutMojomEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kAppServiceOnAppUpdateWithoutMojom},
+          /*disabled_features=*/{kAppServiceOnAppTypeInitializedWithoutMojom});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{kAppServiceOnAppTypeInitializedWithoutMojom,
+                                 kAppServiceOnAppUpdateWithoutMojom});
+    }
   }
 
   void EnableOnAppTypeInitializedFlag() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kAppServiceOnAppTypeInitializedWithoutMojom);
+    scoped_feature_list_.Reset();
+    if (IsOnAppUpdateWithoutMojomEnabled())
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kAppServiceOnAppUpdateWithoutMojom,
+                                kAppServiceOnAppTypeInitializedWithoutMojom},
+          /*disabled_features=*/{});
+    else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{kAppServiceOnAppTypeInitializedWithoutMojom},
+          /*disabled_features=*/{kAppServiceOnAppUpdateWithoutMojom});
+    }
   }
+
+  bool IsOnAppUpdateWithoutMojomEnabled() const { return GetParam(); }
 
   std::set<std::string> updated_ids_;
   std::set<std::string> updated_names_;
@@ -168,7 +198,7 @@ class AppRegistryCacheTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(AppRegistryCacheTest, OnApps) {
+TEST_P(AppRegistryCacheTest, OnApps) {
   AppRegistryCache cache;
   std::vector<AppPtr> deltas;
   deltas.push_back(MakeApp("a", "apple"));
@@ -215,7 +245,7 @@ TEST_F(AppRegistryCacheTest, OnApps) {
   Clear();
 }
 
-TEST_F(AppRegistryCacheTest, Removed) {
+TEST_P(AppRegistryCacheTest, Removed) {
   AppRegistryCache cache;
 
   std::vector<AppPtr> apps;
@@ -248,7 +278,7 @@ TEST_F(AppRegistryCacheTest, Removed) {
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for the non
 // mojom App type first, with the disabled flag.
-TEST_F(AppRegistryCacheTest,
+TEST_P(AppRegistryCacheTest,
        OnAppTypeInitializedWithDisableFlagNonMojomUpdateFirst) {
   DisableOnAppTypeInitializedFlag();
 
@@ -313,7 +343,7 @@ TEST_F(AppRegistryCacheTest,
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for the mojom
 // App type first, with the disabled flag.
-TEST_F(AppRegistryCacheTest,
+TEST_P(AppRegistryCacheTest,
        OnAppTypeInitializedWithDisableFlagMojomUpdateFirst) {
   DisableOnAppTypeInitializedFlag();
 
@@ -326,10 +356,14 @@ TEST_F(AppRegistryCacheTest,
   cache.OnApps(std::move(mojom_deltas1), apps::mojom::AppType::kArc,
                true /* should_notify_initialized */);
 
+  // When OnAppUpdate is called for mojom App, "a" and "c" are updated.
+  // When OnAppUpdate is called for non mojom App, no app is updated.
+  int app_count = IsOnAppUpdateWithoutMojomEnabled() ? 0 : 2;
+
   // Verify OnAppTypeInitialized is called when the mojom Apps are added.
   EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kArc));
   EXPECT_EQ(1, observer1.initialized_app_type_count());
-  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.InitializedAppTypes().size());
   EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kArc));
 
@@ -342,7 +376,7 @@ TEST_F(AppRegistryCacheTest,
   // Verify OnAppTypeInitialized is not called when the non mojom Apps are
   // added.
   EXPECT_EQ(1, observer1.initialized_app_type_count());
-  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
 
   std::vector<apps::mojom::AppPtr> mojom_deltas2;
   mojom_deltas2.push_back(MakeMojomApp("d", "durian"));
@@ -356,7 +390,7 @@ TEST_F(AppRegistryCacheTest,
 
   // Verify OnAppTypeInitialized is not called when the Apps are added.
   EXPECT_EQ(1, observer1.initialized_app_type_count());
-  EXPECT_EQ(2, observer1.app_count_at_initialization());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
   EXPECT_EQ(1u, cache.InitializedAppTypes().size());
 
   // Verify the new observers should not have OnAppTypeInitialized called.
@@ -368,7 +402,7 @@ TEST_F(AppRegistryCacheTest,
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for multiple
 // App types, with the disabled flag.
-TEST_F(AppRegistryCacheTest,
+TEST_P(AppRegistryCacheTest,
        OnAppTypeInitializedWithDisableFlagMultipleAppTypes) {
   DisableOnAppTypeInitializedFlag();
 
@@ -407,11 +441,16 @@ TEST_F(AppRegistryCacheTest,
   cache.OnApps(std::move(mojom_deltas2), apps::mojom::AppType::kChromeApp,
                true /* should_notify_initialized */);
 
+  // When OnAppUpdate is called for mojom App, "a", "c", "d", "n", "s" are
+  // updated. When OnAppUpdate is called for non mojom App, "a", "c", "n", "s"
+  // is updated.
+  int app_count = IsOnAppUpdateWithoutMojomEnabled() ? 4 : 5;
+
   // Verify OnAppTypeInitialized is called when the mojom Apps are added.
   EXPECT_EQ(2u, observer1.app_types().size());
   EXPECT_TRUE(base::Contains(observer1.app_types(), apps::AppType::kChromeApp));
   EXPECT_EQ(2, observer1.initialized_app_type_count());
-  EXPECT_EQ(5, observer1.app_count_at_initialization());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
   EXPECT_EQ(2u, cache.InitializedAppTypes().size());
   EXPECT_TRUE(cache.IsAppTypeInitialized(AppType::kChromeApp));
 
@@ -423,7 +462,7 @@ TEST_F(AppRegistryCacheTest,
   // Verify OnAppTypeInitialized is not called when the non mojom Apps are
   // added.
   EXPECT_EQ(2, observer1.initialized_app_type_count());
-  EXPECT_EQ(5, observer1.app_count_at_initialization());
+  EXPECT_EQ(app_count, observer1.app_count_at_initialization());
   EXPECT_EQ(2u, cache.InitializedAppTypes().size());
 
   // Verify the new observers should not have OnAppTypeInitialized called.
@@ -435,7 +474,7 @@ TEST_F(AppRegistryCacheTest,
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for empty apps
 // vector, with the disabled flag.
-TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
+TEST_P(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
   DisableOnAppTypeInitializedFlag();
 
   AppRegistryCache cache;
@@ -519,7 +558,7 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithDisableFlagEmptyUpdate) {
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for the non
 // mojom App type first, with the enabled flag.
-TEST_F(AppRegistryCacheTest,
+TEST_P(AppRegistryCacheTest,
        OnAppTypeInitializedWithEnableFlagNonMojomUpdateFirst) {
   EnableOnAppTypeInitializedFlag();
 
@@ -580,7 +619,7 @@ TEST_F(AppRegistryCacheTest,
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for the mojom
 // App type first, with the enabled flag.
-TEST_F(AppRegistryCacheTest,
+TEST_P(AppRegistryCacheTest,
        OnAppTypeInitializedWithEnableFlagMojomUpdateFirst) {
   EnableOnAppTypeInitializedFlag();
 
@@ -638,7 +677,7 @@ TEST_F(AppRegistryCacheTest,
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for multiple
 // App types, with the enabled flag.
-TEST_F(AppRegistryCacheTest,
+TEST_P(AppRegistryCacheTest,
        OnAppTypeInitializedWithEnableFlagMultipleAppTypes) {
   EnableOnAppTypeInitializedFlag();
 
@@ -709,7 +748,7 @@ TEST_F(AppRegistryCacheTest,
 
 // Verify the OnAppTypeInitialized callback when OnApps is called for empty apps
 // vector, with the enabled flag.
-TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
+TEST_P(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
   EnableOnAppTypeInitializedFlag();
 
   AppRegistryCache cache;
@@ -790,5 +829,10 @@ TEST_F(AppRegistryCacheTest, OnAppTypeInitializedWithEnableFlagEmptyUpdate) {
   EXPECT_EQ(0, observer2.initialized_app_type_count());
   EXPECT_EQ(0, observer2.app_count_at_initialization());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AppRegistryCacheTest,
+    testing::Bool() /* IsOnAppUpdateWithoutMojomEnabled */);
 
 }  // namespace apps

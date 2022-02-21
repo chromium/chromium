@@ -133,23 +133,25 @@ void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
     }
   }
 
-  // The remaining for loops range over the mojom_deltas_in_progress_ map, not
-  // the deltas vector, so that OnAppUpdate is called only once per unique
-  // app_id.
+  if (!base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    // The remaining for loops range over the mojom_deltas_in_progress_ map, not
+    // the deltas vector, so that OnAppUpdate is called only once per unique
+    // app_id.
 
-  // Notify the observers for every de-duplicated delta.
-  for (const auto& d_iter : mojom_deltas_in_progress_) {
-    // Do not update subscribers for removed apps.
-    if (d_iter.second->readiness == mojom::Readiness::kRemoved) {
-      continue;
-    }
-    auto s_iter = mojom_states_.find(d_iter.first);
-    apps::mojom::App* state =
-        (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
-    apps::mojom::App* delta = d_iter.second;
+    // Notify the observers for every de-duplicated delta.
+    for (const auto& d_iter : mojom_deltas_in_progress_) {
+      // Do not update subscribers for removed apps.
+      if (d_iter.second->readiness == mojom::Readiness::kRemoved) {
+        continue;
+      }
+      auto s_iter = mojom_states_.find(d_iter.first);
+      apps::mojom::App* state =
+          (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
+      apps::mojom::App* delta = d_iter.second;
 
-    for (auto& obs : observers_) {
-      obs.OnAppUpdate(AppUpdate(state, delta, account_id_));
+      for (auto& obs : observers_) {
+        obs.OnAppUpdate(AppUpdate(state, delta, account_id_));
+      }
     }
   }
 
@@ -193,10 +195,26 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
     }
   }
 
-  // TODO(crbug.com/1253250): Modify and add OnAppUpdate for the `App`
-  // struct when the `App` struct replaces the mojom `App` struct for all
-  // publishers, to prevent OnAppUpdate to be called twice for both the
-  // mojom struct and non-mojom struct.
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    // The remaining for loops range over the deltas_in_progress_ map, not
+    // the deltas vector, so that OnAppUpdate is called only once per unique
+    // app_id.
+
+    // Notify the observers for every de-duplicated delta.
+    for (const auto& d_iter : deltas_in_progress_) {
+      // Do not update subscribers for removed apps.
+      if (d_iter.second->readiness == Readiness::kRemoved) {
+        continue;
+      }
+      auto s_iter = states_.find(d_iter.first);
+      App* state = (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
+      App* delta = d_iter.second;
+
+      for (auto& obs : observers_) {
+        obs.OnAppUpdate(AppUpdate(state, delta, account_id_));
+      }
+    }
+  }
 
   // Update the states for every de-duplicated delta.
   for (const auto& d_iter : deltas_in_progress_) {

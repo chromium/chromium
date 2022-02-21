@@ -34,8 +34,11 @@ class AppRegistryCacheMojomTest : public testing::Test,
                                   public apps::AppRegistryCache::Observer {
  protected:
   AppRegistryCacheMojomTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        apps::kAppServiceOnAppTypeInitializedWithoutMojom);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            apps::kAppServiceOnAppTypeInitializedWithoutMojom,
+            apps::kAppServiceOnAppUpdateWithoutMojom});
   }
 
   static apps::mojom::AppPtr MakeApp(
