@@ -22,6 +22,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
@@ -862,6 +863,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1299415")
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
     @Features.EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
@@ -894,6 +896,7 @@ public class TabStripTest {
      */
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/1299415")
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     @Feature({"TabStrip"})
     @Features.EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
