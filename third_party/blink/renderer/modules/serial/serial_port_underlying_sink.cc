@@ -172,12 +172,25 @@ void SerialPortUnderlyingSink::WriteData() {
   DCHECK(buffer_source_);
 
   DOMArrayPiece array_piece(buffer_source_);
+  // From https://webidl.spec.whatwg.org/#dfn-get-buffer-source-copy, if the
+  // buffer source is detached then an empty byte sequence is returned, which
+  // means the write is complete.
+  if (array_piece.IsDetached()) {
+    buffer_source_ = nullptr;
+    offset_ = 0;
+    pending_operation_->Resolve();
+    pending_operation_ = nullptr;
+    return;
+  }
+
   if (array_piece.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-    pending_exception_ = DOMException::Create(
-        "Buffer size exceeds maximum heap object size.", "DataError");
+    pending_exception_ = MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kDataError,
+        "Buffer size exceeds maximum heap object size.");
     PipeClosed();
     return;
   }
+
   const uint8_t* data = array_piece.Bytes();
   const uint32_t length = static_cast<uint32_t>(array_piece.ByteLength());
 
