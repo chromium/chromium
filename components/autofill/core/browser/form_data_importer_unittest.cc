@@ -54,15 +54,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
-using testing::_;
-using testing::AtLeast;
-using testing::Invoke;
-using testing::Return;
-using testing::SaveArg;
-using testing::UnorderedElementsAre;
-using testing::WithoutArgs;
 
 namespace autofill {
 namespace {
@@ -339,35 +331,31 @@ class PersonalDataLoadedObserverMock : public PersonalDataManagerObserver {
   MOCK_METHOD(void, OnPersonalDataFinishedProfileTasks, (), (override));
 };
 
+// Matches an AddressProfile or CreditCard pointer according to Compare().
+// Takes `expected` by value to avoid a dangling reference.
 template <typename T>
-bool CompareElements(T* a, T* b) {
-  return a->Compare(*b) < 0;
+auto ComparesEqual(T expected) {
+  return ::testing::Truly([expected = std::move(expected)](const T& actual) {
+    return actual.Compare(expected) == 0;
+  });
 }
 
+// The below matchers follow ::testing::UnorderedElementsAre[Array] except that
+// they accept AutofillProfile or CreditCard *pointers* and compare their
+// pointees using ComparesEqual().
+
 template <typename T>
-bool ElementsEqual(T* a, T* b) {
-  return a->Compare(*b) == 0;
+auto UnorderedElementsCompareEqualArray(const std::vector<T>& expected_values) {
+  std::vector<::testing::Matcher<T*>> matchers;
+  for (const T& expected : expected_values)
+    matchers.push_back(::testing::Pointee(ComparesEqual(expected)));
+  return ::testing::UnorderedElementsAreArray(matchers);
 }
 
-// Verifies that two vectors have the same elements (according to T::Compare)
-// while ignoring order. This is useful because multiple profiles or credit
-// cards that are added to the SQLite DB within the same second will be returned
-// in GUID (aka random) order.
-template <typename T>
-void ExpectSameElements(const std::vector<T*>& expectations,
-                        const std::vector<T*>& results) {
-  ASSERT_EQ(expectations.size(), results.size());
-
-  std::vector<T*> expectations_copy = expectations;
-  std::sort(expectations_copy.begin(), expectations_copy.end(),
-            CompareElements<T>);
-  std::vector<T*> results_copy = results;
-  std::sort(results_copy.begin(), results_copy.end(), CompareElements<T>);
-
-  EXPECT_EQ(std::mismatch(results_copy.begin(), results_copy.end(),
-                          expectations_copy.begin(), ElementsEqual<T>)
-                .first,
-            results_copy.end());
+template <typename... Matchers>
+auto UnorderedElementsCompareEqual(Matchers... matchers) {
+  return ::testing::UnorderedElementsAre(
+      ::testing::Pointee(ComparesEqual(std::move(matchers)))...);
 }
 
 }  // anonymous namespace
@@ -473,18 +461,8 @@ class FormDataImporterTestBase {
   // Note, that order is taken into account.
   void VerifyExpectationForImportedAddressProfiles(
       const std::vector<AutofillProfile>& expected_profiles) {
-    std::vector<AutofillProfile> expected_non_const_copy = expected_profiles;
-
-    std::vector<AutofillProfile*> imported_profiles_ptrs =
-        personal_data_manager_->GetProfiles();
-    ASSERT_EQ(expected_profiles.size(), imported_profiles_ptrs.size());
-
-    std::vector<AutofillProfile*> expected_profile_ptrs;
-    for (auto& profile : expected_non_const_copy) {
-      expected_profile_ptrs.emplace_back(&profile);
-    }
-
-    ExpectSameElements(expected_profile_ptrs, imported_profiles_ptrs);
+    EXPECT_THAT(personal_data_manager_->GetProfiles(),
+                UnorderedElementsCompareEqualArray(expected_profiles));
   }
 
   // Convenience wrapper that calls |FormDataImporter::ImportFormData()| and
@@ -554,10 +532,8 @@ class FormDataImporterTestBase {
     CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
     test::SetCreditCardInfo(&expected, exp_name, exp_cc_num, exp_cc_month,
                             exp_cc_year, "");
-    const std::vector<CreditCard*>& results =
-        personal_data_manager_->GetCreditCards();
-    ASSERT_EQ(1U, results.size());
-    EXPECT_EQ(0, expected.Compare(*results[0]));
+    EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+                UnorderedElementsCompareEqual(expected));
   }
 
   void WaitForOnPersonalDataChanged() {
@@ -1421,15 +1397,14 @@ TEST_P(FormDataImporterTest,
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
-  std::vector<std::pair<ServerFieldType, std::string>> initial_type_value_pairs(
-      {
-          {NAME_FULL, kDefaultFullName},
-          {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-          {ADDRESS_HOME_CITY, kDefaultCity},
-          {ADDRESS_HOME_STATE, kDefaultState},
-          {ADDRESS_HOME_ZIP, kDefaultZip},
-          {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
-      });
+  std::vector<std::pair<ServerFieldType, std::string>> initial_type_value_pairs{
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneDomesticFormatting},
+  };
   AutofillProfile initial_profile =
       ConstructProfileFromTypeValuePairs(initial_type_value_pairs);
 
@@ -1461,15 +1436,15 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
       ConstructFormStructureFromTypeValuePairs(conflicting_type_value_pairs);
 
   std::vector<std::pair<ServerFieldType, std::string>>
-      resulting_type_value_pairs({{NAME_FULL, kDefaultFullName},
-                                  {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-                                  {ADDRESS_HOME_CITY, kDefaultCity},
-                                  {ADDRESS_HOME_STATE, kDefaultState},
-                                  {ADDRESS_HOME_ZIP, kDefaultZip},
-                                  // The phone number is spelled differently.
-                                  {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
-                                  // Country information is added.
-                                  {ADDRESS_HOME_COUNTRY, "US"}});
+      resulting_type_value_pairs{{NAME_FULL, kDefaultFullName},
+                                 {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+                                 {ADDRESS_HOME_CITY, kDefaultCity},
+                                 {ADDRESS_HOME_STATE, kDefaultState},
+                                 {ADDRESS_HOME_ZIP, kDefaultZip},
+                                 // The phone number is spelled differently.
+                                 {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+                                 // Country information is added.
+                                 {ADDRESS_HOME_COUNTRY, "US"}};
 
   // Verify that importing the conflicting profile will result in an update of
   // the existing profile rather than creating a new one.
@@ -1479,15 +1454,14 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_SameProfileWithConflict) {
 }
 
 TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
-  std::vector<std::pair<ServerFieldType, std::string>> initial_type_value_pairs(
-      {
-          {NAME_FULL, kDefaultFullName},
-          {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-          {ADDRESS_HOME_CITY, kDefaultCity},
-          {ADDRESS_HOME_STATE, kDefaultState},
-          {ADDRESS_HOME_ZIP, kDefaultZip},
-          {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
-      });
+  std::vector<std::pair<ServerFieldType, std::string>> initial_type_value_pairs{
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+  };
   AutofillProfile initial_profile =
       ConstructProfileFromTypeValuePairs(initial_type_value_pairs);
 
@@ -1621,7 +1595,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, profile.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(profile));
 
   // Try the same thing, but without "Mitchell". The profiles should still match
   // because the non empty name pieces (first and last) match that stored in the
@@ -1639,7 +1613,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<AutofillProfile*>& results2 =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, profile.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(profile));
 }
 
 TEST_P(FormDataImporterTest,
@@ -1712,7 +1686,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, profile.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(profile));
 
   // Try the same thing, but without "Mitchell". The profiles should still match
   // because "Marion Morrison" is a variant of the known full name.
@@ -1729,7 +1703,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<AutofillProfile*>& results2 =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, profile.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(profile));
 }
 
 TEST_P(FormDataImporterTest,
@@ -1811,7 +1785,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, profile.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(profile));
 }
 
 // Tests that no profile is inferred if the country is not recognized.
@@ -1912,7 +1886,7 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
                        "San Francisco", "California", "94102", "AM", nullptr);
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(expected));
 }
 
 // Tests that a profile is created for countries with composed names.
@@ -1952,10 +1926,8 @@ TEST_P(FormDataImporterTest,
   test::SetProfileInfo(&expected, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "MM", nullptr);
-  const std::vector<AutofillProfile*>& results =
-      personal_data_manager_->GetProfiles();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetProfiles(),
+              UnorderedElementsCompareEqual(expected));
 }
 
 // TODO(crbug.com/634131): Create profiles if part of a standalone part of a
@@ -2030,10 +2002,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_Valid) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 }
 
 // Tests that an invalid credit card number is not extracted.
@@ -2134,10 +2104,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MonthSelectInvalidText) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "02",
                           "2999", "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 }
 
 TEST_P(FormDataImporterTest, ImportCreditCard_TwoValidCards) {
@@ -2160,10 +2128,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_TwoValidCards) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card.
   FormData form2;
@@ -2184,10 +2150,11 @@ TEST_P(FormDataImporterTest, ImportCreditCard_TwoValidCards) {
   CreditCard expected2(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected2, "", "5500000000000004", "02", "2999",
                           "");  // Imported cards have no billing info.
-  std::vector<CreditCard*> cards;
-  cards.push_back(&expected);
-  cards.push_back(&expected2);
-  ExpectSameElements(cards, personal_data_manager_->GetCreditCards());
+  // We ignore the order because multiple profiles or credit cards that
+  // are added to the SQLite DB within the same second will be returned in GUID
+  // (i.e., random) order.
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected, expected2));
 }
 
 // This form has the expiration year as one field with MM/YY.
@@ -2363,10 +2330,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_SameCreditCardWithConflict) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card where the year is different but
   // the credit card number matches.
@@ -2392,7 +2357,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_SameCreditCardWithConflict) {
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, expected2.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
 TEST_P(FormDataImporterTest, ImportCreditCard_ShouldReturnLocalCard) {
@@ -2415,10 +2380,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_ShouldReturnLocalCard) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card where the year is different but
   // the credit card number matches.
@@ -2447,7 +2410,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_ShouldReturnLocalCard) {
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, expected2.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
 TEST_P(FormDataImporterTest, ImportCreditCard_EmptyCardWithConflict) {
@@ -2471,10 +2434,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_EmptyCardWithConflict) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 
   // Add a second credit card with no number.
   FormData form2;
@@ -2501,7 +2462,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_EmptyCardWithConflict) {
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, expected2.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
 TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInNew) {
@@ -2524,10 +2485,8 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInNew) {
   CreditCard expected(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2999", "");
-  const std::vector<CreditCard*>& results =
-      personal_data_manager_->GetCreditCards();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected.Compare(*results[0]));
+  EXPECT_THAT(personal_data_manager_->GetCreditCards(),
+              UnorderedElementsCompareEqual(expected));
 
   // Add a second different valid credit card where the name is missing but
   // the credit card number matches.
@@ -2554,7 +2513,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInNew) {
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, expected2.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 
   // Add a third credit card where the expiration date is missing.
   FormData form3;
@@ -2582,7 +2541,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInNew) {
   const std::vector<CreditCard*>& results3 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results3.size());
-  EXPECT_EQ(0, expected3.Compare(*results3[0]));
+  EXPECT_THAT(*results3[0], ComparesEqual(expected3));
 }
 
 TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInOld) {
@@ -2624,7 +2583,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_MissingInfoInOld) {
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, expected2.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
 // We allow the user to store a credit card number with separators via the UI.
@@ -2642,7 +2601,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_SameCardWithSeparators) {
   const std::vector<CreditCard*>& results1 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results1.size());
-  EXPECT_EQ(0, saved_credit_card.Compare(*results1[0]));
+  EXPECT_THAT(*results1[0], ComparesEqual(saved_credit_card));
 
   // Import the same card info, but with different separators in the number.
   FormData form;
@@ -2665,7 +2624,7 @@ TEST_P(FormDataImporterTest, ImportCreditCard_SameCardWithSeparators) {
   const std::vector<CreditCard*>& results2 =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results2.size());
-  EXPECT_EQ(0, saved_credit_card.Compare(*results2[0]));
+  EXPECT_THAT(*results2[0], ComparesEqual(saved_credit_card));
 }
 
 // Ensure that if a verified credit card already exists, aggregated credit cards
@@ -2707,7 +2666,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, credit_card.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(credit_card));
 }
 
 // Ensures that |imported_credit_card_record_type_| is set and reset correctly.
@@ -2724,7 +2683,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, saved_credit_card.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(saved_credit_card));
 
   // Simulate a form submission with the same card.
   FormData form;
@@ -2851,7 +2810,7 @@ TEST_P(FormDataImporterTest,
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, saved_credit_card.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(saved_credit_card));
 
   // Simulate a form submission with the same card.
   FormData form;
@@ -3131,7 +3090,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
   const std::vector<AutofillProfile*>& results_addr =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
-  EXPECT_EQ(0, expected_address.Compare(*results_addr[0]));
+  EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
   // Test that the credit card has also been saved.
   CreditCard expected_card(base::GenerateGUID(), test::kEmptyOrigin);
@@ -3140,7 +3099,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressOneCreditCard) {
   const std::vector<CreditCard*>& results_cards =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results_cards.size());
-  EXPECT_EQ(0, expected_card.Compare(*results_cards[0]));
+  EXPECT_THAT(*results_cards[0], ComparesEqual(expected_card));
 }
 
 // Test that a form with two address sections and a credit card section does not
@@ -3222,7 +3181,7 @@ TEST_P(FormDataImporterTest, ImportFormData_TwoAddressesOneCreditCard) {
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected_card.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
 // Test that a form is split into two sections correctly when the name has
@@ -3336,7 +3295,7 @@ TEST_P(FormDataImporterTest, ImportFormData_AddressesDisabledOneCreditCard) {
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected_card.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
 // Test that a form with both address and credit card sections imports only the
@@ -3392,7 +3351,7 @@ TEST_P(FormDataImporterTest, ImportFormData_OneAddressCreditCardDisabled) {
   const std::vector<AutofillProfile*>& results_addr =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results_addr.size());
-  EXPECT_EQ(0, expected_address.Compare(*results_addr[0]));
+  EXPECT_THAT(*results_addr[0], ComparesEqual(expected_address));
 
   // Test that the credit card was not saved.
   const std::vector<CreditCard*>& results_cards =
@@ -3549,7 +3508,7 @@ TEST_P(FormDataImporterTest, ImportFormData_HiddenCreditCardFormAfterEntered) {
   const std::vector<CreditCard*>& results =
       personal_data_manager_->GetCreditCards();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, expected_card.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(expected_card));
 }
 
 // Ensures that no UPI ID value is returned when there's a credit card and no
@@ -4226,7 +4185,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
   const std::vector<AutofillProfile*>& results =
       personal_data_manager_->GetProfiles();
   ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(0, profile.Compare(*results[0]));
+  EXPECT_THAT(*results[0], ComparesEqual(profile));
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_FIRST), u"Marion");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_MIDDLE), u"Mitchell");
