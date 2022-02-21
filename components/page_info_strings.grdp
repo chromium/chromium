@@ -715,4 +715,16 @@
   <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
     Last visited <ph name="DATE">$1<ex>Apr 4, 2021</ex></ph>
   </message>
+
+  <!-- Ad personalization strings -->
+  <!-- TODO(crbug.com/1286276) These strings are not final yet and therefore marked as translateable="false" -->
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER" translateable="false" desc="The header label of the 'Ad personalization' subpage in Page Info bubble.">
+    Ad personalization
+  </message>
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" translateable="false" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+    This site defines interests other sites can use to show you ads
+  </message>
+  <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON" translateable="false" desc="The text on the button, that opens privacy sandbox settings page, in 'Ad personalization' subpage in page info bubble. ">
+    Manage interests
+  </message>
 </grit-part>

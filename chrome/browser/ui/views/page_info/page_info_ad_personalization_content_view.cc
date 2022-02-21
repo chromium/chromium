@@ -41,7 +41,8 @@ PageInfoAdPersonalizationContentView::PageInfoAdPersonalizationContentView(
           },
           this),
       PageInfoViewFactory::GetSiteSettingsIcon(),
-      IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_MANAGE_BUTTON, std::u16string(), 0,
+      IDS_PAGE_INFO_AD_PERSONALIZATION_SUBPAGE_MANAGE_BUTTON, std::u16string(),
+      0,
       /*tooltip_text=*/std::u16string(), std::u16string(),
       PageInfoViewFactory::GetLaunchIcon()));
 
@@ -61,11 +62,10 @@ void PageInfoAdPersonalizationContentView::SetAdPersonalizationInfo(
       layout_provider->GetInsetsMetric(INSETS_PAGE_INFO_HOVER_BUTTON);
 
   // TODO(olesiamarukhno): Show different strings based on info.
-  // TODO(olesiamarukhno): Use actual strings.
   auto* description_label =
       info_container_->AddChildView(std::make_unique<views::Label>(
-          u"Duis ligula nisl, volutpat non est id, molestie cursus mauris. "
-          u"Vestibulum iaculis, urna a finibus.",
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION),
           views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

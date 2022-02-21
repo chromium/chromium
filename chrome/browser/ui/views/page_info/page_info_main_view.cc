@@ -567,9 +567,8 @@ PageInfoMainView::CreateAdPersonalizationSection() {
       ->SetOrientation(views::LayoutOrientation::kVertical);
   ads_personalization_section->AddChildView(
       PageInfoViewFactory::CreateSeparator());
-  // TODO(olesiamarukhno): Use correct icon.
-  // TODO(olesiamarukhno): Use correct strings (title and tooltip).
-  auto* ads_personalization_button = ads_personalization_section->AddChildView(
+  // TODO(olesiamarukhno): Use correct strings (tooltip).
+  ads_personalization_section->AddChildView(
       std::make_unique<PageInfoHoverButton>(
           base::BindRepeating(
               [](PageInfoMainView* view) {
@@ -577,12 +576,11 @@ PageInfoMainView::CreateAdPersonalizationSection() {
                 view->navigation_handler_->OpenAdPersonalizationPage();
               },
               this),
-          PageInfoViewFactory::GetSiteSettingsIcon(),
-          /*title_resource_id=*/0, std::u16string(),
+          PageInfoViewFactory::GetAdPersonalizationIcon(),
+          IDS_PAGE_INFO_AD_PERSONALIZATION_HEADER, std::u16string(),
           PageInfoViewFactory::VIEW_ID_PAGE_INFO_AD_PERSONALIZATION_BUTTON,
           /*tooltip_text=*/std::u16string(), std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
-  ads_personalization_button->SetTitleText(u"Lorem ipsum dolor");
 
   return ads_personalization_section;
 }

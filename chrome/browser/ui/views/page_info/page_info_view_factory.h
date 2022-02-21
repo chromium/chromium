@@ -114,6 +114,9 @@ class PageInfoViewFactory {
   // Returns the icon for the history button.
   static const ui::ImageModel GetHistoryIcon();
 
+  // Returns the icon for the 'Ad personalization' button.
+  static const ui::ImageModel GetAdPersonalizationIcon();
+
   [[nodiscard]] std::unique_ptr<views::View> CreateMainPageView(
       base::OnceClosure initialized_callback);
   [[nodiscard]] std::unique_ptr<views::View> CreateSecurityPageView();
