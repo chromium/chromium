@@ -202,7 +202,7 @@ struct BackupRefPtrImpl {
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
     else {
-      AddressPoolManagerBitmap::IncrementOutsideOfBRPPoolPtrRefCount(address);
+      AddressPoolManagerBitmap::BanSuperPageFromBRPPool(address);
     }
 #endif
 
@@ -219,11 +219,13 @@ struct BackupRefPtrImpl {
 #endif
       ReleaseInternal(address);
     }
-#if !defined(PA_HAS_64_BITS_POINTERS)
-    else {
-      AddressPoolManagerBitmap::DecrementOutsideOfBRPPoolPtrRefCount(address);
-    }
-#endif
+    // We are unable to counteract BanSuperPageFromBRPPool(), called from
+    // WrapRawPtr(). We only use one bit per super-page and, thus can't tell if
+    // there's more than one associated raw_ptr<T> at a given time. The risk of
+    // exhausting the entire address space is minuscule, therefore, we couldn't
+    // resist the perf gain of a single relaxed store (in the above mentioned
+    // function) over much more expensive two CAS operations, which we'd have to
+    // use if we were to un-ban a super-page.
   }
 
   // Unwraps the pointer, while asserting that memory hasn't been freed. The

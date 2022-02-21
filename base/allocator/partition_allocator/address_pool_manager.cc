@@ -516,16 +516,12 @@ bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   }  // scoped_lock
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   // Get blocklist size.
   for (const auto& blocked :
        AddressPoolManagerBitmap::brp_forbidden_super_page_map_) {
     if (blocked.load(std::memory_order_relaxed))
       stats->blocklist_size += 1;
   }
-#else
-  // Either support or remove this option altogether.
-#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
 
   // Count failures in finding non-blocklisted addresses.
   stats->blocklist_hit_count =

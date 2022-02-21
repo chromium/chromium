@@ -102,27 +102,9 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  static void IncrementOutsideOfBRPPoolPtrRefCount(uintptr_t address) {
-#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
+  static void BanSuperPageFromBRPPool(uintptr_t address) {
     brp_forbidden_super_page_map_[address >> kSuperPageShift].store(
         true, std::memory_order_relaxed);
-#else
-    super_page_refcount_map_[address >> kSuperPageShift].fetch_add(
-        1, std::memory_order_relaxed);
-#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
-  }
-
-  static void DecrementOutsideOfBRPPoolPtrRefCount(uintptr_t address) {
-#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
-    // No-op. In this mode, we only use one bit per super-page and, therefore,
-    // can't tell if there's more than one associated raw_ptr<T> at a given
-    // time. There's a small risk is that we may exhaust the entire address
-    // space. On the other hand, a single relaxed store (in the above function)
-    // is much less expensive than two CAS operations.
-#else
-    super_page_refcount_map_[address >> kSuperPageShift].fetch_sub(
-        1, std::memory_order_relaxed);
-#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 
   static bool IsAllowedSuperPageForBRPPool(uintptr_t address) {
@@ -138,13 +120,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // reserving the super-page region and, thus, having the race condition.
     // Since we rely on that external synchronization, the relaxed memory
     // ordering should be sufficient.
-#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
     return !brp_forbidden_super_page_map_[address >> kSuperPageShift].load(
         std::memory_order_relaxed);
-#else
-    return super_page_refcount_map_[address >> kSuperPageShift].load(
-               std::memory_order_relaxed) == 0;
-#endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 
   static void IncrementBlocklistHitCount() { ++blocklist_hit_count_; }
@@ -158,13 +135,8 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static std::bitset<kRegularPoolBits> regular_pool_bits_ GUARDED_BY(GetLock());
   static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-#if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
       brp_forbidden_super_page_map_;
-#else
-  static std::array<std::atomic_uint32_t, kAddressSpaceSize / kSuperPageSize>
-      super_page_refcount_map_;
-#endif
   static std::atomic_size_t blocklist_hit_count_;
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 };

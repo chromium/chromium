@@ -17,8 +17,6 @@ buildflag_header("buildflags") {
   _use_backup_ref_ptr = use_backup_ref_ptr && use_partition_alloc && !is_nacl
   _put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot && _use_backup_ref_ptr
-  _never_remove_from_brp_pool_from_blocklist =
-      never_remove_from_brp_pool_blocklist && _use_backup_ref_ptr
   _enable_backup_ref_ptr_slow_checks =
       enable_backup_ref_ptr_slow_checks && _use_backup_ref_ptr
   _enable_dangling_raw_ptr_checks =
@@ -36,7 +34,6 @@ buildflag_header("buildflags") {
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
-    "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
 
     "USE_FAKE_BINARY_EXPERIMENT=$use_fake_binary_experiment",
 
