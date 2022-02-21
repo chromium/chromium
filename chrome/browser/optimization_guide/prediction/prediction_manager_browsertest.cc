@@ -745,8 +745,15 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
 }
 
+// Flaky on multiple ASAN bots. See https://crbug.com/1266318
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_TestSwitchProfileDoesntCrash \
+  DISABLED_TestSwitchProfileDoesntCrash
+#else
+#define MAYBE_TestSwitchProfileDoesntCrash TestSwitchProfileDoesntCrash
+#endif
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestSwitchProfileDoesntCrash) {
+                       MAYBE_TestSwitchProfileDoesntCrash) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath other_path =
       profile_manager->GenerateNextProfileDirectoryPath();
