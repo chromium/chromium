@@ -1686,6 +1686,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-cros-diacritics-on-physical-keyboard-longpress",
+    "owners": ["jhtin", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-cros-ime-assist-autocorrect",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
     "expiry_milestone": 100

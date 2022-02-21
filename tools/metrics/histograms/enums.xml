@@ -51437,6 +51437,8 @@ from previous Chrome versions.
   <int value="-2048395454" label="ChromeDuetLabeled:disabled"/>
   <int value="-2047832738" label="enable-system-timezone-automatic-detection"/>
   <int value="-2047822258" label="enable-avfoundation"/>
+  <int value="-2047363526"
+      label="DiacriticsOnPhysicalKeyboardLongpress:enabled"/>
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
@@ -51764,6 +51766,8 @@ from previous Chrome versions.
   <int value="-1847835522" label="disable-touch-adjustment"/>
   <int value="-1847776781"
       label="enable-loading-ipc-optimization-for-small-resources"/>
+  <int value="-1847775690"
+      label="DiacriticsOnPhysicalKeyboardLongpress:disabled"/>
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
   <int value="-1846613349" label="OmniboxActiveSearchEngines:disabled"/>
   <int value="-1846471618"

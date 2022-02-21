@@ -4951,6 +4951,12 @@ const char kHoldingSpaceInProgressDownloadsIntegrationDescription[] =
     "Show in-progress download functionality in Tote to increase productivity "
     "by giving users one place to go to monitor and access their downloads.";
 
+const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
+    "Enable diacritics and variant character selection on PK longpress.";
+const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =
+    "Enable diacritics and other varient character selection on physical "
+    "keyboard longpress.";
+
 const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
     "Enable assistive auto-correct features for native IME";

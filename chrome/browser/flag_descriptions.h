@@ -2847,6 +2847,9 @@ extern const char kHoldingSpaceInProgressAnimationV2Description[];
 extern const char kHoldingSpaceInProgressDownloadsIntegrationName[];
 extern const char kHoldingSpaceInProgressDownloadsIntegrationDescription[];
 
+extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
+extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
+
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 

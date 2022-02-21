@@ -391,6 +391,10 @@ const base::Feature kDeskTemplateSync{"DeskTemplateSync",
 const base::Feature kDesksTemplates{"DesksTemplates",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables diacritics on longpress on the physical keyboard.
+const base::Feature kDiacriticsOnPhysicalKeyboardLongpress{
+    "DiacriticsOnPhysicalKeyboardLongpress", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the Diagnostics app.
 const base::Feature kDiagnosticsApp{"DiagnosticsApp",
                                     base::FEATURE_ENABLED_BY_DEFAULT};

@@ -4314,6 +4314,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutocorrectParamsTuningName,
      flag_descriptions::kAutocorrectParamsTuningDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kAutocorrectParamsTuning)},
+    {"enable-cros-diacritics-on-physical-keyboard-longpress",
+     flag_descriptions::kDiacriticsOnPhysicalKeyboardLongpressName,
+     flag_descriptions::kDiacriticsOnPhysicalKeyboardLongpressDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress)},
     {"enable-cros-ime-assist-emoji-enhanced",
      flag_descriptions::kImeAssistEmojiEnhancedName,
      flag_descriptions::kImeAssistEmojiEnhancedDescription, kOsCrOS,
