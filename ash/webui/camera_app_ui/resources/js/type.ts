@@ -361,3 +361,13 @@ export class NoChunkError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+/**
+ * Throws when the portrait mode fails to detect a human face.
+ */
+export class PortraitModeProcessError extends Error {
+  constructor(message = 'No human face detected in the scene') {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}

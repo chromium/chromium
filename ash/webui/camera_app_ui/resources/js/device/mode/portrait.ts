@@ -9,7 +9,6 @@ import {Effect} from '../../mojo/type.js';
 import * as toast from '../../toast.js';
 import {
   Facing,
-  Metadata,
   PreviewVideo,
   Resolution,
 } from '../../type.js';
@@ -74,32 +73,15 @@ export class Portrait extends Photo {
       throw e;
     }
 
-    const toPhotoResult = async (blob: Blob, metadata: Metadata|null) => {
+    const toPhotoResult = async (pendingResult: TakePhotoResult) => {
+      const blob = await pendingResult.pendingBlob;
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
+      const metadata = await pendingResult.pendingMetadata;
       return {blob, timestamp, resolution, metadata};
     };
-
-    const pendingReference = (async () => {
-      const blob = await reference.pendingBlob;
-      const metadata = await reference.pendingMetadata;
-      return toPhotoResult(blob, metadata);
-    })();
-
-    const pendingPortrait = (async () => {
-      let blob: Blob;
-      try {
-        blob = await portrait.pendingBlob;
-      } catch (e) {
-        // Portrait image may failed due to absence of human faces.
-        // TODO(inker): Log non-intended error.
-        return null;
-      }
-      const metadata = await reference.pendingMetadata;
-      return toPhotoResult(blob, metadata);
-    })();
     return () => this.portraitHandler.onPortraitCaptureDone(
-               pendingReference, pendingPortrait);
+               toPhotoResult(reference), toPhotoResult(portrait));
   }
 }
 

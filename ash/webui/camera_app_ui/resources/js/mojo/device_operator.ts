@@ -11,6 +11,7 @@ import {
   ErrorType,
   Facing,
   FpsRangeList,
+  PortraitModeProcessError,
   Resolution,
   ResolutionList,
   VideoConfig,
@@ -564,7 +565,15 @@ export class DeviceOperator {
     listenerCallbacksRouter.onReprocessDone.addListener(
         (effect: Effect, status: number, blob: MojoBlob|null) => {
           const event = assertExists(reprocessEvents.get(effect));
-          if (blob === null || status !== 0) {
+          // The definitions of status code is not exposed to Chrome so we are
+          // not able to distinguish between different kinds of errors.
+          // TODO(b/220056961): Handle errors respectively once we have the
+          // definitions.
+          // Ref:
+          // https://source.corp.google.com/chromeos_public/src/platform2/camera/hal_adapter/reprocess_effect/portrait_mode_effect.h;rcl=dd67a0b4be973da51324be2ff2dd243125e27f07;l=77
+          if (effect === Effect.PORTRAIT_MODE && status !== 0) {
+            event.signalError(new PortraitModeProcessError());
+          } else if (blob === null || status !== 0) {
             event.signalError(new Error(`Set reprocess failed: ${status}`));
           } else {
             const {data, mimeType} = blob;

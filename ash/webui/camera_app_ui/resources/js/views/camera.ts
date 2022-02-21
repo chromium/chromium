@@ -46,6 +46,7 @@ import {
   MimeType,
   Mode,
   PerfEvent,
+  PortraitModeProcessError,
   Resolution,
   Rotation,
   ViewName,
@@ -554,7 +555,7 @@ export class Camera extends View implements CameraViewUI {
 
   async onPortraitCaptureDone(
       pendingReference: Promise<PhotoResult>,
-      pendingPortrait: Promise<PhotoResult|null>): Promise<void> {
+      pendingPortrait: Promise<PhotoResult>): Promise<void> {
     state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
     let hasError = false;
     try {
@@ -568,25 +569,32 @@ export class Camera extends View implements CameraViewUI {
         isVideoSnapshot: false,
       });
 
+      // Save reference.
+      const filenamer = new Filenamer(timestamp);
+      const name = filenamer.newBurstName(false);
       try {
-        // Save reference.
-        const filenamer = new Filenamer(timestamp);
-        const name = filenamer.newBurstName(false);
         await this.resultSaver.savePhoto(blob, name, metadata);
-
-        const portrait = await pendingPortrait;
-        if (portrait === null) {
-          toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
-        } else {
-          // Save portrait.
-          const {blob: portraitBlob, metadata: portraitMetadata} = portrait;
-          const name = filenamer.newBurstName(true);
-          await this.resultSaver.savePhoto(
-              portraitBlob, name, portraitMetadata);
-        }
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
         throw e;
+      }
+
+      try {
+        // Save portrait.
+        const {blob: portraitBlob, metadata: portraitMetadata} =
+            await pendingPortrait;
+        const name = filenamer.newBurstName(true);
+        await this.resultSaver.savePhoto(portraitBlob, name, portraitMetadata);
+      } catch (e) {
+        if (e instanceof PortraitModeProcessError) {
+          // This error might be thrown when no face is detected or the
+          // segmentataion failed for the scene. Since there is not much we can
+          // do for either cases, we tolerate such error.
+          toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
+        } else {
+          toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
+          throw e;
+        }
       }
     } catch (e) {
       hasError = true;
