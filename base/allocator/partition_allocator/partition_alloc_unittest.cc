@@ -3488,7 +3488,7 @@ TEST_P(PartitionAllocTest, RefCountRealloc) {
 
 // Allocate memory, and reference it from 3 raw_ptr. Among them 2 will be
 // dangling.
-TEST_P(PartitionAllocTest, Dangling) {
+TEST_P(PartitionAllocTest, DanglingPtr) {
   CountDanglingRawPtr dangling_checks;
 
   // Allocate memory, and reference it from 3 raw_ptr.
@@ -3508,7 +3508,7 @@ TEST_P(PartitionAllocTest, Dangling) {
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
 
-  // Free it once. This creates two dangling pointer.
+  // Free it. This creates two dangling pointer.
   allocator.root()->Free(ptr);
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
@@ -3516,12 +3516,243 @@ TEST_P(PartitionAllocTest, Dangling) {
   // The dangling raw_ptr stop referencing it.
   EXPECT_FALSE(ref_count->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
-  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
 
   // The dangling raw_ptr stop referencing it again.
   EXPECT_TRUE(ref_count->Release());
   EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 2);
+}
+
+// Allocate memory, and reference it from 3
+// raw_ptr<T, DisableDanglingPtrDetection>. Among them 2 will be dangling. This
+// doesn't trigger any dangling raw_ptr checks.
+TEST_P(PartitionAllocTest, DanglingDanglingPtr) {
+  CountDanglingRawPtr dangling_checks;
+
+  // Allocate memory, and reference it from 3 raw_ptr.
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  ref_count->AcquireFromUnprotectedPtr();
+  ref_count->AcquireFromUnprotectedPtr();
+  ref_count->AcquireFromUnprotectedPtr();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The first raw_ptr<T, DisableDanglingPtrDetection> stops referencing it,
+  // before the memory has been released.
+  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it. This creates two dangling raw_ptr<T, DisableDanglingPtrDetection>.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The dangling raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
+  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The dangling raw_ptr<T, DisableDanglingPtrDetection> stop referencing it
+  // again.
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+}
+
+// When 'free' is called, it remain one raw_ptr<> and one
+// raw_ptr<T, DisableDanglingPtrDetection>. The raw_ptr<> is released first.
+TEST_P(PartitionAllocTest, DanglingMixedReleaseRawPtrFirst) {
+  CountDanglingRawPtr dangling_checks;
+
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
+  ref_count->AcquireFromUnprotectedPtr();
+  ref_count->Acquire();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<> stops referencing it.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
   EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
+}
+
+// When 'free' is called, it remain one raw_ptr<> and one
+// raw_ptr<T, DisableDanglingPtrDetection>.
+// The raw_ptr<T, DisableDanglingPtrDetection> is released first. This
+// triggers the dangling raw_ptr<> checks.
+TEST_P(PartitionAllocTest, DanglingMixedReleaseDanglingPtrFirst) {
+  CountDanglingRawPtr dangling_checks;
+
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
+  ref_count->AcquireFromUnprotectedPtr();
+  ref_count->Acquire();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<> stops referencing it.
+  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
+  EXPECT_TRUE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
+}
+
+// When 'free' is called, it remains one
+// raw_ptr<T, DisableDanglingPtrDetection>, then it is used to acquire one
+// dangling raw_ptr<>. Release the raw_ptr<> first.
+TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtr) {
+  CountDanglingRawPtr dangling_checks;
+
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  // Acquire a raw_ptr<T, DisableDanglingPtrDetection>.
+  ref_count->AcquireFromUnprotectedPtr();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it once.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // A raw_ptr<> starts referencing it.
+  ref_count->Acquire();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<> stops referencing it.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stops referencing it.
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+}
+
+// Same as 'DanglingPtrUsedToAcquireNewRawPtr', but release the
+// raw_ptr<T, DisableDanglingPtrDetection> before the raw_ptr<>.
+TEST_P(PartitionAllocTest, DanglingPtrUsedToAcquireNewRawPtrVariant) {
+  CountDanglingRawPtr dangling_checks;
+
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  // Acquire a raw_ptr<T, DisableDanglingPtrDetection>.
+  ref_count->AcquireFromUnprotectedPtr();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // A raw_ptr<> starts referencing it.
+  ref_count->Acquire();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<> stops referencing it.
+  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stops referencing it.
+  EXPECT_TRUE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+}
+
+// Acquire a raw_ptr<T>, and release it before freeing memory. In the
+// background, there is one raw_ptr<T, DisableDanglingPtrDetection>. This
+// doesn't trigger any dangling raw_ptr<T> checks.
+TEST_P(PartitionAllocTest, RawPtrReleasedBeforeFree) {
+  CountDanglingRawPtr dangling_checks;
+
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  // Acquire a raw_ptr<T, DisableDanglingPtrDetection> and a raw_ptr<>.
+  ref_count->Acquire();
+  ref_count->AcquireFromUnprotectedPtr();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Release the raw_ptr<>.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The raw_ptr<T, DisableDanglingPtrDetection> stop referencing it.
+  EXPECT_TRUE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+}
+
+// Acquire() once, Release() twice => CRASH
+TEST_P(PartitionAllocDeathTest, ReleaseUnderflowRawPtr) {
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  ref_count->Acquire();
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_DEATH(ref_count->Release(), "");
+  allocator.root()->Free(ptr);
+}
+
+// AcquireFromUnprotectedPtr() once, ReleaseFromUnprotectedPtr() twice => CRASH
+TEST_P(PartitionAllocDeathTest, ReleaseUnderflowDanglingPtr) {
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  ref_count->AcquireFromUnprotectedPtr();
+  EXPECT_FALSE(ref_count->ReleaseFromUnprotectedPtr());
+  EXPECT_DEATH(ref_count->ReleaseFromUnprotectedPtr(), "");
+  allocator.root()->Free(ptr);
 }
 
 #endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
