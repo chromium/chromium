@@ -138,10 +138,8 @@ class QuarantineCardTable final {
   // Avoid the load of the base of the regular pool.
   ALWAYS_INLINE static QuarantineCardTable& GetFrom(uintptr_t address) {
     PA_SCAN_DCHECK(IsManagedByPartitionAllocRegularPool(address));
-    constexpr uintptr_t kRegularPoolBaseMask =
-        PartitionAddressSpace::RegularPoolBaseMask();
-    return *reinterpret_cast<QuarantineCardTable*>(address &
-                                                   kRegularPoolBaseMask);
+    return *reinterpret_cast<QuarantineCardTable*>(
+        address & PartitionAddressSpace::RegularPoolBaseMask());
   }
 
   ALWAYS_INLINE void Quarantine(uintptr_t begin, size_t size) {
@@ -168,10 +166,9 @@ class QuarantineCardTable final {
 
   QuarantineCardTable() = default;
 
-  ALWAYS_INLINE static constexpr size_t Byte(uintptr_t address) {
-    constexpr uintptr_t kRegularPoolBaseMask =
-        PartitionAddressSpace::RegularPoolBaseMask();
-    return (address & ~kRegularPoolBaseMask) / kCardSize;
+  ALWAYS_INLINE static size_t Byte(uintptr_t address) {
+    return (address & ~PartitionAddressSpace::RegularPoolBaseMask()) /
+           kCardSize;
   }
 
   ALWAYS_INLINE void SetImpl(uintptr_t begin, size_t size, bool value) {
@@ -777,10 +774,10 @@ class PCScanScanLoop final : public ScanLoop<PCScanScanLoop> {
 
  private:
 #if defined(PA_HAS_64_BITS_POINTERS)
-  ALWAYS_INLINE uintptr_t CageBase() const {
+  ALWAYS_INLINE static uintptr_t CageBase() {
     return PartitionAddressSpace::RegularPoolBase();
   }
-  ALWAYS_INLINE static constexpr uintptr_t CageMask() {
+  ALWAYS_INLINE static uintptr_t CageMask() {
     return PartitionAddressSpace::RegularPoolBaseMask();
   }
 #endif  // defined(PA_HAS_64_BITS_POINTERS)

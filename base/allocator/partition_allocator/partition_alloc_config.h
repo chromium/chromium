@@ -30,6 +30,12 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_STARSCAN_NEON_SUPPORTED
 #endif
 
+#if 0
+// Use dynamically sized GigaCage. This allows to query the size at run-time,
+// before initialization, instead of using a hardcoded constexpr.
+#define PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE
+#endif
+
 #if defined(PA_HAS_64_BITS_POINTERS) && \
     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 #include <linux/version.h>
@@ -37,7 +43,8 @@ static_assert(sizeof(void*) != 8, "");
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 #define PA_STARSCAN_UFFD_WRITE_PROTECTOR_SUPPORTED
 #endif
-#endif
+#endif  // defined(PA_HAS_64_BITS_POINTERS) &&
+        // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Use card table to avoid races for PCScan configuration without safepoints.
@@ -47,7 +54,7 @@ static_assert(sizeof(void*) != 8, "");
 #else
 // The card table is permanently disabled for 32-bit.
 #define PA_STARSCAN_USE_CARD_TABLE 0
-#endif
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 #if PA_STARSCAN_USE_CARD_TABLE && !defined(PA_ALLOW_PCSCAN)
 #error "Card table can only be used when *Scan is allowed"

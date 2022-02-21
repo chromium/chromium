@@ -40,9 +40,15 @@ class BASE_EXPORT PartitionAddressSpace {
     return setup_.regular_pool_;
   }
 
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+  static ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
+    return setup_.regular_pool_base_mask_;
+  }
+#else
   static ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
     return kRegularPoolBaseMask;
   }
+#endif
 
   static ALWAYS_INLINE internal::pool_handle GetBRPPool() {
     return setup_.brp_pool_;
@@ -111,12 +117,17 @@ class BASE_EXPORT PartitionAddressSpace {
 
   static ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
     return setup_.configurable_pool_base_address_ !=
-           kConfigurablePoolInitialBaseAddress;
+           kUninitializedPoolBaseAddress;
   }
 
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
-    return (address & kRegularPoolBaseMask) ==
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+    const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
+#else
+    constexpr uintptr_t regular_pool_base_mask = kRegularPoolBaseMask;
+#endif
+    return (address & regular_pool_base_mask) ==
            setup_.regular_pool_base_address_;
   }
 
@@ -126,7 +137,12 @@ class BASE_EXPORT PartitionAddressSpace {
 
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
-    return (address & kBRPPoolBaseMask) == setup_.brp_pool_base_address_;
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+    const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
+#else
+    constexpr uintptr_t brp_pool_base_mask = kBRPPoolBaseMask;
+#endif
+    return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
@@ -151,6 +167,17 @@ class BASE_EXPORT PartitionAddressSpace {
   void* operator new(size_t, void*) = delete;
 
  private:
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+  static ALWAYS_INLINE size_t RegularPoolSize();
+  static ALWAYS_INLINE size_t BRPPoolSize();
+#else
+  // The pool sizes should be as large as maximum whenever possible.
+  constexpr static ALWAYS_INLINE size_t RegularPoolSize() {
+    return kRegularPoolSize;
+  }
+  constexpr static ALWAYS_INLINE size_t BRPPoolSize() { return kBRPPoolSize; }
+#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+
   // On 64-bit systems, GigaCage is split into disjoint pools. The BRP pool, is
   // where all allocations have a BRP ref-count, thus pointers pointing there
   // can use a BRP protection against UaF. Allocations in the other pools don't
@@ -172,20 +199,21 @@ class BASE_EXPORT PartitionAddressSpace {
   // memory cage, which requires that ArrayBuffers be located inside of it.
   static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
-// TODO(crbug.com/1250788): Remove the iOS special case.
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
+                base::bits::IsPowerOfTwo(kBRPPoolSize));
 #if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/1250788): Remove the iOS special case.
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = kPoolMaxSize;
 #else
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
 #endif
-  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
-                    base::bits::IsPowerOfTwo(kBRPPoolSize) &&
-                    base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
-                    base::bits::IsPowerOfTwo(kConfigurablePoolMinSize),
-                "Each pool size should be a power of two.");
+  static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
+  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
+                base::bits::IsPowerOfTwo(kConfigurablePoolMinSize));
 
+#if !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
   // Masks used to easy determine belonging to a pool.
   // On Arm, the top byte of each pointer is ignored (meaning there are
   // effectively 256 versions of each valid pointer). 4 bits are used to store
@@ -200,26 +228,30 @@ class BASE_EXPORT PartitionAddressSpace {
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask =
       ~kBRPPoolOffsetMask & kMemTagUnmask;
+#endif  // !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
 
-  // This must be != 0 so that IsInConfigurablePool always returns false
-  // when the pool isn't initialized.
-  static constexpr uintptr_t kConfigurablePoolInitialBaseAddress =
+  // This must be set to such a value that IsIn*Pool() always returns false when
+  // the pool isn't initialized.
+  static constexpr uintptr_t kUninitializedPoolBaseAddress =
       static_cast<uintptr_t>(-1);
 
   struct GigaCageSetup {
     // Before PartitionAddressSpace::Init(), no allocation are allocated from a
     // reserved address space. Therefore, set *_pool_base_address_ initially to
-    // k*PoolOffsetMask, or kConfigurablePoolInitialBaseAddress for the
-    // ConfigurablePool, so that PartitionAddressSpace::IsIn*Pool() always
-    // returns false.
+    // -1, so that PartitionAddressSpace::IsIn*Pool() always returns false.
     constexpr GigaCageSetup()
-        : regular_pool_base_address_(kRegularPoolOffsetMask),
-          brp_pool_base_address_(kBRPPoolOffsetMask),
-          configurable_pool_base_address_(kConfigurablePoolInitialBaseAddress),
+        : regular_pool_base_address_(kUninitializedPoolBaseAddress),
+          brp_pool_base_address_(kUninitializedPoolBaseAddress),
+          configurable_pool_base_address_(kUninitializedPoolBaseAddress),
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+          regular_pool_base_mask_(0),
+          brp_pool_base_mask_(0),
+#endif
           configurable_pool_base_mask_(0),
           regular_pool_(0),
           brp_pool_(0),
-          configurable_pool_(0) {}
+          configurable_pool_(0) {
+    }
 
     // Using a union to enforce padding.
     union {
@@ -227,6 +259,10 @@ class BASE_EXPORT PartitionAddressSpace {
         uintptr_t regular_pool_base_address_;
         uintptr_t brp_pool_base_address_;
         uintptr_t configurable_pool_base_address_;
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+        uintptr_t regular_pool_base_mask_;
+        uintptr_t brp_pool_base_mask_;
+#endif
         uintptr_t configurable_pool_base_mask_;
 
         pool_handle regular_pool_;

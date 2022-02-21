@@ -11,7 +11,9 @@
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/alias.h"
@@ -67,46 +69,61 @@ NOINLINE void HandleGigaCageAllocFailure() {
 alignas(kPartitionCachelineSize)
     PartitionAddressSpace::GigaCageSetup PartitionAddressSpace::setup_;
 
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
+  return kRegularPoolSize;
+}
+ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
+  return kBRPPoolSize;
+}
+#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+
 void PartitionAddressSpace::Init() {
   if (IsInitialized())
     return;
 
   setup_.regular_pool_base_address_ = AllocPages(
-      kRegularPoolSize, kRegularPoolSize,
+      RegularPoolSize(), RegularPoolSize(),
       PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
   if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
-  PA_DCHECK(!(setup_.regular_pool_base_address_ & (kRegularPoolSize - 1)));
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+  setup_.regular_pool_base_mask_ = ~(RegularPoolSize() - 1) & kMemTagUnmask;
+#endif
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (RegularPoolSize() - 1)));
   setup_.regular_pool_ = AddressPoolManager::GetInstance()->Add(
-      setup_.regular_pool_base_address_, kRegularPoolSize);
+      setup_.regular_pool_base_address_, RegularPoolSize());
   PA_CHECK(setup_.regular_pool_ == kRegularPoolHandle);
   PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
   PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
   PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
-                            kRegularPoolSize - 1));
+                            RegularPoolSize() - 1));
   PA_DCHECK(
-      !IsInRegularPool(setup_.regular_pool_base_address_ + kRegularPoolSize));
+      !IsInRegularPool(setup_.regular_pool_base_address_ + RegularPoolSize()));
 
   // Reserve an extra allocation granularity unit before the BRP pool, but keep
-  // the pool aligned at kBRPPoolSize. A pointer immediately past an allocation
+  // the pool aligned at BRPPoolSize(). A pointer immediately past an allocation
   // is a valid pointer, and having a "forbidden zone" before the BRP pool
   // prevents such a pointer from "sneaking into" the pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
   uintptr_t base_address = AllocPagesWithAlignOffset(
-      0, kBRPPoolSize + kForbiddenZoneSize, kBRPPoolSize,
-      kBRPPoolSize - kForbiddenZoneSize,
+      0, BRPPoolSize() + kForbiddenZoneSize, BRPPoolSize(),
+      BRPPoolSize() - kForbiddenZoneSize,
       PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc);
   if (!base_address)
     HandleGigaCageAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
-  PA_DCHECK(!(setup_.brp_pool_base_address_ & (kBRPPoolSize - 1)));
+#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+  setup_.brp_pool_base_mask_ = ~(BRPPoolSize() - 1) & kMemTagUnmask;
+#endif
+  PA_DCHECK(!(setup_.brp_pool_base_address_ & (BRPPoolSize() - 1)));
   setup_.brp_pool_ = AddressPoolManager::GetInstance()->Add(
-      setup_.brp_pool_base_address_, kBRPPoolSize);
+      setup_.brp_pool_base_address_, BRPPoolSize());
   PA_CHECK(setup_.brp_pool_ == kBRPPoolHandle);
   PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
   PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_));
-  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + kBRPPoolSize - 1));
-  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + kBRPPoolSize));
+  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + BRPPoolSize() - 1));
+  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + BRPPoolSize()));
 
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.
@@ -142,17 +159,17 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
 }
 
 void PartitionAddressSpace::UninitForTesting() {
-  FreePages(setup_.regular_pool_base_address_, kRegularPoolSize);
+  FreePages(setup_.regular_pool_base_address_, RegularPoolSize());
   // For BRP pool, the allocation region includes a "forbidden zone" before the
   // pool.
   const size_t kForbiddenZoneSize = PageAllocationGranularity();
   FreePages(setup_.brp_pool_base_address_ - kForbiddenZoneSize,
-            kBRPPoolSize + kForbiddenZoneSize);
+            BRPPoolSize() + kForbiddenZoneSize);
   // Do not free pages for the configurable pool, because its memory is owned
   // by someone else, but deinitialize it nonetheless.
-  setup_.regular_pool_base_address_ = kRegularPoolOffsetMask;
-  setup_.brp_pool_base_address_ = kBRPPoolOffsetMask;
-  setup_.configurable_pool_base_address_ = kConfigurablePoolInitialBaseAddress;
+  setup_.regular_pool_base_address_ = kUninitializedPoolBaseAddress;
+  setup_.brp_pool_base_address_ = kUninitializedPoolBaseAddress;
+  setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
   setup_.regular_pool_ = 0;
   setup_.brp_pool_ = 0;
@@ -162,7 +179,7 @@ void PartitionAddressSpace::UninitForTesting() {
 
 void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
   AddressPoolManager::GetInstance()->Remove(setup_.configurable_pool_);
-  setup_.configurable_pool_base_address_ = kConfigurablePoolInitialBaseAddress;
+  setup_.configurable_pool_base_address_ = kUninitializedPoolBaseAddress;
   setup_.configurable_pool_base_mask_ = 0;
   setup_.configurable_pool_ = 0;
 }
