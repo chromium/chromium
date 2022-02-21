@@ -5827,7 +5827,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>garryxiao@chromium.org</owner>
   <owner>cylai@chromium.org</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     The result of attestation-related operations on the Chrome OS side.
   </summary>

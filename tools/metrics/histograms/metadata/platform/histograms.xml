@@ -1189,7 +1189,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.AuthErrorCode" enum="TPMResultCodeEnum"
     expires_after="2022-06-26">
   <owner>yich@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Each sample is the result code of a TPM authorized command issued through
     tcsd. Success is 0. For the other error codes, see
@@ -1200,7 +1200,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.AuthFailCommand.Auth2Fail"
     enum="TPM12CommandOrdinal" expires_after="2021-10-10">
   <owner>cylai@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Reporting the TPM command ordinal that results in TPM_E_AUTH2FAIL code. Note
     that this is only applicable for TPM1.2.
@@ -1210,7 +1210,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.AuthFailCommand.AuthFail"
     enum="TPM12CommandOrdinal" expires_after="2021-10-10">
   <owner>cylai@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Reporting the TPM command ordinal that results in TPM_E_AUTHFAIL code. Note
     that this is only applicable for TPM1.2.
@@ -1220,7 +1220,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.DictionaryAttackCounter" units="units"
     expires_after="2022-06-26">
   <owner>cylai@chromium.org</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Each sample is the value of the TPM dictionary attack counter reported at
     boot and hourly while running. Any non-zero value is unexpected.
@@ -1230,7 +1230,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.DictionaryAttackResetStatus"
     enum="CrosTPMDictionaryAttackResetStatusEnum" expires_after="2022-08-14">
   <owner>cylai@chromium.org</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Each sample is the status of an hourly attempt to reset the TPM dictionary
     attack counter.
@@ -1240,7 +1240,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.TPM.ErrorCode" enum="TPMResultCodeEnum"
     expires_after="2022-06-26">
   <owner>yich@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
     Each sample is the result code of a TPM command issued through tcsd. Success
     is 0. For the other error codes, see /usr/include/tss/tpm_error.h.
@@ -1352,14 +1352,14 @@ chromium-metrics-reviews@google.com.
 <histogram name="Platform.U2F.Command" enum="Cr50U2FCommands"
     expires_after="2022-02-20">
   <owner>cylai@chromium.org</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>Records occurrences of U2F commands sent to cr50.</summary>
 </histogram>
 
 <histogram name="Platform.U2F.LegacyCommand" enum="Cr50U2FCommands"
     expires_after="2021-12-21">
   <owner>cylai@chromium.org</owner>
-  <owner>cros-hwsec-userland-eng+uma@chromium.org</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>Records occurrences of legacy U2F commands sent to cr50.</summary>
 </histogram>
 
