@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -132,8 +133,7 @@ void WebStateList::WebStateWrapper::SetShouldResetOpenerOnActiveWebStateChange(
 }
 
 WebStateList::WebStateList(WebStateListDelegate* delegate)
-    : delegate_(delegate),
-      order_controller_(std::make_unique<WebStateListOrderController>(this)) {
+    : delegate_(delegate) {
   DCHECK(delegate_);
 }
 
@@ -298,7 +298,8 @@ int WebStateList::InsertWebStateImpl(int index,
   }
 
   if (!IsInsertionFlagSet(insertion_flags, INSERT_FORCE_INDEX)) {
-    index = order_controller_->DetermineInsertionIndex(opener.opener);
+    WebStateListOrderController order_controller(*this);
+    index = order_controller.DetermineInsertionIndex(opener.opener);
     if (index < 0 || count() < index)
       index = count();
   }
@@ -400,9 +401,10 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after
   // the WebStateDetachedAt one.
+  WebStateListOrderController order_controller(*this);
   const bool active_web_state_was_closed = (index == active_index_);
   active_index_ =
-      order_controller_->DetermineNewActiveIndex(active_index_, index);
+      order_controller.DetermineNewActiveIndex(active_index_, {index});
 
   ClearOpenersReferencing(index);
   std::unique_ptr<web::WebState> detached_web_state =
