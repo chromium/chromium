@@ -52,6 +52,8 @@ public interface AssistantStaticDependencies {
 
     AssistantTabUtil createTabUtil();
 
+    AssistantSettingsUtil createSettingsUtil();
+
     @CalledByNative
     AssistantAccessTokenUtil createAccessTokenUtil();
 

@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.autofill_assistant.AssistantBottomBarDelegate
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetContent;
 import org.chromium.chrome.browser.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer;
+import org.chromium.chrome.browser.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantDependencyInjector;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
@@ -65,6 +66,7 @@ public class AssistantTriggerScript {
     private final AccessibilityUtil mAccessibilityUtil;
     @Nullable
     private final AssistantProfileImageUtil mProfileImageUtil;
+    private final AssistantSettingsUtil mSettingsUtil;
 
     private AssistantHeaderCoordinator mHeaderCoordinator;
     private AssistantHeaderModel mHeaderModel;
@@ -86,7 +88,8 @@ public class AssistantTriggerScript {
             BottomSheetController controller,
             ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
             AccessibilityUtil accessibilityUtil,
-            @Nullable AssistantProfileImageUtil profileImageUtil) {
+            @Nullable AssistantProfileImageUtil profileImageUtil,
+            AssistantSettingsUtil settingsUtil) {
         assert delegate != null;
         mContext = context;
         mDelegate = delegate;
@@ -96,6 +99,7 @@ public class AssistantTriggerScript {
         mApplicationViewportInsetSupplier.addSupplier(mInsetSupplier);
         mAccessibilityUtil = accessibilityUtil;
         mProfileImageUtil = profileImageUtil;
+        mSettingsUtil = settingsUtil;
 
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
@@ -228,7 +232,7 @@ public class AssistantTriggerScript {
         }
 
         mHeaderCoordinator = new AssistantHeaderCoordinator(
-                mContext, mHeaderModel, mAccessibilityUtil, mProfileImageUtil);
+                mContext, mHeaderModel, mAccessibilityUtil, mProfileImageUtil, mSettingsUtil);
         mHeaderModel.set(
                 AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
         if (AutofillAssistantDependencyInjector.hasServiceRequestSenderToInject()) {

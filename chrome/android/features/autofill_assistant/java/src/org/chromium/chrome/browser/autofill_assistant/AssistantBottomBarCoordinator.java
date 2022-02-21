@@ -102,7 +102,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
-            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid) {
+            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid,
+            AssistantSettingsUtil settingsUtil) {
         mAccessibilityUtil = accessibilityUtil;
         mModel = model;
         mOverlayCoordinator = overlayCoordinator;
@@ -139,8 +140,8 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         setupAnimations(model, rootView);
 
         // Instantiate child components.
-        mHeaderCoordinator = new AssistantHeaderCoordinator(
-                activity, model.getHeaderModel(), accessibilityUtil, profileImageUtil);
+        mHeaderCoordinator = new AssistantHeaderCoordinator(activity, model.getHeaderModel(),
+                accessibilityUtil, profileImageUtil, settingsUtil);
         mInfoBoxCoordinator =
                 new AssistantInfoBoxCoordinator(activity, model.getInfoBoxModel(), imageFetcher);
         AssistantDetailsCoordinator detailsCoordinator = new AssistantDetailsCoordinator(

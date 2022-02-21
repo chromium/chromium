@@ -108,7 +108,8 @@ public class AutofillAssistantHeaderUiTest {
             AssistantHeaderCoordinator coordinator = new AssistantHeaderCoordinator(getActivity(),
                     model, dependencies.getAccessibilityUtil(),
                     dependencies.createProfileImageUtilOrNull(
-                            getActivity(), R.dimen.autofill_assistant_profile_size));
+                            getActivity(), R.dimen.autofill_assistant_profile_size),
+                    dependencies.createSettingsUtil());
 
             CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

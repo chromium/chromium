@@ -18,12 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -43,9 +41,12 @@ class AssistantHeaderViewBinder
     private static final int TEXT_BUBBLE_PIXELS_ABOVE_SHEET = 4;
 
     private final AccessibilityUtil mAccessibilityUtil;
+    private final AssistantSettingsUtil mSettingsUtil;
 
-    public AssistantHeaderViewBinder(AccessibilityUtil accessibilityUtil) {
+    public AssistantHeaderViewBinder(
+            AccessibilityUtil accessibilityUtil, AssistantSettingsUtil settingsUtil) {
         mAccessibilityUtil = accessibilityUtil;
+        mSettingsUtil = settingsUtil;
     }
 
     /**
@@ -172,9 +173,7 @@ class AssistantHeaderViewBinder
         view.mProfileIconMenu.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.settings) {
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(
-                        view.mHeader.getContext(), AutofillAssistantPreferenceFragment.class);
+                mSettingsUtil.launch(view.mHeader.getContext());
                 return true;
             } else if (itemId == R.id.send_feedback) {
                 if (feedbackCallback != null) {

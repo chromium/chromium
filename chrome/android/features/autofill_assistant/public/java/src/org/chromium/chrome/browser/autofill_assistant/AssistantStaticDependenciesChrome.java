@@ -80,6 +80,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     }
 
     @Override
+    public AssistantSettingsUtil createSettingsUtil() {
+        return new AssistantSettingsUtilChrome();
+    }
+
+    @Override
     public AssistantAccessTokenUtil createAccessTokenUtil() {
         return new AssistantAccessTokenUtilChrome();
     }

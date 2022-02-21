@@ -38,7 +38,8 @@ public class AssistantCoordinator {
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
             @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
-            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid) {
+            AssistantEditorFactory editorFactory, WindowAndroid windowAndroid,
+            AssistantSettingsUtil settingsUtil) {
         if (overlayCoordinator != null) {
             mModel = new AssistantModel(overlayCoordinator.getModel());
             mOverlayCoordinator = overlayCoordinator;
@@ -52,7 +53,7 @@ public class AssistantCoordinator {
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
                 browserControlsFactory, accessibilityUtil, infoPageUtil, profileImageUtil,
-                imageFetcher, editorFactory, windowAndroid);
+                imageFetcher, editorFactory, windowAndroid, settingsUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

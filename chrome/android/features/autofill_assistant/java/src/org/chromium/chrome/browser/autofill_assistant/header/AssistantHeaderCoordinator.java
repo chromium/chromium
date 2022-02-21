@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantProfileImageUtil;
+import org.chromium.chrome.browser.autofill_assistant.AssistantSettingsUtil;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderViewBinder.ViewHolder;
@@ -38,7 +39,8 @@ public class AssistantHeaderCoordinator implements AssistantProfileImageUtil.Obs
 
     public AssistantHeaderCoordinator(Context context, AssistantHeaderModel model,
             AccessibilityUtil accessibilityUtil,
-            @Nullable AssistantProfileImageUtil profileImageUtil) {
+            @Nullable AssistantProfileImageUtil profileImageUtil,
+            AssistantSettingsUtil settingsUtil) {
         // Create the poodle and insert it before the status message. We have to create a view
         // bigger than the desired poodle size (24dp) because the actual downstream implementation
         // needs extra space for the animation.
@@ -103,7 +105,8 @@ public class AssistantHeaderCoordinator implements AssistantProfileImageUtil.Obs
         // Bind view and mediator through the model.
         mViewHolder =
                 new AssistantHeaderViewBinder.ViewHolder(context, mView, poodle, mChipsContainer);
-        AssistantHeaderViewBinder viewBinder = new AssistantHeaderViewBinder(accessibilityUtil);
+        AssistantHeaderViewBinder viewBinder =
+                new AssistantHeaderViewBinder(accessibilityUtil, settingsUtil);
         PropertyModelChangeProcessor.create(model, mViewHolder, viewBinder);
     }
 
