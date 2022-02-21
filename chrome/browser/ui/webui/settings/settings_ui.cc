@@ -237,6 +237,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<DefaultBrowserHandler>());
   AddSettingsPageUIHandler(std::make_unique<ManageProfileHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<SystemHandler>());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  html_source->AddBoolean("isSecondaryUser", !profile->IsMainProfile());
+#endif
+
 #endif
 
 #if BUILDFLAG(IS_WIN)

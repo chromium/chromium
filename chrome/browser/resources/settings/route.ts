@@ -195,7 +195,7 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     }
     // </if>
 
-    // <if expr="not chromeos and not lacros">
+    // <if expr="not chromeos">
     r.SYSTEM = r.ADVANCED.createSection('/system', 'system');
     // </if>
 

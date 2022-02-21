@@ -838,6 +838,11 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  (*s_allowlist)[::prefs::kUseAshProxy] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   (*s_allowlist)[::prefs::kSettingsShowOSBanner] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
