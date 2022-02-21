@@ -436,7 +436,9 @@ TEST_F(WebEngineIntegrationTest, PermissionGranted) {
   RunPermissionTest(true);
 }
 
-TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithPermission) {
+// TODO(crbug.com/1299352): Flaky.
+TEST_F(WebEngineIntegrationMediaTest,
+       DISABLED_MicrophoneAccess_WithPermission) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
   GrantPermission(
