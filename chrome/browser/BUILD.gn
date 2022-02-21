@@ -3609,8 +3609,6 @@ static_library("browser") {
       "apps/intent_helper/apps_navigation_throttle.h",
       "apps/intent_helper/apps_navigation_types.cc",
       "apps/intent_helper/apps_navigation_types.h",
-      "apps/intent_helper/intent_picker_auto_display_pref.cc",
-      "apps/intent_helper/intent_picker_auto_display_pref.h",
       "apps/intent_helper/intent_picker_auto_display_service.cc",
       "apps/intent_helper/intent_picker_auto_display_service.h",
       "apps/intent_helper/intent_picker_auto_display_service_factory.cc",

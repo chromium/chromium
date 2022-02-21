@@ -4,21 +4,36 @@
 
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 
-#include <memory>
-
+#include "base/values.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace {
 
-// Creates and returns the local preference, incrementing, accessing and overall
-// checking on the pref's counters are done thru this function and then synced.
-std::unique_ptr<IntentPickerAutoDisplayPref> CreateLocalPreference(
-    Profile* profile,
+// Stop auto-displaying the picker UI if the user has dismissed it
+// |kDismissThreshold|+ times.
+constexpr int kDismissThreshold = 2;
+
+constexpr char kAutoDisplayKey[] = "picker_auto_display_key";
+constexpr char kPlatformKey[] = "picker_platform_key";
+
+// Retrieves or creates a new dictionary for the specific |url|.
+base::Value GetAutoDisplayDictForSettings(
+    const HostContentSettingsMap* settings,
     const GURL& url) {
-  return std::make_unique<IntentPickerAutoDisplayPref>(
-      url, HostContentSettingsMapFactory::GetForProfile(profile));
+  if (!settings)
+    return base::Value(base::Value::Type::DICTIONARY);
+
+  base::Value value = settings->GetWebsiteSetting(
+      url, url, ContentSettingsType::INTENT_PICKER_DISPLAY, /*info=*/nullptr);
+
+  return value.type() == base::Value::Type::DICTIONARY
+             ? std::move(value)
+             : base::Value(base::Value::Type::DICTIONARY);
 }
 
 }  // namespace
@@ -33,20 +48,47 @@ IntentPickerAutoDisplayService::IntentPickerAutoDisplayService(Profile* profile)
     : profile_(profile) {}
 
 bool IntentPickerAutoDisplayService::ShouldAutoDisplayUi(const GURL& url) {
-  return CreateLocalPreference(profile_, url)->HasExceededThreshold();
+  base::Value pref_dict = GetAutoDisplayDictForSettings(
+      HostContentSettingsMapFactory::GetForProfile(profile_), url);
+
+  return pref_dict.FindIntKey(kAutoDisplayKey).value_or(0) < kDismissThreshold;
 }
 
 void IntentPickerAutoDisplayService::IncrementCounter(const GURL& url) {
-  CreateLocalPreference(profile_, url)->IncrementCounter();
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+  base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
+
+  int dismissed_count = pref_dict.FindIntKey(kAutoDisplayKey).value_or(0);
+  pref_dict.SetIntKey(kAutoDisplayKey, dismissed_count + 1);
+
+  settings_map->SetWebsiteSettingDefaultScope(
+      url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
+      std::move(pref_dict));
 }
 
-IntentPickerAutoDisplayPref::Platform
+IntentPickerAutoDisplayService::Platform
 IntentPickerAutoDisplayService::GetLastUsedPlatformForTablets(const GURL& url) {
-  return CreateLocalPreference(profile_, url)->GetPlatform();
+  base::Value pref_dict = GetAutoDisplayDictForSettings(
+      HostContentSettingsMapFactory::GetForProfile(profile_), url);
+  int platform = pref_dict.FindIntKey(kPlatformKey).value_or(0);
+
+  DCHECK_GE(platform, static_cast<int>(Platform::kNone));
+  DCHECK_LE(platform, static_cast<int>(Platform::kMaxValue));
+
+  return static_cast<Platform>(platform);
 }
 
 void IntentPickerAutoDisplayService::UpdatePlatformForTablets(
     const GURL& url,
-    IntentPickerAutoDisplayPref::Platform platform) {
-  CreateLocalPreference(profile_, url)->UpdatePlatform(platform);
+    Platform platform) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(profile_);
+  base::Value pref_dict = GetAutoDisplayDictForSettings(settings_map, url);
+
+  DCHECK_GE(static_cast<int>(platform), static_cast<int>(Platform::kNone));
+  DCHECK_LE(static_cast<int>(platform), static_cast<int>(Platform::kMaxValue));
+  pref_dict.SetIntKey(kPlatformKey, static_cast<int>(platform));
+
+  settings_map->SetWebsiteSettingDefaultScope(
+      url, url, ContentSettingsType::INTENT_PICKER_DISPLAY,
+      std::move(pref_dict));
 }
