@@ -67,6 +67,8 @@
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/crash/core/app/crashpad.h"
+#include "components/nacl/common/buildflags.h"
+#include "components/nacl/common/nacl_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -894,6 +896,16 @@ void BrowserManager::StartWithLogFile(
   // CrAS is the default audio server in Chrome OS.
   if (base::SysInfo::IsRunningOnChromeOS())
     argv.push_back("--use-cras");
+
+#if BUILDFLAG(ENABLE_NACL)
+  // This switch is forwarded to nacl_helper and is needed before zygote fork.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kVerboseLoggingInNacl)) {
+    argv.push_back("--verbose-logging-in-nacl=" +
+                   base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                       switches::kVerboseLoggingInNacl));
+  }
+#endif
 
   std::string additional_flags =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
