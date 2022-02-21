@@ -29,6 +29,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"

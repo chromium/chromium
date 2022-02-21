@@ -22,6 +22,7 @@
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"

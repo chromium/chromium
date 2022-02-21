@@ -19,6 +19,7 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/switches.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"

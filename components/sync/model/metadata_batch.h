@@ -9,8 +9,11 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+
+namespace sync_pb {
+class EntityMetadata;
+}  // namespace sync_pb
 
 namespace syncer {
 

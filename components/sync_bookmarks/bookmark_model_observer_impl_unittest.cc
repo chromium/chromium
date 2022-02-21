@@ -20,6 +20,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"

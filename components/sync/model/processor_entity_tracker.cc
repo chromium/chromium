@@ -8,6 +8,7 @@
 
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/model/processor_entity.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 
 namespace syncer {

@@ -27,6 +27,7 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/sync_metadata_store.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/protocol/session_specifics.pb.h"

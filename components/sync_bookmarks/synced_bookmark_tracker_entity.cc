@@ -15,6 +15,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/unique_position.pb.h"

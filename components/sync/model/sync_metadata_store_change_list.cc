@@ -4,6 +4,8 @@
 
 #include "components/sync/model/sync_metadata_store_change_list.h"
 
+#include "components/sync/protocol/entity_metadata.pb.h"
+
 #include "base/location.h"
 
 using absl::optional;

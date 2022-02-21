@@ -10,9 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/protocol/entity_metadata.pb.h"
 
 namespace sync_pb {
+class EntityMetadata;
 class EntitySpecifics;
 }  // namespace sync_pb
 

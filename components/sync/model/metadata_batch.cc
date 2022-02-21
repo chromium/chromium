@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "components/sync/protocol/entity_metadata.pb.h"
+
 namespace syncer {
 
 MetadataBatch::MetadataBatch() = default;

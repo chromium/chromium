@@ -12,9 +12,12 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/sync_metadata_store.h"
-#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace sync_pb {
+class EntityMetadata;
+}  // namespace sync_pb
 
 namespace syncer {
 
