@@ -22,13 +22,21 @@
 
 namespace ash {
 
+ChromeAppKioskAppInstaller::AppInstallData::AppInstallData() = default;
+ChromeAppKioskAppInstaller::AppInstallData::AppInstallData(
+    const AppInstallData& other) = default;
+ChromeAppKioskAppInstaller::AppInstallData&
+ChromeAppKioskAppInstaller::AppInstallData::operator=(
+    const AppInstallData& other) = default;
+ChromeAppKioskAppInstaller::AppInstallData::~AppInstallData() = default;
+
 ChromeAppKioskAppInstaller::ChromeAppKioskAppInstaller(
     Profile* profile,
-    const std::string& app_id,
+    const AppInstallData& install_data,
     KioskAppLauncher::Delegate* delegate,
     bool finalize_only)
     : profile_(profile),
-      app_id_(app_id),
+      primary_app_install_data_(install_data),
       delegate_(delegate),
       finalize_only_(finalize_only) {}
 
@@ -47,8 +55,9 @@ void ChromeAppKioskAppInstaller::BeginInstall(InstallCallback callback) {
   }
 
   extensions::file_util::SetUseSafeInstallation(true);
-  KioskAppManager::Get()->UpdatePrimaryAppLoaderPrefs(app_id_);
-  if (IsAppInstallPending(app_id_)) {
+  KioskAppManager::Get()->UpdatePrimaryAppLoaderPrefs(
+      primary_app_install_data_);
+  if (IsAppInstallPending(primary_app_install_data_.id)) {
     ObserveActiveInstallations();
     return;
   }
@@ -138,16 +147,18 @@ void ChromeAppKioskAppInstaller::OnExtensionUpdateCheckFinished(
   SYSLOG(INFO) << "OnExtensionUpdateCheckFinished";
   update_checker_.reset();
   if (update_found) {
-    SYSLOG(INFO) << "Start to reload extension with id " << app_id_;
+    SYSLOG(INFO) << "Start to reload extension with id "
+                 << primary_app_install_data_.id;
 
     // Reload the primary app to make sure any reference to the previous version
     // of the shared module, extension, etc will be cleaned up and the new
     // version will be loaded.
     extensions::ExtensionSystem::Get(profile_)
         ->extension_service()
-        ->ReloadExtension(app_id_);
+        ->ReloadExtension(primary_app_install_data_.id);
 
-    SYSLOG(INFO) << "Finish to reload extension with id " << app_id_;
+    SYSLOG(INFO) << "Finish to reload extension with id "
+                 << primary_app_install_data_.id;
   }
 
   FinalizeAppInstall();
@@ -190,8 +201,9 @@ void ChromeAppKioskAppInstaller::MaybeUpdateAppData() {
   if (PrimaryAppHasPendingUpdate())
     return;
 
-  KioskAppManager::Get()->ClearAppData(app_id_);
-  KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_, NULL);
+  KioskAppManager::Get()->ClearAppData(primary_app_install_data_.id);
+  KioskAppManager::Get()->UpdateAppDataFromProfile(primary_app_install_data_.id,
+                                                   profile_, NULL);
 }
 
 void ChromeAppKioskAppInstaller::OnFinishCrxInstall(
@@ -272,7 +284,7 @@ void ChromeAppKioskAppInstaller::ObserveActiveInstallations() {
 const extensions::Extension*
 ChromeAppKioskAppInstaller::GetPrimaryAppExtension() const {
   return extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
-      app_id_);
+      primary_app_install_data_.id);
 }
 
 bool ChromeAppKioskAppInstaller::AreSecondaryAppsInstalled() const {
@@ -311,7 +323,7 @@ bool ChromeAppKioskAppInstaller::IsAnySecondaryAppPending() const {
 bool ChromeAppKioskAppInstaller::PrimaryAppHasPendingUpdate() const {
   return extensions::ExtensionSystem::Get(profile_)
       ->extension_service()
-      ->GetPendingExtensionUpdate(app_id_);
+      ->GetPendingExtensionUpdate(primary_app_install_data_.id);
 }
 
 bool ChromeAppKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
@@ -320,7 +332,7 @@ bool ChromeAppKioskAppInstaller::DidPrimaryOrSecondaryAppFailedToInstall(
   if (success)
     return false;
 
-  if (id == app_id_) {
+  if (id == primary_app_install_data_.id) {
     SYSLOG(ERROR) << "Failed to install crx file of the primary app id=" << id;
     return true;
   }

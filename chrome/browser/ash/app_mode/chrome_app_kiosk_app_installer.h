@@ -26,10 +26,22 @@ class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
     kNetworkMissing,
   };
 
+  struct AppInstallData {
+    AppInstallData();
+    AppInstallData(const AppInstallData&);
+    AppInstallData& operator=(const AppInstallData&);
+    ~AppInstallData();
+
+    std::string id;
+    std::string crx_file_location;
+    std::string version;
+    bool is_store_app = false;
+  };
+
   using InstallCallback = base::OnceCallback<void(InstallResult result)>;
 
   ChromeAppKioskAppInstaller(Profile* profile,
-                             const std::string& app_id,
+                             const AppInstallData& install_data,
                              KioskAppLauncher::Delegate* delegate,
                              bool finalize_only);
   ChromeAppKioskAppInstaller(const ChromeAppKioskAppInstaller&) = delete;
@@ -79,7 +91,7 @@ class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
                           bool should_be_enabled);
 
   Profile* const profile_;
-  const std::string app_id_;
+  const AppInstallData primary_app_install_data_;
   KioskAppLauncher::Delegate* delegate_;
   bool finalize_only_;
 

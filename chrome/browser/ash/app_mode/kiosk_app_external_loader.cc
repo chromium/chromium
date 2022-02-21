@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,36 +19,18 @@ KioskAppExternalLoader::KioskAppExternalLoader(AppClass app_class)
 
 KioskAppExternalLoader::~KioskAppExternalLoader() {
   if (state_ != State::kInitial)
-    SetPrefsChangedHandler(base::RepeatingClosure());
+    SetPrefsChangedHandler(InstallDataChangeCallback());
 }
 
 void KioskAppExternalLoader::StartLoading() {
-  if (state_ != State::kInitial) {
-    SendPrefsIfAvailable();
-    return;
-  }
-
   state_ = State::kLoading;
 
-  SetPrefsChangedHandler(
-      base::BindRepeating(&KioskAppExternalLoader::SendPrefsIfAvailable,
-                          weak_ptr_factory_.GetWeakPtr()));
-
-  SendPrefsIfAvailable();
-}
-
-std::unique_ptr<base::DictionaryValue> KioskAppExternalLoader::GetAppsPrefs() {
-  switch (app_class_) {
-    case AppClass::kPrimary:
-      return KioskAppManager::Get()->GetPrimaryAppLoaderPrefs();
-    case AppClass::kSecondary:
-      return KioskAppManager::Get()->GetSecondaryAppsLoaderPrefs();
-  }
-  return nullptr;
+  SetPrefsChangedHandler(base::BindRepeating(&KioskAppExternalLoader::SendPrefs,
+                                             weak_ptr_factory_.GetWeakPtr()));
 }
 
 void KioskAppExternalLoader::SetPrefsChangedHandler(
-    base::RepeatingClosure handler) {
+    InstallDataChangeCallback handler) {
   switch (app_class_) {
     case AppClass::kPrimary:
       KioskAppManager::Get()->SetPrimaryAppLoaderPrefsChangedHandler(
@@ -60,8 +43,8 @@ void KioskAppExternalLoader::SetPrefsChangedHandler(
   }
 }
 
-void KioskAppExternalLoader::SendPrefsIfAvailable() {
-  std::unique_ptr<base::DictionaryValue> prefs = GetAppsPrefs();
+void KioskAppExternalLoader::SendPrefs(
+    std::unique_ptr<base::DictionaryValue> prefs) {
   if (!prefs)
     return;
 
