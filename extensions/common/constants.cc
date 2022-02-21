@@ -191,6 +191,11 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+bool IsQuickOfficeExtension(const std::string& id) {
+  return id == kQuickOfficeComponentExtensionId ||
+         id == kQuickOfficeInternalExtensionId || id == kQuickOfficeExtensionId;
+}
+
 // TODO(https://crbug.com/1257275): remove after default app migration is done.
 bool IsPreinstalledAppId(const std::string& app_id) {
   return app_id == kGmailAppId || app_id == kGoogleDocsAppId ||

@@ -107,9 +107,7 @@ SkColor MimeTypesHandler::GetBackgroundColor() const {
   if (extension_id_ == extension_misc::kPdfExtensionId) {
     return kPdfExtensionBackgroundColor;
   }
-  if (extension_id_ == extension_misc::kQuickOfficeExtensionId ||
-      extension_id_ == extension_misc::kQuickOfficeInternalExtensionId ||
-      extension_id_ == extension_misc::kQuickOfficeComponentExtensionId) {
+  if (extension_misc::IsQuickOfficeExtension(extension_id_)) {
     return kQuickOfficeExtensionBackgroundColor;
   }
   return content::WebPluginInfo::kDefaultBackgroundColor;
