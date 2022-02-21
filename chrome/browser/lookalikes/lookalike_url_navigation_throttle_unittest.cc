@@ -4,8 +4,6 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
-#include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/lookalikes/core/features.h"
@@ -25,8 +23,6 @@ class LookalikeThrottleTest : public ChromeRenderViewHostTestHarness {
 
 // Tests that spoofy hostnames are properly handled in the throttle.
 TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
-  base::HistogramTester test;
-
   reputation::InitializeSafetyTipConfig();
 
   const struct TestCase {
