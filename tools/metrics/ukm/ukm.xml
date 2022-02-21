@@ -15773,10 +15773,20 @@ be describing additional metrics about the same event.
 <event name="PrerenderPageLoad" singular="True">
   <owner>ksakamoto@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
+  <owner>asamidoi@chromium.org</owner>
   <summary>
     Metrics related to Prerender2
     (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
   </summary>
+  <metric name="FinalStatus" enum="PrerenderHostFinalStatus">
+    <summary>
+      A status of a prerendering attempt. Recorded as enum
+      PrerenderHostFinalStatus in //tools/metrics/histograms/enums.xml.
+
+      This is replicated as Prerender.Experimental.PrerenderHostFinalStatus.* in
+      UMA.
+    </summary>
+  </metric>
   <metric name="Timing.ActivationToFirstContentfulPaint">
     <summary>
       The duration in milliseconds from time of activation navigation start to

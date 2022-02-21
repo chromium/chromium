@@ -74,10 +74,15 @@ void RecordPrerenderActivationTime(
     PrerenderTriggerType trigger_type,
     const std::string& embedder_histogram_suffix);
 
+// Records the status to UMA and UKM. `initiator_ukm_id` represents the page
+// that starts prerendering and `prerendered_ukm_id` represents the prerendered
+// page. `prerendered_ukm_id` is valid after the page is activated.
 void RecordPrerenderHostFinalStatus(
     PrerenderHost::FinalStatus status,
     PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix);
+    const std::string& embedder_histogram_suffix,
+    ukm::SourceId initiator_ukm_id,
+    ukm::SourceId prerendered_ukm_id);
 
 void RecordPrerenderRedirectionMismatchType(
     PrerenderCrossOriginRedirectionMismatch case_type,

@@ -316,7 +316,8 @@ PrerenderHost::~PrerenderHost() {
     observer.OnHostDestroyed();
 
   if (!final_status_)
-    RecordFinalStatus(FinalStatus::kDestroyed);
+    RecordFinalStatus(FinalStatus::kDestroyed, attributes_.initiator_ukm_id,
+                      ukm::kInvalidSourceId);
 }
 
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
@@ -461,7 +462,11 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   for (auto& observer : observers_)
     observer.OnActivated();
 
-  RecordFinalStatus(FinalStatus::kActivated);
+  // TODO(crbug.com/1299330): Replace
+  // `navigation_request.GetNextPageUkmSourceId()` with prerendered page's UKM
+  // source ID.
+  RecordFinalStatus(FinalStatus::kActivated, attributes_.initiator_ukm_id,
+                    navigation_request.GetNextPageUkmSourceId());
   return page;
 }
 
@@ -755,7 +760,8 @@ FrameTree& PrerenderHost::GetPrerenderFrameTree() {
 
 void PrerenderHost::RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
                                       FinalStatus status) {
-  RecordFinalStatus(status);
+  RecordFinalStatus(status, attributes_.initiator_ukm_id,
+                    ukm::kInvalidSourceId);
 }
 
 void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
@@ -768,11 +774,14 @@ PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
   return page_holder_->WaitForLoadCompletionForTesting();  // IN-TEST
 }
 
-void PrerenderHost::RecordFinalStatus(FinalStatus status) {
+void PrerenderHost::RecordFinalStatus(FinalStatus status,
+                                      ukm::SourceId initiator_ukm_id,
+                                      ukm::SourceId prerendered_ukm_id) {
   DCHECK(!final_status_);
   final_status_ = status;
   RecordPrerenderHostFinalStatus(status, trigger_type(),
-                                 embedder_histogram_suffix());
+                                 embedder_histogram_suffix(), initiator_ukm_id,
+                                 prerendered_ukm_id);
 }
 
 const GURL& PrerenderHost::GetInitialUrl() const {

@@ -51,7 +51,10 @@ PrerenderAttributes GeneratePrerenderAttributes(
       url, trigger_type, embedder_histogram_suffix, Referrer(),
       rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
       rfh->GetProcess()->GetID(), rfh->GetFrameToken(),
-      rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      trigger_type == PrerenderTriggerType::kSpeculationRule
+          ? rfh->GetPageUkmSourceId()
+          : ukm::kInvalidSourceId,
+      ui::PAGE_TRANSITION_LINK,
       /*url_match_predicate=*/absl::nullopt);
 }
 

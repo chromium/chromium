@@ -90,11 +90,30 @@ void RecordPrerenderActivationTime(
 void RecordPrerenderHostFinalStatus(
     PrerenderHost::FinalStatus status,
     PrerenderTriggerType trigger_type,
-    const std::string& embedder_histogram_suffix) {
+    const std::string& embedder_histogram_suffix,
+    ukm::SourceId initiator_ukm_id,
+    ukm::SourceId prerendered_ukm_id) {
   base::UmaHistogramEnumeration(
       GenerateHistogramName("Prerender.Experimental.PrerenderHostFinalStatus",
                             trigger_type, embedder_histogram_suffix),
       status);
+
+  if (initiator_ukm_id != ukm::kInvalidSourceId) {
+    // `initiator_ukm_id` must be valid for the speculation rules.
+    DCHECK_EQ(trigger_type, PrerenderTriggerType::kSpeculationRule);
+    ukm::builders::PrerenderPageLoad(initiator_ukm_id)
+        .SetFinalStatus(static_cast<int>(status))
+        .Record(ukm::UkmRecorder::Get());
+  }
+
+  if (prerendered_ukm_id != ukm::kInvalidSourceId) {
+    // `prerendered_ukm_id` must be valid only when the prerendered page gets
+    // activated.
+    DCHECK_EQ(status, PrerenderHost::FinalStatus::kActivated);
+    ukm::builders::PrerenderPageLoad(prerendered_ukm_id)
+        .SetFinalStatus(static_cast<int>(status))
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 void RecordPrerenderRedirectionMismatchType(

@@ -188,7 +188,13 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
  private:
   class PageHolder;
 
-  void RecordFinalStatus(FinalStatus status);
+  // Records the status to UMA and UKM. `initiator_ukm_id` represents the page
+  // that starts prerendering and `prerendered_ukm_id` represents the
+  // prerendered page. `prerendered_ukm_id` is valid after the page is
+  // activated.
+  void RecordFinalStatus(FinalStatus status,
+                         ukm::SourceId initiator_ukm_id,
+                         ukm::SourceId prerendered_ukm_id);
 
   void CreatePageHolder(WebContentsImpl& web_contents);
 
