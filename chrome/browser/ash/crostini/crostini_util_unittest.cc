@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
@@ -133,4 +134,44 @@ TEST_F(CrostiniUtilTest, LaunchCallbackRunsOnRestartError) {
   run_loop_->Run();
 }
 
+TEST_F(CrostiniUtilTest, DuplicateContainerNamesInPrefsAreRemoved) {
+  ContainerId container1("test1", "test1");
+  base::Value dictionary1 = container1.ToDictValue();
+  dictionary1.SetKey(prefs::kContainerOsPrettyNameKey,
+                     base::Value("Test OS Name 1"));
+  dictionary1.SetKey(prefs::kContainerOsVersionKey, base::Value(1));
+
+  ContainerId container2("test1", "test2");
+  base::Value dictionary2 = container2.ToDictValue();
+  dictionary2.SetKey(prefs::kContainerOsPrettyNameKey,
+                     base::Value("Test OS Name 2"));
+  dictionary2.SetKey(prefs::kContainerOsVersionKey, base::Value(2));
+
+  ContainerId container3("test2", "test1");
+  base::Value dictionary3 = container3.ToDictValue();
+  dictionary3.SetKey(prefs::kContainerOsPrettyNameKey,
+                     base::Value("Test OS Name 3"));
+  dictionary3.SetKey(prefs::kContainerOsVersionKey, base::Value(3));
+
+  base::Value containers(base::Value::Type::LIST);
+  containers.Append(dictionary1.Clone());
+  containers.Append(dictionary2.Clone());
+  containers.Append(dictionary1.Clone());
+  containers.Append(dictionary2.Clone());
+  containers.Append(dictionary3.Clone());
+
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->Set(prefs::kCrostiniContainers, std::move(containers));
+
+  RemoveDuplicateContainerEntries(prefs);
+
+  const base::Value::List& result =
+      prefs->Get(prefs::kCrostiniContainers)->GetList();
+
+  ASSERT_EQ(result.size(), 3);
+  EXPECT_EQ(result[0], dictionary1);
+  EXPECT_EQ(result[1], dictionary2);
+  EXPECT_EQ(result[2], dictionary3);
+
+}  // namespace crostini
 }  // namespace crostini

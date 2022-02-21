@@ -32,6 +32,7 @@ namespace views {
 class Widget;
 }  // namespace views
 
+class PrefService;
 class Profile;
 
 namespace crostini {
@@ -196,6 +197,9 @@ void ShowCrostiniRecoveryView(Profile* profile,
                               int64_t display_id,
                               const std::vector<LaunchArg>& args,
                               CrostiniSuccessCallback callback);
+
+// Remove duplicate containers in the existing kCrostiniContainers pref.
+void RemoveDuplicateContainerEntries(PrefService* prefs);
 
 // Add a newly created LXD container to the kCrostiniContainers pref
 void AddNewLxdContainerToPrefs(Profile* profile,
