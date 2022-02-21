@@ -240,7 +240,14 @@ class UserDataDowngradeBrowserCopyAndCleanTest
 // downgrade.
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserCopyAndCleanTest, PRE_Test) {}
 
-IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserCopyAndCleanTest, Test) {
+// TODO(crbug.com/1299325): UserDataDowngradeBrowserCopyAndCleanTest and
+// UserDataDowngradeBrowserNoResetTest test has been flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
+IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserCopyAndCleanTest, MAYBE_Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ThreadPoolInstance::Get()->FlushForTesting();
   EXPECT_EQ(chrome::kChromeVersion,
@@ -265,11 +272,6 @@ class UserDataDowngradeBrowserNoResetTest
 // Verify the user data directory will not be reset without downgrade.
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, PRE_Test) {}
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Test DISABLED_Test
-#else
-#define MAYBE_Test Test
-#endif
 IN_PROC_BROWSER_TEST_F(UserDataDowngradeBrowserNoResetTest, MAYBE_Test) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   EXPECT_EQ(chrome::kChromeVersion,
