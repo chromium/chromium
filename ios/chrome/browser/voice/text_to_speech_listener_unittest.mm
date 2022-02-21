@@ -4,10 +4,15 @@
 
 #import "ios/chrome/browser/voice/text_to_speech_listener.h"
 
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -67,14 +72,24 @@ NSString* const kValidVoiceSearchScript =
 
 #pragma mark - TextToSpeechListenerTest
 
-class TextToSpeechListenerTest : public ChromeWebTest {
+class TextToSpeechListenerTest : public PlatformTest {
  public:
+  TextToSpeechListenerTest()
+      : web_client_(std::make_unique<web::FakeWebClient>()) {}
+
   void SetUp() override {
-    ChromeWebTest::SetUp();
+    PlatformTest::SetUp();
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
     // Load Html is triggering several callbacks when called the first time.
     // Call it a first time before setting the |delegate_| to make sure that it
     // is working as expected in tests.
-    LoadHtml(@"<html><body>Page loaded</body></html>");
+    web::test::LoadHtml(@"<html><body>Page loaded</body></html>", web_state());
     ASSERT_TRUE(
         web::test::WaitForWebViewContainingText(web_state(), "Page loaded"));
 
@@ -85,13 +100,22 @@ class TextToSpeechListenerTest : public ChromeWebTest {
 
   void TestExtraction(NSString* html, NSData* expected_audio_data) {
     [delegate_ setExpectedAudioData:expected_audio_data];
-    LoadHtml(html);
-    WaitForCondition(^bool {
-      return [delegate_ audioDataReceived];
-    });
+    web::test::LoadHtml(html, web_state());
+    base::test::ios::WaitUntilCondition(
+        ^bool {
+          return [delegate_ audioDataReceived];
+        },
+        true, base::Seconds(1000));
   }
 
  private:
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+
   TestTTSListenerDelegate* delegate_;
   TextToSpeechListener* listener_;
 };

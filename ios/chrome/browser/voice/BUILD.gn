@@ -112,6 +112,7 @@ source_set("unit_tests") {
     ":voice",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/web:test_support",
     "//ios/web/common",
     "//ios/web/public/test",
