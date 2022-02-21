@@ -166,8 +166,10 @@ void ReadOnIOThread(scoped_refptr<storage::FileSystemContext> fs_context,
   std::unique_ptr<storage::FileStreamReader> fs_reader =
       fs_context->CreateFileStreamReader(fs_url, offset, length, base::Time());
   if (!fs_reader) {
-    ReplyToReadFailure(std::move(fs_context), method, std::move(sender),
-                       base::File::Error::FILE_ERROR_INVALID_URL);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ReplyToReadFailure, std::move(fs_context),
+                                  method, std::move(sender),
+                                  base::File::Error::FILE_ERROR_INVALID_URL));
     return;
   }
 
