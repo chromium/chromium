@@ -8,6 +8,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -33,10 +34,9 @@ class InlineContainingBlockUtils {
     LogicalOffset relative_offset;
   };
 
-  // It is safe to use UntracedMember here because this is used only on stack
-  // and stores references to LayoutObject owned by other objects.
+  // It is safe to use Persistent here because this is used only on stack.
   using InlineContainingBlockMap =
-      HashMap<UntracedMember<const LayoutObject>,
+      HashMap<Persistent<const LayoutObject>,
               absl::optional<InlineContainingBlockGeometry>>;
 
   // Computes the geometry required for any inline containing blocks.
