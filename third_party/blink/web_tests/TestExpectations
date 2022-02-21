@@ -3291,7 +3291,6 @@ crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/work
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Linux ] external/wpt/resource-timing/object-not-found-adds-entry.html [ Timeout ]
-crbug.com/626703 external/wpt/css/css-multicol/multicol-zero-height-003.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-007.https.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
@@ -4335,6 +4334,7 @@ crbug.com/829028 external/wpt/css/css-multicol/multicol-span-all-017.html [ Fail
 crbug.com/636055 external/wpt/css/css-multicol/multicol-span-all-margin-nested-002.xht [ Failure ]
 crbug.com/990240 external/wpt/css/css-multicol/multicol-span-all-rule-001.html [ Failure ]
 crbug.com/964183 external/wpt/css/css-multicol/multicol-width-005.html [ Failure ]
+crbug.com/481431 external/wpt/css/css-multicol/multicol-zero-height-003.html [ Failure ]
 crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-multicol/spanner-in-opacity.html [ Failure ]
 
