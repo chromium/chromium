@@ -45,6 +45,10 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   bool has_trusted_rate_controller = false;
   bool is_hardware_accelerated = true;
   bool supports_simulcast = false;
+  // True if encoder uses same QP for all macroblocks of a picture without
+  // per-macroblock QP adjustment, and that QP can be calculated from
+  // uncompressed sequence/frame/slice/tile headers.
+  bool reports_average_qp = true;
 
   std::vector<uint8_t> fps_allocation[kMaxSpatialLayers];
   std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;

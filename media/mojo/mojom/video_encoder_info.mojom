@@ -20,6 +20,7 @@ struct VideoEncoderInfo {
   bool has_trusted_rate_controller;
   bool is_hardware_accelerated;
   bool supports_simulcast;
+  bool reports_average_qp;
 
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;

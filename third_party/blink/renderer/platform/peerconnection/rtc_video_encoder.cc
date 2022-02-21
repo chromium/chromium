@@ -183,6 +183,7 @@ webrtc::VideoEncoder::EncoderInfo CopyToWebrtcEncoderInfo(
   info.has_trusted_rate_controller = enc_info.has_trusted_rate_controller;
   info.is_hardware_accelerated = enc_info.is_hardware_accelerated;
   info.supports_simulcast = enc_info.supports_simulcast;
+  info.is_qp_trusted = enc_info.reports_average_qp;
   static_assert(
       webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
       "webrtc::kMaxSpatiallayers is less than "
@@ -630,6 +631,7 @@ RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
   encoder_info_.implementation_name = "ExternalEncoder";
   encoder_info_.has_trusted_rate_controller = true;
   encoder_info_.is_hardware_accelerated = true;
+  encoder_info_.is_qp_trusted = true;
   encoder_info_.fps_allocation[0] = {
       webrtc::VideoEncoder::EncoderInfo::kMaxFramerateFraction};
   DCHECK(encoder_info_.resolution_bitrate_limits.empty());

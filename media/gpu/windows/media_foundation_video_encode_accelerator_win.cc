@@ -466,6 +466,9 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
   DCHECK(encoder_info.is_hardware_accelerated);
   DCHECK(encoder_info.supports_native_handle);
   DCHECK(!encoder_info.supports_simulcast);
+  if (vendor_ == DriverVendor::kIntel) {
+    encoder_info.reports_average_qp = false;
+  }
   if (config.HasSpatialLayer() || config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
     for (size_t i = 0; i < config.spatial_layers.size(); ++i) {
