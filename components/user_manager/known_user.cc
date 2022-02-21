@@ -909,13 +909,5 @@ std::vector<AccountId> GetKnownAccountIds() {
   return KnownUser(local_state).GetKnownAccountIds();
 }
 
-void UpdateId(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).UpdateId(account_id);
-}
-
 }  // namespace known_user
 }  // namespace user_manager

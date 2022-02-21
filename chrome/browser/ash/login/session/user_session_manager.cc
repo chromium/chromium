@@ -1172,7 +1172,8 @@ void UserSessionManager::StoreUserContextDataBeforeProfileIsCreated() {
         user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
   }
 
-  user_manager::known_user::UpdateId(user_context_.GetAccountId());
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.UpdateId(user_context_.GetAccountId());
 }
 
 void UserSessionManager::StartCrosSession() {

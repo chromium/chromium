@@ -331,11 +331,6 @@ AccountId USER_MANAGER_EXPORT GetAccountId(const std::string& user_email,
                                            const std::string& id,
                                            const AccountType& account_type);
 
-// Updates |account_id.account_type_| and |account_id.GetGaiaId()| or
-// |account_id.GetObjGuid()| for user with |account_id|.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::UpdateId instead.
-void USER_MANAGER_EXPORT UpdateId(const AccountId& account_id);
-
 }  // namespace known_user
 }  // namespace user_manager
 
