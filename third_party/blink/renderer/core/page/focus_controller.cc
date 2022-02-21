@@ -1142,7 +1142,7 @@ Element* FocusController::FindFocusableElement(mojom::blink::FocusType type,
   return FindFocusableElementAcrossFocusScopes(type, scope, owner_map);
 }
 
-Element* FocusController::NextFocusableElementInForm(
+Element* FocusController::NextFocusableElementForIME(
     Element* element,
     mojom::blink::FocusType focus_type) {
   // TODO(ajith.v) Due to crbug.com/781026 when next/previous element is far
@@ -1164,9 +1164,6 @@ Element* FocusController::NextFocusableElementInForm(
   else
     form_owner = form_control_element->formOwner();
 
-  if (!form_owner)
-    return nullptr;
-
   OwnerMap owner_map;
   Element* next_element = FindFocusableElement(focus_type, *element, owner_map);
   int traversal = 0;
@@ -1177,21 +1174,33 @@ Element* FocusController::NextFocusableElementInForm(
     auto* next_html_element = DynamicTo<HTMLElement>(next_element);
     if (!next_html_element)
       continue;
-    if (next_html_element->isContentEditableForBinding() &&
-        next_element->IsDescendantOf(form_owner))
-      return next_element;
-    auto* form_element = DynamicTo<HTMLFormControlElement>(next_element);
-    if (!form_element)
+    if (next_html_element->isContentEditableForBinding()) {
+      if (form_owner) {
+        if (next_element->IsDescendantOf(form_owner)) {
+          // |element| and |next_element| belongs to the same <form> element.
+          return next_element;
+        }
+      } else {
+        if (!Traversal<HTMLFormElement>::FirstAncestor(*next_html_element)) {
+          // Neither this |element| nor the |next_element| has a form owner,
+          // i.e. belong to the virtual <form>less form.
+          return next_element;
+        }
+      }
+    }
+    auto* next_form_control_element =
+        DynamicTo<HTMLFormControlElement>(next_element);
+    if (!next_form_control_element)
       continue;
-    if (form_element->formOwner() != form_owner ||
-        form_element->IsDisabledOrReadOnly())
+    if (next_form_control_element->formOwner() != form_owner ||
+        next_form_control_element->IsDisabledOrReadOnly())
       continue;
     // Focusless spatial navigation supports all form types. However, submit
     // buttons are explicitly excluded as moving to them isn't necessary - the
     // IME should just submit instead.
     if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled() &&
         page_->GetSettings().GetSpatialNavigationEnabled() &&
-        !form_element->CanBeSuccessfulSubmitButton()) {
+        !next_form_control_element->CanBeSuccessfulSubmitButton()) {
       return next_element;
     }
     LayoutObject* layout = next_element->GetLayoutObject();

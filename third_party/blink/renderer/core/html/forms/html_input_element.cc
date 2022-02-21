@@ -2111,7 +2111,7 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
 #if BUILDFLAG(IS_ANDROID)
 void HTMLInputElement::DispatchSimulatedEnterIfLastInputInForm() {
   Page* page = GetDocument().GetPage();
-  if (page && !page->GetFocusController().NextFocusableElementInForm(
+  if (page && !page->GetFocusController().NextFocusableElementForIME(
                   this, mojom::blink::FocusType::kForward)) {
     page->GetFocusController().SetFocusedElement(this,
                                                  GetDocument().GetFrame());

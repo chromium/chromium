@@ -2977,7 +2977,7 @@ void LocalFrame::AdvanceFocusInForm(mojom::blink::FocusType focus_type) {
     return;
 
   Element* next_element =
-      GetPage()->GetFocusController().NextFocusableElementInForm(element,
+      GetPage()->GetFocusController().NextFocusableElementForIME(element,
                                                                  focus_type);
   if (!next_element)
     return;

@@ -95,12 +95,12 @@ TEST_F(FocusControllerTest, SVGFocusableElementInForm) {
   auto* first = To<Element>(form->firstChild());
   auto* last = To<Element>(form->lastChild());
 
-  Element* next = GetFocusController().NextFocusableElementInForm(
+  Element* next = GetFocusController().NextFocusableElementForIME(
       first, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next, last)
       << "SVG Element should be skipped even when focusable in form.";
 
-  Element* prev = GetFocusController().NextFocusableElementInForm(
+  Element* prev = GetFocusController().NextFocusableElementForIME(
       next, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(prev, first)
       << "SVG Element should be skipped even when focusable in form.";
@@ -134,6 +134,50 @@ TEST_F(FocusControllerTest, FindFocusableAfterElement) {
 
   EXPECT_EQ(nullptr, GetFocusController().FindFocusableElementAfter(
                          *first, mojom::blink::FocusType::kNone));
+}
+
+TEST_F(FocusControllerTest, NextFocusableElementForIME) {
+  GetDocument().body()->setInnerHTML(
+      "<form>"
+      "  <input type='text' id='username'>"
+      "  <input type='password' id='password'>"
+      "  <input type='submit' value='Login'>"
+      "</form>");
+  Element* username = GetElementById("username");
+  Element* password = GetElementById("password");
+  ASSERT_TRUE(username);
+  ASSERT_TRUE(password);
+
+  EXPECT_EQ(password, GetFocusController().NextFocusableElementForIME(
+                          username, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         username, mojom::blink::FocusType::kBackward));
+
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         password, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(username, GetFocusController().NextFocusableElementForIME(
+                          password, mojom::blink::FocusType::kBackward));
+}
+
+TEST_F(FocusControllerTest, NextFocusableElementForIME_NoFormTag) {
+  GetDocument().body()->setInnerHTML(
+      "  <input type='text' id='username'>"
+      "  <input type='password' id='password'>"
+      "  <input type='submit' value='Login'>");
+  Element* username = GetElementById("username");
+  Element* password = GetElementById("password");
+  ASSERT_TRUE(username);
+  ASSERT_TRUE(password);
+
+  EXPECT_EQ(password, GetFocusController().NextFocusableElementForIME(
+                          username, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         username, mojom::blink::FocusType::kBackward));
+
+  EXPECT_EQ(nullptr, GetFocusController().NextFocusableElementForIME(
+                         password, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(username, GetFocusController().NextFocusableElementForIME(
+                          password, mojom::blink::FocusType::kBackward));
 }
 
 }  // namespace blink

@@ -1883,7 +1883,7 @@ TEST_F(WebViewTest, IsSelectionAnchorFirst) {
 
 TEST_F(
     WebViewTest,
-    MoveFocusToNextFocusableElementInFormWithKeyEventListenersAndNonEditableElements) {
+    MoveFocusToNextFocusableElementForIMEWithKeyEventListenersAndNonEditableElements) {
   const std::string test_file =
       "advance_focus_in_form_with_key_event_listeners.html";
   RegisterMockedHttpURLLoad(test_file);
@@ -1931,7 +1931,7 @@ TEST_F(
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kForward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -1952,7 +1952,7 @@ TEST_F(
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kBackward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -1975,7 +1975,7 @@ TEST_F(
                 kWebTextInputFlagHavePreviousFocusableElement,
             next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           button1, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next_focus->GetIdAttribute(), "contenteditable1");
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -1984,7 +1984,7 @@ TEST_F(
   EXPECT_EQ(content_editable1, document->FocusedElement());
   button1->focus();
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           button1, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(next_focus->GetIdAttribute(), "input1");
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -1998,7 +1998,7 @@ TEST_F(
   // No Next/Previous element for elements outside form.
   EXPECT_EQ(0, next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           anchor1, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2008,31 +2008,35 @@ TEST_F(
   EXPECT_EQ(anchor1, document->FocusedElement());
 
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           anchor1, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kBackward);
   EXPECT_EQ(anchor1, document->FocusedElement());
 
-  // Navigation of elements which is not part of any forms.
+  // Navigation of elements which are not a part of any forms. All these
+  // elements compose a <form>less form.
   Element* text_area3 = document->getElementById("textarea3");
   text_area3->focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
-  // No Next/Previous element for elements outside form.
-  EXPECT_EQ(default_text_input_flags, next_previous_flags);
+  // Next/Previous elements for an element outside of a form are other
+  // <form>less elements.
+  EXPECT_EQ(kWebTextInputFlagHaveNextFocusableElement, next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           text_area3, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(next_focus, nullptr);
+  Element* text_area4 = document->getElementById("textarea4");
+  Element* content_editable2 = document->getElementById("contenteditable2");
+  EXPECT_EQ(next_focus, content_editable2);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kForward);
-  // No Next/Previous element to this element because it's not part of any
-  // form. Hence focus won't change wrt NEXT/PREVIOUS.
-  EXPECT_EQ(text_area3, document->FocusedElement());
+  EXPECT_EQ(content_editable2, document->FocusedElement());
+  // No previous element to this <form>less element because there is no other
+  // formless element before. Hence focus won't change wrt PREVIOUS.
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           text_area3, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2048,17 +2052,17 @@ TEST_F(
   // No Next element for this element, due to last element outside the form.
   EXPECT_EQ(kWebTextInputFlagHavePreviousFocusableElement, next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           button2, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kForward);
-  // No Next element to this element because it's not part of any form.
-  // Hence focus won't change wrt NEXT.
+  // No Next element to this element within form1. Hence focus won't change wrt
+  // NEXT.
   EXPECT_EQ(button2, document->FocusedElement());
   Element* text_area2 = document->getElementById("textarea2");
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           button2, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(next_focus, text_area2);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2067,63 +2071,66 @@ TEST_F(
   // at correct position.
   EXPECT_EQ(text_area2, document->FocusedElement());
 
-  Element* content_editable2 = document->getElementById("contenteditable2");
   document->SetFocusedElement(
       content_editable2, FocusParams(SelectionBehaviorOnFocus::kNone,
                                      mojom::blink::FocusType::kNone, nullptr));
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
-  // No Next/Previous element for elements outside form.
-  EXPECT_EQ(0, next_previous_flags);
+  // Next/Previous elements for an element outside of a form are other
+  // <form>less elements before and after that element.
+  EXPECT_EQ(kWebTextInputFlagHaveNextFocusableElement |
+                kWebTextInputFlagHavePreviousFocusableElement,
+            next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           content_editable2, mojom::blink::FocusType::kForward);
-  EXPECT_EQ(next_focus, nullptr);
+  EXPECT_EQ(next_focus, text_area4);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kForward);
-  // No Next/Previous element to this element because it's not part of any
-  // form. Hence focus won't change wrt NEXT/PREVIOUS.
-  EXPECT_EQ(content_editable2, document->FocusedElement());
+  EXPECT_EQ(text_area4, document->FocusedElement());
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           content_editable2, mojom::blink::FocusType::kBackward);
-  EXPECT_EQ(next_focus, nullptr);
+  document->SetFocusedElement(
+      content_editable2, FocusParams(SelectionBehaviorOnFocus::kNone,
+                                     mojom::blink::FocusType::kNone, nullptr));
+  EXPECT_EQ(next_focus, text_area3);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kBackward);
-  EXPECT_EQ(content_editable2, document->FocusedElement());
+  EXPECT_EQ(text_area3, document->FocusedElement());
 
   // Navigation of elements which is having invalid form attribute and hence
-  // not part of any forms.
-  Element* text_area4 = document->getElementById("textarea4");
+  // is a part of the <form>less form.
   text_area4->focus();
   next_previous_flags =
       active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
-  // No Next/Previous element for elements which is having invalid form
-  // attribute.
-  EXPECT_EQ(default_text_input_flags, next_previous_flags);
+  // No next element for an element outside of a form because it is the last
+  // <form>less element.
+  EXPECT_EQ(kWebTextInputFlagHavePreviousFocusableElement, next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           text_area4, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kForward);
-  // No Next/Previous element to this element because it's not part of any
-  // form. Hence focus won't change wrt NEXT/PREVIOUS.
+  // No next element. Hence focus won't change wrt NEXT.
   EXPECT_EQ(text_area4, document->FocusedElement());
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           text_area4, mojom::blink::FocusType::kBackward);
-  EXPECT_EQ(next_focus, nullptr);
+  // The previous element of a formless element is the previous formless
+  // element.
+  EXPECT_EQ(next_focus, content_editable2);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
       mojom::blink::FocusType::kBackward);
-  EXPECT_EQ(text_area4, document->FocusedElement());
+  EXPECT_EQ(content_editable2, document->FocusedElement());
 
   web_view_helper_.Reset();
 }
 
 TEST_F(
     WebViewTest,
-    MoveFocusToNextFocusableElementInFormWithNonEditableNonFormControlElements) {
+    MoveFocusToNextFocusableElementForIMEWithNonEditableNonFormControlElements) {
   const std::string test_file =
       "advance_focus_in_form_with_key_event_listeners.html";
   RegisterMockedHttpURLLoad(test_file);
@@ -2164,7 +2171,7 @@ TEST_F(
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kForward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -2185,7 +2192,7 @@ TEST_F(
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kBackward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -2207,7 +2214,7 @@ TEST_F(
   // No Next/Previous element for non-form control elements inside form.
   EXPECT_EQ(0, next_previous_flags);
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           anchor2, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2216,7 +2223,7 @@ TEST_F(
   // be null, hence focus will stay same as it is.
   EXPECT_EQ(anchor2, document->FocusedElement());
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           anchor2, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(next_focus, nullptr);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2226,7 +2233,7 @@ TEST_F(
   web_view_helper_.Reset();
 }
 
-TEST_F(WebViewTest, MoveFocusToNextFocusableElementInFormWithTabIndexElements) {
+TEST_F(WebViewTest, MoveFocusToNextFocusableElementForIMEWithTabIndexElements) {
   const std::string test_file =
       "advance_focus_in_form_with_tabindex_elements.html";
   RegisterMockedHttpURLLoad(test_file);
@@ -2269,7 +2276,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementInFormWithTabIndexElements) {
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kForward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -2291,7 +2298,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementInFormWithTabIndexElements) {
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kBackward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -2310,7 +2317,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementInFormWithTabIndexElements) {
   content_editable5->focus();
   Element* input6 = document->getElementById("input6");
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           content_editable5, mojom::blink::FocusType::kForward);
   EXPECT_EQ(next_focus, input6);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2318,7 +2325,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementInFormWithTabIndexElements) {
   EXPECT_EQ(input6, document->FocusedElement());
   content_editable5->focus();
   next_focus =
-      document->GetPage()->GetFocusController().NextFocusableElementInForm(
+      document->GetPage()->GetFocusController().NextFocusableElementForIME(
           content_editable5, mojom::blink::FocusType::kBackward);
   EXPECT_EQ(next_focus, text_area6);
   web_view->MainFrameImpl()->GetFrame()->AdvanceFocusInForm(
@@ -2329,7 +2336,7 @@ TEST_F(WebViewTest, MoveFocusToNextFocusableElementInFormWithTabIndexElements) {
 }
 
 TEST_F(WebViewTest,
-       MoveFocusToNextFocusableElementInFormWithDisabledAndReadonlyElements) {
+       MoveFocusToNextFocusableElementForIMEWithDisabledAndReadonlyElements) {
   const std::string test_file =
       "advance_focus_in_form_with_disabled_and_readonly_elements.html";
   RegisterMockedHttpURLLoad(test_file);
@@ -2363,7 +2370,7 @@ TEST_F(WebViewTest,
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kForward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),
@@ -2385,7 +2392,7 @@ TEST_F(WebViewTest,
         active_input_method_controller->ComputeWebTextInputNextPreviousFlags();
     EXPECT_EQ(focused_elements[i].next_previous_flags, next_previous_flags);
     next_focus =
-        document->GetPage()->GetFocusController().NextFocusableElementInForm(
+        document->GetPage()->GetFocusController().NextFocusableElementForIME(
             current_focus, mojom::blink::FocusType::kBackward);
     if (next_focus) {
       EXPECT_EQ(next_focus->GetIdAttribute(),

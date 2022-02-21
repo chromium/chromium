@@ -87,7 +87,7 @@ class CORE_EXPORT FocusController final
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
   static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  Element* NextFocusableElementInForm(Element*, mojom::blink::FocusType);
+  Element* NextFocusableElementForIME(Element*, mojom::blink::FocusType);
   Element* FindFocusableElementAfter(Element& element, mojom::blink::FocusType);
 
   bool SetFocusedElement(Element*, Frame*, const FocusParams&);
