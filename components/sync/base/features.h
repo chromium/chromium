@@ -64,6 +64,13 @@ inline constexpr base::Feature kSyncSettingsShowLacrosSideBySideWarning{
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1233545): consider checking this flag in Ash as well.
+// Whether explicit passphrase sharing between Ash and Lacros is enabled.
+inline constexpr base::Feature kSyncChromeOSExplicitPassphraseSharing{
+    "SyncChromeOSExplicitPassphraseSharing", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #if BUILDFLAG(IS_IOS)
 // Whether RPC is enabled.
 inline constexpr base::Feature kSyncTrustedVaultPassphraseiOSRPC{
