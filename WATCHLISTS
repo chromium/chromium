@@ -854,7 +854,11 @@
                   '|ash/policy/'\
                   '|components/policy/'\
                   '|chrome/browser/ash/policy/'\
-                  '|chrome/browser/policy/'
+                  '|chrome/browser/policy/'\
+                  '|chrome/test/enterprise'\
+                  '|ash/components/arc/enterprise/'\
+                  '|chrome/browser/ash/arc/enterprise/'\
+                  '|docs/website/site/administrators/'
     },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
@@ -2457,7 +2461,8 @@
            'ukai+cc@chromium.org',
            'yyanagisawa+cc@chromium.org'],
     'cr_elements': ['michaelpg+watch-elements@chromium.org'],
-    'cros_commercial_policy': ['chromeos-commercial-remote-management+watchlist@google.com'],
+    'cros_commercial_policy': ['chromeos-commercial-remote-management+watchlist@google.com',
+                               'enterprise-policy-review@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'cros_sharesheet': ['melzhang+watch+sharesheet@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
