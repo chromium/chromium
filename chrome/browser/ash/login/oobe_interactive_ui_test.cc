@@ -562,8 +562,12 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    if (params_.is_quick_unlock_enabled)
-      quick_unlock::EnabledForTesting(true);
+    if (params_.is_quick_unlock_enabled) {
+      test_api_ = std::make_unique<quick_unlock::TestApi>(
+          /*override_quick_unlock=*/true);
+      test_api_->EnableFingerprintByPolicy(quick_unlock::Purpose::kAny);
+      test_api_->EnablePinByPolicy(quick_unlock::Purpose::kAny);
+    }
 
     if (params_.arc_state != ArcState::kNotAvailable) {
       recommend_apps_fetcher_factory_ =
@@ -593,8 +597,6 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   void TearDownInProcessBrowserTestFixture() override {
     recommend_apps_fetcher_factory_.reset();
   }
-
-  void TearDown() override { quick_unlock::EnabledForTesting(false); }
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     auto response = std::make_unique<BasicHttpResponse>();
@@ -627,6 +629,7 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
   std::unique_ptr<ScopedTestRecommendAppsFetcherFactory>
       recommend_apps_fetcher_factory_;
   net::EmbeddedTestServer* arc_tos_server_;
+  std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
 
 }  // namespace

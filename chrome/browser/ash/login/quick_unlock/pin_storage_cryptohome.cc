@@ -130,8 +130,9 @@ void CheckForCryptohomedService(int attempt,
 
 bool IsCryptohomePinDisabledByPolicy(const AccountId& account_id,
                                      Purpose purpose) {
-  if (quick_unlock::IsEnabledForTesting()) {
-    return false;
+  auto* test_api = quick_unlock::TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsPinEnabledByPolicy(purpose);
   }
   PrefService* pref_service = nullptr;
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);

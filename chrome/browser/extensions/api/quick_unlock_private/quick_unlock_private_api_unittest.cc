@@ -196,7 +196,9 @@ class QuickUnlockPrivateUnitTest
         {1, 2, 3, 4, 5, 6, 7, 8});
 
     // Rebuild quick unlock state.
-    ash::quick_unlock::EnabledForTesting(true);
+    test_api_ = std::make_unique<ash::quick_unlock::TestApi>(
+        /*override_quick_unlock=*/true);
+    test_api_->EnablePinByPolicy(ash::quick_unlock::Purpose::kAny);
     ash::quick_unlock::PinBackend::ResetForTesting();
 
     base::RunLoop().RunUntilIdle();
@@ -237,15 +239,13 @@ class QuickUnlockPrivateUnitTest
   }
 
   void TearDown() override {
-    ash::quick_unlock::EnabledForTesting(false);
-    ash::quick_unlock::DisablePinByPolicyForTesting(false);
-
     base::RunLoop().RunUntilIdle();
 
     ExtensionApiUnittest::TearDown();
 
     fake_user_manager_ = nullptr;
     scoped_user_manager_.reset();
+    test_api_.reset();
 
     ash::SystemSaltGetter::Shutdown();
     ash::UserDataAuthClient::Shutdown();
@@ -616,6 +616,12 @@ class QuickUnlockPrivateUnitTest
 
   bool IsAutosubmitFeatureEnabled() { return std::get<1>(GetParam()); }
 
+  void DisablePinByPolicy() {
+    test_api_.reset();
+    test_api_ = std::make_unique<ash::quick_unlock::TestApi>(
+        /*override_quick_unlock=*/true);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable* test_pref_service_;
 
@@ -662,6 +668,7 @@ class QuickUnlockPrivateUnitTest
   bool expect_modes_changed_ = false;
   ash::UserContext auth_token_user_context_;
   std::string token_;
+  std::unique_ptr<ash::quick_unlock::TestApi> test_api_;
 };
 
 // Verifies that GetAuthTokenValid succeeds when a valid password is provided.
@@ -716,14 +723,16 @@ TEST_P(QuickUnlockPrivateUnitTest, GetAvailableModes) {
   EXPECT_EQ(GetAvailableModes(),
             QuickUnlockModeList{QuickUnlockMode::QUICK_UNLOCK_MODE_PIN});
 
-  ash::quick_unlock::DisablePinByPolicyForTesting(true);
+  // Reset the flags set in Setup.
+  DisablePinByPolicy();
   EXPECT_TRUE(GetAvailableModes().empty());
 }
 
 // Verfies that trying to set modes with a valid PIN failes when PIN is blocked
 // by policy.
 TEST_P(QuickUnlockPrivateUnitTest, SetModesForPinFailsWhenPinDisabledByPolicy) {
-  ash::quick_unlock::DisablePinByPolicyForTesting(true);
+  // Reset the flags set in Setup.
+  DisablePinByPolicy();
   EXPECT_FALSE(SetModesWithError("[\"valid\", [\"PIN\"], [\"111\"]]").empty());
 }
 

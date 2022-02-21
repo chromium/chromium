@@ -56,10 +56,10 @@ class ScreenLockerTest : public InProcessBrowserTest {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
-  void TearDown() override { quick_unlock::EnabledForTesting(false); }
-
   void EnrollFingerprint() {
-    quick_unlock::EnabledForTesting(true);
+    test_api_ = std::make_unique<quick_unlock::TestApi>(
+        /*override_quick_unlock=*/true);
+    test_api_->EnableFingerprintByPolicy(quick_unlock::Purpose::kUnlock);
 
     FakeBiodClient::Get()->StartEnrollSession(
         "test-user", std::string(),
@@ -87,6 +87,7 @@ class ScreenLockerTest : public InProcessBrowserTest {
   void OnStartSession(const dbus::ObjectPath& path) {}
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
 
 IN_PROC_BROWSER_TEST_F(ScreenLockerTest, TestBadThenGoodPassword) {

@@ -30,9 +30,7 @@ namespace ash {
 namespace quick_unlock {
 namespace {
 
-// Quick unlock is enabled regardless of flags.
-bool enabled_for_testing_ = false;
-bool disable_pin_by_policy_for_testing_ = false;
+TestApi* g_instance = nullptr;
 
 // Options for the quick unlock allowlist.
 const char kFactorsOptionAll[] = "all";
@@ -83,8 +81,59 @@ bool IsPinDisabledByPolicySinglePurpose(const PrefService* pref_service,
 
 }  // namespace
 
+TestApi::TestApi(bool override_quick_unlock)
+    : overridden_(override_quick_unlock) {
+  old_instance_ = g_instance;
+  g_instance = this;
+  std::fill(pin_purposes_enabled_by_policy_,
+            pin_purposes_enabled_by_policy_ + kNumOfPurposes, false);
+  std::fill(fingerprint_purposes_enabled_by_policy_,
+            fingerprint_purposes_enabled_by_policy_ + kNumOfPurposes, false);
+}
+
+TestApi::~TestApi() {
+  CHECK_EQ(g_instance, this);
+  g_instance = old_instance_;
+}
+
+TestApi* TestApi::Get() {
+  return g_instance;
+}
+
+bool TestApi::IsQuickUnlockOverridden() {
+  return overridden_;
+}
+
+void TestApi::EnablePinByPolicy(Purpose purpose) {
+  if (purpose != Purpose::kAny) {
+    pin_purposes_enabled_by_policy_[static_cast<int>(Purpose::kAny)] = true;
+  }
+  pin_purposes_enabled_by_policy_[static_cast<int>(purpose)] = true;
+}
+
+void TestApi::EnableFingerprintByPolicy(Purpose purpose) {
+  if (purpose != Purpose::kAny) {
+    fingerprint_purposes_enabled_by_policy_[static_cast<int>(Purpose::kAny)] =
+        true;
+  }
+  fingerprint_purposes_enabled_by_policy_[static_cast<int>(purpose)] = true;
+}
+
+bool TestApi::IsPinEnabledByPolicy(Purpose purpose) {
+  return pin_purposes_enabled_by_policy_[static_cast<int>(purpose)];
+}
+
+bool TestApi::IsFingerprintEnabledByPolicy(Purpose purpose) {
+  return fingerprint_purposes_enabled_by_policy_[static_cast<int>(purpose)];
+}
+
 bool IsFingerprintDisabledByPolicy(const PrefService* pref_service,
                                    Purpose purpose) {
+  auto* test_api = TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsFingerprintEnabledByPolicy(purpose);
+  }
+
   if (purpose == Purpose::kAny) {
     return IsFingerprintDisabledByPolicySinglePurpose(pref_service,
                                                       Purpose::kUnlock) &&
@@ -137,11 +186,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool IsPinDisabledByPolicy(PrefService* pref_service, Purpose purpose) {
-  if (disable_pin_by_policy_for_testing_)
-    return true;
-
-  if (enabled_for_testing_)
-    return false;
+  auto* test_api = TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden()) {
+    return !test_api->IsPinEnabledByPolicy(purpose);
+  }
 
   if (purpose == Purpose::kAny) {
     return IsPinDisabledByPolicySinglePurpose(pref_service, Purpose::kUnlock) &&
@@ -181,7 +229,8 @@ FingerprintLocation GetFingerprintLocation() {
 }
 
 bool IsFingerprintSupported() {
-  if (enabled_for_testing_)
+  auto* test_api = TestApi::Get();
+  if (test_api && test_api->IsQuickUnlockOverridden())
     return true;
 
   const base::CommandLine* command_line =
@@ -191,15 +240,17 @@ bool IsFingerprintSupported() {
 }
 
 bool IsFingerprintEnabled(Profile* profile, Purpose purpose) {
-  if (enabled_for_testing_)
-    return true;
+  // Don't need to check these when using flags to control fingerprint behavior
+  // in tests.
+  auto* test_api = TestApi::Get();
+  if (!test_api || !test_api->IsQuickUnlockOverridden()) {
+    if (!IsFingerprintSupported())
+      return false;
 
-  if (!IsFingerprintSupported())
-    return false;
-
-  // Disable fingerprint if the profile does not belong to the primary user.
-  if (profile != ProfileManager::GetPrimaryUserProfile())
-    return false;
+    // Disable fingerprint if the profile does not belong to the primary user.
+    if (profile != ProfileManager::GetPrimaryUserProfile())
+      return false;
+  }
 
   // Disable fingerprint if disallowed by policy.
   if (IsFingerprintDisabledByPolicy(profile->GetPrefs(), purpose))
@@ -251,18 +302,6 @@ void AddFingerprintResources(content::WebUIDataSource* html_source) {
   }
   html_source->AddBoolean("useLottieAnimationForFingerprint",
                           is_lottie_animation);
-}
-
-void EnabledForTesting(bool state) {
-  enabled_for_testing_ = state;
-}
-
-bool IsEnabledForTesting() {
-  return enabled_for_testing_;
-}
-
-void DisablePinByPolicyForTesting(bool disable) {
-  disable_pin_by_policy_for_testing_ = disable;
 }
 
 }  // namespace quick_unlock

@@ -37,9 +37,10 @@ class FingerprintStorageUnitTest : public testing::Test {
   ~FingerprintStorageUnitTest() override {}
 
   // testing::Test:
-  void SetUp() override { EnabledForTesting(true); }
-
-  void TearDown() override { EnabledForTesting(false); }
+  void SetUp() override {
+    test_api_ = std::make_unique<TestApi>(/*override_quick_unlock=*/true);
+    test_api_->EnableFingerprintByPolicy(Purpose::kAny);
+  }
 
   void SetRecords(int records_number) {
     profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
@@ -48,6 +49,7 @@ class FingerprintStorageUnitTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestApi> test_api_;
 };
 
 }  // namespace

@@ -68,14 +68,13 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   ~FingerprintUnlockTest() override = default;
 
   void SetUp() override {
-    quick_unlock::EnabledForTesting(true);
+    test_api_ = std::make_unique<quick_unlock::TestApi>(
+        /*override_quick_unlock=*/true);
+    test_api_->EnableFingerprintByPolicy(quick_unlock::Purpose::kUnlock);
     InProcessBrowserTest::SetUp();
   }
 
-  void TearDown() override {
-    quick_unlock::EnabledForTesting(false);
-    InProcessBrowserTest::TearDown();
-  }
+  void TearDown() override { InProcessBrowserTest::TearDown(); }
 
   void SetUpInProcessBrowserTestFixture() override {
     zero_duration_mode_ =
@@ -235,6 +234,7 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   QuickUnlockStorage* quick_unlock_storage_;
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
 
 // Provides test clocks, quick unlock and an enrolled fingerprint to the tests.

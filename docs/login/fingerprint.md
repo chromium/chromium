@@ -21,8 +21,8 @@ dbus service. Tests can use `FakeBiodClient` to create an enrollment session and
 simulate fingerprint enrollment scan progress.
 
 Fingerprint unlock policy is dependent on device policy and hardware specs.
-Fingerprint can be manually enabled for testing by calling:
-ash::quick_unlock::EnabledForTesting(true) to force enable fingerprint features.
+Fingerprint can be manually enabled for testing using ash::quick_unlock::TestApi
+to force enable fingerprint features.
 
 Fingerprint unlock is not considered strong authentication. This means that,
 under certain policies, fingerprint cannot be the only method of authentication
