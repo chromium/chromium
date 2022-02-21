@@ -1434,6 +1434,8 @@ static_library("browser") {
     "push_messaging/push_messaging_service_impl.h",
     "push_messaging/push_messaging_utils.cc",
     "push_messaging/push_messaging_utils.h",
+    "query_tiles/query_tile_utils.cc",
+    "query_tiles/query_tile_utils.h",
     "query_tiles/tile_background_task.cc",
     "query_tiles/tile_background_task.h",
     "query_tiles/tile_service_factory.cc",

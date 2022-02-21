@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/query_tiles/query_tile_utils.h"
 #include "chrome/browser/query_tiles/tile_service_factory.h"
 #include "components/query_tiles/switches.h"
 
@@ -51,13 +52,10 @@ void TileBackgroundTask::StartFetchTask(SimpleFactoryKey* key,
     return;
   auto* tile_service = TileServiceFactory::GetInstance()->GetForKey(key);
   DCHECK(tile_service);
-  if (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles) ||
-      (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTilesInNTP) &&
-       !base::FeatureList::IsEnabled(
-           query_tiles::features::kQueryTilesInOmnibox))) {
-    tile_service->CancelTask();
-  } else {
+  if (IsQueryTilesEnabled()) {
     tile_service->StartFetchForTiles(is_from_reduced_mode, std::move(callback));
+  } else {
+    tile_service->CancelTask();
   }
 }
 

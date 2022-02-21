@@ -353,7 +353,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &performance_hints::features::kContextMenuPerformanceInfo,
     &policy::features::kChromeManagementPageAndroid,
     &privacy_sandbox::kPrivacySandboxSettings3,
-    &query_tiles::features::kQueryTilesGeoFilter,
     &query_tiles::features::kQueryTiles,
     &query_tiles::features::kQueryTilesInNTP,
     &query_tiles::features::kQueryTilesInOmnibox,

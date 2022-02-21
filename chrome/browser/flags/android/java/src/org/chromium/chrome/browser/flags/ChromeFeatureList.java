@@ -442,10 +442,8 @@ public abstract class ChromeFeatureList {
             "PushMessagingDisallowSenderIDs";
     public static final String PWA_UPDATE_DIALOG_FOR_NAME_AND_ICON =
             "PwaUpdateDialogForNameAndIcon";
-    public static final String QUERY_TILES_GEO_FILTER = "QueryTilesGeoFilter";
     public static final String QUERY_TILES = "QueryTiles";
     public static final String QUERY_TILES_IN_NTP = "QueryTilesInNTP";
-    public static final String QUERY_TILES_IN_OMNIBOX = "QueryTilesInOmnibox";
     public static final String QUERY_TILES_LOCAL_ORDERING = "QueryTilesLocalOrdering";
     public static final String QUERY_TILES_SEGMENTATION = "QueryTilesSegmentation";
     public static final String QUICK_ACTION_SEARCH_WIDGET = "QuickActionSearchWidgetAndroid";

@@ -81,8 +81,8 @@ class TileConfig {
   // condition.
   static bool GetIsUnMeteredNetworkRequired();
 
-  // Gets the experiment tag to be passed to server.
-  static std::string GetExperimentTag();
+  // Gets the experiment tag to be passed to server, given the country code.
+  static std::string GetExperimentTag(const std::string& country_code);
 
   // Gets the maximum duration for holding current group's info and images.
   static base::TimeDelta GetExpireDuration();

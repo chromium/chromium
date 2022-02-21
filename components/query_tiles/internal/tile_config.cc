@@ -93,7 +93,7 @@ constexpr double kDefaultMinimumTileScoreForNewFrontTiles = 0.9;
 constexpr int kDefaultNumTrendingTilesToDisplay = 2;
 
 // Default number of impressions a trending tile to be displayed .
-constexpr int kDefaultMaxTrendingTileImpressions = 2;
+constexpr int kDefaultMaxTrendingTileImpressions = 1;
 
 // Default position to start shuffling unclicked tile.
 constexpr int kDefaultTileShufflePosition = 2;
@@ -116,6 +116,10 @@ const char kQueryTilesMoreTrendingExperimentTag[] =
 
 // Json Experiment tag for ranking tiles on server based on client context.
 const char kQueryTilesRankTilesExperimentTag[] = "\"rankTiles\": \"true\"";
+
+// Default Json experiment tag for trending query enabled countries.
+constexpr char kDefaultExperimentTagForTrendingEnabledCountries[] =
+    "{maxLevels : 1, enableTrending : true, maxTrendingQueries : 8}";
 
 const GURL BuildGetQueryTileURL(const GURL& base_url, const char* path) {
   GURL::Replacements replacements;
@@ -150,7 +154,7 @@ bool TileConfig::GetIsUnMeteredNetworkRequired() {
 }
 
 // static
-std::string TileConfig::GetExperimentTag() {
+std::string TileConfig::GetExperimentTag(const std::string& country_code) {
   std::vector<std::string> experiment_tag;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kQueryTilesSingleTier)) {
@@ -176,8 +180,12 @@ std::string TileConfig::GetExperimentTag() {
     return "{" + base::JoinString(experiment_tag, ",") + "}";
   }
 
-  return base::GetFieldTrialParamValueByFeature(features::kQueryTiles,
-                                                kExperimentTagKey);
+  std::string tag = base::GetFieldTrialParamValueByFeature(
+      features::kQueryTiles, kExperimentTagKey);
+  if (tag.empty() && features::IsQueryTilesEnabledForCountry(country_code)) {
+    return kDefaultExperimentTagForTrendingEnabledCountries;
+  }
+  return tag;
 }
 
 // static
