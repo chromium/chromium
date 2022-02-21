@@ -69,7 +69,6 @@ class PointerEventTarget {
 
   Member<Element> target_element;
   Member<LocalFrame> target_frame;
-  Member<Scrollbar> scrollbar;
   String region;
 };
 

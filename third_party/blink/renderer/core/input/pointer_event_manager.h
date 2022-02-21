@@ -243,8 +243,6 @@ class CORE_EXPORT PointerEventManager final
   // filtering on the given event.
   bool ShouldFilterEvent(PointerEvent* pointer_event);
 
-  bool HandleScrollbarTouchDrag(const WebPointerEvent&, Scrollbar*);
-
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |PointerEventManager::clear()|.
 
@@ -287,8 +285,6 @@ class CORE_EXPORT PointerEventManager final
   bool skip_touch_filter_all_ = false;
 
   Member<GestureManager> gesture_manager_;
-
-  Member<Scrollbar> captured_scrollbar_;
 };
 
 }  // namespace blink
