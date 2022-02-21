@@ -8,9 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Stores EID-related data and timestamps at which time this data becomes
 // active or inactive.
@@ -40,13 +38,11 @@ struct DataWithTimestamp {
   int64_t end_timestamp_ms;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::DataWithTimestamp;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::DataWithTimestamp;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_DATA_WITH_TIMESTAMP_H_

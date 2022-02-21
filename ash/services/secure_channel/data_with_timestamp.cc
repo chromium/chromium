@@ -12,9 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 DataWithTimestamp::DataWithTimestamp(const std::string& data,
                                      const int64_t start_timestamp_ms,
@@ -65,6 +63,4 @@ bool DataWithTimestamp::operator==(const DataWithTimestamp& other) const {
          end_timestamp_ms == other.end_timestamp_ms;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

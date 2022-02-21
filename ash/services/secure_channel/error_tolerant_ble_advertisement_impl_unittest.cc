@@ -14,9 +14,7 @@
 #include "device/bluetooth/test/mock_bluetooth_advertisement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -221,6 +219,4 @@ TEST_F(SecureChannelErrorTolerantBleAdvertisementImplTest,
   EXPECT_TRUE(stopped_callback_called_);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

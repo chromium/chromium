@@ -9,9 +9,7 @@
 #include "base/hash/hash.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 DeviceIdPair::DeviceIdPair(const std::string& remote_device_id,
                            const std::string& local_device_id)
@@ -57,6 +55,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

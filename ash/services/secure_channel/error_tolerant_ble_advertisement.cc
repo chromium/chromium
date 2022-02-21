@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/error_tolerant_ble_advertisement.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 ErrorTolerantBleAdvertisement::ErrorTolerantBleAdvertisement(
     const DeviceIdPair& device_id_pair)
@@ -14,6 +12,4 @@ ErrorTolerantBleAdvertisement::ErrorTolerantBleAdvertisement(
 
 ErrorTolerantBleAdvertisement::~ErrorTolerantBleAdvertisement() = default;
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

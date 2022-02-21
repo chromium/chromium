@@ -13,9 +13,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -151,6 +149,4 @@ void DeviceToDeviceSecureContext::HandleUnwrapResult(
   ProcessIncomingMessageQueue(callback);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

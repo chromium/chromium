@@ -9,9 +9,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Advertises to the device with the given ID. Due to issues in the Bluetooth
 // stack, it is possible that registering or unregistering an advertisement can
@@ -45,13 +43,11 @@ class ErrorTolerantBleAdvertisement {
   const DeviceIdPair device_id_pair_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ErrorTolerantBleAdvertisement;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::ErrorTolerantBleAdvertisement;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_

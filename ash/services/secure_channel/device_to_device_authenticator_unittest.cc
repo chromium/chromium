@@ -27,11 +27,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 // The initiator's session public key in base64url form. Note that this is
 // actually a serialized proto.
@@ -369,6 +370,4 @@ TEST_F(SecureChannelDeviceToDeviceAuthenticatorTest,
   connection_.OnBytesReceived(wire_message.Serialize());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

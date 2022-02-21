@@ -8,17 +8,15 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/ble_synchronizer_base.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/error_tolerant_ble_advertisement.h"
 #include "ash/services/secure_channel/foreground_eid_generator.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class BleSynchronizerBase;
 
 // Concrete ErrorTolerantBleAdvertisement implementation.
 class ErrorTolerantBleAdvertisementImpl
@@ -104,13 +102,6 @@ class ErrorTolerantBleAdvertisementImpl
       this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::ErrorTolerantBleAdvertisementImpl;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_ERROR_TOLERANT_BLE_ADVERTISEMENT_IMPL_H_

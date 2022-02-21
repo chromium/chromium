@@ -15,9 +15,8 @@
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
-namespace chromeos {
 
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -279,6 +278,4 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
   EXPECT_EQ(message4, decoded_messages.front());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

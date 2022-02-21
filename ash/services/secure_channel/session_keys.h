@@ -40,4 +40,9 @@ class SessionKeys {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::SessionKeys;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_SESSION_KEYS_H_

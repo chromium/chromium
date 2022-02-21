@@ -73,6 +73,7 @@ using ::chromeos::multidevice::CreateRemoteDeviceRefListForTest;
 using ::chromeos::multidevice::GetMutableRemoteDevice;
 using ::chromeos::multidevice::RemoteDeviceRefBuilder;
 using ::chromeos::multidevice::kTestRemoteDeviceName;
+using ::chromeos::multidevice::kTestRemoteDevicePublicKey;
 }  // namespace multidevice
 }  // namespace ash
 

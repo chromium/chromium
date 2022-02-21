@@ -9,14 +9,10 @@
 
 #include "ash/services/secure_channel/session_keys.h"
 #include "base/callback_forward.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/multidevice/secure_message_delegate.h"
 
-namespace chromeos {
-
-namespace multidevice {
-class SecureMessageDelegate;
-}  // namespace multidevice
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Utility class containing operations in the DeviceToDevice protocol that the
 // initiator needs to perform. For Smart Lock, in which a phone unlocks a
@@ -119,8 +115,6 @@ class DeviceToDeviceResponderOperations {
       ValidationCallback callback);
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_DEVICE_TO_DEVICE_RESPONDER_OPERATIONS_H_

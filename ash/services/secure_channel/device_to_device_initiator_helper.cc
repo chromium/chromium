@@ -10,9 +10,7 @@
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -338,6 +336,4 @@ void DeviceToDeviceInitiatorHelper::OnInnerMessageUnwrappedForResponderAuth(
   std::move(callback).Run(verified, SessionKeys(context.session_symmetric_key));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

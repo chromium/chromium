@@ -79,4 +79,9 @@ class FakeSecureMessageDelegateFactory
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::multidevice {
+using ::chromeos::multidevice::FakeSecureMessageDelegate;
+}
+
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_FAKE_SECURE_MESSAGE_DELEGATE_H_

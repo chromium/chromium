@@ -12,9 +12,7 @@
 #include "third_party/securemessage/proto/securemessage.pb.h"
 #include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -350,6 +348,4 @@ void DeviceToDeviceResponderOperations::ValidateInitiatorAuthMessage(
                      std::move(callback)));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
