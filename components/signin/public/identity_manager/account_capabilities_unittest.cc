@@ -22,6 +22,20 @@ TEST_F(AccountCapabilitiesTest, CanOfferExtendedChromeSyncPromos) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanRunChromePrivacySandboxTrials) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
+            signin::Tribool::kUnknown);
+
+  capabilities.set_can_offer_extended_chrome_sync_promos(true);
+  EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
+            signin::Tribool::kTrue);
+
+  capabilities.set_can_offer_extended_chrome_sync_promos(false);
+  EXPECT_EQ(capabilities.can_run_chrome_privacy_sandbox_trials(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, AreAllCapabilitiesKnown_Empty) {
   AccountCapabilities capabilities;
   EXPECT_FALSE(capabilities.AreAllCapabilitiesKnown());
