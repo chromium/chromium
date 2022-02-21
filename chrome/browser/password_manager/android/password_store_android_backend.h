@@ -170,7 +170,8 @@ class PasswordStoreAndroidBackend
   void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
                AndroidBackendError error) override;
 
-  void QueueNewJob(JobId job_id, JobReturnHandler return_handler);
+  template <typename Callback>
+  void QueueNewJob(JobId job_id, Callback callback, MetricInfix metric_infix);
   JobReturnHandler GetAndEraseJob(JobId job_id);
 
   // Gets logins matching |form|.
