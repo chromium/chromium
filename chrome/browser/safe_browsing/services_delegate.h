@@ -118,6 +118,8 @@ class ServicesDelegate {
   virtual void CreateTelemetryService(Profile* profile) {}
   virtual void RemoveTelemetryService(Profile* profile) {}
 
+  virtual void OnProfileWillBeDestroyed(Profile* profile) {}
+
  protected:
   // Unowned pointer
   SafeBrowsingService* const safe_browsing_service_;

@@ -227,6 +227,10 @@ class DownloadProtectionService {
   virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context);
 
+  // Removes all pending download requests that are associated with the
+  // `browser_context`.
+  void RemovePendingDownloadRequests(content::BrowserContext* browser_context);
+
  private:
   friend class PPAPIDownloadRequest;
   friend class DownloadUrlSBClient;
@@ -322,9 +326,11 @@ class DownloadProtectionService {
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
 
   // Set of pending server requests for DownloadManager mediated downloads.
-  base::flat_map<CheckClientDownloadRequestBase*,
-                 std::unique_ptr<CheckClientDownloadRequestBase>>
-      download_requests_;
+  base::flat_map<
+      content::BrowserContext*,
+      base::flat_map<CheckClientDownloadRequestBase*,
+                     std::unique_ptr<CheckClientDownloadRequestBase>>>
+      context_download_requests_;
 
   // Set of pending server requests for PPAPI mediated downloads.
   base::flat_map<PPAPIDownloadRequest*, std::unique_ptr<PPAPIDownloadRequest>>
