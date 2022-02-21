@@ -31,8 +31,6 @@
 namespace crostini {
 
 struct ExportProgressOptionalArguments {
-  int progress_percent{};  // TODO(juwa): remove this once tremplin has been
-                           // shipped.
   uint32_t total_files{};
   uint64_t total_bytes{};
   uint32_t files_streamed{};
@@ -96,7 +94,6 @@ class CrostiniExportImportTest : public testing::Test {
     signal.set_vm_name(kCrostiniDefaultVmName);
     signal.set_container_name(kCrostiniDefaultContainerName);
     signal.set_status(status);
-    signal.set_progress_percent(arguments.progress_percent);
     signal.set_total_input_files(arguments.total_files);
     signal.set_total_input_bytes(arguments.total_bytes);
     signal.set_input_files_streamed(arguments.files_streamed);
