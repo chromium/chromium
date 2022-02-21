@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -85,10 +84,8 @@ class BorealisInstallerImpl::Installation
       return;
     }
     SetState(InstallingState::kInstallingDlc);
-    dlcservice::InstallRequest install_request;
-    install_request.set_id(kBorealisDlcName);
     chromeos::DlcserviceClient::Get()->Install(
-        install_request,
+        kBorealisDlcName,
         base::BindOnce(&Installation::OnDlcInstallationCompleted,
                        weak_factory_.GetWeakPtr()),
         base::BindRepeating(&Installation::OnDlcInstallationProgressUpdated,

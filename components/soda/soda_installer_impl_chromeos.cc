@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -53,10 +52,8 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
   soda_progress_ = 0.0;
 
   // Install SODA DLC.
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(kSodaDlcName);
   chromeos::DlcserviceClient::Get()->Install(
-      install_request,
+      kSodaDlcName,
       base::BindOnce(&SodaInstallerImplChromeOS::OnSodaInstalled,
                      base::Unretained(this), base::Time::Now()),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnSodaProgress,
@@ -81,10 +78,8 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 
   language_pack_progress_.insert({LanguageCode::kEnUs, 0.0});
 
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(kSodaEnglishUsDlcName);
   chromeos::DlcserviceClient::Get()->Install(
-      install_request,
+      kSodaEnglishUsDlcName,
       base::BindOnce(&SodaInstallerImplChromeOS::OnLanguageInstalled,
                      base::Unretained(this), LanguageCode::kEnUs,
                      base::Time::Now()),
