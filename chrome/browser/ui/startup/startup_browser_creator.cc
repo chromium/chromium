@@ -305,13 +305,10 @@ bool CanOpenProfileOnStartup(StartupProfileInfo profile_info) {
 #endif
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 bool ShouldShowProfilePickerAtProcessLaunch(
     ProfileManager* profile_manager,
     const base::CommandLine& command_line) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-#else
-
   // Skip the profile picker when Chrome is restarted (e.g. after an update) so
   // that the session can be restored.
   if (StartupBrowserCreator::WasRestarted())
@@ -366,8 +363,8 @@ bool ShouldShowProfilePickerAtProcessLaunch(
     return false;
 
   return ProfilePicker::ShouldShowAtLaunch();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // If Incognito or Guest mode are requested by policy or command line returns
 // the appropriate private browsing profile. Otherwise returns
@@ -427,6 +424,7 @@ StartupProfilePathInfo GetProfilePickerStartupProfilePathInfo() {
           StartupProfileMode::kProfilePicker};
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 StartupProfileInfo GetProfilePickerStartupProfileInfo() {
   auto path_info = GetProfilePickerStartupProfilePathInfo();
   DCHECK_EQ(path_info.mode, StartupProfileMode::kProfilePicker);
@@ -447,6 +445,7 @@ StartupProfileInfo GetProfilePickerStartupProfileInfo() {
 
   return {nullptr, StartupProfileMode::kError};
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 void ShowProfilePicker(chrome::startup::IsProcessStartup process_startup) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

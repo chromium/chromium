@@ -48,13 +48,6 @@ namespace policy {
 
 namespace {
 
-ino_t GetInodeValue(const base::FilePath& path) {
-  struct stat file_stats;
-  if (stat(path.value().c_str(), &file_stats) != 0)
-    return 0;
-  return file_stats.st_ino;
-}
-
 bool CreateDummyFile(const base::FilePath& path) {
   return WriteFile(path, "42", sizeof("42")) == sizeof("42");
 }

@@ -61,15 +61,6 @@ enum class FileSystemType { kDownloads, kDriveFs };
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the path of the downloads mount point for the given `profile`.
-base::FilePath GetDownloadsPath(Profile* profile) {
-  base::FilePath result;
-  EXPECT_TRUE(
-      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          file_manager::util::GetDownloadsMountPointName(profile), &result));
-  return result;
-}
-
 // Converts an `absolute_file_path` to its drive path.
 base::FilePath ConvertAbsoluteFilePathToDrivePath(
     Profile* profile,
@@ -140,15 +131,6 @@ void WaitForItemAddition(
         }
       });
   run_loop.Run();
-}
-
-// Waits for a holding space item with the provided `item_id` to be added to the
-// holding space model. Returns immediately if the item already exists.
-void WaitForItemAddition(const std::string& item_id) {
-  WaitForItemAddition(
-      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
-        return item->id() == item_id;
-      }));
 }
 
 // Waits for a holding space item matching the provided `predicate` to be

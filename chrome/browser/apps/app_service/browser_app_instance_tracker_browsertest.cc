@@ -120,10 +120,6 @@ bool operator==(const TestInstance& e1, const TestInstance& e2) {
          e1.is_web_contents_active == e2.is_web_contents_active;
 }
 
-bool operator!=(const TestInstance& e1, const TestInstance& e2) {
-  return !(e1 == e2);
-}
-
 bool operator<(const TestInstance& e1, const TestInstance& e2) {
   return std::tie(e1.name, e1.id, e1.type, e1.app_id, e1.window, e1.title,
                   e1.is_browser_active, e1.is_web_contents_active) <

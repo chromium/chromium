@@ -51,10 +51,6 @@ constexpr char kOfflineResourcesComponent[] = "demo-mode-resources";
 constexpr char kTestDemoModeResourcesMountPoint[] =
     "/run/imageloader/demo_mode_resources";
 
-void SetBoolean(bool* value) {
-  *value = true;
-}
-
 class DemoSessionTest : public testing::Test {
  public:
   DemoSessionTest()

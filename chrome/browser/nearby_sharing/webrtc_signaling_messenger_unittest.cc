@@ -33,16 +33,6 @@ CreateReceiveMessagesResponse(const std::string& msg) {
   return response;
 }
 
-chrome_browser_nearby_sharing_instantmessaging::StreamBody BuildResponseProto(
-    const std::vector<std::string>& messages) {
-  chrome_browser_nearby_sharing_instantmessaging::StreamBody stream_body;
-  for (const auto& msg : messages) {
-    stream_body.add_messages(
-        CreateReceiveMessagesResponse(msg).SerializeAsString());
-  }
-  return stream_body;
-}
-
 class FakeIncomingMessagesListener
     : public sharing::mojom::IncomingMessagesListener {
  public:

@@ -131,19 +131,6 @@ print::PrintJobInfo JobInfo2() {
                        print::PrintSettings::TWO_SIDED_LONG_EDGE);
 }
 
-em::PrintJobEvent JobEvent3() {
-  return CreateJobEvent("id3", "title3",
-                        ::reporting::error::FAILED_PRECONDITION,
-                        em::PrintJobEvent::PrintSettings::BLACK_AND_WHITE,
-                        em::PrintJobEvent::PrintSettings::TWO_SIDED_SHORT_EDGE);
-}
-
-print::PrintJobInfo JobInfo3() {
-  return CreateJobInfo("id3", "title3", print::PrintJobInfo::FAILED,
-                       print::PrintSettings::BLACK_AND_WHITE,
-                       print::PrintSettings::TWO_SIDED_SHORT_EDGE);
-}
-
 class PrintJobEventMatcher : public MatcherInterface<const em::PrintJobEvent&> {
  public:
   explicit PrintJobEventMatcher(const em::PrintJobEvent& event)

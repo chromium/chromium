@@ -16,15 +16,17 @@ namespace sharing_hub {
 
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Whether the sharing hub feature should be disabled by policy.
 bool SharingHubDisabledByPolicy(content::BrowserContext* context) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
   const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
   return !prefs->GetBoolean(prefs::kDesktopSharingHubEnabled);
 #else
   return false;
 #endif
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Whether screenshots-related features should be disabled by policy.
 // Currently used by desktop.
@@ -37,7 +39,7 @@ bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
 }  // namespace
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (SharingHubDisabledByPolicy(context))
     return false;
 #endif

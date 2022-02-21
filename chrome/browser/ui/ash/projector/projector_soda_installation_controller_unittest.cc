@@ -24,10 +24,6 @@
 
 namespace {
 
-inline const std::string& GetLocale() {
-  return g_browser_process->GetApplicationLocale();
-}
-
 inline void SetLocale(const std::string& locale) {
   g_browser_process->SetApplicationLocale(locale);
 }

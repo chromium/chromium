@@ -57,12 +57,6 @@ using ::testing::WithArg;
 
 constexpr char kData[] = "\1\2\3\4\5\6\7";
 
-std::string Base64Decode(const char* input) {
-  std::string result;
-  CHECK(base::Base64Decode(input, &result));
-  return result;
-}
-
 std::string GetSubjectPublicKeyInfo(
     const scoped_refptr<net::X509Certificate>& certificate) {
   base::StringPiece spki_der_piece;

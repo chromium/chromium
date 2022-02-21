@@ -41,17 +41,6 @@ constexpr int64_t kCertExpired = -20;
 constexpr int kRetryLimit = 3;
 constexpr char kFakeCertificate[] = "fake_cert";
 
-void CertCallbackSuccess(AttestationFlow::CertificateCallback callback) {
-  AttestationClient::Get()
-      ->GetTestInterface()
-      ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
-      ->set_certificate("fake_cert");
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), ATTESTATION_SUCCESS, "fake_cert"));
-}
-
 void CertCallbackUnspecifiedFailure(
     AttestationFlow::CertificateCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

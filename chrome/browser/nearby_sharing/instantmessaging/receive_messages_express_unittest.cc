@@ -23,12 +23,6 @@ const char kOAuthToken[] = "oauth_token";
 const char kTestAccount[] = "test@test.test";
 const char kCountryCode[] = "US";
 
-chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
-CreateRequest() {
-  return chrome_browser_nearby_sharing_instantmessaging::
-      ReceiveMessagesExpressRequest();
-}
-
 chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse
 CreateReceiveMessagesResponse(const std::string& msg) {
   chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesResponse

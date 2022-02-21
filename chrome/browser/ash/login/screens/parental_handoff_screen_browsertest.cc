@@ -43,11 +43,6 @@ const test::UIPath kParentalHandoffDialog = {"parental-handoff",
                                              "parentalHandoffDialog"};
 const test::UIPath kNextButton = {"parental-handoff", "nextButton"};
 
-SystemWebDialogDelegate* GetEduCoexistenceLoginDialog() {
-  return chromeos::SystemWebDialogDelegate::FindInstance(
-      SupervisedUserService::GetEduCoexistenceLoginUrl());
-}
-
 class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
  public:
   ParentalHandoffScreenBrowserTest();
