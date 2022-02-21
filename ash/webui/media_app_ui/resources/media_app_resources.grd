@@ -11,7 +11,9 @@
       <!-- Privileged app host contents. -->
       <include name="IDR_MEDIA_APP_INDEX_HTML" file="index.html" type="BINDATA" />
       <include name="IDR_MEDIA_APP_INDEX_DARK_LIGHT_HTML" file="index_dark_light.html" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_VIEWPDFHOST_HTML" file="viewpdfhost.html" type="BINDATA" />
       <include name="IDR_MEDIA_APP_LAUNCH_JS" file="${root_gen_dir}/ash/webui/media_app_ui/resources/js/launch.rollup.js" use_base_dir="false" compress="brotli" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_VIEWPDFHOST_JS" file="js/viewpdfhost.js" type="BINDATA" />
       <include name="IDR_MEDIA_APP_APP_ICON_SVG" file="assets/app_icon.svg" type="BINDATA" />
       <include name="IDR_MEDIA_APP_IMAGE_ICON_SVG" file="assets/image_icon.svg" type="BINDATA" />
       <include name="IDR_MEDIA_APP_AUDIO_ICON_SVG" file="assets/audio_icon.svg" type="BINDATA" />

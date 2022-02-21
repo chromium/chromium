@@ -185,6 +185,12 @@ guestMessagePipe.registerHandler(Message.TOGGLE_BROWSER_FULLSCREEN_MODE, () => {
   mediaAppPageHandler.toggleBrowserFullscreenMode();
 });
 
+guestMessagePipe.registerHandler(Message.OPEN_IN_SANDBOXED_VIEWER, message => {
+  window.open(
+      `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
+      'popup=1');
+});
+
 guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {
   const overwrite = /** @type {!OverwriteFileMessage} */ (message);
   const originalHandle = fileHandleForToken(overwrite.token);

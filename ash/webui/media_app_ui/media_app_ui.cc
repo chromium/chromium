@@ -45,6 +45,8 @@ content::WebUIDataSource* CreateHostDataSource() {
     source->SetDefaultResource(IDR_MEDIA_APP_INDEX_HTML);
   }
   source->AddResourcePath("launch.js", IDR_MEDIA_APP_LAUNCH_JS);
+  source->AddResourcePath("viewpdfhost.html", IDR_MEDIA_APP_VIEWPDFHOST_HTML);
+  source->AddResourcePath("viewpdfhost.js", IDR_MEDIA_APP_VIEWPDFHOST_JS);
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();

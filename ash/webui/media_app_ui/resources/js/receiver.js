@@ -330,7 +330,15 @@ const DELEGATE = {
       }
       throw e;
     }
-  }
+  },
+  /**
+   * @param {string} title
+   * @param {string} blobUuid
+   */
+  openInSandboxedViewer(title, blobUuid) {
+    parentMessagePipe.sendMessage(
+        Message.OPEN_IN_SANDBOXED_VIEWER, {title, blobUuid});
+  },
 };
 
 /**

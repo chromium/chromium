@@ -215,6 +215,18 @@ mediaApp.ClientApiDelegate.prototype.notifyCurrentFile = function(
  * @return {!Promise<!File>} A Blob-backed File with type: image/jpeg.
  */
 mediaApp.ClientApiDelegate.prototype.extractPreview = function(file) {};
+/**
+ * Passes the provided `blobUuid` to a sandboxed viewer in a popup window. This
+ * enables the trusted context to open the popup so that it does not appear with
+ * UI suggesting to the user that it is insecure. Only the UUID of the blob
+ * should be passed (hex digits and hyphens), which will reconstruct the blob
+ * URL in the sandbox. The provided `title` will be used to set the document
+ * title (e.g., to include the filename), which will appear in the popup title
+ * bar and shelf context menu.
+ * @type {function(string, string)|undefined}
+ */
+mediaApp.ClientApiDelegate.prototype.openInSandboxedViewer = function(
+    title, blobUuid) {};
 
 /**
  * The client Api for interacting with the media app instance.
