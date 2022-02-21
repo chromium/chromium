@@ -14,6 +14,11 @@
 
 namespace colors_test_expected {
 
+COMPONENT_EXPORT(colors_test_expected) bool DarkModeEnabled();
+COMPONENT_EXPORT(colors_test_expected) bool DebugColorsEnabled();
+COMPONENT_EXPORT(colors_test_expected) void SetDarkModeEnabled(bool enabled);
+COMPONENT_EXPORT(colors_test_expected) void SetDebugColorsEnabled(bool enabled);
+
 enum class ColorName {
   kGoogleGrey900,
   kTextColorPrimary,
@@ -28,12 +33,12 @@ enum class OpacityName {
 
 COMPONENT_EXPORT(colors_test_expected) SkAlpha GetOpacity(
     OpacityName opacity_name,
-    bool is_dark_mode);
+    bool is_dark_mode = DarkModeEnabled());
 
 COMPONENT_EXPORT(colors_test_expected) SkColor ResolveColor(
     ColorName color_name,
-    bool is_dark_mode,
-    bool use_debug_colors);
+    bool is_dark_mode = DarkModeEnabled(),
+    bool use_debug_colors = DebugColorsEnabled());
 
 COMPONENT_EXPORT(colors_test_expected) extern char kDebugOverrideCssString[];
 

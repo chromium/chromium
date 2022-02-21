@@ -76,14 +76,12 @@ class ViewsStyleGenerator(CSSStyleGenerator):
         assert (isinstance(c, Color))
 
         if c.var:
-            return (
-                'ResolveColor(ColorName::%s, is_dark_mode, use_debug_colors)' %
-                self._ToConstName(c.var))
+            return ('ResolveColor(ColorName::%s, is_dark_mode)' %
+                    self._ToConstName(c.var))
 
         if c.rgb_var:
             return ('SkColorSetA(ResolveColor(' +
-                    'ColorName::%s, is_dark_mode, use_debug_colors), %s)' %
-                    (self._ToConstName(
+                    'ColorName::%s, is_dark_mode), %s)' % (self._ToConstName(
                         c.RGBVarToVar()), self._CppOpacity(c.opacity)))
 
         if c.opacity.a != 1:

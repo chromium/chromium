@@ -89,10 +89,7 @@ ColorName TypeToColorName(AshColorProvider::ContentLayerType type) {
 // cros_colors.json5. Colors there will also be used by ChromeOS WebUI.
 SkColor ResolveColor(AshColorProvider::ContentLayerType type,
                      bool use_dark_color) {
-  return cros_styles::ResolveColor(
-      TypeToColorName(type), use_dark_color,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(TypeToColorName(type), use_dark_color);
 }
 
 // Notify all the other components besides the System UI to update on the color
@@ -120,6 +117,9 @@ AshColorProvider::AshColorProvider() {
   // May be null in unit tests.
   if (Shell::HasInstance())
     Shell::Get()->session_controller()->AddObserver(this);
+
+  cros_styles::SetDebugColorsEnabled(base::FeatureList::IsEnabled(
+      ash::features::kSemanticColorsDebugOverride));
 }
 
 AshColorProvider::~AshColorProvider() {
@@ -129,6 +129,9 @@ AshColorProvider::~AshColorProvider() {
   // May be null in unit tests.
   if (Shell::HasInstance())
     Shell::Get()->session_controller()->RemoveObserver(this);
+
+  cros_styles::SetDebugColorsEnabled(false);
+  cros_styles::SetDarkModeEnabled(false);
 }
 
 // static
@@ -204,10 +207,8 @@ SkColor AshColorProvider::GetContentLayerColor(ContentLayerType type) const {
 }
 
 SkColor AshColorProvider::GetActiveDialogTitleBarColor() const {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kDialogTitleBarColor, IsDarkModeEnabled(),
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kDialogTitleBarColor,
+                                   IsDarkModeEnabled());
 }
 
 SkColor AshColorProvider::GetInactiveDialogTitleBarColor() const {
@@ -255,10 +256,8 @@ SkColor AshColorProvider::GetInvertedBackgroundColor() const {
 }
 
 SkColor AshColorProvider::GetBackgroundColorInMode(bool use_dark_color) const {
-  return cros_styles::ResolveColor(
-      cros_styles::ColorName::kBgColor, use_dark_color,
-      base::FeatureList::IsEnabled(
-          ash::features::kSemanticColorsDebugOverride));
+  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
+                                   use_dark_color);
 }
 
 void AshColorProvider::AddObserver(ColorModeObserver* observer) {
@@ -483,6 +482,7 @@ SkColor AshColorProvider::GetBackgroundThemedColorImpl(
 
 void AshColorProvider::NotifyDarkModeEnabledPrefChange() {
   const bool is_enabled = IsDarkModeEnabled();
+  cros_styles::SetDarkModeEnabled(is_enabled);
   for (auto& observer : observers_)
     observer.OnColorModeChanged(is_enabled);
 

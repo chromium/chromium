@@ -19,6 +19,11 @@
 
 namespace {{namespace_name}} {
 
+COMPONENT_EXPORT({{namespace_name}}) bool DarkModeEnabled();
+COMPONENT_EXPORT({{namespace_name}}) bool DebugColorsEnabled();
+COMPONENT_EXPORT({{namespace_name}}) void SetDarkModeEnabled(bool enabled);
+COMPONENT_EXPORT({{namespace_name}}) void SetDebugColorsEnabled(bool enabled);
+
 enum class ColorName {
 {%- for obj in colors %}
   {{obj.name | to_const_name}},
@@ -35,13 +40,13 @@ enum class OpacityName {
 
 COMPONENT_EXPORT({{namespace_name}}) SkAlpha GetOpacity(
     OpacityName opacity_name,
-    bool is_dark_mode);
+    bool is_dark_mode = DarkModeEnabled());
 {%- endif %}
 
 COMPONENT_EXPORT({{namespace_name}}) SkColor ResolveColor(
     ColorName color_name,
-    bool is_dark_mode,
-    bool use_debug_colors);
+    bool is_dark_mode = DarkModeEnabled(),
+    bool use_debug_colors = DebugColorsEnabled());
 
 COMPONENT_EXPORT({{namespace_name}}) extern char kDebugOverrideCssString[];
 
