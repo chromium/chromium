@@ -98,8 +98,11 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
   bool ShouldRevealPassword() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  // If the element is the last input in the form, trigger a form submission.
-  void DispatchSimulatedEnterIfLastInputInForm();
+  // Returns whether this is the last element within its form.
+  bool IsLastInputElementInForm();
+
+  // Triggers a form submission.
+  void DispatchSimulatedEnter();
 #endif
 
 #if INSIDE_BLINK

@@ -2109,15 +2109,21 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void HTMLInputElement::DispatchSimulatedEnterIfLastInputInForm() {
-  Page* page = GetDocument().GetPage();
-  if (page && !page->GetFocusController().NextFocusableElementForIME(
-                  this, mojom::blink::FocusType::kForward)) {
-    page->GetFocusController().SetFocusedElement(this,
-                                                 GetDocument().GetFrame());
+bool HTMLInputElement::IsLastInputElementInForm() {
+  DCHECK(GetDocument().GetPage());
+  return !GetDocument()
+              .GetPage()
+              ->GetFocusController()
+              .NextFocusableElementForIME(this,
+                                          mojom::blink::FocusType::kForward);
+}
 
-    EventDispatcher::DispatchSimulatedEnterEvent(*this);
-  }
+void HTMLInputElement::DispatchSimulatedEnter() {
+  DCHECK(GetDocument().GetPage());
+  GetDocument().GetPage()->GetFocusController().SetFocusedElement(
+      this, GetDocument().GetFrame());
+
+  EventDispatcher::DispatchSimulatedEnterEvent(*this);
 }
 #endif
 

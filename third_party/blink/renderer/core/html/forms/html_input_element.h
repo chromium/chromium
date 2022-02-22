@@ -324,7 +324,8 @@ class CORE_EXPORT HTMLInputElement
   void SetShouldRevealPassword(bool value);
   bool ShouldRevealPassword() const { return should_reveal_password_; }
 #if BUILDFLAG(IS_ANDROID)
-  void DispatchSimulatedEnterIfLastInputInForm();
+  bool IsLastInputElementInForm();
+  void DispatchSimulatedEnter();
 #endif
   AXObject* PopupRootAXObject();
   void DidNotifySubtreeInsertionsToDocument() override;

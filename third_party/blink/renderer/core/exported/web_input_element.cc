@@ -146,8 +146,12 @@ bool WebInputElement::ShouldRevealPassword() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void WebInputElement::DispatchSimulatedEnterIfLastInputInForm() {
-  Unwrap<HTMLInputElement>()->DispatchSimulatedEnterIfLastInputInForm();
+bool WebInputElement::IsLastInputElementInForm() {
+  return Unwrap<HTMLInputElement>()->IsLastInputElementInForm();
+}
+
+void WebInputElement::DispatchSimulatedEnter() {
+  Unwrap<HTMLInputElement>()->DispatchSimulatedEnter();
 }
 #endif
 

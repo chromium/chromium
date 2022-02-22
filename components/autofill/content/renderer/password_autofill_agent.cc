@@ -1483,8 +1483,8 @@ void PasswordAutofillAgent::TriggerFormSubmission() {
     // TODO(crbug.com/1283004): Support filling single username fields too.
     DCHECK(input.IsPasswordFieldForAutofill())
         << "Form submission attempt for a non-password element";
-
-    input.DispatchSimulatedEnterIfLastInputInForm();
+    if (input.IsLastInputElementInForm())
+      input.DispatchSimulatedEnter();
   }
 }
 #endif
