@@ -130,7 +130,10 @@ gfx::DisplayColorSpaces FillDisplayColorSpaces(
         gfx::BufferFormat::RGBA_1010102);
 
     // TODO(https://crbug.com/1286074): Populate maximum luminance based on
-    // `hdr_static_metadata`.
+    // `hdr_static_metadata`. For now, assume that the HDR maximum luminance
+    // is 1,000% of the SDR maximum luminance.
+    constexpr float kHDRMaxLuminanceRelative = 10.f;
+    display_color_spaces.SetHDRMaxLuminanceRelative(kHDRMaxLuminanceRelative);
   }
   return display_color_spaces;
 }
