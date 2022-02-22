@@ -81,8 +81,6 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   bool AreDropTypesRequired() override;
   bool CanDrop(const ui::OSExchangeData& data) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  ui::mojom::DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event) override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void Layout() override;

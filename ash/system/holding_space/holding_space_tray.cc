@@ -393,19 +393,6 @@ int HoldingSpaceTray::OnDragUpdated(const ui::DropTargetEvent& event) {
              : ui::DragDropTypes::DRAG_COPY;
 }
 
-DragOperation HoldingSpaceTray::OnPerformDrop(
-    const ui::DropTargetEvent& event) {
-  std::vector<base::FilePath> unpinned_file_paths(
-      ExtractUnpinnedFilePaths(event.data()));
-  if (unpinned_file_paths.empty())
-    return DragOperation::kNone;
-
-  ui::mojom::DragOperation output_drag_op = DragOperation::kNone;
-  PerformDrop(std::move(unpinned_file_paths), event, output_drag_op);
-
-  return output_drag_op;
-}
-
 views::View::DropCallback HoldingSpaceTray::GetDropCallback(
     const ui::DropTargetEvent& event) {
   std::vector<base::FilePath> unpinned_file_paths(
