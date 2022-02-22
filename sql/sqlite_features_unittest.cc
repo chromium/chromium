@@ -419,6 +419,66 @@ TEST_F(SQLiteFeaturesTest, DeletePreviouslySelectedRows) {
   EXPECT_FALSE(select.Step());
 }
 
+// The "No Isolation Between Operations On The Same Database Connection" section
+// in https://sqlite.org/isolation.html states that it's possible to INSERT in
+// a table while concurrently executing a SELECT statement reading from it, but
+// it's undefined whether the row will show up in the SELECT statement's results
+// or not.
+//
+// Given this ambiguity, Chrome code is not allowed to INSERT in the same table
+// as a concurrent SELECT. However, it is allowed to INSERT in a table which is
+// not covered by SELECT, because this greatly simplifes migrations. So, we test
+// the ability to INSERT in a table while SELECTing from another table, to
+// catch any regressions introduced by SQLite upgrades.
+TEST_F(SQLiteFeaturesTest, InsertWhileSelectingFromDifferentTable) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE src(id INTEGER PRIMARY KEY, t TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE dst(id INTEGER PRIMARY KEY, t TEXT)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO src VALUES(2, 'two')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO src VALUES(3, 'three')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO src VALUES(4, 'four')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO src VALUES(5, 'five')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO src VALUES(6, 'six')"));
+
+  static const char kSelectSrcEvenSql[] = "SELECT id,t FROM src WHERE id%2=0";
+  sql::Statement select_src(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectSrcEvenSql));
+
+  ASSERT_TRUE(select_src.Step());
+  ASSERT_EQ(select_src.ColumnInt(0), 2);
+  ASSERT_EQ(select_src.ColumnString(1), "two");
+  EXPECT_TRUE(db_.Execute("INSERT INTO dst VALUES(2, 'two');"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO dst VALUES(3, 'three')"));
+
+  ASSERT_TRUE(select_src.Step());
+  ASSERT_EQ(select_src.ColumnInt(0), 4);
+  ASSERT_EQ(select_src.ColumnString(1), "four");
+  ASSERT_TRUE(db_.Execute("INSERT INTO dst VALUES(4, 'four')"));
+
+  ASSERT_TRUE(select_src.Step());
+  ASSERT_EQ(select_src.ColumnInt(0), 6);
+  ASSERT_EQ(select_src.ColumnString(1), "six");
+  ASSERT_TRUE(db_.Execute("INSERT INTO dst VALUES(5, 'five')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO dst VALUES(6, 'six')"));
+
+  EXPECT_FALSE(select_src.Step());
+
+  static const char kSelectDstSql[] = "SELECT id,t FROM dst";
+  sql::Statement select_dst(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectDstSql));
+  std::vector<int> dst_ids;
+  std::vector<std::string> dst_texts;
+  while (select_dst.Step()) {
+    dst_ids.push_back(select_dst.ColumnInt(0));
+    dst_texts.push_back(select_dst.ColumnString(1));
+  }
+
+  std::vector<int> golden_dst_ids = {2, 3, 4, 5, 6};
+  EXPECT_EQ(golden_dst_ids, dst_ids);
+  std::vector<std::string> golden_dst_texts = {"two", "three", "four", "five",
+                                               "six"};
+  EXPECT_EQ(golden_dst_texts, dst_texts);
+}
+
 #if BUILDFLAG(IS_APPLE)
 // If a database file is marked to be excluded from backups, verify that journal
 // files are also excluded.
