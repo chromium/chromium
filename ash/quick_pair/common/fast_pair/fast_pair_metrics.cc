@@ -87,8 +87,6 @@ const char kFastPairAccountKeyWriteResultRetroactiveMetric[] =
     "RetroactivePairingProtocol";
 const char kFastPairAccountKeyWriteFailureInitialMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.InitialPairingProtocol";
-const char kFastPairAccountKeyWriteFailureSubsequentMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.SubsequentPairingProtocol";
 const char kFastPairAccountKeyWriteFailureRetroactiveMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.RetroactivePairingProtocol";
 const char kKeyGenerationResultMetric[] =
@@ -304,8 +302,6 @@ void RecordAccountKeyFailureReason(const Device& device,
           kFastPairAccountKeyWriteFailureRetroactiveMetric, failure);
       break;
     case Protocol::kFastPairSubsequent:
-      base::UmaHistogramEnumeration(
-          kFastPairAccountKeyWriteFailureSubsequentMetric, failure);
       break;
   }
 }
