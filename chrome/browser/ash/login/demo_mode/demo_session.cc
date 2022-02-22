@@ -607,7 +607,7 @@ void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
 
 void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != GetHighlightsAppId() ||
-      !(update.GetPriorReadiness() == apps::Readiness::kUnknown &&
+      !(update.PriorReadiness() == apps::Readiness::kUnknown &&
         update.GetReadiness() == apps::Readiness::kReady)) {
     return;
   }

@@ -299,17 +299,18 @@ apps::mojom::Readiness AppUpdate::Readiness() const {
   return apps::mojom::Readiness::kUnknown;
 }
 
-apps::mojom::Readiness AppUpdate::PriorReadiness() const {
-  return mojom_state_ ? mojom_state_->readiness
-                      : apps::mojom::Readiness::kUnknown;
+apps::Readiness AppUpdate::PriorReadiness() const {
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    return state_ ? state_->readiness : apps::Readiness::kUnknown;
+  }
+
+  return ConvertMojomReadinessToReadiness(
+      mojom_state_ ? mojom_state_->readiness
+                   : apps::mojom::Readiness::kUnknown);
 }
 
 apps::Readiness AppUpdate::GetReadiness() const {
     GET_VALUE_WITH_DEFAULT_VALUE(readiness, apps::Readiness::kUnknown)}
-
-apps::Readiness AppUpdate::GetPriorReadiness() const {
-  return state_ ? state_->readiness : apps::Readiness::kUnknown;
-}
 
 bool AppUpdate::ReadinessChanged() const {
   if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {

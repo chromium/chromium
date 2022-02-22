@@ -27,7 +27,7 @@ class AppUpdateMojomTest : public testing::Test {
   }
 
   apps::mojom::Readiness expect_readiness_;
-  apps::mojom::Readiness expect_prior_readiness_;
+  apps::Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
 
   std::string expect_name_;
@@ -259,7 +259,7 @@ class AppUpdateMojomTest : public testing::Test {
     EXPECT_EQ(state == nullptr, u.StateIsNull());
 
     expect_readiness_ = apps::mojom::Readiness::kUnknown;
-    expect_prior_readiness_ = apps::mojom::Readiness::kUnknown;
+    expect_prior_readiness_ = apps::Readiness::kUnknown;
     expect_name_ = "";
     expect_short_name_ = "";
     expect_publisher_id_ = "";
@@ -319,7 +319,8 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       apps::AppUpdate::Merge(state, delta);
-      expect_prior_readiness_ = state->readiness;
+      expect_prior_readiness_ =
+          apps::ConvertMojomReadinessToReadiness(state->readiness);
       ExpectNoChange();
       CheckExpects(u);
     }
@@ -352,7 +353,8 @@ class AppUpdateMojomTest : public testing::Test {
 
     if (state) {
       apps::AppUpdate::Merge(state, delta);
-      expect_prior_readiness_ = state->readiness;
+      expect_prior_readiness_ =
+          apps::ConvertMojomReadinessToReadiness(state->readiness);
       ExpectNoChange();
       CheckExpects(u);
     }
