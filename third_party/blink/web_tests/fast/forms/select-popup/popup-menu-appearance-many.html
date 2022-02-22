@@ -1,29 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
-</head>
-<body>
-<select id="menu">
-</select>
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+
+<select></select>
+
 <script>
-var menu = document.getElementById('menu');
-for (var i = 0; i < 200; i++) {
-    var option = new Option('item ' + i);
-    if (i === 100)
-        option.selected = true;
-    menu.appendChild(option);
-}
-openPicker(menu, finishJSTest, function () {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-});
+  window.onload = () => {
+    var menu = document.querySelector('select');
+    for (var i = 0; i < 200; i++) {
+      var option = new Option('item ' + i);
+      if (i === 100)
+          option.selected = true;
+      menu.appendChild(option);
+    }
+    openPickerAppearanceOnly(menu)
+  };
 </script>
-</body>
-</html>

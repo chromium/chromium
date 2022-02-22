@@ -20,25 +20,15 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
 }
-
-function openCallback() {
+window.onload = () => {
+  openPicker(document.querySelector('input'))
+  .then(() => {
     form1.submit();
-}
-
-function errorCallback() {
+  })
+  .catch(e => {
     testRunner.notifyDone();
+  });
 }
-
-window.onload = async function () {
-    await test_driver.bless("show color picker");
-    color.showPicker();
-
-    popupWindow = internals.pagePopupWindow;
-    if (popupWindow)
-        setPopupOpenCallback(openCallback);
-    else
-        errorCallback();
-};
 </script>
 </body>
 </html>

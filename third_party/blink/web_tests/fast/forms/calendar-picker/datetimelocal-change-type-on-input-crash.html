@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <script src=../../../resources/js-test.js>></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src=../../forms/resources/picker-common.js>></script>
 <input type=datetime-local id=datetimelocal1>
 <script>
@@ -13,12 +15,12 @@ function handleInput(event) {
 }
 
 datetimelocal1.addEventListener('input', handleInput, false);
-openPicker(datetimelocal1, test1);
+openPickerDeprecatedJsTest(datetimelocal1, test1);
 
 function test1() {
     eventSender.keyDown('ArrowLeft');
     eventSender.keyDown('Enter');
-    waitUntilClosing(test1AfterClosing);
+    waitUntilClosingDeprecatedJsTest(test1AfterClosing);
 }
 
 function test1AfterClosing() {

@@ -213,7 +213,6 @@ fast/forms/radio/radio-appearance-basic.html [ Pass ]
 fast/forms/range/input-appearance-range.html [ Pass ]
 fast/forms/search/search-rtl.html [ Pass ]
 fast/forms/select/basic-selects.html [ Pass ]
-fast/forms/select-popup/popup-menu-appearance-coarse.html [ Pass ]
 fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Pass ]
 fast/forms/text/input-baseline.html [ Pass ]
 fast/forms/textarea/textarea-align.html [ Pass ]
@@ -698,7 +697,7 @@ crbug.com/1179565 svg/filters/filter-clip.svg [ Failure Pass ]
 crbug.com/1179565 svg/transforms/text-with-mask-with-svg-transform.svg [ Failure Pass ]
 crbug.com/1179565 svg/zoom/page/zoom-mask-with-percentages.svg [ Failure Pass ]
 
-# Timeout failures 
+# Timeout failures
 crbug.com/1179572 accessibility/click-event.html [ Timeout ]
 crbug.com/1179572 clipboard/copy-image-at.html [ Timeout ]
 crbug.com/1179572 fullscreen/video-controls-timeline.html [ Timeout ]
@@ -720,6 +719,7 @@ crbug.com/1179570 virtual/scroll-unification/fast/forms/suggestion-picker/time-s
 crbug.com/1179570 virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-mouse-operations.html [ Timeout ]
 crbug.com/1179570 virtual/scroll-unification/fast/events/wheel/wheelevent-ctrl.html [ Timeout ]
 crbug.com/1179570 virtual/scroll-unification/fast/events/wheel/wheelevent-in-scrolling-div.html [ Timeout ]
+crbug.com/1179570 fast/forms/select-popup/popup-menu-appearance-coarse.html [ Timeout ]
 
 # Off by one errors cause by SwiftShader update
 crbug.com/1266821 compositing/3d-corners.html [ Failure ]

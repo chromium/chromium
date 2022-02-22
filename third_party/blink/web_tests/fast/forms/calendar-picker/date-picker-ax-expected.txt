@@ -1,0 +1,6 @@
+CONSOLE MESSAGE: Received MarkDirty event
+CONSOLE MESSAGE: Received MarkDirty event
+This is a testharness.js-based test.
+FAIL Tests that typing an arrow key and opening month switcher menu dispatches |Focus| and |MarkDirty| a11y events. promise_test: Unhandled rejection with value: "Didn't receive expected events.  Got 0 Focus and 2 MarkDirty"
+Harness: the test ran to completion.
+

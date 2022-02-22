@@ -1,21 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/calendar-picker-common.js"></script>
-</head>
-<body>
-<input type=week id=week value="10000-W12">
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+<input type=week value="10000-W12">
 
 <script>
-openPickerAppearanceOnly(document.getElementById('week'), finishJSTest);
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>
-</body>
-</html>

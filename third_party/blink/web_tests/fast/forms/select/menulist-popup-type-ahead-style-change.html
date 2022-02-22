@@ -1,34 +1,26 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../../resources/js-test.js"></script>
-<script src="../resources/common.js"></script>
-<script src="../resources/picker-common.js"></script>
-</head>
-<body>
-Tests &lt;select&gt; style change when popup is visible after selection is changed
-by keyboard typeahead. The selection should not change when style changes.
-Needs run-layout-test.<br>
-<select id="select">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../forms/resources/picker-common.js"></script>
+
+<select>
   <option>A</option>
   <option>B</option>
   <option>C</option>
 </select>
-<pre id="output"></pre>
+
 <script>
-var select = document.getElementById('select');
-function openPickerErrorCallback() {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-}
-openPicker(select, function() {
+// Tests <select> style change when popup is visible after selection is changed
+// by keyboard typeahead. The selection should not change when style changes.
+window.onload = () => {
+  const select = document.querySelector('select');
+  openPickerAppearanceOnly(select, () => {
     eventSender.keyDown('C', null);
     select.offsetTop;
     select.style.backgroundColor = 'yellow';
-    shouldBeEqualToString('internals.selectMenuListText(select)', 'C');
-    finishJSTest();
-}, openPickerErrorCallback);
+    assert_equals(internals.selectMenuListText(select), 'C');
+  });
+};
 </script>
-</body>
-</html>
-

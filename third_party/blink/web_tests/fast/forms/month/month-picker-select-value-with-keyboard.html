@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -17,7 +19,7 @@
 <script>
 promise_test(() => {
   let monthElement = document.getElementById("month0");
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('ArrowRight');
     eventSender.keyDown('ArrowDown');
@@ -31,7 +33,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById("month1");
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('ArrowRight');
     assert_equals(monthElement.value, "2019-09", "Right arrow key should skip over invalid date.");
@@ -43,7 +45,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById("month2");
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('ArrowUp');
     assert_equals(monthElement.value, "2019-03", "Up arrow key should skip over invalid month.");
@@ -55,7 +57,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById("month3");
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('ArrowDown');
     assert_equals(monthElement.value, "2020-05", "Arrow key should skip to next valid month even if it's in a different year.");
@@ -67,7 +69,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById("month4");
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('ArrowLeft');
     eventSender.keyDown('ArrowLeft');
@@ -81,7 +83,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById("month5");
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('ArrowDown');
     eventSender.keyDown('ArrowDown');

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<head>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
+
 <style>
   select {
     width: 100px;
@@ -8,7 +10,7 @@
     display:block;
   }
 </style>
-</head>
+
 <!-- text-align CSS should work inside <select> -->
 <select>
   <option style="text-align:right;" selected>right</option>
@@ -48,9 +50,5 @@
   <option style="text-align:center">center</option>
 </select>
 <script>
-  function done() {
-    testRunner.notifyDone();
-  }
-  testRunner.waitUntilDone();
-  openPicker(document.querySelector("#menu"), done, done);
+  window.onload = openPickerAppearanceOnly(document.querySelector('#menu'));
 </script>

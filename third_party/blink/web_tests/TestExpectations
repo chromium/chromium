@@ -2498,9 +2498,6 @@ crbug.com/1223118 external/wpt/resource-timing/initiator-type/link.html [ Failur
 # Chrome touch-action computation ignores div transforms.
 crbug.com/715148 external/wpt/pointerevents/pointerevent_touch-action-rotated-divs_touch-manual.html [ Skip ]
 
-crbug.com/654999 [ Win ] fast/forms/color/color-suggestion-picker-appearance-zoom200.html [ Failure Pass ]
-crbug.com/654999 [ Linux ] fast/forms/color/color-suggestion-picker-appearance-zoom200.html [ Failure Pass ]
-
 crbug.com/658304 [ Win ] fast/forms/select/input-select-after-resize.html [ Crash Failure Pass Skip Timeout ]
 
 crbug.com/736319 external/wpt/css/css-writing-modes/text-combine-upright-compression-001.html [ Failure ]
@@ -2581,8 +2578,6 @@ crbug.com/525296 fast/css/font-load-while-styleresolver-missing.html [ Crash Fai
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-window.html [ Failure Pass Skip Timeout ]
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-worker.html [ Failure Pass Skip Timeout ]
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-sharedworker.html [ Failure Pass Skip Timeout ]
-
-crbug.com/543369 fast/forms/select-popup/popup-menu-appearance-tall.html [ Failure Pass ]
 
 crbug.com/548765 http/tests/devtools/console-fetch-logging.js [ Failure Pass ]
 
@@ -2798,6 +2793,48 @@ crbug.com/893480 external/wpt/html/semantics/interactive-elements/the-dialog-ele
 crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-basic.html [ Failure Timeout ]
 crbug.com/1040611 external/wpt/uievents/order-of-events/mouse-events/wheel-scrolling.html [ Failure Timeout ]
 
+# crbug.com/1298321: "element click intercepted error" when <body style="zoom:2">.
+crbug.com/1298321 fast/forms/calendar-picker/calendar-picker-appearance-zoom200.html [ Pass Failure Timeout ]
+crbug.com/1298321 fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Pass Failure Timeout ]
+crbug.com/1298321 fast/forms/select-popup/popup-menu-appearance-zoom.html [ Pass Failure Timeout ]
+crbug.com/1298321 fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom200.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor200withzoom/fast/hidpi/static/popup-menu-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor200withzoom/fast/hidpi/static/calendar-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor200withzoom/fast/hidpi/static/data-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/calendar-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor200/fast/hidpi/static/popup-menu-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor150/fast/hidpi/static/calendar-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1298321 virtual/scalefactor150/fast/hidpi/static/popup-menu-appearance.html [ Pass Failure Timeout ]
+
+# crbug.com/1299212: These need more work after the revamp of picker-common.js
+crbug.com/1299212 fast/forms/select-popup/popup-menu-appearance-coarse.html [ Pass Failure Timeout ]
+crbug.com/1299212 fast/forms/select-popup/popup-menu-position.html [ Pass Failure Timeout ]
+crbug.com/1299212 http/tests/webfont/popup-menu-load-webfont-after-open.html [ Pass Failure Timeout ]
+crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/date-suggestion-picker-mouse-operations.html [ Pass Failure Timeout ]
+crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/week-suggestion-picker-mouse-operations.html [ Pass Failure Timeout ]
+crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/month-suggestion-picker-mouse-operations.html [ Pass Failure Timeout ]
+crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Pass Failure Timeout ]
+crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/datetimelocal-suggestion-picker-mouse-operations.html [ Pass Failure Timeout ]
+crbug.com/1299212 fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Pass Failure Timeout Skip ]
+crbug.com/1299212 fast/forms/color-scheme/select/select-popup-appearance-basic.html [ Pass Failure Timeout Skip ]
+crbug.com/1299212 fast/forms/select/menulist-popup-type-ahead-style-change.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom125.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-locale-hebrew.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/month-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance-locale-hebrew.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+# At least scrollbars, if not window sizes, are flaky on Win7:
+crbug.com/1299212 [ Win7 ] fast/forms/select-popup/popup-menu-appearance-tall.html [ Pass Failure Timeout ]
+crbug.com/1299212 [ Win7 ] fast/forms/suggestion-picker/* [ Pass Failure Timeout ]
+crbug.com/1299212 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
 
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
@@ -4572,10 +4609,6 @@ crbug.com/689781 external/wpt/media-source/mediasource-duration.html [ Failure P
 crbug.com/689781 [ Win ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 crbug.com/689781 [ Mac ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 
-crbug.com/681468 [ Win ] virtual/scalefactor150/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/681468 [ Win ] virtual/scalefactor200withzoom/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
-crbug.com/681468 [ Win ] virtual/scalefactor200/fast/hidpi/static/data-suggestion-picker-appearance.html [ Failure Pass Timeout ]
-
 crbug.com/1157857 virtual/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Failure Pass Timeout ]
 
 crbug.com/683800 [ Debug Win7 ] external/wpt/selection/* [ Failure Pass ]
@@ -4941,13 +4974,6 @@ crbug.com/1047480 [ Fuchsia ] virtual/gpu-rasterization/images/drag-image-descen
 ### See crbug.com/891427 comment near the top of this file:
 ###crbug.com/816914 [ Mac ] fast/canvas/canvas-drawImage-live-video.html [ Failure Pass ]
 crbug.com/817167 http/tests/devtools/oopif/oopif-cookies-refresh.js [ Failure Pass Skip Timeout ]
-
-# Disable temporarily on Win7, will remove them when they are not flaky.
-crbug.com/1047176 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
-crbug.com/1047176 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
-crbug.com/1047176 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
-crbug.com/1047176 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
-crbug.com/1047176 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
 
 # Sheriff 2018-03-02
 crbug.com/818076 http/tests/devtools/oopif/oopif-elements-navigate-in.js [ Failure Pass ]
@@ -5544,7 +5570,6 @@ crbug.com/989665 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-ti
 crbug.com/1046784 http/tests/inspector-protocol/service-worker/target-reloaded-after-crash.js [ Failure Pass Timeout ]
 
 # Sheriff 2020-01-28
-crbug.com/1046201 [ Mac ] fast/forms/calendar-picker/calendar-picker-appearance-zoom125.html [ Failure Pass ]
 crbug.com/1046440 fast/loader/submit-form-while-parsing-2.html [ Failure Pass Timeout ]
 
 # Sheriff 2020-01-29
@@ -5639,7 +5664,6 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-ta
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-input-field.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Crash Failure Pass Timeout ]
-crbug.com/476553 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/resize-corner-tracking-touch.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/subpixel-overflow-mouse-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/476553 virtual/scroll-unification/http/tests/misc/destroy-middle-click-locked-target-crash.html [ Crash Failure Pass Skip Timeout ]
@@ -5939,13 +5963,6 @@ crbug.com/1113127 fast/canvas/downsample-quality.html [ Crash Failure Pass ]
 # Sheriff 2020-08-06
 crbug.com/1113791 [ Win ] media/video-zoom.html [ Failure Pass ]
 
-# Virtual dark mode tests currently fails.
-crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/date-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/month-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/time-suggestion-picker-appearance.html [ Failure ]
-crbug.com/1111932 virtual/dark-color-scheme/fast/forms/color-scheme/suggestion-picker/week-suggestion-picker-appearance.html [ Failure ]
-
 # Sheriff 2020-08-11
 crbug.com/1095540 virtual/threaded-prefer-compositing/fast/scrolling/resize-corner-tracking-touch.html [ Failure Pass ]
 
@@ -6074,24 +6091,6 @@ crbug.com/1134459 accessibility/aom-click-action.html [ Pass Timeout ]
 #Sheriff 2020-11-26
 crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Skip Timeout ]
 crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
-
-# Win7 suggestion picker appearance tests have a scrollbar flakiness issue
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance-rtl.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance-with-scroll-bar.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-locale-hebrew.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-rtl.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance-with-scroll-bar.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-locale-hebrew.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-rtl.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance-with-scroll-bar.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance-rtl.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance-with-scroll-bar.html [ Failure Pass ]
-crbug.com/1045510 [ Win7 ] fast/forms/suggestion-picker/time-suggestion-picker-appearance.html [ Failure Pass ]
-
-crbug.com/681468 fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom125.html [ Failure Pass ]
-crbug.com/681468 fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom200.html [ Failure Pass ]
 
 # These tests will only run in the virtual test suite where the frequency
 # capping for overlay popup detection is disabled. This eliminates the need
@@ -6813,9 +6812,6 @@ crbug.com/1232388 [ Mac10.12 ] external/wpt/html/rendering/non-replaced-elements
 crbug.com/1232867 [ Mac10.12 ] fast/inline-block/contenteditable-baseline.html [ Failure Pass ]
 crbug.com/1254382 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/background-image-alpha.https.html [ Failure ]
 
-# Sheriff 2021-07-27
-crbug.com/1233557 [ Mac10.12 ] fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Failure Pass ]
-
 # Sheriff 2021-07-28
 crbug.com/1233781 http/tests/serviceworker/window-close-during-registration.html [ Failure Pass ]
 crbug.com/1234057 external/wpt/css/css-paint-api/no-op-animation.https.html [ Failure Pass ]
@@ -7069,7 +7065,6 @@ crbug.com/1249176 [ Mac11-arm64 ] fast/replaced/no-focus-ring-object.html [ Fail
 
 crbug.com/1249176 [ Mac11-arm64 ] editing/selection/find-in-text-control.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-min-max-attribute.html [ Crash ]
-crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/stylesheet-and-script-load-order-http.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/blob/send-sliced-data-blob.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/formdata/send-form-data-with-empty-name.html [ Crash ]
@@ -7413,20 +7408,6 @@ crbug.com/1229095 [ Linux ] virtual/gpu/fast/canvas/canvas-getImageData.html [ F
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict.js [ Pass Timeout ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Pass Timeout ]
 
-# crbug.com/1270510 Picker appearance tests that are flaky
-# Note - because some of these are in SlowTests, they need to be Skipped.
-crbug.com/1285304 fast/forms/color-scheme/suggestion-picker/time-suggestion-picker-appearance.html [ Failure Pass Skip Timeout ]
-crbug.com/1293965 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Skip ]
-crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure Pass ]
-crbug.com/1293965 [ Mac ] fast/forms/month/month-picker-appearance-step.html [ Skip ]
-crbug.com/1293965 [ Mac ] fast/forms/color-scheme/week-picker/week-picker-appearance-highlight-es.html [ Skip ]
-crbug.com/1295712 [ Mac10.13 ] fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure ]
-crbug.com/1295733 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Failure ]
-crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance.html [ Failure Pass ]
-crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance.html [ Failure Pass ]
-crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
-crbug.com/1293965 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
-
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
 
@@ -7497,8 +7478,6 @@ crbug.com/1253323 http/tests/devtools/sources/debugger/navigator-view.js [ Skip 
 crbug.com/1290978 [ Win ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Mac ] external/wpt/css/CSS2/normal-flow/crashtests/block-in-inline-ax-crash.html [ Crash Failure Pass Timeout ]
 crbug.com/1290978 [ Win7 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Crash Failure Pass Skip Timeout ]
-crbug.com/1291246 [ Mac ] virtual/dark-system-color-picker-appearance/fast/forms/color-scheme/color/color-picker-appearance.html [ Failure Pass ]
-crbug.com/1291246 [ Mac ] virtual/system-color-picker-appearance/fast/forms/color-scheme/color/color-picker-appearance.html [ Failure Pass ]
 
 # Sheriff 2022-01-27 Flaky test
 crbug.com/1291488 virtual/shared_array_buffer_on_desktop/fast/peerconnection/RTCPeerConnection-addMultipleTracks.html [ Skip ]

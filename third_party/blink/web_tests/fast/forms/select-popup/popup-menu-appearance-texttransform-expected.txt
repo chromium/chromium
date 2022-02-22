@@ -1,7 +1,0 @@
-foo
-bar
-
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

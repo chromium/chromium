@@ -9,9 +9,8 @@
 <script src="../resources/common.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
 <script src="../resources/picker-common.js"></script>
-</head>
-<body>
-<select id="menu">
+
+<select>
   <option>option1</option>
   <option>option2</option>
   <option>option3</option>
@@ -44,37 +43,26 @@
 <script>
 internals.settings.setScrollAnimatorEnabled(false);
 
-let test = async_test(function(test) {
-  var selectRect = menu.getBoundingClientRect();
-  clickToOpenPickerWithPromise(selectRect.left, selectRect.top, test.step_func(testScrollbarScroll),
-      test.unreached_func('Picker failed to open'));
-}, "Scrollbar clicks in a popup must scroll");
-
-async function testScrollbarScroll() {
-    let picker = internals.pagePopupWindow.global.picker;
-    let scrollEvents = 0;
-
+promise_test(() => {
+  const menu = document.querySelector('select');
+  return openPicker(menu)
+  .then(() => {
     // Click on the scrollbar forward button, and then validate
     // that the scrollbar/scrollable area scrolled.
-    let selectElement = internals.pagePopupWindow.global.picker._selectElement;
-    let innerSelectRect = selectElement.getBoundingClientRect();
-    let scrollbarX = innerSelectRect.x + innerSelectRect.width - 5 + popupWindow.screenX;
-    let scrollbarY = innerSelectRect.y + innerSelectRect.height - 10 + popupWindow.screenY;
-    let actions = new test_driver.Actions();
-    await actions
+    let innerSelectRect = internals.pagePopupWindow.global.picker._selectElement.getBoundingClientRect();
+    let scrollbarX = innerSelectRect.x + innerSelectRect.width - 5 + internals.pagePopupWindow.screenX;
+    let scrollbarY = innerSelectRect.y + innerSelectRect.height - 10 + internals.pagePopupWindow.screenY;
+    return (new test_driver.Actions())
       .pointerMove(scrollbarX, scrollbarY)
       .pointerDown()
       .pointerUp()
       .send();
-    requestAnimationFrame(test.step_func(function() {
-      requestAnimationFrame(test.step_func(function() {
-          assert_greater_than(selectElement.scrollTop, 0);
-          test.done();
-      }));
-    }));
-}
-
+  })
+  .then(requestAnimationFramePromise())
+  .then(requestAnimationFramePromise())
+  .then(() => {
+    assert_not_equals(internals.pagePopupWindow, null, "The click shouldn't have closed the window");
+    assert_greater_than(internals.pagePopupWindow.global.picker._selectElement.scrollTop, 0);
+  });
+}, "Scrollbar clicks in a popup must scroll");
 </script>
-</body>
-</html>
-

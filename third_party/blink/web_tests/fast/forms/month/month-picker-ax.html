@@ -3,6 +3,8 @@
 <head>
     <script src="../../../resources/testharness.js"></script>
     <script src="../../../resources/testharnessreport.js"></script>
+    <script src="../../../resources/testdriver.js"></script>
+    <script src="../../../resources/testdriver-vendor.js"></script>
     <script src="../resources/common.js"></script>
     <script src="../resources/picker-common.js"></script>
     <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -14,7 +16,7 @@
 <script>
 promise_test((t) => {
   var month1 = document.getElementById('month1');
-  return openPickerWithPromise(month1).then(() => {
+  return openPicker(month1).then(() => {
     var markDirtyCounter = 0;
     var focusCounter = 0;
     let promise = new Promise((resolve, reject) => {

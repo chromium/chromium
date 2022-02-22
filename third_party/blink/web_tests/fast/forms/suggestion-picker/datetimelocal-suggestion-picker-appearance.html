@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/suggestion-picker-common.js"></script>
-</head>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <body style="background-color: #eeffff;">
-<input type=datetime-local id=datetime-local value="10000-12-31T23:59" list="suggestions" style="width: 300px;" step="0.001">
+<input type=datetime-local value="10000-12-31T23:59" list="suggestions" style="width: 300px;" step="0.001">
 <datalist id=suggestions>
     <option>2012-11-31T00:00</option> <!--invalid-->
     <option>2012-11-31</option> <!--invalid-->
@@ -34,18 +29,10 @@ window.enablePixelTesting = true;
     <option>2012-11-22T01:18</option>
     <option>2012-11-22T01:19</option>
 </datalist>
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
+  
 <script>
-openPickerAppearanceOnly(document.getElementById('datetime-local'), finishTest);
-
-function finishTest() {
-    popupWindow.focus();
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+    internals.pagePopupWindow.focus();
     eventSender.keyDown('ArrowDown');
-    finishJSTest();
-}
+  });
 </script>
-</body>
-</html>

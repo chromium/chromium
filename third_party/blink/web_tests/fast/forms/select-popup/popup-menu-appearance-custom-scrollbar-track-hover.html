@@ -1,11 +1,8 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-  window.enablePixelTesting = true;
-</script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
-<script src="../resources/common.js"></script>
+
 <style>
   select:focus {
     outline-width: 0;
@@ -36,9 +33,8 @@
     background-color: green;
   }
 </style>
-</head>
-<body>
-<select id='menu'>
+
+<select>
   <option>This is an option</option>
   <option>This is an option</option>
   <option>This is an option</option>
@@ -67,30 +63,27 @@
   <option>This is an option</option>
   <option>This is an option</option>
 </select>
+
 <script>
-let menu = document.getElementById('menu');
-function mouseMoveToScrollbar() {
-  return new Promise(function(resolve, reject) {
-    if (window.chrome && chrome.gpuBenchmarking) {
-      let selectElement = internals.pagePopupWindow.global.picker._selectElement;
-      let innerSelectRect = selectElement.getBoundingClientRect();
-      let scrollbarX = innerSelectRect.x + innerSelectRect.width - 5;
-      let scrollbarY = innerSelectRect.y + innerSelectRect.height - 10;
-      chrome.gpuBenchmarking.pointerActionSequence(
-          [{
-            source: 'mouse',
-            actions: [{name: 'pointerMove', x: scrollbarX, y: scrollbarY}]
-          }],
-          resolve);
-    } else {
-      reject();
-    }
-  });
-}
-openPicker(menu, ()=>{
-  mouseMoveToScrollbar().then(()=>{testRunner.notifyDone()}) 
-})
-testRunner.waitUntilDone()
+  window.onload = () => {
+    let menu = document.querySelector('select');
+    openPickerAppearanceOnly(menu,() => {
+      return new Promise(function(resolve, reject) {
+        if (window.chrome && chrome.gpuBenchmarking) {
+          let selectElement = internals.pagePopupWindow.global.picker._selectElement;
+          let innerSelectRect = selectElement.getBoundingClientRect();
+          let scrollbarX = innerSelectRect.x + innerSelectRect.width - 5;
+          let scrollbarY = innerSelectRect.y + innerSelectRect.height - 10;
+          chrome.gpuBenchmarking.pointerActionSequence(
+              [{
+                source: 'mouse',
+                actions: [{name: 'pointerMove', x: scrollbarX, y: scrollbarY}]
+              }],
+              resolve);
+        } else {
+          reject();
+        }
+      });
+    });
+  };
 </script>
-</body>
-</html>

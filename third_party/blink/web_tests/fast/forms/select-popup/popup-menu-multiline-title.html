@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 </head>
@@ -19,7 +21,7 @@ function openPickerErrorCallback() {
 }
 
 document.getElementById('option1').title = 'bar\nbaz';
-openPicker(menu, test1, openPickerErrorCallback);
+openPickerDeprecatedJsTest(menu, test1, openPickerErrorCallback);
 
 function test1() {
     picker = internals.pagePopupWindow.global.picker;

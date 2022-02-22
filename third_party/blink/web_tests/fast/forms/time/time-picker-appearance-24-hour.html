@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<script>
-testRunner.waitUntilDone();
-if (window.internals)
-    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
-</script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
-<input type="time" id="time" value="14:15" lang="ru">
+
+<input type="time" value="14:15" lang="ru">
+
 <script>
-openPickerAppearanceOnly(document.getElementById('time'), () => testRunner.notifyDone());
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'));
 </script>

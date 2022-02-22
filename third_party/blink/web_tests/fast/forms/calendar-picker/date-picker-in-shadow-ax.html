@@ -3,6 +3,8 @@
 <head>
   <script src="../../../resources/testharness.js"></script>
   <script src="../../../resources/testharnessreport.js"></script>
+  <script src="../../../resources/testdriver.js"></script>
+  <script src="../../../resources/testdriver-vendor.js"></script>
   <script src="../resources/common.js"></script>
   <script src="../resources/picker-common.js"></script>
   <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -19,7 +21,7 @@
   promise_test(async () => {
     let date = document.querySelector("#shadowHost").shadowRoot.querySelector('#date0');
 
-    await openPickerWithPromise(date);
+    await openPicker(date);
     assert_equals(accessibilityController.focusedElement.role, "AXRole: AXGrid", "a11y focus should have moved inside the calendar grid in the control's popup");
   }, 'Tests that a11y focus is sent inside the date picker popup when the control is in a shadow DOM.');
 </script>

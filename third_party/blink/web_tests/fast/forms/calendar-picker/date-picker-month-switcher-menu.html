@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -15,7 +17,7 @@
 
 promise_test(() => {
   let dateElement = document.getElementById('date-0');
-  return openPickerWithPromise(dateElement)
+  return openPicker(dateElement)
   .then(() => {
     // Make the picker dismiss synchronously so we don't need to insert
     // an artificial delay in the test
@@ -35,7 +37,7 @@ promise_test(() => {
 
 promise_test(() => {
   let dateElement = document.getElementById('date-1');
-  return openPickerWithPromise(dateElement)
+  return openPicker(dateElement)
   .then(() => {
     // Make the picker dismiss synchronously so we don't need to insert
     // an artificial delay in the test
@@ -53,7 +55,7 @@ promise_test(() => {
 
 promise_test(() => {
   let dateElement = document.getElementById('date-2');
-  return openPickerWithPromise(dateElement)
+  return openPicker(dateElement)
   .then(() => {
     clickMonthPopupButton();
     eventSender.keyDown('Enter');
