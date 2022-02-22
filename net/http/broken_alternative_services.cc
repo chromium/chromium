@@ -5,6 +5,7 @@
 #include "net/http/broken_alternative_services.h"
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/memory/singleton.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -223,11 +224,11 @@ void BrokenAlternativeServices::SetBrokenAndRecentlyBrokenAlternativeServices(
       *recently_broken_alternative_services);
   // Add back all existing recently broken alt svcs to cache so they're at
   // front of recency list (LRUCache::Get() does this automatically).
-  for (auto it = recently_broken_alternative_services->rbegin();
-       it != recently_broken_alternative_services->rend(); ++it) {
-    if (recently_broken_alternative_services_.Get(it->first) ==
+  for (const auto& [service, broken_count] :
+       base::Reversed(*recently_broken_alternative_services)) {
+    if (recently_broken_alternative_services_.Get(service) ==
         recently_broken_alternative_services_.end()) {
-      recently_broken_alternative_services_.Put(it->first, it->second);
+      recently_broken_alternative_services_.Put(service, broken_count);
     }
   }
 

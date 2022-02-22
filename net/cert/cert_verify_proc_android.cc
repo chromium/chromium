@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
@@ -299,9 +300,9 @@ bool VerifyFromAndroidTrustManager(
   // Extract the public key hashes and check whether or not any are known
   // roots. Walk from the end of the chain (root) to leaf, to optimize for
   // known root checks.
-  for (auto it = verified_chain.rbegin(); it != verified_chain.rend(); ++it) {
+  for (const auto& cert : base::Reversed(verified_chain)) {
     base::StringPiece spki_bytes;
-    if (!asn1::ExtractSPKIFromDERCert(*it, &spki_bytes)) {
+    if (!asn1::ExtractSPKIFromDERCert(cert, &spki_bytes)) {
       verify_result->cert_status |= CERT_STATUS_INVALID;
       continue;
     }

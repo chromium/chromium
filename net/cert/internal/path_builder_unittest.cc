@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/callback_forward.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -617,8 +618,8 @@ TEST_F(PathBuilderMultiRootTest, TestCertIssuerOrdering) {
         b_by_c_, b_by_f_, f_by_e_, c_by_d_, c_by_e_};
     CertIssuerSourceStatic sync_certs;
     if (reverse_order) {
-      for (auto it = certs.rbegin(); it != certs.rend(); ++it)
-        sync_certs.AddCert(*it);
+      for (const auto& cert : base::Reversed(certs))
+        sync_certs.AddCert(cert);
     } else {
       for (const auto& cert : certs)
         sync_certs.AddCert(cert);

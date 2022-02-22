@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/adapters.h"
 #include "base/file_version_info.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -1333,9 +1334,8 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
     }
   }
 
-  for (auto r_iter = types.rbegin(); r_iter != types.rend(); ++r_iter) {
+  for (const auto& type : base::Reversed(types)) {
     std::unique_ptr<FilterSourceStream> downstream;
-    SourceStream::SourceType type = *r_iter;
     switch (type) {
       case SourceStream::TYPE_BROTLI:
         downstream = CreateBrotliSourceStream(std::move(upstream));
