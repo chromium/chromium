@@ -745,9 +745,12 @@ void AutocompleteController::UpdateResult(
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
-  // TODO(tommycli): It sure seems like this should be moved down below
-  // `TransferOldMatches()` along with all the other annotation code.
-  result_.AttachPedalsToMatches(input_, *provider_client_);
+  // Only produce Pedals for the default focus case (not on focus or on delete).
+  if (input_.focus_type() == OmniboxFocusType::DEFAULT) {
+    // TODO(tommycli): It sure seems like this should be moved down below
+    // `TransferOldMatches()` along with all the other annotation code.
+    result_.AttachPedalsToMatches(input_, *provider_client_);
+  }
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
   // valid against the current input.
