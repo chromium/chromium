@@ -1684,7 +1684,7 @@ Your Google account may have other forms of browsing history like searches and a
         Choose where to download
       </message>
       <message name="IDS_DOWNLOAD_LOCATION_DIALOG_TITLE_CONFIRM_DOWNLOAD" desc="Title for the dialog that informs the user to confirm the download.">
-        Confirm download
+        Download file?
       </message>
       <message name="IDS_DOWNLOAD_LOCATION_DIALOG_CHECKBOX" desc="Label for the checkbox that allows the user to indicate if they do not want the download location selection dialog to appear every time they initiate a download.">
         Don‘t show again
