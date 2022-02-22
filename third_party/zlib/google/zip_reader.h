@@ -188,8 +188,9 @@ class ZipReader {
   bool ok() const { return ok_; }
 
   // Extracts |num_bytes_to_extract| bytes of the current entry to |delegate|,
-  // starting from the beginning of the entry. Return value specifies whether
-  // the entire file was extracted.
+  // starting from the beginning of the entry.
+  //
+  // Returns true if the entire file was extracted without error.
   //
   // Precondition: Next() returned a non-null Entry.
   bool ExtractCurrentEntry(WriterDelegate* delegate,
@@ -200,8 +201,8 @@ class ZipReader {
   // the current entry is a directory it just creates the directory
   // synchronously instead.
   //
-  // success_callback will be called on success and failure_callback will be
-  // called on failure. progress_callback will be called at least once.
+  // |success_callback| will be called on success and |failure_callback| will be
+  // called on failure. |progress_callback| will be called at least once.
   // Callbacks will be posted to the current MessageLoop in-order.
   //
   // Precondition: Next() returned a non-null Entry.
@@ -209,7 +210,7 @@ class ZipReader {
       const base::FilePath& output_file_path,
       SuccessCallback success_callback,
       FailureCallback failure_callback,
-      const ProgressCallback& progress_callback);
+      ProgressCallback progress_callback);
 
   // Extracts the current entry into memory. If the current entry is a
   // directory, |*output| is set to the empty string. If the current entry is a
@@ -258,7 +259,7 @@ class ZipReader {
   void ExtractChunk(base::File target_file,
                     SuccessCallback success_callback,
                     FailureCallback failure_callback,
-                    const ProgressCallback& progress_callback,
+                    ProgressCallback progress_callback,
                     const int64_t offset);
 
   std::string encoding_;

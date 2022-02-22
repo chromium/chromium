@@ -337,7 +337,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
     const base::FilePath& output_file_path,
     SuccessCallback success_callback,
     FailureCallback failure_callback,
-    const ProgressCallback& progress_callback) {
+    ProgressCallback progress_callback) {
   DCHECK(zip_file_);
   DCHECK_LT(0, next_index_);
   DCHECK(ok_);
@@ -391,7 +391,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
       FROM_HERE,
       base::BindOnce(&ZipReader::ExtractChunk, weak_ptr_factory_.GetWeakPtr(),
                      std::move(output_file), std::move(success_callback),
-                     std::move(failure_callback), progress_callback,
+                     std::move(failure_callback), std::move(progress_callback),
                      0 /* initial offset */));
 }
 
@@ -449,7 +449,7 @@ void ZipReader::Reset() {
 void ZipReader::ExtractChunk(base::File output_file,
                              SuccessCallback success_callback,
                              FailureCallback failure_callback,
-                             const ProgressCallback& progress_callback,
+                             ProgressCallback progress_callback,
                              int64_t offset) {
   char buffer[internal::kZipBufSize];
 
@@ -489,7 +489,8 @@ void ZipReader::ExtractChunk(base::File output_file,
       FROM_HERE,
       base::BindOnce(&ZipReader::ExtractChunk, weak_ptr_factory_.GetWeakPtr(),
                      std::move(output_file), std::move(success_callback),
-                     std::move(failure_callback), progress_callback, offset));
+                     std::move(failure_callback), std::move(progress_callback),
+                     offset));
 }
 
 // FileWriterDelegate ----------------------------------------------------------
