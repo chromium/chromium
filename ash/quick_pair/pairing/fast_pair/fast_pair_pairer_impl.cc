@@ -251,7 +251,7 @@ void FastPairPairerImpl::OnPairConnected(
   RecordPairDeviceResult(/*success=*/!error.has_value());
 
   if (error) {
-    QP_LOG(WARNING) << "Failed to starting pairing procedure by pairing to "
+    QP_LOG(WARNING) << "Failed to start pairing procedure by pairing to "
                        "device due to error: "
                     << error.value();
     std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
@@ -270,7 +270,7 @@ void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
 }
 
 void FastPairPairerImpl::OnConnectError() {
-  QP_LOG(WARNING) << "Failed to starting pairing procedure by connecting to "
+  QP_LOG(WARNING) << "Failed to start pairing procedure by connecting to "
                      "device address.";
   RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
