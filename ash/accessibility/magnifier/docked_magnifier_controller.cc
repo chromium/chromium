@@ -10,6 +10,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/display/cursor_window_controller.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -406,16 +407,21 @@ void DockedMagnifierController::MaybePerformViewportResizing(
   bool cursor_is_over_resizer =
       root_y >= separator_top - 1 && root_y <= separator_bottom;
   ::wm::CursorManager* cursor_manager = Shell::Get()->cursor_manager();
+  CursorWindowController* cursor_window_controller =
+      Shell::Get()->window_tree_host_manager()->cursor_window_controller();
 
-  // If the mouse is over the divider, change cursor to north/south resize.
+  // If cursor is over separator, change to north/south resize, move on top.
+  // Reset once the cursor is not over separator, and user isn't resizing.
   if (cursor_is_over_resizer && !is_cursor_locked_) {
     MaybeSetCursorSize(ui::CursorSize::kLarge);
     cursor_manager->SetCursor(ui::mojom::CursorType::kNorthSouthResize);
     cursor_manager->LockCursor();
+    cursor_window_controller->OnDockedMagnifierResizingStateChanged(true);
     is_cursor_locked_ = true;
   } else if (!cursor_is_over_resizer && is_cursor_locked_ && !is_resizing_) {
     MaybeSetCursorSize(ui::CursorSize::kNormal);
     cursor_manager->UnlockCursor();
+    cursor_window_controller->OnDockedMagnifierResizingStateChanged(false);
     is_cursor_locked_ = false;
   }
 
