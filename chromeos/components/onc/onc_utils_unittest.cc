@@ -19,6 +19,7 @@
 #include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace onc {
@@ -167,6 +168,135 @@ TEST(ONCUtils, SetHiddenSSIDField_WithValueSetTrue) {
   SetHiddenSSIDField(wifi_fields);
   EXPECT_TRUE(wifi_fields->FindKey(::onc::wifi::kHiddenSSID)->GetBool());
 }
+
+struct MaskCredentialsTestCase {
+  const OncValueSignature* onc_signature;
+  const char* onc;
+  const char* expected_after_masking;
+};
+
+using ONCUtilsMaskCredentialsTest =
+    testing::TestWithParam<MaskCredentialsTestCase>;
+
+TEST_P(ONCUtilsMaskCredentialsTest, Test) {
+  absl::optional<base::Value> onc_value =
+      base::JSONReader::Read(GetParam().onc);
+  ASSERT_TRUE(onc_value) << "Could not parse " << GetParam().onc;
+  absl::optional<base::Value> expected_after_masking_value =
+      base::JSONReader::Read(GetParam().expected_after_masking);
+  ASSERT_TRUE(expected_after_masking_value)
+      << "Could not parse " << GetParam().expected_after_masking;
+
+  base::Value masked = MaskCredentialsInOncObject(*(GetParam().onc_signature),
+                                                  *onc_value, "******");
+
+  EXPECT_EQ(masked, *expected_after_masking_value);
+}
+
+constexpr MaskCredentialsTestCase kMaskCredentialsTestCases[] = {
+    // Actual passwords in the L2TP Password field in NetworkConfiguration are
+    // masked.
+    {&kNetworkConfigurationSignature,
+     R"({ "GUID": "guid",
+        "VPN": {
+          "L2TP": {
+            "Username": "some username",
+            "Password": "secret_pwd"
+          }
+        }
+      }
+   )",
+     R"({ "GUID": "guid",
+        "VPN": {
+          "L2TP": {
+            "Username": "some username",
+            "Password": "******"
+          }
+        }
+      }
+   )"},
+    // The ${PASSWORD} variable in the L2TP Password field in
+    // NetworkConfiguration is not masked.
+    {&kNetworkConfigurationSignature,
+     R"({ "GUID": "guid",
+        "VPN": {
+          "L2TP": {
+            "Username": "some username",
+            "Password": "${PASSWORD}"
+          }
+        }
+      }
+   )",
+     R"({ "GUID": "guid",
+        "VPN": {
+          "L2TP": {
+            "Username": "some username",
+            "Password": "${PASSWORD}"
+          }
+        }
+      }
+   )"},
+    // Actual passwords in the EAP Password field in NetworkConfiguration are
+    // masked.
+    {&kNetworkConfigurationSignature,
+     R"({ "GUID": "guid",
+        "WiFi": {
+          "EAP": {
+            "Identity": "some username",
+            "Password": "secret_pwd"
+          }
+        }
+      }
+   )",
+     R"({ "GUID": "guid",
+        "WiFi": {
+          "EAP": {
+            "Identity": "some username",
+            "Password": "******"
+          }
+        }
+      }
+   )"},
+    // The ${PASSWORD} variable in the EAP Password field in
+    // NetworkConfiguration is not masked.
+    {&kNetworkConfigurationSignature,
+     R"({ "GUID": "guid",
+        "WiFi": {
+          "EAP": {
+            "Identity": "some username",
+            "Password": "${PASSWORD}"
+          }
+        }
+      }
+   )",
+     R"({ "GUID": "guid",
+        "WiFi": {
+          "EAP": {
+            "Identity": "some username",
+            "Password": "${PASSWORD}"
+          }
+        }
+      }
+   )"},
+    // The PSK Passphrase is masked no matter if it contains ${PASSWORD} or not.
+    {&kNetworkConfigurationSignature,
+     R"({ "GUID": "guid",
+        "WiFi": {
+          "Passphrase": "${PASSWORD}"
+        }
+      }
+   )",
+     R"({ "GUID": "guid",
+        "WiFi": {
+          "Passphrase": "******"
+        }
+      }
+   )"},
+};
+
+INSTANTIATE_TEST_SUITE_P(ONCUtilsMaskCredentialsTest,
+                         ONCUtilsMaskCredentialsTest,
+                         ::testing::ValuesIn(kMaskCredentialsTestCases));
 
 }  // namespace onc
 }  // namespace chromeos
