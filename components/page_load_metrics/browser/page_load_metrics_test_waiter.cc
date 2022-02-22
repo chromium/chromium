@@ -25,6 +25,53 @@ bool IsSubset(const Set& set1, const Set& set2) {
 
 }  // namespace
 
+// PageLoadMetricsObserver used by the PageLoadMetricsTestWaiter to observe
+// metrics updates.
+class WaiterMetricsObserver : public PageLoadMetricsObserver {
+ public:
+  using FrameTreeNodeId = PageLoadMetricsObserver::FrameTreeNodeId;
+  // We use a WeakPtr to the PageLoadMetricsTestWaiter because |waiter| can be
+  // destroyed before this WaiterMetricsObserver.
+  explicit WaiterMetricsObserver(
+      base::WeakPtr<PageLoadMetricsTestWaiter> waiter)
+      : waiter_(waiter) {}
+
+  ~WaiterMetricsObserver() override = default;
+
+  void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
+                      const mojom::PageLoadTiming& timing) override;
+
+  void OnCpuTimingUpdate(content::RenderFrameHost* subframe_rfh,
+                         const mojom::CpuTiming& timing) override;
+
+  void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
+                                 int behavior_flags) override;
+  void OnLoadedResource(
+      const ExtraRequestCompleteInfo& extra_request_complete_info) override;
+
+  void OnResourceDataUseObserved(
+      content::RenderFrameHost* rfh,
+      const std::vector<mojom::ResourceDataUpdatePtr>& resources) override;
+
+  void OnFeaturesUsageObserved(
+      content::RenderFrameHost* rfh,
+      const std::vector<blink::UseCounterFeature>&) override;
+
+  void OnDidFinishSubFrameNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
+  void OnFrameIntersectionUpdate(
+      content::RenderFrameHost* rfh,
+      const mojom::FrameIntersectionUpdate& frame_intersection_update) override;
+
+  void OnV8MemoryChanged(
+      const std::vector<MemoryUpdate>& memory_updates) override;
+
+ private:
+  const base::WeakPtr<PageLoadMetricsTestWaiter> waiter_;
+};
+
 PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
     content::WebContents* web_contents)
     : MetricsLifecycleObserver(web_contents) {}
@@ -428,80 +475,70 @@ void PageLoadMetricsTestWaiter::ResetExpectations() {
   expected_minimum_aggregate_cpu_time_ = base::TimeDelta();
 }
 
-PageLoadMetricsTestWaiter::WaiterMetricsObserver::~WaiterMetricsObserver() =
-    default;
-
-PageLoadMetricsTestWaiter::WaiterMetricsObserver::WaiterMetricsObserver(
-    base::WeakPtr<PageLoadMetricsTestWaiter> waiter)
-    : waiter_(waiter) {}
-
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnTimingUpdate(
+void WaiterMetricsObserver::OnTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (waiter_)
     waiter_->OnTimingUpdated(subframe_rfh, timing);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnCpuTimingUpdate(
+void WaiterMetricsObserver::OnCpuTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
     const page_load_metrics::mojom::CpuTiming& timing) {
   if (waiter_)
     waiter_->OnCpuTimingUpdated(subframe_rfh, timing);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::
-    OnLoadingBehaviorObserved(content::RenderFrameHost*, int behavior_flags) {
+void WaiterMetricsObserver::OnLoadingBehaviorObserved(content::RenderFrameHost*,
+                                                      int behavior_flags) {
   if (waiter_)
     waiter_->OnLoadingBehaviorObserved(behavior_flags);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnLoadedResource(
+void WaiterMetricsObserver::OnLoadedResource(
     const page_load_metrics::ExtraRequestCompleteInfo&
         extra_request_complete_info) {
   if (waiter_)
     waiter_->OnLoadedResource(extra_request_complete_info);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::
-    OnResourceDataUseObserved(
-        content::RenderFrameHost* rfh,
-        const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
-            resources) {
+void WaiterMetricsObserver::OnResourceDataUseObserved(
+    content::RenderFrameHost* rfh,
+    const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
+        resources) {
   if (waiter_)
     waiter_->OnResourceDataUseObserved(rfh, resources);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnFeaturesUsageObserved(
+void WaiterMetricsObserver::OnFeaturesUsageObserved(
     content::RenderFrameHost* rfh,
     const std::vector<blink::UseCounterFeature>& features) {
   if (waiter_)
     waiter_->OnFeaturesUsageObserved(nullptr, features);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::
-    OnFrameIntersectionUpdate(
-        content::RenderFrameHost* rfh,
-        const page_load_metrics::mojom::FrameIntersectionUpdate&
-            frame_intersection_update) {
+void WaiterMetricsObserver::OnFrameIntersectionUpdate(
+    content::RenderFrameHost* rfh,
+    const page_load_metrics::mojom::FrameIntersectionUpdate&
+        frame_intersection_update) {
   if (waiter_)
     waiter_->OnFrameIntersectionUpdate(rfh, frame_intersection_update);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::
-    OnDidFinishSubFrameNavigation(
-        content::NavigationHandle* navigation_handle) {
+void WaiterMetricsObserver::OnDidFinishSubFrameNavigation(
+    content::NavigationHandle* navigation_handle) {
   if (waiter_)
     waiter_->OnDidFinishSubFrameNavigation(navigation_handle);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::FrameSizeChanged(
+void WaiterMetricsObserver::FrameSizeChanged(
     content::RenderFrameHost* render_frame_host,
     const gfx::Size& frame_size) {
   if (waiter_)
     waiter_->FrameSizeChanged(render_frame_host, frame_size);
 }
 
-void PageLoadMetricsTestWaiter::WaiterMetricsObserver::OnV8MemoryChanged(
+void WaiterMetricsObserver::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {
   if (waiter_)
     waiter_->OnV8MemoryChanged(memory_updates);

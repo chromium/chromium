@@ -18,8 +18,9 @@
 
 namespace page_load_metrics {
 
-class PageLoadMetricsTestWaiter
-    : public page_load_metrics::MetricsLifecycleObserver {
+class WaiterMetricsObserver;
+
+class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
  public:
   // A bitvector to express which timing fields to match on.
   enum class TimingField : int {
@@ -125,57 +126,6 @@ class PageLoadMetricsTestWaiter
   virtual void ResetExpectations();
 
  private:
-  // PageLoadMetricsObserver used by the PageLoadMetricsTestWaiter to observe
-  // metrics updates.
-  class WaiterMetricsObserver
-      : public page_load_metrics::PageLoadMetricsObserver {
-   public:
-    using FrameTreeNodeId =
-        page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
-    // We use a WeakPtr to the PageLoadMetricsTestWaiter because |waiter| can be
-    // destroyed before this WaiterMetricsObserver.
-    explicit WaiterMetricsObserver(
-        base::WeakPtr<PageLoadMetricsTestWaiter> waiter);
-    ~WaiterMetricsObserver() override;
-
-    void OnTimingUpdate(
-        content::RenderFrameHost* subframe_rfh,
-        const page_load_metrics::mojom::PageLoadTiming& timing) override;
-
-    void OnCpuTimingUpdate(
-        content::RenderFrameHost* subframe_rfh,
-        const page_load_metrics::mojom::CpuTiming& timing) override;
-
-    void OnLoadingBehaviorObserved(content::RenderFrameHost* rfh,
-                                   int behavior_flags) override;
-    void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
-                              extra_request_complete_info) override;
-
-    void OnResourceDataUseObserved(
-        content::RenderFrameHost* rfh,
-        const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
-            resources) override;
-
-    void OnFeaturesUsageObserved(
-        content::RenderFrameHost* rfh,
-        const std::vector<blink::UseCounterFeature>&) override;
-
-    void OnDidFinishSubFrameNavigation(
-        content::NavigationHandle* navigation_handle) override;
-    void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
-                          const gfx::Size& frame_size) override;
-    void OnFrameIntersectionUpdate(
-        content::RenderFrameHost* rfh,
-        const page_load_metrics::mojom::FrameIntersectionUpdate&
-            frame_intersection_update) override;
-
-    void OnV8MemoryChanged(
-        const std::vector<MemoryUpdate>& memory_updates) override;
-
-   private:
-    const base::WeakPtr<PageLoadMetricsTestWaiter> waiter_;
-  };
-
   // Manages a bitset of TimingFields.
   class TimingFieldBitSet {
    public:
@@ -334,6 +284,8 @@ class PageLoadMetricsTestWaiter
   double last_main_frame_layout_shift_score_ = 0;
 
   base::WeakPtrFactory<PageLoadMetricsTestWaiter> weak_factory_{this};
+
+  friend class WaiterMetricsObserver;
 };
 
 }  // namespace page_load_metrics
