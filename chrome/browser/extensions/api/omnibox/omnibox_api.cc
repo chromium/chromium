@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -304,20 +303,20 @@ ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
 }
 
 void OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles(
-    std::unique_ptr<DescriptionAndStyles> description_and_styles,
-    std::string error) {
-  if (!description_and_styles) {
-    DCHECK(!error.empty());
-    Respond(Error(std::move(error)));
+    DescriptionAndStylesResult result) {
+  if (!result.error.empty()) {
+    Respond(Error(std::move(result.error)));
     return;
   }
 
+  DCHECK_EQ(1u, result.descriptions_and_styles.size());
+  DescriptionAndStyles& single_result = result.descriptions_and_styles[0];
+
   omnibox::DefaultSuggestResult default_suggestion;
-  default_suggestion.description =
-      base::UTF16ToUTF8(description_and_styles->description);
+  default_suggestion.description = base::UTF16ToUTF8(single_result.description);
   default_suggestion.description_styles =
       std::make_unique<std::vector<api::omnibox::MatchClassification>>();
-  default_suggestion.description_styles->swap(description_and_styles->styles);
+  default_suggestion.description_styles->swap(single_result.styles);
   SetDefaultSuggestion(default_suggestion);
   Respond(NoArguments());
 }

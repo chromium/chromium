@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -35,7 +36,6 @@ class Image;
 }
 
 namespace extensions {
-struct DescriptionAndStyles;
 
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
@@ -160,9 +160,7 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
 
   // Called asynchronously with the parsed description and styles for the
   // default suggestion.
-  void OnParsedDescriptionAndStyles(
-      std::unique_ptr<DescriptionAndStyles> description_and_styles,
-      std::string error);
+  void OnParsedDescriptionAndStyles(DescriptionAndStylesResult result);
 
   // Sets the default suggestion in the extension preferences.
   void SetDefaultSuggestion(

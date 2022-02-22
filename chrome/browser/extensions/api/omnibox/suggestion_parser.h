@@ -20,24 +20,47 @@ namespace extensions {
 // common struct.
 struct DescriptionAndStyles {
   DescriptionAndStyles();
+  DescriptionAndStyles(const DescriptionAndStyles&) = delete;
+  DescriptionAndStyles(DescriptionAndStyles&&);
+  DescriptionAndStyles& operator=(const DescriptionAndStyles&) = delete;
+  DescriptionAndStyles& operator=(DescriptionAndStyles&&);
   ~DescriptionAndStyles();
 
   std::u16string description;
   std::vector<api::omnibox::MatchClassification> styles;
 };
 
+// The container for the result from parsing descriptions and styles.
+struct DescriptionAndStylesResult {
+  // Chromium's clang plugin about non-trivial structs needing out-of-line
+  // constructors requires us to go a little ham here.
+  DescriptionAndStylesResult();
+  DescriptionAndStylesResult(const DescriptionAndStylesResult&) = delete;
+  DescriptionAndStylesResult(DescriptionAndStylesResult&&);
+  DescriptionAndStylesResult& operator=(const DescriptionAndStylesResult&) =
+      delete;
+  DescriptionAndStylesResult& operator=(DescriptionAndStylesResult&&);
+  ~DescriptionAndStylesResult();
+
+  // The parse error, if any. If a parsing error was encountered, no results
+  // will be populated.
+  std::string error;
+  // The parsed descriptions and styles, if parsing was successful.
+  std::vector<DescriptionAndStyles> descriptions_and_styles;
+};
+
 using DescriptionAndStylesCallback =
-    base::OnceCallback<void(std::unique_ptr<DescriptionAndStyles> result,
-                            std::string error)>;
+    base::OnceCallback<void(DescriptionAndStylesResult)>;
 
 // Parses `str`, which is the suggestion string passed from the extension that
 // potentially contains XML markup (e.g., the string may be
 // "visit <url>https://example.com</url>"). This parses the string in an
-// isolated process and asynchronously returns the description and styles via
-// `callback`. On failure (e.g. due to invalid XML), invokes `callback` with
-// null.
+// isolated process and asynchronously returns the parse result via `callback`.
 void ParseDescriptionAndStyles(base::StringPiece str,
                                DescriptionAndStylesCallback callback);
+// Same as above, but takes in multiple string inputs.
+void ParseDescriptionsAndStyles(const std::vector<base::StringPiece>& strs,
+                                DescriptionAndStylesCallback callback);
 
 }  // namespace extensions
 
