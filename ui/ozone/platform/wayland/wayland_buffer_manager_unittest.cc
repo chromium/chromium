@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/overlay_priority_hint.h"

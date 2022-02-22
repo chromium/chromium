@@ -15,6 +15,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/resources/grit/ui_resources.h"
 
 #if BUILDFLAG(IS_WIN)

@@ -31,6 +31,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using extensions::mojom::ManifestLocation;
 

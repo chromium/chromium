@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/callback.h"
+#include "base/time/time.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user.h"
 

@@ -4,6 +4,8 @@
 
 #include "ui/views/drag_utils.h"
 
+#include "base/notreached.h"
+
 namespace views {
 
 void RunShellDrag(gfx::NativeView view,

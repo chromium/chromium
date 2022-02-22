@@ -39,6 +39,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/strings/grit/ui_strings.h"

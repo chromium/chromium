@@ -11,6 +11,10 @@
 #include "ui/base/x/x11_whole_screen_move_loop.h"
 #include "ui/gfx/geometry/point.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace ui {
 
 // When we're dragging tabs, we need to manually position our window.

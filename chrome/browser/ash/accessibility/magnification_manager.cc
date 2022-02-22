@@ -21,6 +21,8 @@
 #include "content/public/browser/focused_node_details.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/accessibility/view_accessibility.h"
 

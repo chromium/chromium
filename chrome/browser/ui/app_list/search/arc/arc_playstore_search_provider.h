@@ -18,6 +18,10 @@ namespace arc {
 enum class ArcPlayStoreSearchRequestState;
 }  // namespace arc
 
+namespace base {
+class TimeTicks;
+}  // namespace base
+
 namespace app_list {
 
 class ArcPlayStoreSearchProvider : public SearchProvider {

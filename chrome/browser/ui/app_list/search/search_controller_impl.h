@@ -14,6 +14,7 @@
 
 #include "base/callback.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"

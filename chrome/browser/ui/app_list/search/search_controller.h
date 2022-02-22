@@ -27,6 +27,11 @@ namespace ash {
 enum class AppListSearchResultType;
 }
 
+namespace base {
+class Time;
+class TimeDelta;
+}
+
 namespace app_list {
 
 class SearchProvider;

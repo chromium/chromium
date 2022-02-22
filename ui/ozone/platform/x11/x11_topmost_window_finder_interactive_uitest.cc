@@ -19,6 +19,7 @@
 #include "ui/base/x/test/x11_property_change_waiter.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"

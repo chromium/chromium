@@ -19,6 +19,10 @@
 #include "ui/base/dragdrop/download_file_interface.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/callback_forward.h"
+#endif
+
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"

@@ -21,6 +21,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
 namespace web_app {

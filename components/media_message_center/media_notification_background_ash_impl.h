@@ -10,6 +10,10 @@
 #include "base/component_export.h"
 #include "ui/gfx/image/image_skia.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace media_message_center {
 
 // MediaNotificationBackground for CrOS media notifications.

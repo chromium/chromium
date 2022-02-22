@@ -8,6 +8,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 #include "weblayer/browser/java/jni/FaviconCallbackProxy_jni.h"
 #include "weblayer/browser/tab_impl.h"

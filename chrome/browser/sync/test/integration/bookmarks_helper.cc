@@ -55,6 +55,7 @@
 #include "ui/base/models/tree_node_iterator.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;

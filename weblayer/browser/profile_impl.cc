@@ -34,6 +34,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/browser_list.h"

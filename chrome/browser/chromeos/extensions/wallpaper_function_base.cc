@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 using content::BrowserThread;

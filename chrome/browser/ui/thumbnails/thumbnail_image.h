@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {

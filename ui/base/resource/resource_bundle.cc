@@ -47,6 +47,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/strings/grit/app_locale_settings.h"
 #include "url/gurl.h"

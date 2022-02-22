@@ -8,6 +8,7 @@
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/session_manager/core/session_manager.h"
@@ -17,6 +18,11 @@
 #include "ui/views/accessibility/ax_event_observer.h"
 
 class PrefChangeRegistrar;
+
+namespace gfx {
+class Point;
+class Rect;
+}
 
 namespace ash {
 

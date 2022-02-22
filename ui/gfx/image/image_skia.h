@@ -10,10 +10,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/gfx_export.h"
-#include "ui/gfx/image/image_skia_rep.h"
 
 namespace gfx {
+class ImageSkiaRep;
 class ImageSkiaSource;
 class Size;
 

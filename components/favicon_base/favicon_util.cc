@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"

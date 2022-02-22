@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/mac/scoped_cftyperef.h"

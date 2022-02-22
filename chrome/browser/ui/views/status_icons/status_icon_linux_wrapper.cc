@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_button_linux.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 #if defined(USE_DBUS)

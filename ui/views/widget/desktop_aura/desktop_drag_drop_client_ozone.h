@@ -16,6 +16,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"

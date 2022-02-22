@@ -40,6 +40,7 @@
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

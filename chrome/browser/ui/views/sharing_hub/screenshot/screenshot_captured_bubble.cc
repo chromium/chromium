@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button.h"

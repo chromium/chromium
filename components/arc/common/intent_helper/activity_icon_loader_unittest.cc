@@ -15,6 +15,7 @@
 #include "components/arc/common/intent_helper/adaptive_icon_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace arc {
 namespace internal {

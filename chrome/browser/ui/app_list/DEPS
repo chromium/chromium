@@ -21,4 +21,8 @@ specific_include_rules = {
     "+ash/app_list/views/apps_grid_view.h",
     "+ash/shell.h",
   ],
+
+  "app_list_syncable_service_unittest\.cc": [
+    "+cc/base/math_util.h",
+  ],
 }

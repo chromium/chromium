@@ -43,6 +43,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/interpolated_transform.h"
 
 namespace ui {

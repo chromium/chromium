@@ -17,6 +17,7 @@
 #include "ui/gfx/image/image_internal.h"
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
 
 namespace {
