@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -211,6 +212,12 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
   base::UmaHistogramBoolean("Browser.ThemeService.WritePackToDisk", success);
 }
 
+void ReportHistogramBooleanUsesColorProvider(bool uses_color_provider) {
+  UMA_HISTOGRAM_BOOLEAN(
+      "Browser.ThemeService.BrowserThemeProvider.GetColor.UsesColorProvider",
+      uses_color_provider);
+}
+
 }  // namespace
 
 
@@ -322,9 +329,14 @@ gfx::ImageSkia* ThemeService::BrowserThemeProvider::GetImageSkiaNamed(
 }
 
 SkColor ThemeService::BrowserThemeProvider::GetColor(int id) const {
-  if (auto color = GetColorProviderColor(id))
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Browser.ThemeService.BrowserThemeProvider.GetColor");
+  if (auto color = GetColorProviderColor(id)) {
+    ReportHistogramBooleanUsesColorProvider(true);
     return color.value();
+  }
 
+  ReportHistogramBooleanUsesColorProvider(false);
   return theme_helper_.GetColor(id, incognito_, GetThemeSupplier());
 }
 
