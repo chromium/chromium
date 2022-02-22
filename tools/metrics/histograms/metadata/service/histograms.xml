@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.DiskCache.InitResult" units="units"
-    expires_after="2022-04-05">
+    expires_after="2023-02-22">
   <owner>bashi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <summary>
