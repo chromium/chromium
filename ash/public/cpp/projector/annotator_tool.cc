@@ -16,7 +16,7 @@ namespace {
 
 const char kToolColor[] = "color";
 const char kToolSize[] = "size";
-const char kToolType[] = "type";
+const char kToolType[] = "tool";
 
 // For example, SK_ColorGREEN -> "FF00FF00".
 std::string ConvertColorToHexString(SkColor color) {
