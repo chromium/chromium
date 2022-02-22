@@ -427,6 +427,18 @@ TEST_P(CredentialManagerImplTest, IsZeroClickAllowed) {
   EXPECT_FALSE(cm_service_impl()->IsZeroClickAllowed());
 }
 
+TEST_P(CredentialManagerImplTest, CredentialManagerOnStoreEmptyCredential) {
+  EXPECT_CALL(*client_, PromptUserToSavePasswordPtr).Times(testing::Exactly(0));
+
+  bool called = false;
+  auto info = CredentialInfo();
+  CallStore(info, base::BindOnce(&RespondCallback, &called));
+
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(called);
+}
+
 TEST_P(CredentialManagerImplTest, CredentialManagerOnStore) {
   auto info = PasswordFormToCredentialInfo(form_);
   EXPECT_CALL(*client_, PromptUserToSavePasswordPtr(_))
