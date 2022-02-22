@@ -188,10 +188,14 @@ var MillisecondsPerDay = 24 * 60 * 60 * 1000;
  */
 var MillisecondsPerWeek = DaysPerWeek * MillisecondsPerDay;
 
+// ----------------------------------------------------------------
+
 /**
- * @constructor
+ * The base class of Day, Week, and Month.
  */
-function DateType() {
+class DateType {
+  constructor() {
+  }
 }
 
 // ----------------------------------------------------------------
@@ -780,204 +784,205 @@ class Week extends DateType {
 
 // ----------------------------------------------------------------
 
-/**
- * @constructor
- * @extends DateType
- * @param {!number} year
- * @param {!number} month
- */
-function Month(year, month) {
+class Month extends DateType {
   /**
-   * @type {number}
-   * @const
+   * @param {!number} year
+   * @param {!number} month
    */
-  this.year = year + Math.floor(month / MonthsPerYear);
+  constructor(year, month) {
+    super();
+    /**
+     * @type {number}
+     * @const
+     */
+    this.year = year + Math.floor(month / MonthsPerYear);
+    /**
+     * @type {number}
+     * @const
+     */
+    this.month = month % MonthsPerYear < 0 ?
+        month % MonthsPerYear + MonthsPerYear :
+        month % MonthsPerYear;
+  }
+
+  static ISOStringRegExp = /^(\d+)-(\d+)$/;
+
+  // See platform/text/date_components.h.
+  static Minimum = new Month(1, 0);
+  static Maximum = new Month(275760, 8);
+
+  // See core/html/forms/month_input_type.cc.
+  static DefaultStep = 1;
+  static DefaultStepBase = 0;
+
   /**
-   * @type {number}
-   * @const
+   * @param {!string} str
+   * @return {?Month}
    */
-  this.month = month % MonthsPerYear < 0 ?
-      month % MonthsPerYear + MonthsPerYear :
-      month % MonthsPerYear;
-};
+  static parse(str) {
+    var match = Month.ISOStringRegExp.exec(str);
+    if (!match)
+      return null;
+    var year = parseInt(match[1], 10);
+    var month = parseInt(match[2], 10) - 1;
+    return new Month(year, month);
+  }
 
-Month.ISOStringRegExp = /^(\d+)-(\d+)$/;
+  /**
+   * @param {!number} value
+   * @return {!Month}
+   */
+  static createFromValue(monthsSinceEpoch) {
+    return new Month(1970, monthsSinceEpoch)
+  }
 
-// See platform/text/date_components.h.
-Month.Minimum = new Month(1, 0);
-Month.Maximum = new Month(275760, 8);
+  /**
+   * @param {!Date} date
+   * @return {!Month}
+   */
+  static createFromDate(date) {
+    if (isNaN(date.valueOf()))
+      throw 'Invalid date';
+    return new Month(date.getUTCFullYear(), date.getUTCMonth());
+  }
 
-// See core/html/forms/month_input_type.cc.
-Month.DefaultStep = 1;
-Month.DefaultStepBase = 0;
+  /**
+   * @param {!Day} day
+   * @return {!Month}
+   */
+  static createFromDay(day) {
+    return new Month(day.year, day.month);
+  }
 
-/**
- * @param {!string} str
- * @return {?Month}
- */
-Month.parse = function(str) {
-  var match = Month.ISOStringRegExp.exec(str);
-  if (!match)
-    return null;
-  var year = parseInt(match[1], 10);
-  var month = parseInt(match[2], 10) - 1;
-  return new Month(year, month);
-};
+  /**
+   * @return {!Month}
+   */
+  static createFromToday() {
+    var now = new Date();
+    return new Month(now.getFullYear(), now.getMonth());
+  }
 
-/**
- * @param {!number} value
- * @return {!Month}
- */
-Month.createFromValue = function(monthsSinceEpoch) {
-  return new Month(1970, monthsSinceEpoch)
-};
+  /**
+   * @param {!Month} other
+   * @return {!boolean}
+   */
+  equals(other) {
+    return other instanceof Month && this.year === other.year &&
+        this.month === other.month;
+  }
 
-/**
- * @param {!Date} date
- * @return {!Month}
- */
-Month.createFromDate = function(date) {
-  if (isNaN(date.valueOf()))
-    throw 'Invalid date';
-  return new Month(date.getUTCFullYear(), date.getUTCMonth());
-};
+  /**
+   * @param {!number=} offset
+   * @return {!Month}
+   */
+  previous(offset) {
+    if (typeof offset === 'undefined')
+      offset = 1;
+    return new Month(this.year, this.month - offset);
+  }
 
-/**
- * @param {!Day} day
- * @return {!Month}
- */
-Month.createFromDay = function(day) {
-  return new Month(day.year, day.month);
-};
+  /**
+   * @param {!number=} offset
+   * @return {!Month}
+   */
+  next(offset) {
+    if (typeof offset === 'undefined')
+      offset = 1;
+    return new Month(this.year, this.month + offset);
+  }
 
-/**
- * @return {!Month}
- */
-Month.createFromToday = function() {
-  var now = new Date();
-  return new Month(now.getFullYear(), now.getMonth());
-};
+  /**
+   * @return {!Month}
+   */
+  nextHome() {
+    if (this.month !== 0)
+      return new Month(this.year, 0);
+    return new Month(this.year - 1, 0);
+  }
 
-/**
- * @param {!Month} other
- * @return {!boolean}
- */
-Month.prototype.equals = function(other) {
-  return other instanceof Month && this.year === other.year &&
-      this.month === other.month;
-};
+  /**
+   * @return {!Month}
+   */
+  nextEnd() {
+    if (this.month !== MonthsPerYear - 1)
+      return new Month(this.year, MonthsPerYear - 1);
+    return new Month(this.year + 1, MonthsPerYear - 1);
+  }
 
-/**
- * @param {!number=} offset
- * @return {!Month}
- */
-Month.prototype.previous = function(offset) {
-  if (typeof offset === 'undefined')
-    offset = 1;
-  return new Month(this.year, this.month - offset);
-};
+  /**
+   * @return {!Date}
+   */
+  startDate() {
+    return createUTCDate(this.year, this.month, 1);
+  }
 
-/**
- * @param {!number=} offset
- * @return {!Month}
- */
-Month.prototype.next = function(offset) {
-  if (typeof offset === 'undefined')
-    offset = 1;
-  return new Month(this.year, this.month + offset);
-};
+  /**
+   * @return {!Date}
+   */
+  endDate() {
+    if (this.equals(Month.Maximum))
+      return Day.Maximum.startDate();
+    return this.next().startDate();
+  }
 
-/**
- * @return {!Month}
- */
-Month.prototype.nextHome = function() {
-  if (this.month !== 0)
-    return new Month(this.year, 0);
-  return new Month(this.year - 1, 0);
-};
+  /**
+   * @return {!Day}
+   */
+  firstDay() {
+    return new Day(this.year, this.month, 1);
+  }
 
-/**
- * @return {!Month}
- */
-Month.prototype.nextEnd = function() {
-  if (this.month !== MonthsPerYear - 1)
-    return new Month(this.year, MonthsPerYear - 1);
-  return new Month(this.year + 1, MonthsPerYear - 1);
-};
+  /**
+   * @return {!Day}
+   */
+  middleDay() {
+    return new Day(this.year, this.month, this.month === 1 ? 14 : 15);
+  }
 
-/**
- * @return {!Date}
- */
-Month.prototype.startDate = function() {
-  return createUTCDate(this.year, this.month, 1);
-};
+  /**
+   * @return {!Day}
+   */
+  lastDay() {
+    if (this.equals(Month.Maximum))
+      return Day.Maximum;
+    return this.next().firstDay().previous();
+  }
 
-/**
- * @return {!Date}
- */
-Month.prototype.endDate = function() {
-  if (this.equals(Month.Maximum))
-    return Day.Maximum.startDate();
-  return this.next().startDate();
-};
+  /**
+   * @return {!number}
+   */
+  valueOf() {
+    return (this.year - 1970) * MonthsPerYear + this.month;
+  }
 
-/**
- * @return {!Day}
- */
-Month.prototype.firstDay = function() {
-  return new Day(this.year, this.month, 1);
-};
+  /**
+   * @return {!string}
+   */
+  toString() {
+    var yearString = String(this.year);
+    if (yearString.length < 4)
+      yearString = ('000' + yearString).substr(-4, 4);
+    return yearString + '-' + ('0' + (this.month + 1)).substr(-2, 2);
+  }
 
-/**
- * @return {!Day}
- */
-Month.prototype.middleDay = function() {
-  return new Day(this.year, this.month, this.month === 1 ? 14 : 15);
-};
+  /**
+   * @return {!string}
+   */
+  toLocaleString() {
+    if (global.params.locale === 'ja')
+      return '' + this.year + '\u5e74' +
+          formatJapaneseImperialEra(this.year, this.month) + ' ' +
+          (this.month + 1) + '\u6708';
+    return window.pagePopupController.formatMonth(this.year, this.month);
+  }
 
-/**
- * @return {!Day}
- */
-Month.prototype.lastDay = function() {
-  if (this.equals(Month.Maximum))
-    return Day.Maximum;
-  return this.next().firstDay().previous();
-};
-
-/**
- * @return {!number}
- */
-Month.prototype.valueOf = function() {
-  return (this.year - 1970) * MonthsPerYear + this.month;
-};
-
-/**
- * @return {!string}
- */
-Month.prototype.toString = function() {
-  var yearString = String(this.year);
-  if (yearString.length < 4)
-    yearString = ('000' + yearString).substr(-4, 4);
-  return yearString + '-' + ('0' + (this.month + 1)).substr(-2, 2);
-};
-
-/**
- * @return {!string}
- */
-Month.prototype.toLocaleString = function() {
-  if (global.params.locale === 'ja')
-    return '' + this.year + '\u5e74' +
-        formatJapaneseImperialEra(this.year, this.month) + ' ' +
-        (this.month + 1) + '\u6708';
-  return window.pagePopupController.formatMonth(this.year, this.month);
-};
-
-/**
- * @return {!string}
- */
-Month.prototype.toShortLocaleString = function() {
-  return window.pagePopupController.formatShortMonth(this.year, this.month);
-};
+  /**
+   * @return {!string}
+   */
+  toShortLocaleString() {
+    return window.pagePopupController.formatShortMonth(this.year, this.month);
+  }
+}
 
 // ----------------------------------------------------------------
 // Initialization
@@ -4968,4 +4973,5 @@ if (window.dialogArguments) {
 
 // Necessary for some web tests.
 window.Day = Day;
+window.Month = Month;
 window.Week = Week;
