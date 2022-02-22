@@ -265,8 +265,7 @@ void PixelTest::SetUpGLWithoutRenderer(
 
   auto context_provider =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gles2_interface=*/true, /*support_locking=*/false,
-          viz::RasterInterfaceType::None);
+          viz::TestContextType::kGLES2, /*support_locking=*/false);
   gpu::ContextResult result = context_provider->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   output_surface_ = std::make_unique<PixelTestOutputSurface>(
@@ -275,8 +274,7 @@ void PixelTest::SetUpGLWithoutRenderer(
 
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gles2_interface=*/true, /*support_locking=*/false,
-          viz::RasterInterfaceType::None);
+          viz::TestContextType::kGLES2, /*support_locking=*/false);
   result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
@@ -321,8 +319,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   // Set up the client side context provider, etc
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_gles2_interface=*/true, /*support_locking=*/false,
-          viz::RasterInterfaceType::None);
+          viz::TestContextType::kGLES2, /*support_locking=*/false);
   gpu::ContextResult result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();

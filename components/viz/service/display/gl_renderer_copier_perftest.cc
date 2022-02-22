@@ -63,8 +63,7 @@ class GLRendererCopierPerfTest : public testing::Test {
  public:
   GLRendererCopierPerfTest() {
     context_provider_ = base::MakeRefCounted<TestInProcessContextProvider>(
-        /*enable_gles2_interface=*/true, /*support_locking=*/false,
-        RasterInterfaceType::None);
+        TestContextType::kGLES2, /*support_locking=*/false);
     gpu::ContextResult result = context_provider_->BindToCurrentThread();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = context_provider_->ContextGL();

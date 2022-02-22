@@ -41,7 +41,6 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
     TestGpuMemoryBufferManager* gpu_memory_buffer_manager,
     TestImageFactory* image_factory,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    bool oop_raster,
     DisplayCompositorMemoryAndTaskController* display_controller) {
   const bool is_offscreen = true;
   gpu::ContextCreationAttribs attribs;
@@ -52,7 +51,7 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
   attribs.sample_buffers = 0;
   attribs.fail_if_major_perf_caveat = false;
   attribs.bind_generates_resource = false;
-  attribs.enable_oop_rasterization = oop_raster;
+  attribs.enable_oop_rasterization = false;
 
   auto context = std::make_unique<gpu::GLInProcessContext>();
   if (display_controller) {
@@ -78,19 +77,16 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
 }  // namespace
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext() {
-  return CreateGLInProcessContext(
-      nullptr, nullptr, base::ThreadTaskRunnerHandle::Get(), false, nullptr);
+  return CreateGLInProcessContext(nullptr, nullptr,
+                                  base::ThreadTaskRunnerHandle::Get(), nullptr);
 }
 
 TestInProcessContextProvider::TestInProcessContextProvider(
-    bool enable_gles2_interface,
+    TestContextType type,
     bool support_locking,
-    RasterInterfaceType raster_interface_type,
     gpu::raster::GrShaderCache* gr_shader_cache,
     gpu::GpuProcessActivityFlags* activity_flags)
-    : enable_gles2_interface_(enable_gles2_interface),
-      raster_interface_type_(raster_interface_type),
-      activity_flags_(activity_flags) {
+    : type_(type), activity_flags_(activity_flags) {
   if (support_locking)
     context_lock_.emplace();
 }
@@ -106,18 +102,28 @@ void TestInProcessContextProvider::Release() const {
 }
 
 gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
-  if (raster_interface_type_ == RasterInterfaceType::GPU ||
-      raster_interface_type_ == RasterInterfaceType::Software) {
-    DCHECK(!enable_gles2_interface_);
+  auto* holder = TestGpuServiceHolder::GetInstance();
+
+  if (type_ == TestContextType::kGLES2) {
+    display_controller_ =
+        std::make_unique<DisplayCompositorMemoryAndTaskController>(
+            holder->task_executor(), &image_factory_);
+
+    gles2_context_ = CreateGLInProcessContext(
+        &gpu_memory_buffer_manager_, &image_factory_,
+        base::ThreadTaskRunnerHandle::Get(), display_controller_.get());
+
+    caps_ = gles2_context_->GetCapabilities();
+  } else {
+    bool is_gpu_raster = type_ == TestContextType::kGpuRaster;
+
     gpu::ContextCreationAttribs attribs;
     attribs.bind_generates_resource = false;
-    attribs.enable_oop_rasterization =
-        raster_interface_type_ == RasterInterfaceType::GPU;
+    attribs.enable_oop_rasterization = is_gpu_raster;
     attribs.enable_raster_interface = true;
     attribs.enable_gles2_interface = false;
 
     raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
-    auto* holder = TestGpuServiceHolder::GetInstance();
     auto result = raster_context_->Initialize(
         holder->task_executor(), attribs, gpu::SharedMemoryLimits(),
         &gpu_memory_buffer_manager_, &image_factory_,
@@ -125,56 +131,29 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
         holder->gpu_service()->gr_shader_cache(), activity_flags_);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
-    cache_controller_ = std::make_unique<ContextCacheController>(
-        raster_context_->GetContextSupport(),
-        base::ThreadTaskRunnerHandle::Get());
-
     caps_ = raster_context_->GetCapabilities();
-  } else if (raster_interface_type_ == RasterInterfaceType::LEGACY_GPU ||
-             enable_gles2_interface_) {
-    display_controller_ =
-        std::make_unique<DisplayCompositorMemoryAndTaskController>(
-            TestGpuServiceHolder::GetInstance()->task_executor(),
-            &image_factory_);
 
-    gles2_context_ = CreateGLInProcessContext(
-        &gpu_memory_buffer_manager_, &image_factory_,
-        base::ThreadTaskRunnerHandle::Get(), false /* oop_raster */,
-        display_controller_.get());
-    cache_controller_ = std::make_unique<ContextCacheController>(
-        gles2_context_->GetImplementation(),
-        base::ThreadTaskRunnerHandle::Get());
-    if (raster_interface_type_ == RasterInterfaceType::LEGACY_GPU) {
-      raster_implementation_gles2_ =
-          std::make_unique<gpu::raster::RasterImplementationGLES>(
-              gles2_context_->GetImplementation(), ContextSupport());
-    }
-
-    caps_ = gles2_context_->GetCapabilities();
+    // We don't have a good way for tests to change what the in process gpu
+    // service will return for this capability. But we want to use gpu
+    // rasterization if and only if the test requests it.
+    caps_.gpu_rasterization = is_gpu_raster;
   }
 
-  // We don't have a good way for tests to change what the in process gpu
-  // service will return for this capability. But we want to use gpu
-  // rasterization if and only if the test requests it.
-  caps_.gpu_rasterization =
-      raster_interface_type_ == RasterInterfaceType::LEGACY_GPU ||
-      raster_interface_type_ == RasterInterfaceType::GPU;
-
+  cache_controller_ = std::make_unique<ContextCacheController>(
+      ContextSupport(), base::ThreadTaskRunnerHandle::Get());
   cache_controller_->SetLock(GetLock());
+
   return gpu::ContextResult::kSuccess;
 }
 
 gpu::gles2::GLES2Interface* TestInProcessContextProvider::ContextGL() {
+  DCHECK_EQ(type_, TestContextType::kGLES2);
   return gles2_context_->GetImplementation();
 }
 
 gpu::raster::RasterInterface* TestInProcessContextProvider::RasterInterface() {
-  DCHECK(raster_interface_type_ != RasterInterfaceType::None);
-  if (raster_context_) {
-    return raster_context_->GetImplementation();
-  } else {
-    return raster_implementation_gles2_.get();
-  }
+  DCHECK_NE(type_, TestContextType::kGLES2);
+  return raster_context_->GetImplementation();
 }
 
 gpu::ContextSupport* TestInProcessContextProvider::ContextSupport() {

@@ -39,7 +39,11 @@ class DisplayCompositorMemoryAndTaskController;
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext();
 
-enum RasterInterfaceType { None, Software, LEGACY_GPU, GPU };
+enum TestContextType {
+  kGLES2,           // Provides GLES2Interface.
+  kSoftwareRaster,  // Provides RasterInterface for software raster.
+  kGpuRaster        // Provides RasterInterface for GPU raster.
+};
 
 class TestInProcessContextProvider
     : public base::RefCountedThreadSafe<TestInProcessContextProvider>,
@@ -47,9 +51,8 @@ class TestInProcessContextProvider
       public RasterContextProvider {
  public:
   explicit TestInProcessContextProvider(
-      bool enable_gles2_interface,
+      TestContextType type,
       bool support_locking,
-      RasterInterfaceType raster_interface_type,
       gpu::raster::GrShaderCache* gr_shader_cache = nullptr,
       gpu::GpuProcessActivityFlags* activity_flags = nullptr);
 
@@ -76,8 +79,7 @@ class TestInProcessContextProvider
   ~TestInProcessContextProvider() override;
 
  private:
-  const bool enable_gles2_interface_;
-  const RasterInterfaceType raster_interface_type_;
+  const TestContextType type_;
   raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
   raw_ptr<gpu::GpuProcessActivityFlags> activity_flags_ = nullptr;
 
@@ -85,13 +87,12 @@ class TestInProcessContextProvider
   TestImageFactory image_factory_;
   gpu::Capabilities caps_;
 
-  // Used if support_gles2_interface.
+  // Used for GLES2 contexts only.
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> display_controller_;
   std::unique_ptr<gpu::GLInProcessContext> gles2_context_;
-  std::unique_ptr<gpu::raster::RasterInterface> raster_implementation_gles2_;
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
-  // Used if !support_gles2_interface.
+  // Used for raster contexts only.
   std::unique_ptr<gpu::RasterInProcessContext> raster_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;

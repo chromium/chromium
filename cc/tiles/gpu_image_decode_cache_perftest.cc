@@ -47,9 +47,8 @@ class GpuImageDecodeCachePerfTest
                kTimeCheckInterval),
         context_provider_(
             base::MakeRefCounted<viz::TestInProcessContextProvider>(
-                /*enable_gles2_interface=*/false,
-                /*support_locking=*/false,
-                ParamToRasterInterfaceType(GetParam()))) {}
+                ParamToTestContextType(GetParam()),
+                /*support_locking=*/false)) {}
 
   void SetUp() override {
     gpu::ContextResult result = context_provider_->BindToCurrentThread();
@@ -81,15 +80,12 @@ class GpuImageDecodeCachePerfTest
     }
   }
 
-  viz::RasterInterfaceType ParamToRasterInterfaceType(TestMode mode) {
+  viz::TestContextType ParamToTestContextType(TestMode mode) {
     switch (mode) {
       case TestMode::kGpu:
-        return viz::RasterInterfaceType::GPU;
+        return viz::TestContextType::kGpuRaster;
       case TestMode::kSw:
-        return viz::RasterInterfaceType::Software;
-      default:
-        NOTREACHED();
-        return viz::RasterInterfaceType::None;
+        return viz::TestContextType::kSoftwareRaster;
     }
   }
 

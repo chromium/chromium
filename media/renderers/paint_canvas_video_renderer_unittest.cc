@@ -944,21 +944,18 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     gl::GLSurfaceTestSupport::InitializeOneOff();
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-        /*enable_gles2_interface=*/false,
-        /*support_locking=*/false, viz::RasterInterfaceType::GPU);
+        viz::TestContextType::kGpuRaster, /*support_locking=*/false);
     gpu::ContextResult result = media_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     gles2_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-        /*enable_gles2_interface=*/true, /*support_locking=*/false,
-        viz::RasterInterfaceType::None);
+        viz::TestContextType::kGLES2, /*support_locking=*/false);
     result = gles2_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     destination_context_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            /*enable_gles2_interface=*/true, /*support_locking=*/false,
-            viz::RasterInterfaceType::None);
+            viz::TestContextType::kGLES2, /*support_locking=*/false);
     result = destination_context_->BindToCurrentThread();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cropped_frame_ = CreateCroppedFrame();
