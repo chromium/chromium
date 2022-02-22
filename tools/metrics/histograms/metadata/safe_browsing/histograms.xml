@@ -1898,9 +1898,21 @@ chromium-metrics-reviews@google.com.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Logs the outcome of displaying a modal dialog when a signed-in, non-syncing
-    user changes their account tailored security setting and dismisses the
-    corresponding message.
+    Logs the outcome of displaying a modal dialog on Desktop when a signed-in,
+    non-syncing user changes their account tailored security setting in the flow
+    of consenting.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.TailoredSecurityUnconsentedPromotionNotificationOutcome"
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2023-02-17">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the outcome of displaying a notification on desktop when a signed-in,
+    non-syncing user changes their account tailored security setting not in the
+    flow of consenting.
   </summary>
 </histogram>
 
@@ -1909,9 +1921,9 @@ chromium-metrics-reviews@google.com.
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Logs the outcome of displaying the message when a signed-in, non-syncing
-    user changes their account tailored security setting and is {Flow} of
-    consenting.
+    Logs the outcome of displaying the message on Android when a signed-in,
+    non-syncing user changes their account tailored security setting and is
+    {Flow} of consenting.
   </summary>
   <token key="Flow">
     <variant name="InFlow" summary="in the flow"/>
