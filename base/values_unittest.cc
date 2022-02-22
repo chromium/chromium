@@ -34,32 +34,36 @@
 
 namespace base {
 
-// Ensure that base::Value is as small as possible, i.e. that there is
-// no wasted space after the inner value due to alignment constraints.
-// Distinguish between the 'header' that includes |type_| and and the inner
-// value that follows it, which can be a bool, int, double, string, blob, list
-// or dict.
+#ifdef NDEBUG
+// `Value` should have a (relatively) small size to avoid creating excess
+// overhead, e.g. for lists of values that are all ints.
 //
-// This test is only enabled when NDEBUG is defined. This way the test will not
-// fail in debug builds that sometimes contain larger versions of the standard
-// containers used inside base::Value.
+// This test is limited to NDEBUG builds, since some containers may require
+// extra storage for supporting debug checks for things like iterators.
 TEST(ValuesTest, SizeOfValue) {
-  static_assert(
-      std::max({alignof(size_t), alignof(bool), alignof(int),
-                alignof(Value::DoubleStorage), alignof(std::string),
-                alignof(Value::BlobStorage), alignof(Value::ListStorage),
-                alignof(Value::DictStorage)}) == alignof(Value),
-      "Value does not have smallest possible alignof");
+#if BUILDFLAG(IS_WIN)
+  // On Windows, clang-cl does not support `[[no_unique_address]]` (see
+  // https://github.com/llvm/llvm-project/issues/49358). `base::Value::Dict` has
+  // a `base::flat_tree` which relies on this attribute to avoid wasting space
+  // when the comparator is stateless. Unfortunately, this means
+  // `base::Value::Dict` ends up taking 4 machine words instead of 3. An
+  // additional word is used by absl::variant for the type index.
+  constexpr size_t kExpectedSize = 5 * sizeof(void*);
+#else   // !BUILDFLAG(IS_WIN)
+  // libc++'s std::string and std::vector both take 3 machine words. An
+  // additional word is used by absl::variant for the type index.
+  constexpr size_t kExpectedSize = 4 * sizeof(void*);
+#endif  // BUILDFLAG(IS_WIN)
 
-  static_assert(
-      sizeof(size_t) +
-              std::max({sizeof(bool), sizeof(int), sizeof(Value::DoubleStorage),
-                        sizeof(std::string), sizeof(Value::BlobStorage),
-                        sizeof(Value::ListStorage),
-                        sizeof(Value::DictStorage)}) ==
-          sizeof(Value),
-      "Value does not have smallest possible sizeof");
+  // Use std::integral_constant so the compiler error message includes the
+  // evaluated size. In future versions of clang, it should be possible to
+  // simplify this to an equality comparison (i.e. newer clangs print out
+  // "comparison reduces to '(1 == 2)'").
+  static_assert(std::is_same_v<std::integral_constant<size_t, sizeof(Value)>,
+                               std::integral_constant<size_t, kExpectedSize>>,
+                "base::Value has an unexpected size!");
 }
+#endif
 
 TEST(ValuesTest, TestNothrow) {
   static_assert(std::is_nothrow_move_constructible<Value>::value,

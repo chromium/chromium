@@ -1144,8 +1144,6 @@ class BASE_EXPORT GSL_OWNER Value {
   explicit Value(absl::monostate);
   explicit Value(DoubleStorage storage);
 
-  friend class ValuesTest_SizeOfValue_Test;
-
   absl::variant<absl::monostate,
                 bool,
                 int,
