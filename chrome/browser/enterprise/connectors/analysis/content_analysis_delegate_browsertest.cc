@@ -787,8 +787,15 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   EXPECT_TRUE(called);
 }
 
+// TODO(https://crbug.com/1299762): Re-enable on non-mac platforms once flaky
+// timeouts are fixed.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_BlockLargeFiles BlockLargeFiles
+#else
+#define MAYBE_BlockLargeFiles DISABLED_BlockLargeFiles
+#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
-                       BlockLargeFiles) {
+                       MAYBE_BlockLargeFiles) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Set up delegate and upload service.
