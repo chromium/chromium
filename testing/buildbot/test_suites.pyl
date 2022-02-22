@@ -912,7 +912,7 @@
       'content_browsertests': {},
       'interactive_ui_tests': {
         'swarming': {
-          'shards': 3,
+          'shards': 10,
         },
       },
     },
