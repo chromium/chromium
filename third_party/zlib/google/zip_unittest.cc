@@ -634,7 +634,7 @@ TEST_F(ZipTest, ZipTimeStamp) {
   TestTimeStamp("02 Jan 2038 23:59:58", VALID_YEAR);
 }
 
-#if defined(OS_POSIX)
+#if defined(OS_POSIX) || defined(OS_FUCHSIA)
 TEST_F(ZipTest, ZipFiles) {
   base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 
@@ -658,7 +658,7 @@ TEST_F(ZipTest, ZipFiles) {
     EXPECT_EQ(entry->path, zip_file_list_[i]);
   }
 }
-#endif  // defined(OS_POSIX)
+#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
 
 TEST_F(ZipTest, UnzipFilesWithIncorrectSize) {
   // test_mismatch_size.zip contains files with names from 0.txt to 7.txt with
