@@ -375,8 +375,9 @@ RenderFrameProxyHost* RenderFrameHostManager::GetProxyToParent() {
   if (frame_tree_node_->IsMainFrame())
     return nullptr;
 
-  return GetRenderFrameProxyHost(
-      frame_tree_node_->parent()->GetSiteInstance()->group());
+  return frame_tree_node_->GetBrowsingContextStateForSubframe()
+      ->GetRenderFrameProxyHost(
+          frame_tree_node_->parent()->GetSiteInstance()->group());
 }
 
 RenderFrameProxyHost* RenderFrameHostManager::GetProxyToOuterDelegate() {
@@ -393,7 +394,11 @@ RenderFrameProxyHost* RenderFrameHostManager::GetProxyToOuterDelegate() {
     return nullptr;
   }
 
-  return GetRenderFrameProxyHost(
+  // We will create an outer delegate proxy in each BrowsingContextState in this
+  // frame so it doesn't matter which BCS is used here.
+  // TODO(crbug.com/1270671): implement outer delegate proxy storage in all
+  // BrowsingContextStates.
+  return render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
       outer_contents_frame_tree_node->parent()->GetSiteInstance()->group());
 }
 
@@ -772,7 +777,9 @@ void RenderFrameHostManager::DiscardUnusedFrame(
     // |render_frame_host|, as this method is only called to discard a pending
     // or speculative RenderFrameHost, i.e. one that has never hosted an actual
     // document.
-    proxy = GetRenderFrameProxyHost(site_instance->group());
+    proxy =
+        render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
+            site_instance->group());
     CHECK(proxy);
   }
 
@@ -1120,7 +1127,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       // corresponding proxy. See https://crbug.com/487872.
       // TODO(https://crbug.com/1072817): Make this logic more robust to
       // consider the case for failed navigations after CommitPending.
-      if (GetRenderFrameProxyHost(
+      if (navigation_rfh->browsing_context_state()->GetRenderFrameProxyHost(
               static_cast<SiteInstanceImpl*>(dest_site_instance.get())
                   ->group())) {
         navigation_rfh->SwapIn();
@@ -1292,8 +1299,10 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
 
     // The renderer hasn't acknowledged the `CommitNavigation()` yet so the
     // `RenderFrameProxyHost` should still be alive. Reuse it.
-    RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-        speculative_render_frame_host_->GetSiteInstance()->group());
+    RenderFrameProxyHost* proxy =
+        speculative_render_frame_host_->browsing_context_state()
+            ->GetRenderFrameProxyHost(
+                speculative_render_frame_host_->GetSiteInstance()->group());
     DCHECK(proxy);
     speculative_render_frame_host_->UndoCommitNavigation(
         *proxy, frame_tree_node_->IsLoading());
@@ -1368,7 +1377,8 @@ void RenderFrameHostManager::OnDidChangeCollapsedState(bool collapsed) {
     current_frame_host()->GetAssociatedLocalFrame()->Collapse(collapsed);
   } else {
     RenderFrameProxyHost* proxy_to_parent =
-        GetRenderFrameProxyHost(parent_site_instance->group());
+        frame_tree_node_->GetBrowsingContextStateForSubframe()
+            ->GetRenderFrameProxyHost(parent_site_instance->group());
     proxy_to_parent->GetAssociatedRemoteFrame()->Collapse(collapsed);
   }
 }
@@ -2762,7 +2772,8 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     SiteInstanceGroup* site_instance_group =
         static_cast<SiteInstanceImpl*>(instance)->group();
     if (!InitRenderView(instance, render_view_host,
-                        GetRenderFrameProxyHost(site_instance_group))) {
+                        browsing_context_state->GetRenderFrameProxyHost(
+                            site_instance_group))) {
       return nullptr;
     }
 
@@ -2823,8 +2834,9 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
   }
 
   // If a proxy already exists and is alive, nothing needs to be done.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(instance)->group());
   if (proxy && proxy->is_render_frame_proxy_live())
     return;
 
@@ -2915,8 +2927,9 @@ void RenderFrameHostManager::EnsureRenderViewInitialized(
 
   // If the proxy in |instance| doesn't exist, this RenderView is not swapped
   // out and shouldn't be reinitialized here.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(instance)->group());
   if (!proxy)
     return;
 
@@ -3129,8 +3142,9 @@ bool RenderFrameHostManager::InitRenderFrame(
     CHECK_NE(previous_sibling_routing_id, MSG_ROUTING_NONE);
   }
 
-  RenderFrameProxyHost* existing_proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(site_instance)->group());
+  RenderFrameProxyHost* existing_proxy =
+      render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
   if (existing_proxy && !existing_proxy->is_render_frame_proxy_live())
     existing_proxy->InitRenderFrameProxy();
 
@@ -3201,8 +3215,8 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
 
   // Main frames need both the RenderView and RenderFrame reinitialized, so
   // use InitRenderView.
-  DCHECK(
-      !GetRenderFrameProxyHost(render_frame_host->GetSiteInstance()->group()));
+  DCHECK(!render_frame_host->browsing_context_state()->GetRenderFrameProxyHost(
+      render_frame_host->GetSiteInstance()->group()));
   if (!InitRenderView(render_frame_host->GetSiteInstance(),
                       render_frame_host->render_view_host(), nullptr))
     return false;
@@ -3228,8 +3242,9 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstance(
   if (render_frame_host_->GetSiteInstance() == site_instance)
     return render_frame_host_->GetRoutingID();
 
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(site_instance)->group());
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          static_cast<SiteInstanceImpl*>(site_instance)->group());
   if (proxy)
     return proxy->GetRoutingID();
 
@@ -3242,7 +3257,9 @@ RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
   if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)
     return render_frame_host_->GetFrameToken();
 
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance_group);
+  RenderFrameProxyHost* proxy =
+      render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+          site_instance_group);
   if (proxy)
     return proxy->GetFrameToken();
 
@@ -3441,7 +3458,7 @@ void RenderFrameHostManager::CommitPending(
       if (focused_frame && !focused_frame->IsMainFrame() &&
           focused_frame->current_frame_host()->GetSiteInstance() !=
               render_frame_host_->GetSiteInstance()) {
-        focused_frame->render_manager()
+        focused_frame->GetBrowsingContextStateForSubframe()
             ->GetRenderFrameProxyHost(
                 render_frame_host_->GetSiteInstance()->group())
             ->SetFocusedFrame();
@@ -3580,8 +3597,8 @@ void RenderFrameHostManager::CommitPending(
 
   // After all is done, there must never be a proxy in the list which has the
   // same SiteInstanceGroup as the current RenderFrameHost.
-  CHECK(
-      !GetRenderFrameProxyHost(render_frame_host_->GetSiteInstance()->group()));
+  CHECK(!render_frame_host_->browsing_context_state()->GetRenderFrameProxyHost(
+      render_frame_host_->GetSiteInstance()->group()));
 }
 
 std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
@@ -3658,18 +3675,6 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   return old_render_frame_host;
 }
 
-RenderFrameProxyHost* RenderFrameHostManager::GetRenderFrameProxyHost(
-    SiteInstanceGroup* site_instance_group) const {
-  // TODO(crbug.com/1270671): update all call sites of this method when the
-  // browsing_context_state_ is removed, so that the correct RenderFrameHost and
-  // associated BrowsingContextState are used.
-  return browsing_context_state_->GetRenderFrameProxyHost(site_instance_group);
-}
-
-size_t RenderFrameHostManager::GetProxyCount() {
-  return browsing_context_state_->proxy_hosts().size();
-}
-
 void RenderFrameHostManager::CollectOpenerFrameTrees(
     std::vector<FrameTree*>* opener_frame_trees,
     std::unordered_set<FrameTreeNode*>* nodes_with_back_links) {
@@ -3742,8 +3747,11 @@ void RenderFrameHostManager::CreateOpenerProxies(
   // creation.
   for (auto* node : nodes_with_back_links) {
     RenderFrameProxyHost* proxy =
-        node->render_manager()->GetRenderFrameProxyHost(
-            static_cast<SiteInstanceImpl*>(instance)->group());
+        node->render_manager()
+            ->current_frame_host()
+            ->browsing_context_state()
+            ->GetRenderFrameProxyHost(
+                static_cast<SiteInstanceImpl*>(instance)->group());
     // If there is no proxy, the cycle may involve nodes in the same process,
     // or, if this is a subframe, --site-per-process may be off.  Either way,
     // there's nothing more to do.

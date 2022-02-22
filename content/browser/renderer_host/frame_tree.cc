@@ -652,8 +652,10 @@ void FrameTree::SetFocusedFrame(FrameTreeNode* node, SiteInstance* source) {
   for (auto* instance : frame_tree_site_instances) {
     if (instance != source && instance != current_instance) {
       RenderFrameProxyHost* proxy =
-          node->render_manager()->GetRenderFrameProxyHost(
-              static_cast<SiteInstanceImpl*>(instance)->group());
+          node->current_frame_host()
+              ->browsing_context_state()
+              ->GetRenderFrameProxyHost(
+                  static_cast<SiteInstanceImpl*>(instance)->group());
       if (proxy) {
         proxy->SetFocusedFrame();
       } else {
@@ -793,8 +795,11 @@ void FrameTree::SetPageFocus(SiteInstance* instance, bool is_focused) {
   // This is only used to set page-level focus in cross-process subframes, and
   // requests to set focus in main frame's SiteInstance are ignored.
   if (instance != root_manager->current_frame_host()->GetSiteInstance()) {
-    RenderFrameProxyHost* proxy = root_manager->GetRenderFrameProxyHost(
-        static_cast<SiteInstanceImpl*>(instance)->group());
+    RenderFrameProxyHost* proxy =
+        root_manager->current_frame_host()
+            ->browsing_context_state()
+            ->GetRenderFrameProxyHost(
+                static_cast<SiteInstanceImpl*>(instance)->group());
     proxy->GetAssociatedRemoteFrame()->SetPageFocus(is_focused);
   }
 }
@@ -925,7 +930,6 @@ void FrameTree::Shutdown() {
     // need to be moved along during activation replace this line with a DCHECK
     // that there are no pending delete instances.
     root_manager->ClearRFHsPendingShutdown();
-    DCHECK_EQ(0u, root_manager->GetProxyCount());
     DCHECK(!root_->navigation_request());
     DCHECK(!root_manager->speculative_frame_host());
     manager_delegate_->OnFrameTreeNodeDestroyed(root_);

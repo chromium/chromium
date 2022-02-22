@@ -308,10 +308,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // SiteInstance.
   void CreateProxiesForChildFrame(FrameTreeNode* child);
 
-  // Returns the RenderFrameProxyHost for the given SiteInstanceGroup, if any.
-  RenderFrameProxyHost* GetRenderFrameProxyHost(
-      SiteInstanceGroup* site_instance_group) const;
-
   // If |render_frame_host| is on the pending deletion list, this deletes it.
   // Returns whether it was deleted.
   bool DeleteFromPendingList(RenderFrameHostImpl* render_frame_host);
@@ -471,9 +467,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // Sets the child RenderWidgetHostView for this frame, which must be part of
   // an inner FrameTree.
   void SetRWHViewForInnerFrameTree(RenderWidgetHostViewChildFrame* child_rwhv);
-
-  // Returns the number of RenderFrameProxyHosts for this frame.
-  size_t GetProxyCount();
 
   // Executes a PageBroadcast Mojo method to every RenderView in the FrameTree.
   // This should only be called in the top-level RenderFrameHostManager.

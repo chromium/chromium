@@ -9017,7 +9017,7 @@ bool RenderFrameHostImpl::IsActive() {
 size_t RenderFrameHostImpl::GetProxyCount() {
   if (!IsActive())
     return 0;
-  return frame_tree_node_->render_manager()->GetProxyCount();
+  return browsing_context_state_->GetProxyCount();
 }
 
 bool RenderFrameHostImpl::HasSelection() {
