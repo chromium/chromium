@@ -477,8 +477,9 @@ template("gcc_toolchain") {
       if (target_cpu == "mipsel" && is_component_build && is_android) {
         rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
       } else if (current_os == "aix") {
-        # --whole-archive, --no-whole-archive flags are not available on the aix ld.
-        rspfile_content = "{{inputs}} {{solibs}} {{libs}} -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
+        # --whole-archive, --no-whole-archive flags are not available on the aix
+        # ld.
+        rspfile_content = "{{inputs}} {{solibs}} {{libs}} {{rlibs}}"
       } else {
         rspfile_content = "-Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--whole-archive {{rlibs}} -Wl,--no-whole-archive"
       }
