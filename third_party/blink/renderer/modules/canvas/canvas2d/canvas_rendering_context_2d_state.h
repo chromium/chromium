@@ -322,6 +322,8 @@ class CanvasRenderingContext2DState final
   bool is_transform_invertible_ : 1;
   bool has_clip_ : 1;
   bool has_complex_clip_ : 1;
+  bool letter_spacing_is_set_ : 1;
+  bool word_spacing_is_set_ : 1;
   mutable bool fill_style_dirty_ : 1;
   mutable bool stroke_style_dirty_ : 1;
   mutable bool line_dash_dirty_ : 1;
