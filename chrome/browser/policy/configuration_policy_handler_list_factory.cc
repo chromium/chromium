@@ -47,6 +47,7 @@
 #include "chrome/browser/ssl/secure_origin_policy_handler.h"
 #include "chrome/browser/themes/theme_color_policy_handler.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
@@ -1613,6 +1614,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWindowPlacementBlockedForUrls,
     prefs::kManagedWindowPlacementBlockedForUrls,
     base::Value::Type::LIST },
+#if !BUILDFLAG(IS_ANDROID)
+  { key::kWebAuthenticationRemoteProxiedRequestsAllowed,
+    webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+    base::Value::Type::BOOLEAN },
+#endif
 };
 // clang-format on
 

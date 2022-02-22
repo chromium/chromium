@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/webui/print_preview/policy_settings.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/secure_origin_allowlist.h"
@@ -1499,6 +1500,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(
       prefs::kLensRegionSearchEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      webauthn::pref_names::kRemoteProxiedRequestsAllowed, false);
 #endif
 
   registry->RegisterBooleanPref(prefs::kPrivacyGuideViewed, false);

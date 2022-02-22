@@ -62,6 +62,7 @@ class CONTENT_EXPORT WebAuthenticationDelegate {
   // credentials so thought is required before allowing an origin to assert an
   // RP ID.
   virtual bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      BrowserContext* browser_context,
       const url::Origin& caller_origin,
       const std::string& relying_party_id);
 

@@ -8,10 +8,14 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
@@ -97,7 +101,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
   ChromeWebAuthenticationDelegate delegate;
   for (const auto& test : kTests) {
     EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
-                  url::Origin::Create(GURL(test.origin)), test.rp_id),
+                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
+                  test.rp_id),
               test.expected);
   }
 }
@@ -270,3 +275,85 @@ TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+class CorpCrdOverrideOriginAndRpIdValidationTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
+};
+
+TEST_F(CorpCrdOverrideOriginAndRpIdValidationTest, Test) {
+  constexpr char kCorpCrdOrigin[] = "https://remotedesktop.corp.google.com";
+  constexpr char kExampleOrigin[] = "https://example.com";
+  constexpr char kTestRpId[] = "random.test.site.com";
+  enum class Policy {
+    kUnset,
+    kDisabled,
+    kEnabled,
+  };
+  struct {
+    Policy policy_value;
+    std::string switch_value;
+    std::string origin;
+    bool expected;
+  } kTestCases[] = {
+      // With the policy disabled, the override should be off.
+      {Policy::kUnset, "", kCorpCrdOrigin, false},
+      {Policy::kUnset, kExampleOrigin, kExampleOrigin, false},
+      {Policy::kDisabled, "", kCorpCrdOrigin, false},
+      {Policy::kDisabled, kExampleOrigin, kExampleOrigin, false},
+
+      // The origin must match the hard-coded value from the policy or the
+      // switch value exactly.
+      {Policy::kEnabled, "", kCorpCrdOrigin, true},
+      {Policy::kEnabled, kExampleOrigin, kCorpCrdOrigin, true},
+      {Policy::kEnabled, kExampleOrigin, kExampleOrigin, true},
+      {Policy::kEnabled, "", kExampleOrigin, false},
+      {Policy::kEnabled, kExampleOrigin, "http://remotedesktop.corp.google.com",
+       false},
+      {Policy::kEnabled, kExampleOrigin, "https://remotedesktop.google.com",
+       false},
+      {Policy::kEnabled, kExampleOrigin, "https://google.com", false},
+      {Policy::kEnabled, kExampleOrigin, "https://a.google.com", false},
+      {Policy::kEnabled, kExampleOrigin, "https://sub.example.com", false},
+      {Policy::kEnabled, kExampleOrigin, "http://example.com", false},
+      {Policy::kEnabled, kExampleOrigin, "example.com2", false},
+
+      // The switch takes exactly one origin. No lists, or wildcards allowed.
+      {Policy::kEnabled, "https://example.com,https://other.com",
+       kExampleOrigin, false},
+      {Policy::kEnabled, "", kExampleOrigin, false},
+      {Policy::kEnabled, "", kExampleOrigin, false},
+      {Policy::kEnabled, "https://*", kExampleOrigin, false},
+      {Policy::kEnabled, "*.example.com", kExampleOrigin, false},
+      {Policy::kEnabled, "https://*.example.com", kExampleOrigin, false},
+  };
+  ChromeWebAuthenticationDelegate delegate;
+  for (const auto& test : kTestCases) {
+    PrefService* prefs =
+        Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
+        test.switch_value);
+    switch (test.policy_value) {
+      case Policy::kUnset:
+        prefs->ClearPref(webauthn::pref_names::kRemoteProxiedRequestsAllowed);
+        break;
+      case Policy::kDisabled:
+        prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+                          false);
+        break;
+      case Policy::kEnabled:
+        prefs->SetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed,
+                          true);
+        break;
+    }
+
+    EXPECT_EQ(delegate.OverrideCallerOriginAndRelyingPartyIdValidation(
+                  GetBrowserContext(), url::Origin::Create(GURL(test.origin)),
+                  kTestRpId),
+              test.expected);
+  }
+}

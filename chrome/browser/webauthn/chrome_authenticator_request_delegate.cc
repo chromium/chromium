@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/strings/string_piece.h"
@@ -30,6 +31,8 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
+#include "chrome/browser/webauthn/webauthn_pref_names.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
@@ -110,10 +113,56 @@ ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
 #if !BUILDFLAG(IS_ANDROID)
 
+static bool IsAllowedGoogleCorpRemoteProxyingOrigin(
+    content::BrowserContext* browser_context,
+    const url::Origin& caller_origin) {
+  if (!base::FeatureList::IsEnabled(
+          device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege)) {
+    return false;
+  }
+
+  const Profile* profile = Profile::FromBrowserContext(browser_context);
+  const PrefService* prefs = profile->GetPrefs();
+  const bool google_corp_remote_proxied_request_allowed =
+      prefs->GetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed);
+  if (!google_corp_remote_proxied_request_allowed) {
+    return false;
+  }
+
+  // The Google-internal CRD origin. The policy explicitly does not cover
+  // external instances of CRD.
+  constexpr char kGoogleCorpCrdOrigin[] =
+      "https://remotedesktop.corp.google.com";
+  if (caller_origin == url::Origin::Create(GURL(kGoogleCorpCrdOrigin))) {
+    return true;
+  }
+
+  const std::string cmdline_allowed_origin(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin));
+  if (cmdline_allowed_origin.empty()) {
+    return false;
+  }
+
+  return caller_origin == url::Origin::Create(GURL(cmdline_allowed_origin));
+}
+
 bool ChromeWebAuthenticationDelegate::
     OverrideCallerOriginAndRelyingPartyIdValidation(
+        content::BrowserContext* browser_context,
         const url::Origin& caller_origin,
         const std::string& relying_party_id) {
+  // Allow the Google-internal version of Chrome Remote Desktop to bypass RP ID
+  // validation so that it can execute WebAuthn requests on behalf of a remote
+  // host. This behavior is gated on an internal-only platform-level enterprise
+  // policy with the hard-coded Google-internal CRD origin. An additional origin
+  // fro development and testing can be supplied via a switch, but only if the
+  // enterprise policy has been enabled.
+  if (IsAllowedGoogleCorpRemoteProxyingOrigin(browser_context, caller_origin)) {
+    // Any Relying Party ID is allowed.
+    return true;
+  }
+
   // Allow chrome-extensions:// origins to make WebAuthn requests.
   // `MaybeGetRelyingPartyId` will override the RP ID to use when processing
   // requests from extensions.

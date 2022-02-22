@@ -41,4 +41,8 @@ const base::Feature kWebAuthCrosPlatformAuthenticator{
 extern const base::Feature kU2fPermissionPrompt{
     "U2fPermissionPrompt", base::FEATURE_ENABLED_BY_DEFAULT};
 
+extern const base::Feature kWebAuthnGoogleCorpRemoteDesktopClientPrivilege{
+    "WebAuthenticationGoogleCorpRemoteDesktopClientPrivilege",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace device

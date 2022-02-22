@@ -9537,6 +9537,39 @@
       For more information about the deprecation of the U2F Security Key API, please refer to https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A.''',
     },
     {
+      'name': 'WebAuthenticationRemoteProxiedRequestsAllowed',
+      'owners': ['martinkr@google.com', 'agl@chromium.org'],
+      'tags': ['full-admin-access'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow CRD to execute WebAuthn API requests proxied from a remote host.',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow CRD to execute WebAuthn API requests proxied from a remote host.',
+        },
+      ],
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'internal_only': True,  # Not available outside of Google.
+        'per_profile': True,
+        'platform_only': True,  # No cloud-policy support.
+      },
+      'example_value': True,
+      'default': False,
+      'id': 965,
+      'caption': '''Allow <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph> to execute WebAuthn API requests proxied from a remote host.''',
+      'desc': '''If set to Enabled, <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph> may execute WebAuthn API requests that originate from a browsing session on a remote host.
+
+      If the policy is set to Disabled or left unset, the default behavior will apply.
+
+      Note that this feature is only supported inside Google's internal network environment.''',
+    },
+    {
       'name': 'GCFUserDataDir',
       'owners': ['grt@chromium.org'],
       'type': 'string',
@@ -31241,6 +31274,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 964,
+  'highest_id_currently_used': 965,
   'highest_atomic_group_id_currently_used': 42
 }

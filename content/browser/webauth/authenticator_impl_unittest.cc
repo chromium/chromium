@@ -1843,8 +1843,8 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
       RenderFrameHost*) override {
     return is_uvpaa_override;
   }
-
   bool OverrideCallerOriginAndRelyingPartyIdValidation(
+      content::BrowserContext* browser_context,
       const url::Origin& origin,
       const std::string& rp_id) override {
     return permit_extensions && origin.scheme() == kExtensionScheme &&
@@ -2297,12 +2297,6 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
   }
 
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
-};
-
-class AuthenticatorContentBrowserClientWithCableFlagTest
-    : public AuthenticatorContentBrowserClientTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kWebAuthCable};
 };
 
 // Test that credentials can be created and used from an extension origin when
@@ -3370,6 +3364,12 @@ TEST_F(AuthenticatorContentBrowserClientTest,
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
             AuthenticatorStatus::SUCCESS);
 }
+
+class AuthenticatorContentBrowserClientWithCableFlagTest
+    : public AuthenticatorContentBrowserClientTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kWebAuthCable};
+};
 
 TEST_F(AuthenticatorContentBrowserClientWithCableFlagTest,
        CableCredentialWithoutCableExtension) {

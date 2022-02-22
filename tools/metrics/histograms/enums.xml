@@ -28749,6 +28749,7 @@ Called by update_document_policy_enum.py.-->
   <int value="962" label="CloudReportingUploadFrequency"/>
   <int value="963" label="OptimizationGuideFetchingEnabled"/>
   <int value="964" label="WebAuthnFactors"/>
+  <int value="965" label="WebAuthenticationRemoteProxiedRequestsAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

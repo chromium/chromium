@@ -122,8 +122,7 @@ WebAuthRequestSecurityChecker::~WebAuthRequestSecurityChecker() = default;
 
 bool WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
     const url::Origin& origin) {
-  auto cryptotoken_origin = url::Origin::Create(GURL(kCryptotokenOrigin));
-  return cryptotoken_origin == origin;
+  return origin == url::Origin::Create(GURL(kCryptotokenOrigin));
 }
 
 bool WebAuthRequestSecurityChecker::IsSameOriginWithAncestors(
@@ -178,8 +177,9 @@ WebAuthRequestSecurityChecker::ValidateDomainAndRelyingPartyID(
   if (GetContentClient()
           ->browser()
           ->GetWebAuthenticationDelegate()
-          ->OverrideCallerOriginAndRelyingPartyIdValidation(caller_origin,
-                                                            relying_party_id)) {
+          ->OverrideCallerOriginAndRelyingPartyIdValidation(
+              render_frame_host_->GetBrowserContext(), caller_origin,
+              relying_party_id)) {
     return blink::mojom::AuthenticatorStatus::SUCCESS;
   }
 

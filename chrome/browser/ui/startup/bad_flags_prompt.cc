@@ -17,6 +17,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/ui/simple_message_box.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chromium_strings.h"
@@ -146,6 +147,11 @@ static const char* kBadFlags[] = {
     // with a high potential for security / privacy abuse) for specified
     // origins.
     switches::kRestrictedApiOrigins,
+
+    // Allows the specified origin to make Web Authentication API requests on
+    // behalf of other origins, if a corresponding Google-internal
+    // platform-level enterprise policy is also applied.
+    webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin,
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
