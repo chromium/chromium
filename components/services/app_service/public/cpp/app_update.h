@@ -91,7 +91,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool NameChanged() const;
 
   const std::string& ShortName() const;
-  const std::string& GetShortName() const;
   bool ShortNameChanged() const;
 
   // The publisher-specific ID for this app, e.g. for Android apps, this field

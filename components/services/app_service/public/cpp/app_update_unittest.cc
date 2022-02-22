@@ -175,7 +175,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_name_, u.Name());
     EXPECT_EQ(expect_name_changed_, u.NameChanged());
 
-    EXPECT_EQ(expect_short_name_, u.GetShortName());
+    EXPECT_EQ(expect_short_name_, u.ShortName());
     EXPECT_EQ(expect_short_name_changed_, u.ShortNameChanged());
 
     EXPECT_EQ(expect_publisher_id_, u.GetPublisherId());

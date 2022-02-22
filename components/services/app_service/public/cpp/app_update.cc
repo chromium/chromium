@@ -344,6 +344,10 @@ bool AppUpdate::NameChanged() const {
 }
 
 const std::string& AppUpdate::ShortName() const {
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    GET_VALUE_WITH_FALLBACK(short_name, base::EmptyString())
+  }
+
   if (mojom_delta_ && mojom_delta_->short_name.has_value()) {
     return mojom_delta_->short_name.value();
   }
@@ -351,10 +355,6 @@ const std::string& AppUpdate::ShortName() const {
     return mojom_state_->short_name.value();
   }
   return base::EmptyString();
-}
-
-const std::string& AppUpdate::GetShortName() const {
-  GET_VALUE_WITH_FALLBACK(short_name, base::EmptyString())
 }
 
 bool AppUpdate::ShortNameChanged() const {
