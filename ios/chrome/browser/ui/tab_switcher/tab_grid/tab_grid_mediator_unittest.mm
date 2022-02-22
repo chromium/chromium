@@ -338,6 +338,7 @@ class TabGridMediatorTest : public PlatformTest {
         navigation_manager->GetItemAtIndex(0));
     web_state->SetNavigationManager(std::move(navigation_manager));
     web_state->SetBrowserState(browser_state_.get());
+    web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
     SnapshotTabHelper::CreateForWebState(web_state.get(),
                                          [[NSUUID UUID] UUIDString]);

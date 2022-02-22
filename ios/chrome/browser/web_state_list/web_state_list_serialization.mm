@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <unordered_map>
 
@@ -16,6 +17,8 @@
 #import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
@@ -30,22 +33,50 @@ namespace {
 // the WebStates stored in the WebStateList.
 NSString* const kOpenerIndexKey = @"OpenerIndex";
 NSString* const kOpenerNavigationIndexKey = @"OpenerNavigationIndex";
+
+// Some WebState may have no back/forward history. This can happen for
+// multiple reason (one is when opening a new tab on a slow network session,
+// and terminating the app before the navigation can commit, another is when
+// WKWebView intercepts a new tab navigation to an app navigation; there may
+// be other cases). This function creates a WebStateListRemovingIndexes that
+// records the indexes of the WebStates that should not be saved.
+WebStateListRemovingIndexes GetIndexOfWebStatesToDrop(
+    WebStateList* web_state_list) {
+  std::vector<int> web_state_to_skip_indexes;
+  for (int index = 0; index < web_state_list->count(); ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    if (web_state->GetNavigationItemCount() == 0) {
+      web_state_to_skip_indexes.push_back(index);
+    }
+  }
+  return WebStateListRemovingIndexes(std::move(web_state_to_skip_indexes));
+}
 }  // namespace
 
 SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
                                         NSSet* web_states_to_serialize) {
+  const WebStateListRemovingIndexes removing_indexes =
+      GetIndexOfWebStatesToDrop(web_state_list);
+
+  const int web_state_to_save_count =
+      web_state_list->count() - removing_indexes.count();
+
   NSMutableArray<CRWSessionStorage*>* serialized_session =
-      [NSMutableArray arrayWithCapacity:web_state_list->count()];
+      [NSMutableArray arrayWithCapacity:web_state_to_save_count];
   NSMutableArray<SessionSummary*>* serialized_session_summary = nil;
   NSMutableDictionary<NSString*, NSData*>* serialized_tab_contents = nil;
   if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
     serialized_session_summary =
-        [NSMutableArray arrayWithCapacity:web_state_list->count()];
+        [NSMutableArray arrayWithCapacity:web_state_to_save_count];
     serialized_tab_contents =
-        [NSMutableDictionary dictionaryWithCapacity:web_state_list->count()];
+        [NSMutableDictionary dictionaryWithCapacity:web_state_to_save_count];
   }
 
   for (int index = 0; index < web_state_list->count(); ++index) {
+    if (removing_indexes.Contains(index)) {
+      continue;
+    }
+
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     WebStateOpener opener = web_state_list->GetOpenerOfWebStateAt(index);
 
@@ -56,6 +87,11 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
     if (opener.opener) {
       opener_index = web_state_list->GetIndexOfWebState(opener.opener);
       DCHECK_NE(opener_index, WebStateList::kInvalidIndex);
+
+      opener_index = removing_indexes.IndexAfterRemoval(opener_index);
+    }
+
+    if (opener_index != WebStateList::kInvalidIndex) {
       user_data_manager->AddSerializableData(@(opener_index), kOpenerIndexKey);
       user_data_manager->AddSerializableData(@(opener.navigation_index),
                                              kOpenerNavigationIndexKey);
@@ -99,10 +135,13 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
     }
   }
 
-  NSUInteger selectedIndex =
-      web_state_list->active_index() != WebStateList::kInvalidIndex
-          ? static_cast<NSUInteger>(web_state_list->active_index())
-          : static_cast<NSUInteger>(NSNotFound);
+  WebStateListOrderController order_controller(*web_state_list);
+  const int active_index = order_controller.DetermineNewActiveIndex(
+      web_state_list->active_index(), std::move(removing_indexes));
+
+  NSUInteger selectedIndex = active_index != WebStateList::kInvalidIndex
+                                 ? static_cast<NSUInteger>(active_index)
+                                 : static_cast<NSUInteger>(NSNotFound);
 
   return [[SessionWindowIOS alloc]
       initWithSessions:[serialized_session copy]

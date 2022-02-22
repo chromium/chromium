@@ -25,7 +25,23 @@ WebStateListRemovingIndexes::WebStateListRemovingIndexes(
     std::initializer_list<int> indexes)
     : WebStateListRemovingIndexes(std::vector<int>(indexes)) {}
 
+WebStateListRemovingIndexes::WebStateListRemovingIndexes(
+    const WebStateListRemovingIndexes&) = default;
+
+WebStateListRemovingIndexes& WebStateListRemovingIndexes::operator=(
+    const WebStateListRemovingIndexes&) = default;
+
+WebStateListRemovingIndexes::WebStateListRemovingIndexes(
+    WebStateListRemovingIndexes&&) = default;
+
+WebStateListRemovingIndexes& WebStateListRemovingIndexes::operator=(
+    WebStateListRemovingIndexes&&) = default;
+
 WebStateListRemovingIndexes::~WebStateListRemovingIndexes() = default;
+
+bool WebStateListRemovingIndexes::Contains(int index) const {
+  return std::binary_search(indexes_.begin(), indexes_.end(), index);
+}
 
 int WebStateListRemovingIndexes::IndexAfterRemoval(int index) const {
   const auto lower_bound =

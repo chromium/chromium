@@ -25,12 +25,20 @@
 
 namespace {
 
+std::unique_ptr<web::WebState> CreateWebStateWithNavigationItemCount(int cnt) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetNavigationItemCount(cnt);
+  return web_state;
+}
+
 std::unique_ptr<web::WebState> CreateWebState() {
-  return std::make_unique<web::FakeWebState>();
+  return CreateWebStateWithNavigationItemCount(1);
 }
 
 std::unique_ptr<web::WebState> CreateWebStateWithID(NSString* web_state_id) {
-  return std::make_unique<web::FakeWebState>(web_state_id);
+  auto web_state = std::make_unique<web::FakeWebState>(web_state_id);
+  web_state->SetNavigationItemCount(1);
+  return web_state;
 }
 
 std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
@@ -178,4 +186,31 @@ TEST_F(WebStateListSerializationTest, Serialize) {
       EXPECT_EQ(session_window.tabContents[web_state_id].length, 0u);
     }
   }
+}
+
+TEST_F(WebStateListSerializationTest, SerializationDropNoNavigation) {
+  WebStateList original_web_state_list(web_state_list_delegate());
+  original_web_state_list.InsertWebState(
+      0, CreateWebState(), WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  original_web_state_list.InsertWebState(
+      1, CreateWebStateWithNavigationItemCount(0),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
+  original_web_state_list.InsertWebState(
+      2, CreateWebStateWithNavigationItemCount(0),
+      WebStateList::INSERT_FORCE_INDEX,
+      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
+  original_web_state_list.InsertWebState(
+      3, CreateWebState(), WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  original_web_state_list.InsertWebState(
+      4, CreateWebState(), WebStateList::INSERT_FORCE_INDEX,
+      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
+
+  SessionWindowIOS* session_window =
+      SerializeWebStateList(&original_web_state_list, [NSSet set]);
+
+  // Check that the two tabs with no navigation items have been closed,
+  // including the active tab (its next sibling should be selected).
+  EXPECT_EQ(3u, session_window.sessions.count);
+  EXPECT_EQ(static_cast<NSUInteger>(2), session_window.selectedIndex);
 }

@@ -22,6 +22,13 @@ class WebStateListRemovingIndexes {
  public:
   explicit WebStateListRemovingIndexes(std::vector<int> indexes);
   WebStateListRemovingIndexes(std::initializer_list<int> indexes);
+
+  WebStateListRemovingIndexes(const WebStateListRemovingIndexes&);
+  WebStateListRemovingIndexes& operator=(const WebStateListRemovingIndexes&);
+
+  WebStateListRemovingIndexes(WebStateListRemovingIndexes&&);
+  WebStateListRemovingIndexes& operator=(WebStateListRemovingIndexes&&);
+
   ~WebStateListRemovingIndexes();
 
   // Returns the number of WebState that will be closed.
