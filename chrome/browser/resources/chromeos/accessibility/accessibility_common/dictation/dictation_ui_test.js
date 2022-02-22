@@ -57,15 +57,31 @@ DictationUIE2ETest = class extends DictationE2ETestBase {
     // Poll until the updateDictationBubble() API gets called with
     // `targetProps`.
     return new Promise(resolve => {
+      const printErrorMessageTimeoutId = setTimeout(() => {
+        this.printErrorMessage(targetProps);
+      }, DictationUIE2ETest.PRINT_ERROR_MESSAGE_DELAY_MS);
       const intervalId = setInterval(() => {
         if (this.uiPropertiesMatch(targetProps)) {
+          clearTimeout(printErrorMessageTimeoutId);
           clearInterval(intervalId);
           resolve();
         }
       });
     });
   }
+
+  /** @param {DictationBubbleProperties} props */
+  printErrorMessage(props) {
+    console.error(`Still waiting for UI properties
+      visible: ${props.visible}
+      icon: ${props.icon}
+      text: ${props.text}
+      hints: ${props.hints}`);
+  }
 };
+
+/** @const {number} */
+DictationUIE2ETest.PRINT_ERROR_MESSAGE_DELAY_MS = 3.5 * 1000;
 
 SYNC_TEST_F(
     'DictationUIE2ETest', 'ShownWhenSpeechRecognitionStarts', async function() {
