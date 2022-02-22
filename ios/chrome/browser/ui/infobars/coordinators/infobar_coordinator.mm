@@ -97,9 +97,9 @@
   }
 
   // Make sure to display the Toolbar/s before presenting the Banner.
-    _animatedFullscreenDisabler =
-        std::make_unique<AnimatedScopedFullscreenDisabler>(
-            FullscreenController::FromBrowser(self.browser));
+  _animatedFullscreenDisabler =
+      std::make_unique<AnimatedScopedFullscreenDisabler>(
+          FullscreenController::FromBrowser(self.browser));
   _animatedFullscreenDisabler->StartAnimation();
 
   [self.bannerViewController
