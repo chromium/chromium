@@ -147,6 +147,10 @@ export class CrActionMenuElement extends PolymerElement {
 
   static get properties() {
     return {
+      // Accessibility text of the menu. Should be something along the lines of
+      // "actions", or "more actions".
+      accessibilityLabel: String,
+
       // Setting this flag will make the menu listen for content size changes
       // and reposition to its anchor accordingly.
       autoReposition: {

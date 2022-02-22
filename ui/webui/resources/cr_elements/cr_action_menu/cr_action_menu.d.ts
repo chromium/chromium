@@ -38,6 +38,7 @@ export enum AnchorAlignment {
 }
 
 interface CrActionMenuElement extends HTMLElement {
+  accessibilityLabel: string|null|undefined;
   autoReposition: boolean|null|undefined;
   open: boolean;
   roleDescription: string|null|undefined;
