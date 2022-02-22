@@ -646,62 +646,73 @@ TEST_F(AttributionHostTest,
   navigation->Commit();
 }
 
-TEST_F(AttributionHostTest,
+namespace {
+const char kLocalHost[] = "http://localhost";
+
+struct OriginTrustworthyChecksTestCase {
+  const char* impression_origin;
+  const char* conversion_origin;
+  const char* reporting_origin;
+  bool impression_expected;
+};
+
+const OriginTrustworthyChecksTestCase kOriginTrustworthyChecksTestCases[] = {
+    {.impression_origin = kLocalHost,
+     .conversion_origin = kLocalHost,
+     .reporting_origin = kLocalHost,
+     .impression_expected = true},
+    {.impression_origin = "http://127.0.0.1",
+     .conversion_origin = "http://127.0.0.1",
+     .reporting_origin = "http://127.0.0.1",
+     .impression_expected = true},
+    {.impression_origin = kLocalHost,
+     .conversion_origin = kLocalHost,
+     .reporting_origin = "http://insecure.com",
+     .impression_expected = false},
+    {.impression_origin = kLocalHost,
+     .conversion_origin = "http://insecure.com",
+     .reporting_origin = kLocalHost,
+     .impression_expected = false},
+    {.impression_origin = "http://insecure.com",
+     .conversion_origin = kLocalHost,
+     .reporting_origin = kLocalHost,
+     .impression_expected = false},
+    {.impression_origin = "https://secure.com",
+     .conversion_origin = "https://secure.com",
+     .reporting_origin = "https://secure.com",
+     .impression_expected = true},
+};
+
+class AttributionHostOriginTrustworthyChecksTest
+    : public AttributionHostTest,
+      public ::testing::WithParamInterface<OriginTrustworthyChecksTestCase> {};
+
+}  // namespace
+
+TEST_P(AttributionHostOriginTrustworthyChecksTest,
        ImpressionNavigation_OriginTrustworthyChecksPerformed) {
-  const char kLocalHost[] = "http://localhost";
+  const OriginTrustworthyChecksTestCase& test_case = GetParam();
 
-  struct {
-    std::string impression_origin;
-    std::string conversion_origin;
-    std::string reporting_origin;
-    bool impression_expected;
-  } kTestCases[] = {
-      {.impression_origin = kLocalHost,
-       .conversion_origin = kLocalHost,
-       .reporting_origin = kLocalHost,
-       .impression_expected = true},
-      {.impression_origin = "http://127.0.0.1",
-       .conversion_origin = "http://127.0.0.1",
-       .reporting_origin = "http://127.0.0.1",
-       .impression_expected = true},
-      {.impression_origin = kLocalHost,
-       .conversion_origin = kLocalHost,
-       .reporting_origin = "http://insecure.com",
-       .impression_expected = false},
-      {.impression_origin = kLocalHost,
-       .conversion_origin = "http://insecure.com",
-       .reporting_origin = kLocalHost,
-       .impression_expected = false},
-      {.impression_origin = "http://insecure.com",
-       .conversion_origin = kLocalHost,
-       .reporting_origin = kLocalHost,
-       .impression_expected = false},
-      {.impression_origin = "https://secure.com",
-       .conversion_origin = "https://secure.com",
-       .reporting_origin = "https://secure.com",
-       .impression_expected = true},
-  };
+  EXPECT_CALL(mock_manager_, HandleSource).Times(test_case.impression_expected);
 
-  for (const auto& test_case : kTestCases) {
-    EXPECT_CALL(mock_manager_, HandleSource)
-        .Times(test_case.impression_expected);
+  contents()->NavigateAndCommit(GURL(test_case.impression_origin));
+  auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+      GURL(test_case.conversion_origin), main_rfh());
 
-    contents()->NavigateAndCommit(GURL(test_case.impression_origin));
-    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
-        GURL(test_case.conversion_origin), main_rfh());
-
-    blink::Impression impression;
-    impression.conversion_destination =
-        url::Origin::Create(GURL(test_case.conversion_origin));
-    impression.reporting_origin =
-        url::Origin::Create(GURL(test_case.reporting_origin));
-    navigation->set_impression(impression);
-    navigation->SetInitiatorFrame(main_rfh());
-    navigation->Commit();
-
-    Mock::VerifyAndClear(&mock_manager_);
-  }
+  blink::Impression impression;
+  impression.conversion_destination =
+      url::Origin::Create(GURL(test_case.conversion_origin));
+  impression.reporting_origin =
+      url::Origin::Create(GURL(test_case.reporting_origin));
+  navigation->set_impression(impression);
+  navigation->SetInitiatorFrame(main_rfh());
+  navigation->Commit();
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    AttributionHostOriginTrustworthyChecks,
+    AttributionHostOriginTrustworthyChecksTest,
+    ::testing::ValuesIn(kOriginTrustworthyChecksTestCases));
 
 TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
   EXPECT_CALL(
