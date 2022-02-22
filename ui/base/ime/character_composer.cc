@@ -123,7 +123,6 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
       compose_buffer_.clear();
       UTF32CharacterToUTF16(composed_character_utf32, &composed_character_);
     }
-    UpdatePreeditStringSequenceMode();
     return true;
   }
   // Key press is not a part of composition.
@@ -150,25 +149,9 @@ bool CharacterComposer::FilterKeyPressSequenceMode(const KeyEvent& event) {
       }
     }
     compose_buffer_.clear();
-    UpdatePreeditStringSequenceMode();
     return true;
   }
   return false;
-}
-
-void CharacterComposer::UpdatePreeditStringSequenceMode() {
-  for (auto key : compose_buffer_) {
-    if (key.IsCharacter()) {
-      base::WriteUnicodeCharacter(key.ToCharacter(), &preedit_string_);
-    } else if (key.IsDeadKey()) {
-      base::WriteUnicodeCharacter(key.ToDeadKeyCombiningCharacter(),
-                                  &preedit_string_);
-    } else if (key.IsComposeKey() && (compose_buffer_.size() == 1)) {
-      // The U+00B7 "middle dot" character is also used by GTK to represent the
-      // compose key in preedit strings.
-      base::WriteUnicodeCharacter(0xB7, &preedit_string_);
-    }
-  }
 }
 
 bool CharacterComposer::FilterKeyPressHexMode(const KeyEvent& event) {
