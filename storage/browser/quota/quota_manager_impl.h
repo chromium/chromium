@@ -322,16 +322,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                             blink::mojom::StorageType type,
                             bool enabled);
 
-  // DeleteHostData (surprisingly enough) deletes data of a particular
-  // blink::mojom::StorageType associated with a set of storage keys.
-  // DeleteBucketData will only delete the specified bucket.
-  // Each method additionally requires a `quota_client_types` which specifies
-  // the types of QuotaClients to delete from the storage key.
-  // Pass in QuotaClientType::AllClients() to remove all clients from the
-  // storage key, regardless of type.
+  // Deletes `bucket` data for the specified `quota_client_types`. Pass in
+  // QuotaClientType::AllClients() to remove bucket data for all quota clients.
+  //
+  // `callback` is always called. If this QuotaManager gets destroyed during
+  // deletion, `callback` may be called with a kErrorAbort status.
   virtual void DeleteBucketData(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
+
+  // Deletes buckets of a particular blink::mojom::StorageType with storage keys
+  // that match the specified host.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       QuotaClientTypes quota_client_types,
@@ -532,8 +533,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void DeleteBucketDataInternal(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
-  // Cleans up BucketDataDeleter tasks that have completed.
-  void DidDeleteBucketData();
+
+  // Removes the BucketDataDeleter that completed its work.
+  //
+  // This method is static because it must call `delete_bucket_data_callback`
+  // even if the QuotaManagerImpl was destroyed.
+  static void DidDeleteBucketData(base::WeakPtr<QuotaManagerImpl> quota_manager,
+                                  StatusCallback delete_bucket_data_callback,
+                                  BucketDataDeleter* deleter,
+                                  blink::mojom::QuotaStatusCode status_code);
 
   // Methods for eviction logic.
   void StartEviction();

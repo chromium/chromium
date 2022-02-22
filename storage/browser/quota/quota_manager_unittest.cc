@@ -27,6 +27,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -689,6 +690,7 @@ class QuotaManagerImplTest : public testing::Test {
   QuotaErrorOr<BucketInfo> bucket_;
   QuotaErrorOr<std::set<StorageKey>> storage_keys_;
   base::ScopedTempDir data_dir_;
+  scoped_refptr<QuotaManagerImpl> quota_manager_impl_;
 
  private:
   base::Time IncrementMockTime() {
@@ -696,7 +698,6 @@ class QuotaManagerImplTest : public testing::Test {
     return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
   }
 
-  scoped_refptr<QuotaManagerImpl> quota_manager_impl_;
   scoped_refptr<MockSpecialStoragePolicy> mock_special_storage_policy_;
 
   QuotaStatusCode quota_status_;
@@ -3198,6 +3199,50 @@ TEST_F(QuotaManagerImplTest, QuotaChangeEvent_SmallPartitionPressure) {
   GetStorageCapacity();
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(quota_change_dispatched);
+}
+
+TEST_F(QuotaManagerImplTest, DeleteBucketData_QuotaManagerDeletedImmediately) {
+  static const MockStorageKeyData kData[] = {
+      {"http://foo.com/", kTemp, 1},
+  };
+  CreateAndRegisterClient(kData, QuotaClientType::kIndexedDatabase,
+                          {blink::mojom::StorageType::kTemporary});
+
+  GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo foo_bucket = bucket_.value();
+
+  base::test::TestFuture<QuotaStatusCode> delete_bucket_data_future;
+  quota_manager_impl_->DeleteBucketData(
+      foo_bucket.ToBucketLocator(), {QuotaClientType::kIndexedDatabase},
+      delete_bucket_data_future.GetCallback());
+  quota_manager_impl_.reset();
+  EXPECT_EQ(QuotaStatusCode::kErrorAbort, delete_bucket_data_future.Get());
+}
+
+TEST_F(QuotaManagerImplTest, DeleteBucketData_CallbackDeletesQuotaManager) {
+  static const MockStorageKeyData kData[] = {
+      {"http://foo.com/", kTemp, 1},
+  };
+  CreateAndRegisterClient(kData, QuotaClientType::kIndexedDatabase,
+                          {blink::mojom::StorageType::kTemporary});
+
+  GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo foo_bucket = bucket_.value();
+
+  base::RunLoop run_loop;
+  QuotaStatusCode delete_bucket_data_result = QuotaStatusCode::kUnknown;
+  quota_manager_impl_->DeleteBucketData(
+      foo_bucket.ToBucketLocator(), {QuotaClientType::kIndexedDatabase},
+      base::BindLambdaForTesting([&](QuotaStatusCode status_code) {
+        quota_manager_impl_.reset();
+        delete_bucket_data_result = status_code;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(QuotaStatusCode::kOk, delete_bucket_data_result);
 }
 
 }  // namespace storage
