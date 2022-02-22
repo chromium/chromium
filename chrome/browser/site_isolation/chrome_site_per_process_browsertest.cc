@@ -1187,6 +1187,52 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_FALSE(frame_c_popup_opened);
 }
 
+// Test that opening a window with `noopener` consumes user activation.
+// crbug.com/1264543, crbug.com/1291210
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
+                       UserActivationConsumptionNoopener) {
+  // Start on a page a.com.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Activate the frame by executing a dummy script.
+  const std::string no_op_script = "// No-op script";
+  EXPECT_TRUE(ExecuteScript(web_contents, no_op_script));
+
+  // Add a popup observer.
+  content::TestNavigationObserver popup_observer(nullptr);
+  popup_observer.StartWatchingNewWebContents();
+
+  // Open a popup from the frame, with `noopener`. This should consume
+  // transient user activation.
+  GURL popup_url(embedded_test_server()->GetURL("popup.com", "/"));
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      web_contents,
+      base::StringPrintf(
+          "window.w = window.open('%s'+'title1.html', '_blank', 'noopener');",
+          popup_url.spec().c_str())));
+
+  // Try to open another popup.
+  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
+      web_contents,
+      base::StringPrintf(
+          "window.w = window.open('%s'+'title2.html', '_blank', 'noopener');",
+          popup_url.spec().c_str())));
+
+  // Wait and check that only one popup was opened.
+  popup_observer.Wait();
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+
+  content::WebContents* popup =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(embedded_test_server()->GetURL("popup.com", "/title1.html"),
+            popup->GetLastCommittedURL());
+  EXPECT_NE(popup, web_contents);
+}
+
 // TODO(crbug.com/1021895): Flaky.
 // Tests that a cross-site iframe runs its beforeunload handler when closing a
 // tab.  See https://crbug.com/853021.

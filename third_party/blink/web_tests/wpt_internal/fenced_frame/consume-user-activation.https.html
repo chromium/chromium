@@ -88,11 +88,7 @@ promise_test(async () => {
 
   // Check that B's transient user activation was consumed.
   assert_activations(true, true, "A");
-  // TODO(crbug.com/1291210): B should be inactive after consuming the
-  // transient user activation, but due to a preexisting bug it isn't.
-  // Replace with this once fixed:
-  // await B.execute(assert_activations, [true, false, "B"]);
-  await B.execute(assert_activations, [true, true, "B"]);
+  await B.execute(assert_activations, [true, false, "B"]);
 
 }, 'user-activation');
 </script>
