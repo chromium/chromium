@@ -97,7 +97,9 @@ void DismissMenu() {
       waitForSufficientlyVisibleElementWithMatcher:GetMenuTitleMatcher()];
 }
 
-- (void)testRemove {
+// Disabled test due to multiple builder failures.
+// TODO(crbug.com/1298232): re-enable the test with fix.
+- (void)DISABLED_testRemove {
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
 
