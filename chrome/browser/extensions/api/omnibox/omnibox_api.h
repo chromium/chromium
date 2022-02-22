@@ -161,7 +161,8 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
   // Called asynchronously with the parsed description and styles for the
   // default suggestion.
   void OnParsedDescriptionAndStyles(
-      std::unique_ptr<DescriptionAndStyles> description_and_styles);
+      std::unique_ptr<DescriptionAndStyles> description_and_styles,
+      std::string error);
 
   // Sets the default suggestion in the extension preferences.
   void SetDefaultSuggestion(

@@ -605,20 +605,18 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
              // runtime.lastError.
              // Because of this difference, getting the emitted error is a bit
              // of a pain.
-             let expectedError;
              let error = await new Promise((resolve) => {
                try {
                  chrome.omnibox.setDefaultSuggestion(
                      {description: '<tag> <match>match</match> world'},
                      () => {
-                       expectedError = /Failed to parse suggestion./;
                        resolve(chrome.runtime.lastError.message);
                      });
                } catch (e) {
-                 expectedError = /Opening and ending tag mismatch/;
                  resolve(e.message);
                }
              });
+             let expectedError = /Opening and ending tag mismatch/;
              chrome.test.assertTrue(expectedError.test(error), error);
              chrome.test.succeed();
            }

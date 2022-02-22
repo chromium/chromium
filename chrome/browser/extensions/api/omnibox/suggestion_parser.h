@@ -27,7 +27,8 @@ struct DescriptionAndStyles {
 };
 
 using DescriptionAndStylesCallback =
-    base::OnceCallback<void(std::unique_ptr<DescriptionAndStyles>)>;
+    base::OnceCallback<void(std::unique_ptr<DescriptionAndStyles> result,
+                            std::string error)>;
 
 // Parses `str`, which is the suggestion string passed from the extension that
 // potentially contains XML markup (e.g., the string may be

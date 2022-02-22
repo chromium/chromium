@@ -7,8 +7,11 @@
 #include <map>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "third_party/libxml/chromium/libxml_utils.h"
 #include "third_party/libxml/chromium/xml_reader.h"
 
 namespace data_decoder {
@@ -18,8 +21,27 @@ using NamespaceMap = std::map<std::string, std::string>;
 
 namespace {
 
-void ReportError(XmlParser::ParseCallback callback, const std::string& error) {
-  std::move(callback).Run(/*result=*/absl::nullopt, absl::make_optional(error));
+void ReportError(XmlParser::ParseCallback callback,
+                 const std::string& generic_error,
+                 const std::string& libxml_error) {
+  std::string error;
+  if (!libxml_error.empty()) {
+    error = base::StrCat({generic_error, ": ", libxml_error});
+    // libxml errors have trailing lines, spaces, and a carrot to try and
+    // indicate where an error is. For instance, an error string may be:
+    // Entity: line 1: parser error : Opening and ending tag mismatch: hello
+    // line 1 and goodbye
+    // <hello>bad tag</goodbye>
+    //                         ^
+    // This is helpful in a terminal, but not when gathering and returning the
+    // error. Instead, just trim the trailing whitespace and '^'.
+    base::TrimString(error, " \n^", &error);
+  } else {
+    error = generic_error;
+  }
+
+  std::move(callback).Run(/*result=*/absl::nullopt,
+                          absl::make_optional(std::move(error)));
 }
 
 enum class TextNodeType { kText, kCData };
@@ -101,6 +123,17 @@ void PopulateAttributes(base::Value* node_value, XmlReader* xml_reader) {
                      std::move(attribute_dict));
 }
 
+// A function to capture XML errors. Otherwise, by default, they are printed to
+// stderr. `context` is a pointer to a std::string stack-allocated in the
+// Parse(); `message` and the subsequent arguments are passed by libxml.
+void CaptureXmlErrors(void* context, const char* message, ...) {
+  va_list args;
+  va_start(args, message);
+  std::string* error = static_cast<std::string*>(context);
+  base::StringAppendV(error, message, args);
+  va_end(args);
+}
+
 }  // namespace
 
 XmlParser::XmlParser() = default;
@@ -110,9 +143,12 @@ XmlParser::~XmlParser() = default;
 void XmlParser::Parse(const std::string& xml,
                       WhitespaceBehavior whitespace_behavior,
                       ParseCallback callback) {
+  std::string errors;
+  ScopedXmlErrorFunc error_func(&errors, CaptureXmlErrors);
+
   XmlReader xml_reader;
   if (!xml_reader.Load(xml)) {
-    ReportError(std::move(callback), "Invalid XML: failed to load");
+    ReportError(std::move(callback), "Invalid XML: failed to load", errors);
     return;
   }
 
@@ -121,7 +157,8 @@ void XmlParser::Parse(const std::string& xml,
   while (xml_reader.Read()) {
     if (xml_reader.IsClosingElement()) {
       if (element_stack.empty()) {
-        ReportError(std::move(callback), "Invalid XML: unbalanced elements");
+        ReportError(std::move(callback), "Invalid XML: unbalanced elements",
+                    errors);
         return;
       }
       element_stack.pop_back();
@@ -136,7 +173,8 @@ void XmlParser::Parse(const std::string& xml,
     base::Value new_element;
     if (GetTextFromNode(&xml_reader, &text, &text_node_type)) {
       if (!base::IsStringUTF8(text)) {
-        ReportError(std::move(callback), "Invalid XML: invalid UTF8 text.");
+        ReportError(std::move(callback), "Invalid XML: invalid UTF8 text.",
+                    errors);
         return;
       }
       new_element = CreateTextNode(text, text_node_type);
@@ -173,11 +211,12 @@ void XmlParser::Parse(const std::string& xml,
   }
 
   if (!element_stack.empty()) {
-    ReportError(std::move(callback), "Invalid XML: unbalanced elements");
+    ReportError(std::move(callback), "Invalid XML: unbalanced elements",
+                errors);
     return;
   }
   if (!root_element.is_dict() || root_element.DictEmpty()) {
-    ReportError(std::move(callback), "Invalid XML: bad content");
+    ReportError(std::move(callback), "Invalid XML: bad content", errors);
     return;
   }
   std::move(callback).Run(absl::make_optional(std::move(root_element)),

@@ -90,19 +90,21 @@ void ConstructResultFromValue(
     DescriptionAndStylesCallback callback,
     data_decoder::DataDecoder::ValueOrError value_or_error) {
   if (value_or_error.error) {
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, *value_or_error.error);
     return;
   }
 
   DCHECK(value_or_error.value);
   if (!value_or_error.value->is_dict()) {
-    std::move(callback).Run(nullptr);
+    // Hopefully, we wouldn't get a non-dictionary result from a successful
+    // decoding, but if we do, just emit a generic error.
+    std::move(callback).Run(nullptr, "Invalid XML");
     return;
   }
 
   auto result = std::make_unique<DescriptionAndStyles>();
   WalkNode(*value_or_error.value, result.get());
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(std::move(result), std::string());
 }
 
 }  // namespace

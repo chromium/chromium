@@ -304,10 +304,11 @@ ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
 }
 
 void OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles(
-    std::unique_ptr<DescriptionAndStyles> description_and_styles) {
+    std::unique_ptr<DescriptionAndStyles> description_and_styles,
+    std::string error) {
   if (!description_and_styles) {
-    // TODO(devlin): Provide a more descriptive error.
-    Respond(Error("Failed to parse suggestion."));
+    DCHECK(!error.empty());
+    Respond(Error(std::move(error)));
     return;
   }
 

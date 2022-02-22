@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_switcher/browser_switcher_features.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_switcher {
@@ -26,8 +27,11 @@ void OnXmlParsed(base::RepeatingClosure quit_run_loop,
   EXPECT_EQ(expected.rules.sitelist, actual.rules.sitelist);
   EXPECT_EQ(expected.rules.greylist, actual.rules.greylist);
   EXPECT_EQ(expected.error.has_value(), actual.error.has_value());
-  if (expected.error.has_value() && actual.error.has_value())
-    EXPECT_EQ(*expected.error, *actual.error);
+  if (expected.error.has_value() && actual.error.has_value()) {
+    // The actual error may have more detail at the end. Ensure it starts with
+    // the expected error.
+    EXPECT_THAT(*actual.error, testing::StartsWith(*expected.error));
+  }
 }
 
 }  // namespace

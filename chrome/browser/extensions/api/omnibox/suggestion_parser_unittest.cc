@@ -48,27 +48,42 @@ class SuggestionParserUnitTest : public testing::Test {
   // A helper method to synchronously parses `str` as input and return the
   // result.
   std::unique_ptr<DescriptionAndStyles> ParseInput(base::StringPiece str) {
-    base::RunLoop run_loop;
     std::unique_ptr<DescriptionAndStyles> result_out;
-    auto get_result =
-        [&run_loop, &result_out](std::unique_ptr<DescriptionAndStyles> result) {
-          result_out = std::move(result);
-          run_loop.Quit();
-        };
+    std::string error;
+    ParseImpl(str, &result_out, &error);
+    return result_out;
+  }
+
+  // Returns the parsing error from attempting to parse `str`.
+  std::string GetParseError(base::StringPiece str) {
+    std::unique_ptr<DescriptionAndStyles> result_out;
+    std::string error_out;
+    ParseImpl(str, &result_out, &error_out);
+    return error_out;
+  }
+
+ private:
+  void ParseImpl(base::StringPiece str,
+                 std::unique_ptr<DescriptionAndStyles>* result_out,
+                 std::string* error_out) {
+    base::RunLoop run_loop;
+    auto get_result = [&run_loop, result_out, error_out](
+                          std::unique_ptr<DescriptionAndStyles> result,
+                          std::string error) {
+      *result_out = std::move(result);
+      *error_out = std::move(error);
+      run_loop.Quit();
+    };
 
     ParseDescriptionAndStyles(str, base::BindLambdaForTesting(get_result));
     run_loop.Run();
 
-    return result_out;
+    // Exactly one of error and result should be populated.
+    bool has_result = result_out->get();
+    bool has_error = !error_out->empty();
+    EXPECT_TRUE(has_result ^ has_error) << has_result << ", " << has_error;
   }
 
-  // Returns true if parsing the given `str` fails.
-  bool ParsingFails(base::StringPiece str) {
-    std::unique_ptr<DescriptionAndStyles> result = ParseInput(str);
-    return result == nullptr;
-  }
-
- private:
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };
@@ -108,8 +123,10 @@ TEST_F(SuggestionParserUnitTest, BasicCases) {
 TEST_F(SuggestionParserUnitTest, ParsingFails) {
   // Note: These aren't expected to be terribly robust tests, since XML parsing
   // is exercised significantly more in the XmlParser-related tests.
-  EXPECT_TRUE(ParsingFails("<dim>no closing tag"));
-  EXPECT_TRUE(ParsingFails("<dim>hello <url>foo</dim> world</url>"));
+  EXPECT_THAT(GetParseError("<dim>no closing tag"),
+              testing::HasSubstr("Opening and ending tag mismatch"));
+  EXPECT_THAT(GetParseError("<dim>hello <url>foo</dim> world</url>"),
+              testing::HasSubstr("Opening and ending tag mismatch"));
 }
 
 // Tests that XML strings are properly sanitized from any forbidden characters.
