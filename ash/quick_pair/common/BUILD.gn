@@ -82,6 +82,7 @@ source_set("unit_tests") {
     "device_unittest.cc",
     "fast_pair/fast_pair_decoder_unittest.cc",
     "fast_pair/fast_pair_feature_usage_metrics_logger_unittest.cc",
+    "log_buffer_unittest.cc",
     "logging_unittest.cc",
   ]
 
