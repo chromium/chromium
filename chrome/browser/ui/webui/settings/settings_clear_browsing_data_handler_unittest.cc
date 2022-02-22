@@ -67,8 +67,6 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
 };
 
 void ClearBrowsingDataHandlerUnitTest::SetUp() {
-  feature_list_.InitWithFeatures({features::kSearchHistoryLink}, {});
-
   TestingProfile::Builder builder;
   profile_ = builder.Build();
 

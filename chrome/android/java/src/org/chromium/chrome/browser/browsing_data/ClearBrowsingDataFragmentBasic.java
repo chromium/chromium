@@ -21,7 +21,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -96,16 +95,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             // Update the Clear Browsing History text based on the sign-in/sync state and whether
             // the link to MyActivity is displayed inline or at the bottom of the page.
-            // Note: when the flag is enabled but sync is disabled, the default string is used, so
-            // there is no need to change it.
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                    && isHistorySyncEnabled()) {
+            // Note: when  sync is disabled, the default string is used.
+            if (isHistorySyncEnabled()) {
                 // The text is different only for users with history sync.
                 historyCheckbox.setSummary(R.string.clear_browsing_history_summary_synced_no_link);
-            } else if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)) {
-                historyCheckbox.setSummary(isHistorySyncEnabled()
-                                ? R.string.clear_browsing_history_summary_synced
-                                : R.string.clear_browsing_history_summary_signed_in);
             }
             cookiesCheckbox.setSummary(
                     R.string.clear_cookies_and_site_data_summary_basic_signed_in);
@@ -127,13 +120,11 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         boolean isDefaultSearchEngineGoogle = templateUrlService.isDefaultSearchEngineGoogle();
 
         // Google-related links to delete search history and other browsing activity.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                || defaultSearchEngine == null
+        if (defaultSearchEngine == null
                 || !identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            // One of three cases:
-            // 1. The feature is disabled.
-            // 2. The default search engine is disabled.
-            // 3. The user is not signed into Chrome.
+            // One of two cases:
+            // 1. The default search engine is disabled.
+            // 2. The user is not signed into Chrome.
             // In all those cases, delete the link to clear Google data using MyActivity.
             deleteGoogleDataTextIfExists();
         } else if (isDefaultSearchEngineGoogle) {
@@ -145,12 +136,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         }
 
         // Text for search history if DSE is not Google.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_HISTORY_LINK)
-                || defaultSearchEngine == null || isDefaultSearchEngineGoogle) {
-            // One of three cases:
-            // 1. The feature is disabled.
-            // 2. The default search engine is disabled.
-            // 3. The default search engine is Google.
+        if (defaultSearchEngine == null || isDefaultSearchEngineGoogle) {
+            // One of two cases:
+            // 1. The default search engine is disabled.
+            // 2. The default search engine is Google.
             // In all those cases, delete the link to clear non-Google search history.
             deleteNonGoogleSearchHistoryTextIfExists();
         } else if (defaultSearchEngine.getIsPrepopulated()) {

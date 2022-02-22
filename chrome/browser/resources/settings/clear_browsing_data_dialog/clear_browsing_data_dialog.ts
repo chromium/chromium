@@ -246,11 +246,6 @@ export class SettingsClearBrowsingDataDialogElement extends
         value: () => loadTimeData.getBoolean('installedAppsInCbd'),
       },
 
-      searchHistoryLinkFlagEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('searchHistoryLink'),
-      },
-
       googleSearchHistoryString_: {
         type: String,
         computed: 'computeGoogleSearchHistoryString_(isNonGoogleDse_)',
@@ -286,7 +281,6 @@ export class SettingsClearBrowsingDataDialogElement extends
   private tabsNames_: Array<string>;
   private installedApps_: Array<InstalledApp>;
   private installedAppsFlagEnabled_: boolean;
-  private searchHistoryLinkFlagEnabled_: boolean;
   private googleSearchHistoryString_: string;
   private isNonGoogleDse_: boolean;
   private nonGoogleSearchHistoryString_: string;
@@ -377,18 +371,9 @@ export class SettingsClearBrowsingDataDialogElement extends
 
   /** Choose a label for the history checkbox. */
   private browsingCheckboxLabel_(
-      isSyncConsented: boolean, isSyncingHistory: boolean,
-      hasSyncError: boolean, historySummary: string,
-      historySummarySignedIn: string, historySummarySignedInNoLink: string,
-      historySummarySynced: string): string {
-    if (this.searchHistoryLinkFlagEnabled_) {
-      return isSyncingHistory ? historySummarySignedInNoLink : historySummary;
-    } else if (isSyncingHistory && !hasSyncError) {
-      return historySummarySynced;
-    } else if (isSyncConsented && !this.isSyncPaused_) {
-      return historySummarySignedIn;
-    }
-    return historySummary;
+      isSyncingHistory: boolean, historySummary: string,
+      historySummarySignedInNoLink: string): string {
+    return isSyncingHistory ? historySummarySignedInNoLink : historySummary;
   }
 
   /** Choose a label for the cookie checkbox. */
@@ -603,15 +588,6 @@ export class SettingsClearBrowsingDataDialogElement extends
     return isNonGoogleDse ?
         this.i18nAdvanced('clearGoogleSearchHistoryNonGoogleDse') :
         this.i18nAdvanced('clearGoogleSearchHistoryGoogleDse');
-  }
-
-  private shouldShowGoogleSearchHistoryLabel_(isSignedIn: boolean): boolean {
-    return this.searchHistoryLinkFlagEnabled_ && isSignedIn;
-  }
-
-  private shouldShowNonGoogleSearchHistoryLabel_(isNonGoogleDse: boolean):
-      boolean {
-    return this.searchHistoryLinkFlagEnabled_ && isNonGoogleDse;
   }
 
   private shouldShowFooter_(): boolean {

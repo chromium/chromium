@@ -919,9 +919,6 @@ const base::FeatureParam<base::TimeDelta> kSCTLogMaxIngestionRandomDelay{
     base::Hours(1),
 };
 
-const base::Feature kSearchHistoryLink{"SearchHistoryLink",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether the user is prompted when sites request attestation.
 const base::Feature kSecurityKeyAttestationPrompt{
     "SecurityKeyAttestationPrompt", base::FEATURE_ENABLED_BY_DEFAULT};

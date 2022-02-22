@@ -454,23 +454,21 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
       browsing_data_counter_utils::ShouldShowCookieException(profile_));
 
   event.SetBoolKey("isNonGoogleDse", false);
-  if (base::FeatureList::IsEnabled(features::kSearchHistoryLink)) {
-    const TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(profile_);
-    const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
-    if (dse && dse->GetEngineType(template_url_service->search_terms_data()) !=
-                   SearchEngineType::SEARCH_ENGINE_GOOGLE) {
-      // Non-Google DSE. Prepopulated DSEs have an ID > 0.
-      event.SetBoolKey("isNonGoogleDse", true);
-      event.SetStringKey(
-          "nonGoogleSearchHistoryString",
-          (dse->prepopulate_id() > 0)
-              ? l10n_util::GetStringFUTF16(
-                    IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE,
-                    dse->short_name())
-              : l10n_util::GetStringUTF16(
-                    IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
-    }
+  const TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
+  if (dse && dse->GetEngineType(template_url_service->search_terms_data()) !=
+                 SearchEngineType::SEARCH_ENGINE_GOOGLE) {
+    // Non-Google DSE. Prepopulated DSEs have an ID > 0.
+    event.SetBoolKey("isNonGoogleDse", true);
+    event.SetStringKey(
+        "nonGoogleSearchHistoryString",
+        (dse->prepopulate_id() > 0)
+            ? l10n_util::GetStringFUTF16(
+                  IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE,
+                  dse->short_name())
+            : l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
   }
   FireWebUIListener("update-sync-state", event);
 }

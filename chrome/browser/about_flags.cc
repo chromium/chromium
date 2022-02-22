@@ -6174,10 +6174,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     "MetricsSettingsAndroid")},
 #endif
 
-    {"search-history-link", flag_descriptions::kSearchHistoryLinkName,
-     flag_descriptions::kSearchHistoryLinkDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kSearchHistoryLink)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"safe-browsing-password-protection-for-signed-in-users",
      flag_descriptions::kPasswordProtectionForSignedInUsersName,

@@ -195,11 +195,6 @@ var CrSettingsClearBrowsingDataTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/clear_browsing_data_test.js&host=webui-test';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kSearchHistoryLink']};
-  }
 };
 
 // TODO(crbug.com/1107652): Flaky on Mac.
