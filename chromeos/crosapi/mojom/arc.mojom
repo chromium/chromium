@@ -38,6 +38,21 @@ enum RequestUrlHandlerListStatus {
   kArcNotAvailable,
 };
 
+[Stable, Extensible]
+enum IsInstallableResult {
+  // The app is available for installation in ARC.
+  kInstallable,
+
+  // The app is not available for installation in ARC or is already installed.
+  kNotInstallable,
+
+  // ARC is not running (e.g. disabled).
+  kArcIsNotRunning,
+
+  // ARC mojo API version is too low.
+  kArcIsTooOld,
+};
+
 // This struct reflects components/arc/mojom/intent_common.mojom.
 // Describes an activity.
 [Stable]
@@ -152,8 +167,8 @@ interface ArcObserver {
 };
 
 // Interacts with ARC.
-// Next version: 4
-// Next method id: 7
+// Next version: 5
+// Next method id: 8
 [Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
 interface Arc {
   // Registers ArcObserver in Lacros-chrome to Ash-chrome
@@ -201,4 +216,9 @@ interface Arc {
   // the ResolverActivity, this package will be picked if it is on the list.
   // When multiple packages are set as preferred, the most recent setting wins.
   [MinVersion=3] AddPreferredPackage@6(string package_name);
+
+  // Checks if the |package_name| is available for installation.
+  // See |arc.mojom.AppInstance.IsInstallable|.
+  [MinVersion=4] IsInstallable@7(string package_name) =>
+      (IsInstallableResult result);
 };

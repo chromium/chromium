@@ -69,6 +69,13 @@ mojom::IntentInfoPtr ConvertArcIntentInfo(arc::mojom::IntentInfoPtr intent) {
                                 intent->extras);
 }
 
+void OnIsInstallable(mojom::Arc::IsInstallableCallback callback,
+                     bool installable) {
+  std::move(callback).Run(
+      installable ? crosapi::mojom::IsInstallableResult::kInstallable
+                  : crosapi::mojom::IsInstallableResult::kNotInstallable);
+}
+
 }  // namespace
 
 ArcAsh::ArcAsh() = default;
@@ -355,6 +362,24 @@ void ArcAsh::AddPreferredPackage(const std::string& package_name) {
   }
 
   instance->AddPreferredPackage(package_name);
+}
+
+void ArcAsh::IsInstallable(const std::string& package_name,
+                           IsInstallableCallback callback) {
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    std::move(callback).Run(
+        crosapi::mojom::IsInstallableResult::kArcIsNotRunning);
+    return;
+  }
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->app(), IsInstallable);
+  if (!instance) {
+    std::move(callback).Run(crosapi::mojom::IsInstallableResult::kArcIsTooOld);
+    return;
+  }
+  instance->IsInstallable(
+      package_name, base::BindOnce(&OnIsInstallable, std::move(callback)));
 }
 
 void ArcAsh::OnIconInvalidated(const std::string& package_name) {
