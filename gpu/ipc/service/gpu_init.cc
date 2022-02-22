@@ -165,13 +165,13 @@ class GpuWatchdogInit {
 void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
                                GpuPreferences* gpu_preferences) {
   if (gpu_feature_info->status_values[GPU_FEATURE_TYPE_VULKAN] ==
-      kGpuFeatureStatusEnabled) {
+          kGpuFeatureStatusEnabled ||
+      gpu_preferences->gr_context_type == GrContextType::kVulkan) {
     LOG(ERROR) << "Vulkan not supported with in process gpu";
     gpu_preferences->use_vulkan = VulkanImplementationName::kNone;
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_VULKAN] =
         kGpuFeatureStatusDisabled;
-    if (gpu_preferences->gr_context_type == GrContextType::kVulkan)
-      gpu_preferences->gr_context_type = GrContextType::kGL;
+    gpu_preferences->gr_context_type = GrContextType::kGL;
   }
 }
 
