@@ -486,9 +486,13 @@ void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
 }
 
 void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {
-  DCHECK(tasks_.contains(task));
   TakeTaskErrorLog(task);
-  tasks_.erase(task);
+  // If this happens after/during the call to Shutdown(), then ignore deletion
+  // as `tasks_` is emptied already.
+  if (started_) {
+    DCHECK(tasks_.contains(task));
+    tasks_.erase(task);
+  }
 }
 
 void WebAppInstallManager::OnInstallTaskCompleted(
