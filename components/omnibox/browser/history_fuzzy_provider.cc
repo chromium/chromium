@@ -66,7 +66,12 @@ struct Correction {
 
 struct Node {
   int relevance = 0;
-  std::unordered_map<char16_t, std::reference_wrapper<Node>> next;
+
+  // Note: Some C++ implementations of unordered_map support using the
+  // containing struct (Node) as element type, but some do not. To avoid
+  // potential build issues in downstream projects that use Chromium code,
+  // ensure the element type is of known size (a fully declared type).
+  std::unordered_map<char16_t, std::unique_ptr<Node>> next;
 
   void Insert(const std::u16string& text, size_t from) {
     if (from >= text.length()) {
@@ -74,17 +79,11 @@ struct Node {
       return;
     }
     char16_t c = text[from];
-    Node& node = next.at(c);
-    node.Insert(text, from + 1);
-  }
-
-  int Walk(const std::u16string& text, size_t from) const {
-    if (from >= text.length()) {
-      return relevance;
+    std::unique_ptr<Node>& node = next[c];
+    if (!node) {
+      node = std::make_unique<Node>();
     }
-    char16_t c = text[from];
-    const Node& node = next.at(c);
-    return node.Walk(text, from + 1);
+    node->Insert(text, from + 1);
   }
 
   // Produce corrections necessary to get `text` back on trie. Each correction
@@ -114,7 +113,7 @@ struct Node {
         // insertion, not only replacement. Change `from` parameter and modify
         // correction accordingly.
         std::vector<Correction> subcorrections;
-        bool found = entry.second.get().FindCorrections(
+        bool found = entry.second->FindCorrections(
             text, from + 1, tolerance - 1, subcorrections);
         if (found) {
           // Remaining input without further correction is on trie.
@@ -135,8 +134,8 @@ struct Node {
       return false;
     } else {
       // Found; proceed with tolerance.
-      return it->second.get().FindCorrections(text, from + 1, tolerance,
-                                              corrections);
+      return it->second->FindCorrections(text, from + 1, tolerance,
+                                         corrections);
     }
   }
 
@@ -148,7 +147,7 @@ struct Node {
       DVLOG(1) << "  <" << built << ">";
     }
     for (const auto& entry : next) {
-      entry.second.get().Log(built + entry.first);
+      entry.second->Log(built + entry.first);
     }
   }
 };
