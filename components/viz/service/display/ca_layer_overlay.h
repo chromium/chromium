@@ -164,7 +164,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
   // https://crbug.com/836351, https://crbug.com/1290384
   bool video_capture_enabled_ = false;
 
-  size_t max_quad_list_size_ = 0;
+  size_t max_quad_list_size_for_videos_ = 0;
 
   // The error code in ProcessForCALayerOverlays()
   gfx::CALayerResult ca_layer_result_ = gfx::kCALayerSuccess;

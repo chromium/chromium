@@ -26,9 +26,11 @@ namespace {
 // The CoreAnimation renderer's performance starts suffering when too many
 // quads are promoted to CALayers. At extremes, corruption can occur.
 // https://crbug.com/1022116
-// This number can be re-assigned by kMacCAOverlayQuadMaxNum when
-// feature kMacCAOverlayQuad is enabled.
+
 constexpr size_t kTooManyQuads = 128;
+// |kTooManyQuadsWithVideos| can be re-assigned by kMacCAOverlayQuadMaxNum when
+// feature kMacCAOverlayQuad is enabled.
+constexpr size_t kTooManyQuadsWithVideos = 300;
 
 // If there are too many RenderPassDrawQuads, we shouldn't use Core
 // Animation to present them as individual layers, since that potentially
@@ -348,12 +350,16 @@ CALayerOverlayProcessor::CALayerOverlayProcessor()
     : overlays_allowed_(ui::RemoteLayerAPISupported()),
       enable_ca_renderer_(base::FeatureList::IsEnabled(kCARenderer)),
       enable_hdr_underlays_(base::FeatureList::IsEnabled(kHDRUnderlays)) {
-  max_quad_list_size_ = kTooManyQuads;
   if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {
+    max_quad_list_size_for_videos_ = kTooManyQuadsWithVideos;
     const int max_num = features::kMacCAOverlayQuadMaxNum.Get();
     if (max_num > 0)
-      max_quad_list_size_ = max_num;
+      max_quad_list_size_for_videos_ = max_num;
+  } else {
+    max_quad_list_size_for_videos_ = kTooManyQuads;
   }
+
+  DCHECK_GE(max_quad_list_size_for_videos_, kTooManyQuads);
 }
 
 bool CALayerOverlayProcessor::AreClipSettingsValid(
@@ -458,9 +464,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     result = gfx::kCALayerFailedVideoCaptureEnabled;
   } else if (!render_pass->copy_requests.empty()) {
     result = gfx::kCALayerFailedCopyRequests;
-  } else if (num_visible_quads > max_quad_list_size_) {
-    // |max_quad_list_size_| might be set by finch and is bigger than
-    // kTooManyQuads (128).
+  } else if (num_visible_quads > max_quad_list_size_for_videos_) {
     result = gfx::kCALayerFailedTooManyQuads;
   }
 
@@ -509,9 +513,10 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     ca_layer_overlays->push_back(ca_layer);
   }
 
-  // In the case of |max_quad_list_size_| > |num_visible_quads| > kTooManyQuads,
-  // Accept CALayerOverlay if in a video conference (video count >=
-  // kMaxNumVideos(5)). Otherwise, do not use CALayerOverlay.
+  // Apply Feature kMacCAOverlayQuad to non-video-conferencing mode only.
+  // In the case of |max_quad_list_size_for_videos_| > |num_visible_quads| >
+  // kTooManyQuads, accept CALayerOverlay only if it's in a video conferencing
+  // mode. (video count >= kMaxNumVideos(5)) Otherwise, fail CALayerOverlay.
   if (num_visible_quads > kTooManyQuads &&
       yuv_draw_quad_count < kMaxNumVideos) {
     result = gfx::kCALayerFailedTooManyQuads;
