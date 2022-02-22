@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <limits>
 #include <string>
 
 #include "base/bind.h"
@@ -125,6 +126,91 @@ TEST_F(SQLStatementTest, Reset) {
 
   s.Reset(true);
   ASSERT_FALSE(s.Step());
+}
+
+TEST_F(SQLStatementTest, BindInt64) {
+  // `id` makes SQLite's rowid mechanism explicit. We rely on it to retrieve
+  // the rows in the same order that they were inserted.
+  ASSERT_TRUE(db_.Execute(
+      "CREATE TABLE ints(id INTEGER PRIMARY KEY, i INTEGER NOT NULL)"));
+
+  const std::vector<int64_t> values = {
+      // Small positive values.
+      0,
+      1,
+      2,
+      10,
+      101,
+      1002,
+
+      // Small negative values.
+      -1,
+      -2,
+      -3,
+      -10,
+      -101,
+      -1002,
+
+      // Large values.
+      std::numeric_limits<int64_t>::max(),
+      std::numeric_limits<int64_t>::min(),
+  };
+
+  Statement insert(db_.GetUniqueStatement("INSERT INTO ints(i) VALUES(?)"));
+  for (int64_t value : values) {
+    insert.BindInt64(0, value);
+    ASSERT_TRUE(insert.Run());
+    insert.Reset(/* clear_bound_vars= */ true);
+  }
+
+  Statement select(db_.GetUniqueStatement("SELECT i FROM ints ORDER BY id"));
+  for (int64_t value : values) {
+    ASSERT_TRUE(select.Step());
+    int64_t column_value = select.ColumnInt64(0);
+    EXPECT_EQ(value, column_value);
+  }
+}
+
+// Chrome features rely on being able to use uint64_t with ColumnInt64().
+// This is supported, because (starting in C++20) casting between signed and
+// unsigned integers is well-defined in both directions. This test ensures that
+// the casting works as expected.
+TEST_F(SQLStatementTest, BindInt64_FromUint64t) {
+  // `id` makes SQLite's rowid mechanism explicit. We rely on it to retrieve
+  // the rows in the same order that they were inserted.
+  ASSERT_TRUE(db_.Execute(
+      "CREATE TABLE ints(id INTEGER PRIMARY KEY, i INTEGER NOT NULL)"));
+
+  const std::vector<uint64_t> values = {
+      // Small positive values.
+      0,
+      1,
+      2,
+      10,
+      101,
+      1002,
+
+      // Large values.
+      std::numeric_limits<int64_t>::max() - 1,
+      std::numeric_limits<int64_t>::max(),
+      std::numeric_limits<uint64_t>::max() - 1,
+      std::numeric_limits<uint64_t>::max(),
+  };
+
+  Statement insert(db_.GetUniqueStatement("INSERT INTO ints(i) VALUES(?)"));
+  for (uint64_t value : values) {
+    insert.BindInt64(0, static_cast<int64_t>(value));
+    ASSERT_TRUE(insert.Run());
+    insert.Reset(/* clear_bound_vars= */ true);
+  }
+
+  Statement select(db_.GetUniqueStatement("SELECT i FROM ints ORDER BY id"));
+  for (uint64_t value : values) {
+    ASSERT_TRUE(select.Step());
+    int64_t column_value = select.ColumnInt64(0);
+    uint64_t cast_column_value = static_cast<uint64_t>(column_value);
+    EXPECT_EQ(value, cast_column_value) << " column_value: " << column_value;
+  }
 }
 
 TEST_F(SQLStatementTest, BindBlob) {
