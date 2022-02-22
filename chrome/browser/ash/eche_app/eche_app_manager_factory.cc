@@ -8,9 +8,13 @@
 
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
 #include "ash/services/secure_channel/presence_monitor_impl.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
+#include "ash/shell.h"
+#include "ash/system/eche/eche_tray.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/webui/eche_app_ui/apps_access_manager_impl.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "ash/webui/eche_app_ui/eche_uid_provider.h"
@@ -27,6 +31,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
+#include "chrome/browser/ash/web_applications/eche_app_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -40,6 +45,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -47,7 +54,20 @@ namespace eche_app {
 
 namespace {
 
-void CloseEcheApp(Profile* profile) {
+EcheTray* GetEcheTray() {
+  return Shell::GetPrimaryRootWindowController()
+      ->GetStatusAreaWidget()
+      ->eche_tray();
+}
+
+void CloseEche(Profile* profile) {
+  if (features::IsEcheCustomWidgetEnabled()) {
+    auto* eche_tray = GetEcheTray();
+    if (eche_tray) {
+      eche_tray->PurgeAndClose();
+    }
+    return;
+  }
   for (auto* browser : *(BrowserList::GetInstance())) {
     if (browser->profile() != profile)
       continue;
@@ -71,18 +91,26 @@ enum class NotificationInteraction {
   kMaxValue = kOpenAppStreaming,
 };
 
-void LaunchSystemWebApp(Profile* profile,
-                        const std::string& package_name,
-                        const absl::optional<int64_t>& notification_id,
-                        const std::u16string& visible_name,
-                        const absl::optional<int64_t>& user_id) {
+void LaunchBubble(const GURL& url) {
+  auto* eche_tray = GetEcheTray();
+  // TODO(nayebi): if it is null log an error? Dcheck?
+  if (eche_tray) {
+    eche_tray->SetUrl(url);
+    eche_tray->ShowBubble();
+  }
+}
+
+void LaunchWebApp(const std::string& package_name,
+                  const absl::optional<int64_t>& notification_id,
+                  const std::u16string& visible_name,
+                  const absl::optional<int64_t>& user_id,
+                  Profile* profile) {
   EcheAppManagerFactory::GetInstance()->SetLastLaunchedAppInfo(
       LaunchedAppInfo::Builder()
           .SetPackageName(package_name)
           .SetVisibleName(visible_name)
           .SetUserId(user_id)
           .Build());
-
   std::u16string url;
   // Use hash mark(#) to send params to webui so we don't need to reload the
   // whole eche window.
@@ -107,9 +135,13 @@ void LaunchSystemWebApp(Profile* profile,
     url.append(u"&user_id=");
     url.append(base::NumberToString16(user_id.value()));
   }
+  const auto gurl = GURL(url);
 
+  if (features::IsEcheCustomWidgetEnabled()) {
+    return LaunchBubble(gurl);
+  }
   web_app::SystemAppLaunchParams params;
-  params.url = GURL(url);
+  params.url = gurl;
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
                                    params);
 }
@@ -119,8 +151,7 @@ void LaunchEcheApp(Profile* profile,
                    const std::string& package_name,
                    const std::u16string& visible_name,
                    const absl::optional<int64_t>& user_id) {
-  LaunchSystemWebApp(profile, package_name, notification_id, visible_name,
-                     user_id);
+  LaunchWebApp(package_name, notification_id, visible_name, user_id, profile);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
                                 NotificationInteraction::kOpenAppStreaming);
   EcheAppManagerFactory::GetInstance()
@@ -237,7 +268,7 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
       device_sync_client, multidevice_setup_client, secure_channel_client,
       std::move(presence_monitor_client),
       base::BindRepeating(&LaunchEcheApp, profile),
-      base::BindRepeating(&CloseEcheApp, profile),
+      base::BindRepeating(&CloseEche, profile),
       base::BindRepeating(&EcheAppManagerFactory::ShowNotification,
                           weak_ptr_factory_.GetWeakPtr(), profile));
 }
