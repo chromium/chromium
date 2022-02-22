@@ -921,7 +921,10 @@ TEST_F(ZipTest, NestedZip) {
 // Some Android waterfall and CQ try bots are running out of space when
 // performing this test (android-asan, android-11-x86-rel,
 // android-marshmallow-x86-rel-non-cq).
-#if defined(THREAD_SANITIZER) || defined(OS_FUCHSIA) || defined(OS_ANDROID)
+// TODO(https://crbug.com/1299736): Re-enable on Mac and debug builds when
+// timeouts are fixed.
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || !defined(NDEBUG)
 TEST_F(ZipTest, DISABLED_BigFile) {
 #else
 TEST_F(ZipTest, BigFile) {
