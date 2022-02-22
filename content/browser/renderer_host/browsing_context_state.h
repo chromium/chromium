@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/browsing_instance.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_instance_group.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
@@ -38,6 +39,10 @@ namespace content {
 // RenderFrameHost will have an associated BrowsingContextState (which never
 // changes), but each BrowsingContextState can be shared between multiple
 // RenderFrameHosts for the same frame/FrameTreeNode.
+
+// BrowsingContextState is responsible for proxy storage and
+// RenderFrameHostManager is responsible for connecting different
+// BrowsingContextStates and creating proxies for appropriate SiteInstances.
 
 // A new BCS will be created when a new RenderFrameHost is created for a new
 // frame or a speculative RFH is created for a cross-BrowsingInstance (browsing
@@ -174,13 +179,25 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
   void SendFramePolicyUpdatesToProxies(SiteInstance* parent_site_instance,
                                        const blink::FramePolicy& frame_policy);
 
+  // Create a RenderFrameProxyHost owned by this object. This
+  // RenderFrameProxyHost represents the browsing context in this site instance.
+  // TODO(crbug.com/1270671): Currently we pass a FrameTreeNode because it is
+  // required for the constructor to RenderFrameProxyHost. However, the stored
+  // reference to FrameTreeNode should be replaced by a BrowsingContextState
+  // instead; FrameTreeNode will need to be removed from here as well.
+  RenderFrameProxyHost* CreateRenderFrameProxyHost(
+      SiteInstance* site_instance,
+      const scoped_refptr<RenderViewHostImpl>& rvh,
+      FrameTreeNode* frame_tree_node);
+
  protected:
   friend class base::RefCounted<BrowsingContextState>;
 
   virtual ~BrowsingContextState();
 
  private:
-  // Proxy hosts, indexed by SiteInstanceGroup ID.
+  // Proxy hosts for this browsing context in various renderer processes, keyed
+  // by SiteInstanceGroup ID.
   RenderFrameProxyHostMap proxy_hosts_;
 
   // Track information that needs to be replicated to processes that have

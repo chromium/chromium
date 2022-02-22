@@ -345,9 +345,14 @@ class CONTENT_EXPORT FrameTree {
   // the source will have a RenderFrameHost.  |source| may be null if there is
   // no node navigating in this frame tree (such as when this is called
   // for an opener's frame tree), in which case no nodes are skipped for
-  // RenderFrameProxyHost creation.
+  // RenderFrameProxyHost creation. |source_new_browsing_context_state| is the
+  // BrowsingContextState used by the speculative frame host, which may differ
+  // from the BrowsingContextState in |source| during cross-origin cross-
+  // browsing-instance navigations.
   void CreateProxiesForSiteInstance(FrameTreeNode* source,
-                                    SiteInstance* site_instance);
+                                    SiteInstance* site_instance,
+                                    const scoped_refptr<BrowsingContextState>&
+                                        source_new_browsing_context_state);
 
   // Convenience accessor for the main frame's RenderFrameHostImpl.
   RenderFrameHostImpl* GetMainFrame() const;

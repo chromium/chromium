@@ -507,8 +507,11 @@ void FrameTree::RemoveFrame(FrameTreeNode* child) {
   parent->RemoveChild(child);
 }
 
-void FrameTree::CreateProxiesForSiteInstance(FrameTreeNode* source,
-                                             SiteInstance* site_instance) {
+void FrameTree::CreateProxiesForSiteInstance(
+    FrameTreeNode* source,
+    SiteInstance* site_instance,
+    const scoped_refptr<BrowsingContextState>&
+        source_new_browsing_context_state) {
   // Create the RenderFrameProxyHost for the new SiteInstance.
   if (!source || !source->IsMainFrame()) {
     RenderViewHostImpl* render_view_host =
@@ -517,7 +520,19 @@ void FrameTree::CreateProxiesForSiteInstance(FrameTreeNode* source,
       root()->render_manager()->EnsureRenderViewInitialized(render_view_host,
                                                             site_instance);
     } else {
-      root()->render_manager()->CreateRenderFrameProxy(site_instance);
+      // Due to the check above, we are creating either an opener proxy (when
+      // source is null) or a main frame proxy due to a subframe navigation
+      // (when source is not a main frame). In the former case, we should use
+      // root's current BrowsingContextState, while in the latter case we should
+      // use BrowsingContextState from the main RenderFrameHost of the subframe
+      // being navigated. We want to ensure that the RenderView is created in
+      // the right SiteInstance if it doesn't exist, before creating the other
+      // proxies; if the RenderView doesn't exist, the only way to do this is to
+      // also create a proxy for the main frame as well.
+      root()->render_manager()->CreateRenderFrameProxy(
+          site_instance,
+          source ? source->parent()->GetMainFrame()->browsing_context_state()
+                 : root()->current_frame_host()->browsing_context_state());
     }
   }
 
@@ -573,7 +588,15 @@ void FrameTree::CreateProxiesForSiteInstance(FrameTreeNode* source,
       if (!node->IsMainFrame() && is_site_instance_for_outer_delegate)
         continue;
 
-      node->render_manager()->CreateRenderFrameProxy(site_instance);
+      // If |node| is the FrameTreeNode being navigated, we use
+      // |browsing_context_state| (as BrowsingContextState might change for
+      // cross-BrowsingInstance navigations). Otherwise, we should use the
+      // |node|'s current BrowsingContextState.
+      node->render_manager()->CreateRenderFrameProxy(
+          site_instance,
+          node == source
+              ? source_new_browsing_context_state
+              : node->current_frame_host()->browsing_context_state());
     }
   }
 }

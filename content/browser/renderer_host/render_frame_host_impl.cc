@@ -5387,7 +5387,8 @@ void RenderFrameHostImpl::DidChangeName(const std::string& name,
   std::string old_name = browsing_context_state_->frame_name();
   frame_tree_node()->SetFrameName(name, unique_name);
   if (old_name.empty() && !name.empty())
-    frame_tree_node_->render_manager()->CreateProxiesForNewNamedFrame();
+    frame_tree_node_->render_manager()->CreateProxiesForNewNamedFrame(
+        browsing_context_state_);
   delegate_->DidChangeName(this, name);
 }
 
@@ -7862,7 +7863,7 @@ void RenderFrameHostImpl::UpdateOpener() {
   // exist.
   if (frame_tree_node_->opener()) {
     frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
-        GetSiteInstance(), frame_tree_node_);
+        GetSiteInstance(), frame_tree_node_, browsing_context_state_);
   }
 
   auto opener_frame_token =

@@ -3929,8 +3929,10 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   // this named frame have proxies for it.  Must be called after
   // SetSessionStorageNamespace, since this calls CreateRenderView, which uses
   // GetSessionStorageNamespace.
-  if (!params.frame_name.empty())
-    new_contents_impl->GetRenderManager()->CreateProxiesForNewNamedFrame();
+  if (!params.frame_name.empty()) {
+    new_contents_impl->GetRenderManager()->CreateProxiesForNewNamedFrame(
+        new_contents_impl->GetMainFrame()->browsing_context_state());
+  }
 
   // Save the window for later if we're not suppressing the opener (since it
   // will be shown immediately).
@@ -7624,10 +7626,11 @@ void WebContentsImpl::EnsureOpenerProxiesExist(
       // process but we intentionally do not expose the embedder's opener chain
       // to it.
       source_web_contents->GetRenderManager()->CreateRenderFrameProxy(
-          GetSiteInstance());
+          GetSiteInstance(),
+          source_web_contents->GetMainFrame()->browsing_context_state());
     } else {
       source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
-          GetSiteInstance(), nullptr);
+          GetSiteInstance(), nullptr, source_rfh->browsing_context_state());
     }
   }
 }

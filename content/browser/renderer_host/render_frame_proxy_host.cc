@@ -365,7 +365,8 @@ void RenderFrameProxyHost::UpdateOpener() {
   // the new opener's proxy exists in this case.
   if (frame_tree_node_->opener()) {
     frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
-        GetSiteInstance(), frame_tree_node_);
+        GetSiteInstance(), frame_tree_node_,
+        frame_tree_node_->current_frame_host()->browsing_context_state());
   }
 
   auto opener_frame_token =

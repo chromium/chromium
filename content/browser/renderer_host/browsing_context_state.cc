@@ -4,6 +4,9 @@
 
 #include "content/browser/renderer_host/browsing_context_state.h"
 
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 
@@ -202,6 +205,33 @@ void BrowsingContextState::SendFramePolicyUpdatesToProxies(
           frame_policy);
     }
   }
+}
+
+RenderFrameProxyHost* BrowsingContextState::CreateRenderFrameProxyHost(
+    SiteInstance* site_instance,
+    const scoped_refptr<RenderViewHostImpl>& rvh,
+    FrameTreeNode* frame_tree_node) {
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kLegacyOneToOneWithFrameTreeNode) {
+    DCHECK_EQ(this,
+              frame_tree_node->current_frame_host()->browsing_context_state());
+  }
+
+  auto site_instance_group_id =
+      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId();
+  CHECK(proxy_hosts_.find(site_instance_group_id) == proxy_hosts_.end())
+      << "A proxy already existed for this SiteInstanceGroup.";
+  RenderFrameProxyHost* proxy_host =
+      new RenderFrameProxyHost(site_instance, std::move(rvh), frame_tree_node);
+  proxy_hosts_[site_instance_group_id] = base::WrapUnique(proxy_host);
+  static_cast<SiteInstanceImpl*>(site_instance)->group()->AddObserver(this);
+
+  TRACE_EVENT_INSTANT(
+      "navigation", "BrowsingContextState::CreateRenderFrameProxyHost",
+      perfetto::protos::pbzero::ChromeTrackEvent::kRenderFrameProxyHost,
+      *proxy_host);
+  return proxy_host;
 }
 
 }  // namespace content
