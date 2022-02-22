@@ -6,6 +6,9 @@
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
 <translation id="1302104331113804646">ფასებისთვის თვალის მიდევნების პარამეტრები</translation>
 <translation id="1378979118429748177">შეიტყვეთ ფასების დაწევის შესახებ</translation>
+<translation id="1403228085774130835">თქვენი დახურული ჩანართების პოვნა შეგიძლიათ Chrome-ის მთავარი მენიუს სექციაში „ბოლოდროინდელი ჩანართები“</translation>
+<translation id="1455506303394048917">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა ამ მოწყობილობიდან წაიშლება</translation>
+<translation id="1499635324672558517">გსურთ ყველა ინკოგნიტო ჩანართის დახურვა?</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="2118649612461486615">მაღაზიის ინფორმაცია</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">თქვენი ჩანართები აქ დაჯგუფებულია</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა)}other{(<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა)}}</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
+<translation id="4870911314065352661">გსურთ, ყველა ჩანართი დაიხუროს?</translation>
 <translation id="492284538114688557">აღმოჩენილია ფასის დაწევა</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
 <translation id="5073204694187207510">სრულეკრანიანი ბადის დამალვა</translation>

@@ -6,6 +6,9 @@
 <translation id="125153950246128346">మరొక ట్యాబ్‌ను చూడటానికి నొక్కండి</translation>
 <translation id="1302104331113804646">ధరను ట్రాక్ చేసే సెట్టింగ్‌లు</translation>
 <translation id="1378979118429748177">ధరలు తగ్గినప్పుడు నోటిఫికేషన్‌ను పొందండి</translation>
+<translation id="1403228085774130835">మీ మూసివేసిన ట్యాబ్‌లను మీరు Chrome ప్రధాన మెనూ కింద ఇటీవలి ట్యాబ్‌లలో కనుగొనవచ్చు</translation>
+<translation id="1455506303394048917">ఈ అజ్ఞాత ట్యాబ్‌లలోని మీ యాక్టివిటీ ఈ పరికరం నుండి క్లియర్ చేయబడుతుంది</translation>
+<translation id="1499635324672558517">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేయాలా?</translation>
 <translation id="1657719826150349398">ట్యాబ్‌ని కిందికి తరలించు</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
 <translation id="2118649612461486615">స్టోర్ సమాచారం</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">మీ ట్యాబ్‌లు గ్రూప్ చేయబడి, ఇక్కడ ఉన్నాయి</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> రివ్యూ)}other{(<ph name="REVIEWS_COUNT_MANY" /> రివ్యూలు)}}</translation>
 <translation id="4850886885716139402">వీక్షణ</translation>
+<translation id="4870911314065352661">అన్ని ట్యాబ్‌లను మూసివేయాలా?</translation>
 <translation id="492284538114688557">ధర తగ్గింపు గుర్తించబడింది</translation>
 <translation id="5007392906805964215">సమీక్షించు</translation>
 <translation id="5073204694187207510">ఫుల్-స్క్రీన్‌ గ్రిడ్‌‌ను దాచిపెట్టు</translation>

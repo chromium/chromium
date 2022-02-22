@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
 <translation id="1302104331113804646">Үнийн хяналтын тохиргоо</translation>
 <translation id="1378979118429748177">Үнэ буурсан тохиолдолд мэдэгдэл аваарай</translation>
+<translation id="1403228085774130835">Та хаасан табуудаа Chrome-н үндсэн цэсийн доор байх Саяхны табууд хэсгээс олох боломжтой</translation>
+<translation id="1455506303394048917">Таны эдгээр Нууцлалтай таб дахь үйл ажиллагааг энэ төхөөрөмжөөс арилгана</translation>
+<translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
 <translation id="2118649612461486615">Дэлгүүрийн мэдээлэл</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Таны табуудыг энд бүлэглэсэн болно</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> шүүмж)}other{(<ph name="REVIEWS_COUNT_MANY" /> шүүмж)}}</translation>
 <translation id="4850886885716139402">Харах</translation>
+<translation id="4870911314065352661">Бүх табыг хаах уу?</translation>
 <translation id="492284538114688557">Үнийн уналт илрүүллээ</translation>
 <translation id="5007392906805964215">Шалгах</translation>
 <translation id="5073204694187207510">Бүтэн дэлгэцийн торыг нуух</translation>

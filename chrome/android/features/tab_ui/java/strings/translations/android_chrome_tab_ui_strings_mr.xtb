@@ -6,6 +6,9 @@
 <translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
 <translation id="1302104331113804646">किंमत ट्रॅक करण्याची सेटिंग्ज</translation>
 <translation id="1378979118429748177">किमतीमध्ये घट झाल्यावर सूचना मिळवा</translation>
+<translation id="1403228085774130835">Chrome च्या मुख्य मेनू अंतर्गत अलीकडील टॅबमध्ये तुम्ही तुमचे बंद केलेले टॅब पाहू शकता</translation>
+<translation id="1455506303394048917">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून साफ केली जाईल</translation>
+<translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
+<translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>
 <translation id="492284538114688557">किमतीतील घट आढळली</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>

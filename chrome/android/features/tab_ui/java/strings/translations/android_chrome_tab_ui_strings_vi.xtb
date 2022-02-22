@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Nhấn để xem một thẻ khác</translation>
 <translation id="1302104331113804646">Tùy chọn theo dõi giá</translation>
 <translation id="1378979118429748177">Nhận thông báo khi có mặt hàng giảm giá</translation>
+<translation id="1403228085774130835">Bạn có thể tìm thấy các thẻ mình đã đóng trong mục thẻ Gần đây trên trình đơn chính của Chrome</translation>
+<translation id="1455506303394048917">Hoạt động của bạn trong những thẻ ẩn danh này sẽ được xoá khỏi thiết bị này</translation>
+<translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
 <translation id="2118649612461486615">Thông tin cửa hàng</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Các thẻ của bạn được nhóm với nhau tại đây</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> bài đánh giá)}other{(<ph name="REVIEWS_COUNT_MANY" /> bài đánh giá)}}</translation>
 <translation id="4850886885716139402">Xem</translation>
+<translation id="4870911314065352661">Đóng tất cả các thẻ?</translation>
 <translation id="492284538114688557">Đã phát hiện có mặt hàng giảm giá</translation>
 <translation id="5007392906805964215">Xem</translation>
 <translation id="5073204694187207510">Ẩn lưới toàn màn hình</translation>

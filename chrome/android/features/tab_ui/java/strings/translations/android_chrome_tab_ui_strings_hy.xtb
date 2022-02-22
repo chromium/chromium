@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1302104331113804646">Գների հետագծման կարգավորումներ</translation>
 <translation id="1378979118429748177">Տեղեկացեք, երբ գների իջեցում լինի</translation>
+<translation id="1403228085774130835">Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում</translation>
+<translation id="1455506303394048917">Այս ինկոգնիտո ներդիրներում ձեր կատարած գործողությունները կհեռացվեն սարքից</translation>
+<translation id="1499635324672558517">Փակե՞լ բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="2118649612461486615">Տեղեկություններ խանութի մասին</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
+<translation id="4870911314065352661">Փակե՞լ բոլոր ներդիրները</translation>
 <translation id="492284538114688557">Հայտնաբերվել է գնի իջեցում</translation>
 <translation id="5007392906805964215">Դիտել</translation>
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>

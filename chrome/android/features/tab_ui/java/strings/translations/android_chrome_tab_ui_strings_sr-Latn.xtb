@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Dodirnite da biste videli neku drugu karticu</translation>
 <translation id="1302104331113804646">Podešavanja praćenja cene</translation>
 <translation id="1378979118429748177">Dobijajte obaveštenja o sniženjima</translation>
+<translation id="1403228085774130835">Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a</translation>
+<translation id="1455506303394048917">Vaše aktivnosti na ovim karticama bez arhiviranja će biti obrisane sa ovog uređaja</translation>
+<translation id="1499635324672558517">Želite da zatvorite sve kartice bez arhiviranja?</translation>
 <translation id="1657719826150349398">Premestite karticu nadole</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="2118649612461486615">Detalji o prodavnici</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Kartice su grupisane zajedno ovde</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzija)}one{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzije)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzija)}}</translation>
 <translation id="4850886885716139402">Prikaz</translation>
+<translation id="4870911314065352661">Želite da zatvorite sve kartice?</translation>
 <translation id="492284538114688557">Uočeno je sniženje</translation>
 <translation id="5007392906805964215">Pregledaj</translation>
 <translation id="5073204694187207510">Sakrijte prikaz mreže na celom ekranu</translation>

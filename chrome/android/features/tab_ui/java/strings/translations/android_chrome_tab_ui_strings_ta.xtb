@@ -6,6 +6,7 @@
 <translation id="125153950246128346">வேறொரு தாவலைப் பார்க்க, தட்டவும்</translation>
 <translation id="1302104331113804646">விலையைக் கண்காணிப்பதற்கான அமைப்புகள்</translation>
 <translation id="1378979118429748177">விலைச் சரிவின்போது அறிவிப்பு அனுப்பப்படும்</translation>
+<translation id="1403228085774130835">Chrome முதன்மை மெனுவின் கீழே உள்ள சமீபத்திய பக்கங்கள் என்பதில் மூடிய பக்கங்களைப் பார்க்கலாம்</translation>
 <translation id="1657719826150349398">தாவலைக் கீழே நகர்த்து</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவல்}other{<ph name="TABS_COUNT_MANY" /> தாவல்கள்}}</translation>
 <translation id="2118649612461486615">ஸ்டோர் தகவல்</translation>
@@ -40,6 +41,7 @@
 <translation id="4648718555153979859">உங்கள் தாவல்கள் இங்கு குழுவாக்கப்பட்டுள்ளன</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> மதிப்புரை)}other{(<ph name="REVIEWS_COUNT_MANY" /> மதிப்புரைகள்)}}</translation>
 <translation id="4850886885716139402">காட்சி</translation>
+<translation id="4870911314065352661">அனைத்து உலாவிப் பக்கங்களையும் மூடவா?</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>

@@ -6,6 +6,9 @@
 <translation id="125153950246128346">മറ്റൊരു ടാബ് കാണാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1302104331113804646">നിരക്ക് ട്രാക്ക് ചെയ്യൽ ക്രമീകരണം</translation>
 <translation id="1378979118429748177">വിലയിടിയുമ്പോൾ അറിയിപ്പ് നേടുക</translation>
+<translation id="1403228085774130835">Chrome പ്രധാന മെനുവിന് കീഴിലുള്ള 'അടുത്തിടെ തുറന്ന ടാബുകളിൽ' നിങ്ങളുടെ അടച്ച ടാബുകൾ കണ്ടെത്താം</translation>
+<translation id="1455506303394048917">ഈ അദൃശ്യ ടാബുകളിൽ നിന്നുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് മായ്ക്കും</translation>
+<translation id="1499635324672558517">എല്ലാ അദൃശ്യ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
 <translation id="2118649612461486615">സ്റ്റോർ വിവരങ്ങൾ</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">നിങ്ങളുടെ ടാബുകൾ ഇവിടെ ഒന്നിച്ച് ഗ്രൂപ്പ് ചെയ്യപ്പെടും</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ)}}</translation>
 <translation id="4850886885716139402">കാണുക</translation>
+<translation id="4870911314065352661">എല്ലാ ടാബുകളും അടയ്‌ക്കണോ?</translation>
 <translation id="492284538114688557">വിലയിടിവ് കണ്ടെത്തി</translation>
 <translation id="5007392906805964215">അവലോകനം ചെയ്യുക</translation>
 <translation id="5073204694187207510">പൂർണ്ണസ്ക്രീൻ ഗ്രിഡ് മറയ്ക്കുക</translation>

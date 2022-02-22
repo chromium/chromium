@@ -6,6 +6,9 @@
 <translation id="125153950246128346">ແຕະເພື່ອເບິ່ງແຖບອື່ນ</translation>
 <translation id="1302104331113804646">ການຕັ້ງຄ່າການຕິດຕາມລາຄາ</translation>
 <translation id="1378979118429748177">ຮັບການແຈ້ງເຕືອນເມື່ອມີການຫຼຸດລາຄາ</translation>
+<translation id="1403228085774130835">ທ່ານສາມາດຊອກຫາແຖບທີ່ປິດໄປແລ້ວໄດ້ໃນແຖບຫຼ້າສຸດຢູ່ພາຍໃຕ້ເມນູຫຼັກຂອງ Chrome</translation>
+<translation id="1455506303394048917">ການເຄື່ອນໄຫວຂອງທ່ານໃນແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນເຫຼົ່ານີ້ຈະຖືກລຶບລ້າງອອກຈາກອຸປະກອນນີ້</translation>
+<translation id="1499635324672558517">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດບໍ?</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2118649612461486615">ຂໍ້​ມູນ​ຮ້ານ​ຄ້າ</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">ແຖບຂອງທ່ານຖືກຈັດເປັນກຸ່ມຮວມກັນຢູ່ບ່ອນນີ້</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ)}other{(<ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ)}}</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
+<translation id="4870911314065352661">ປິດແຖບທັງໝົດບໍ?</translation>
 <translation id="492284538114688557">ພົບເຫັນການຫຼຸດລາຄາ</translation>
 <translation id="5007392906805964215">ກວດສອບ</translation>
 <translation id="5073204694187207510">ເຊື່ອງຕາໜ່າງແບບເຕັມຈໍ</translation>

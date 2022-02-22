@@ -6,6 +6,9 @@
 <translation id="125153950246128346">輕按即可查看另一個分頁</translation>
 <translation id="1302104331113804646">價格追蹤設定</translation>
 <translation id="1378979118429748177">在降價時收到通知</translation>
+<translation id="1403228085774130835">在 Chrome 主選單下的「最近開啟的分頁」中，可以查看關閉的分頁</translation>
+<translation id="1455506303394048917">系統將會從此裝置清除您在這些無痕式分頁中的活動</translation>
+<translation id="1499635324672558517">要關閉所有無痕式分頁嗎？</translation>
 <translation id="1657719826150349398">下移分頁</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="2118649612461486615">商店資料</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
+<translation id="4870911314065352661">要關閉所有分頁嗎？</translation>
 <translation id="492284538114688557">有商品降價</translation>
 <translation id="5007392906805964215">查看</translation>
 <translation id="5073204694187207510">隱藏全螢幕網格</translation>

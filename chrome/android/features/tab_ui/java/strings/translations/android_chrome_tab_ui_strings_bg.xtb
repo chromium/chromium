@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1302104331113804646">Настройки за проследяването на цените</translation>
 <translation id="1378979118429748177">Получаване на известия при понижения на цени</translation>
+<translation id="1403228085774130835">Можете да намерите затворените си раздели в секцията „Скорошни раздели“ в главното меню на Chrome</translation>
+<translation id="1455506303394048917">Активността ви в съответните раздели в режим „инкогнито“ ще бъде изчистена от това устройство</translation>
+<translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="2118649612461486615">Информация за магазина</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзив)}other{(<ph name="REVIEWS_COUNT_MANY" /> отзива)}}</translation>
 <translation id="4850886885716139402">Изглед</translation>
+<translation id="4870911314065352661">Искате ли да затворите всички раздели?</translation>
 <translation id="492284538114688557">Установено бе намаление на цена</translation>
 <translation id="5007392906805964215">Преглед</translation>
 <translation id="5073204694187207510">Скриване на решетката на цял екран</translation>

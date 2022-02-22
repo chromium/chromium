@@ -1348,7 +1348,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Құрылғы иесі "Пайдалану және диагностика деректерін жіберу" функциясын қосып қойса, жаңылыс туралы есептер де Google-ға жүктеп салынуы мүмкін.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="2332131598580221120">Дүкенде көру</translation>
 <translation id="2332192922827071008">Жеке параметрлерді ашу</translation>
-<translation id="2332515770639153015">Жақсартылған Safe Browsing қосулы</translation>
+<translation id="2332515770639153015">Күшейтілген Safe Browsing қосулы</translation>
 <translation id="2332742915001411729">Әдепкі параметрлерге қайта орнату</translation>
 <translation id="2332948465534020594">Мазаламау режимі қосулы</translation>
 <translation id="2335111415680198280">{0,plural, =1{# терезені жабу}other{# терезені жабу}}</translation>
@@ -5735,7 +5735,7 @@
 <translation id="6914783257214138813">Құпия сөз экспортталған құпия сөздер файлын көре алатын кез келген адамға қолжетімді болады.</translation>
 <translation id="6916590542764765824">Кеңейтімдерді басқару</translation>
 <translation id="6919868320029503575">Оңай құпия сөздер</translation>
-<translation id="6919952941889172531">Осы Chrome профилі үшін Жақсартылған Safe Browsing функциясы қосылсын ба?</translation>
+<translation id="6919952941889172531">Осы Chrome профилі үшін Күшейтілген Safe Browsing функциясы қосылсын ба?</translation>
 <translation id="6920989436227028121">Қалыпты қойынды ретінде ашу</translation>
 <translation id="6921104647315081813">Әрекеттерді тазалау</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ашылмады.</translation>
@@ -7305,7 +7305,7 @@
 <translation id="8528074251912154910">Тілдерді қосу</translation>
 <translation id="8528962588711550376">Кіріп жатырсыз.</translation>
 <translation id="8529925957403338845">Жылдам тетеринг байланысы орнатылмады</translation>
-<translation id="8531701051932785007">Жақсартылған Safe Browsing өшірулі</translation>
+<translation id="8531701051932785007">Күшейтілген Safe Browsing өшірулі</translation>
 <translation id="8534656636775144800">Қап! Доменге кіру кезінде бірдеңеден қате кетті. Әрекетті қайталаңыз.</translation>
 <translation id="8535005006684281994">Netscape сертификат жаңалау URL мекенжайы</translation>
 <translation id="8536956381488731905">Пернені басқанда дыбыс шығару</translation>
@@ -7795,7 +7795,7 @@
 <translation id="9026731007018893674">жүктеу</translation>
 <translation id="9026852570893462412">Бұл процесс бірнеше минутқа созылуы мүмкін. Виртуалды құрылғы жүктелуде.</translation>
 <translation id="9027459031423301635">Сілтемені жаңа &amp;қойындыда ашу</translation>
-<translation id="9029667986262585240">Аккаунтыңызда жақсартылған Safe Browsing функциясын өшірдіңіз.</translation>
+<translation id="9029667986262585240">Аккаунтыңызда Күшейтілген Safe Browsing функциясын өшірдіңіз.</translation>
 <translation id="9030515284705930323">Ұйымыңыз аккаунт үшін Google Play Store қызметін қоспаған. Қосымша ақпарат алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="9030754204056345429">Жылдамырақ</translation>
 <translation id="9030785788945687215">Gmail</translation>
@@ -7842,7 +7842,7 @@
 <translation id="9070342919388027491">Қойынды сол жаққа жылжытылды.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB тінтуірі қосылды</translation>
-<translation id="9075413375877487220">Жақсартылған Safe Browsing қорғанысы бұл кеңейтімді сенімді деп санамайды.</translation>
+<translation id="9075413375877487220">Күшейтілген Safe Browsing қорғанысы бұл кеңейтімді сенімді деп санамайды.</translation>
 <translation id="9076283476770535406">Мұнда ересектерге арналған мазмұн болуы мүмкін</translation>
 <translation id="9076523132036239772">Кешіріңіз, электрондық поштаңызды немесе құпия сөзіңізді растау мүмкін емес. Алдымен желіге қосылып көріңіз.</translation>
 <translation id="9076977315710973122">SMB ортақ қалтасы</translation>

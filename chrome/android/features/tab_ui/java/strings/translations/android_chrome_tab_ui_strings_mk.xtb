@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Допрете за да видите друга картичка</translation>
 <translation id="1302104331113804646">Поставки за следењето цени</translation>
 <translation id="1378979118429748177">Добивајте известувања кога ќе има попусти</translation>
+<translation id="1403228085774130835">Можете да ги најдете затворените картички меѓу „Неодамнешните картички“ во главното мени на Chrome</translation>
+<translation id="1455506303394048917">Вашата активност во картичкиве „Инкогнито“ ќе се избрише од уредов</translation>
+<translation id="1499635324672558517">Да се затворат сите картички „Инкогнито“?</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
 <translation id="2118649612461486615">Информации за продавницата</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Картичките тука се групирани заедно</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> рецензија)}one{(<ph name="REVIEWS_COUNT_MANY" /> рецензија)}other{(<ph name="REVIEWS_COUNT_MANY" /> рецензии)}}</translation>
 <translation id="4850886885716139402">Приказ</translation>
+<translation id="4870911314065352661">Да се затворат сите картички?</translation>
 <translation id="492284538114688557">Забележано е намалување на цената</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
 <translation id="5073204694187207510">Сокриј ја табелата на цел екран</translation>

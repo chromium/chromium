@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Pieskarieties, lai skatītu citu cilni</translation>
 <translation id="1302104331113804646">Cenu izsekošanas iestatījumi</translation>
 <translation id="1378979118429748177">Saņemiet paziņojumus par cenu kritumu.</translation>
+<translation id="1403228085774130835">Aizvērtās cilnes varat atrast Chrome galvenās izvēlnes sadaļā Nesen atvērtas cilnes</translation>
+<translation id="1455506303394048917">Jūsu darbības šajās inkognito cilnēs tiks notīrītas no šīs ierīces.</translation>
+<translation id="1499635324672558517">Vai aizvērt visas inkognito cilnes?</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="2118649612461486615">Veikala informācija</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Jūsu cilnes šeit ir grupētas kopā</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsauksme)}zero{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmju)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsauksme)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsauksmes)}}</translation>
 <translation id="4850886885716139402">Skatīt</translation>
+<translation id="4870911314065352661">Vai aizvērt visas cilnes?</translation>
 <translation id="492284538114688557">Konstatēts cenas kritums</translation>
 <translation id="5007392906805964215">Pārskatīt</translation>
 <translation id="5073204694187207510">Slēpt pilnekrāna režģi</translation>

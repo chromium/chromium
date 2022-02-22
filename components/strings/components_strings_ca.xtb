@@ -873,7 +873,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">S'està carregant...</translation>
 <translation id="3709599264800900598">Text que has copiat</translation>
-<translation id="370972442370243704">Activa Recorreguts</translation>
+<translation id="370972442370243704">Activa els recorreguts</translation>
 <translation id="3711895659073496551">Suspèn</translation>
 <translation id="3712624925041724820">Llicències exhaurides</translation>
 <translation id="3714780639079136834">Activa les dades mòbils o la Wi-Fi.</translation>
@@ -1132,7 +1132,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4508814173490746936">No s'ha pogut fer servir Touch ID</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per traduir aquesta pàgina amb el Traductor de Google</translation>
 <translation id="4510487217173779431">Chou4 (sobre)</translation>
-<translation id="4514308731478712184">Desactiva Recorreguts</translation>
+<translation id="4514308731478712184">Desactiva els recorreguts</translation>
 <translation id="4515275063822566619">Les targetes i les adreces s'obtenen de Chrome i del teu Compte de Google (<ph name="ACCOUNT_EMAIL" />). Pots gestionar-les des de <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4517607026994743406">Comm-10 (sobre)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>

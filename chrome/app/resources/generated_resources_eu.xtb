@@ -2410,7 +2410,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3429160811076349561">Probako eginbideak desaktibatuta daude</translation>
 <translation id="3429271624041785769">Web-edukien hizkuntzak</translation>
 <translation id="3429275422858276529">Egin orri honen laster-marka, geroago bizkor aurkitzeko</translation>
-<translation id="343115368966109153"><ph name="FILE_NAME" /> deskargatu nahi duzu? Gailua erabiltzen duen edonork ikus dezake.</translation>
+<translation id="343115368966109153"><ph name="FILE_NAME" /> deskargatu nahi duzu? Gailua erabiltzen duten guztiek ikus dezakete.</translation>
 <translation id="3432227430032737297">Kendu erakutsitako guztiak</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Sistemak ezin izan du ezarri gailuaren instalazio-atributuen blokeoa.</translation>
@@ -2765,7 +2765,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3777806571986431400">Luzapena gaitu da</translation>
 <translation id="3778152852029592020">Deskarga bertan behera utzi da.</translation>
 <translation id="3778208826288864398">Segurtasun-giltza blokeatuta dago PINa gehiegitan idatzi delako oker. Segurtasun-giltza berrezarri behar da.</translation>
-<translation id="3778369586810509692">Fitxategi hau gailuan gordeko da eta denek ikusi ahal izango dute.</translation>
+<translation id="3778369586810509692">Fitxategia gailuan gordeko da eta denek ikusi ahal izango dute.</translation>
 <translation id="3778740492972734840">&amp;Garatzaileen tresnak</translation>
 <translation id="3778868487658107119">Egin iezazkiozu galderak. Eska iezaiozu gauzak egiteko. Zure neurrira egindako Google-ren zerbitzua duzu, eta beti dago laguntzeko prest.</translation>
 <translation id="3781742599892759500">Linux-en mikrofonorako sarbidea</translation>

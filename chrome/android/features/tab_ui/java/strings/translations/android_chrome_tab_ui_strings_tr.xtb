@@ -6,6 +6,9 @@
 <translation id="125153950246128346">Başka bir sekmeyi görmek için dokunun</translation>
 <translation id="1302104331113804646">Fiyat takibi ayarları</translation>
 <translation id="1378979118429748177">Fiyatlar düştüğünde haberdar olun</translation>
+<translation id="1403228085774130835">Kapatılan sekmelerinizi, Chrome ana menüsündeki son sekmelerde bulabilirsiniz</translation>
+<translation id="1455506303394048917">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>
+<translation id="1499635324672558517">Tüm gizli sekmeler kapatılsın mı?</translation>
 <translation id="1657719826150349398">Sekmeyi aşağı taşı</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekme}other{<ph name="TABS_COUNT_MANY" /> sekme}}</translation>
 <translation id="2118649612461486615">Mağaza bilgileri</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> yorum)}other{(<ph name="REVIEWS_COUNT_MANY" /> yorum)}}</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
+<translation id="4870911314065352661">Tüm sekmeler kapatılsın mı?</translation>
 <translation id="492284538114688557">Fiyat düşüşü belirlendi</translation>
 <translation id="5007392906805964215">İncele</translation>
 <translation id="5073204694187207510">Tam ekran ızgarayı gizler</translation>

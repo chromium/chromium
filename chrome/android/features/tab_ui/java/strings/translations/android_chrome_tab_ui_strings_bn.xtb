@@ -6,6 +6,9 @@
 <translation id="125153950246128346">অন্য ট্যাব দেখতে ট্যাপ করুন</translation>
 <translation id="1302104331113804646">দাম ট্র্যাক করার সেটিংস</translation>
 <translation id="1378979118429748177">দাম কমলে তার বিজ্ঞপ্তি পান</translation>
+<translation id="1403228085774130835">Chrome-এর প্রধান মেনুর অধীনে 'সাম্প্রতিক' ট্যাবের মধ্যে আপনার বন্ধ করে দেওয়া ট্যাবগুলি দেখতে পারবেন</translation>
+<translation id="1455506303394048917">এইসব ছদ্মবেশী ট্যাবে আপনার করা অ্যাক্টিভিটি এই ডিভাইস থেকে মুছে ফেলা হবে</translation>
+<translation id="1499635324672558517">সবকটি ছদ্মবেশী ট্যাব বন্ধ করবেন?</translation>
 <translation id="1657719826150349398">ট্যাব নিচে সরান</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
 <translation id="2118649612461486615">স্টোর সংক্রান্ত তথ্য</translation>
@@ -40,6 +43,7 @@
 <translation id="4648718555153979859">আপনার ট্যাবগুলি এখানে একসাথে গ্রুপ করা আছে</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />টি রিভিউ)}one{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}other{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}}</translation>
 <translation id="4850886885716139402">দেখুন</translation>
+<translation id="4870911314065352661">সব ট্যাব বন্ধ করবেন?</translation>
 <translation id="492284538114688557">দাম কমেছে বোঝা গেছে</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5073204694187207510">ফুলস্ক্রিন গ্রিড লুকান</translation>
