@@ -56,7 +56,8 @@ export class EntryLocationImpl {
         (rootType !== VolumeManagerCommon.RootType.SHARED_DRIVE &&
          rootType !== VolumeManagerCommon.RootType.COMPUTER &&
          rootType !== VolumeManagerCommon.RootType.REMOVABLE &&
-         rootType !== VolumeManagerCommon.RootType.TRASH);
+         rootType !== VolumeManagerCommon.RootType.TRASH &&
+         rootType !== VolumeManagerCommon.RootType.GUEST_OS);
     Object.freeze(this);
   }
 }

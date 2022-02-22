@@ -73,6 +73,7 @@ export function setUp() {
   window.loadTimeData.resetForTesting({
     FILES_TRASH_ENABLED: false,
     UNIFIED_MEDIA_VIEW_ENABLED: false,
+    GUEST_OS: false,
   });
 
   // Setup mock chrome APIs.

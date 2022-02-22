@@ -38921,6 +38921,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="25" label="RECENT_IMAGES"/>
   <int value="26" label="RECENT_VIDEOS"/>
   <int value="27" label="TRASH"/>
+  <int value="28" label="GUEST_OS"/>
 </enum>
 
 <enum name="FileManagerTaskType">

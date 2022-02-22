@@ -100,6 +100,14 @@ export async function getDisallowedTransfers(entries, destinationEntry) {
       destinationEntry);
 }
 
+/**
+ * Lists Guest OSs which support having their files mounted.
+ * @return {!Promise<!Array<!chrome.fileManagerPrivate.MountableGuest>>}
+ */
+export async function listMountableGuests() {
+  return promisify(chrome.fileManagerPrivate.listMountableGuests);
+}
+
 /*
  * FileSystemEntry helpers
  */

@@ -111,6 +111,9 @@ VolumeManagerCommon.RootType = {
   // Root for crostini 'Linux files'.
   CROSTINI: 'crostini',
 
+  // Root for mountable Guest OSs.
+  GUEST_OS: 'guest_os',
+
   // Root for android files.
   ANDROID_FILES: 'android_files',
 
@@ -181,6 +184,7 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.RECENT_IMAGES,                     // 25
   VolumeManagerCommon.RootType.RECENT_VIDEOS,                     // 26
   VolumeManagerCommon.RootType.TRASH,                             // 27
+  VolumeManagerCommon.RootType.GUEST_OS,                          // 28
 ];
 console.assert(
     Object.keys(VolumeManagerCommon.RootType).length ===
@@ -232,6 +236,7 @@ VolumeManagerCommon.VolumeType = {
   MEDIA_VIEW: 'media_view',
   DOCUMENTS_PROVIDER: 'documents_provider',
   CROSTINI: 'crostini',
+  GUEST_OS: 'guest_os',
   ANDROID_FILES: 'android_files',
   MY_FILES: 'my_files',
   SMB: 'smb',
@@ -304,6 +309,8 @@ VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
       return VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER;
     case VolumeManagerCommon.RootType.CROSTINI:
       return VolumeManagerCommon.VolumeType.CROSTINI;
+    case VolumeManagerCommon.RootType.GUEST_OS:
+      return VolumeManagerCommon.VolumeType.GUEST_OS;
     case VolumeManagerCommon.RootType.ANDROID_FILES:
       return VolumeManagerCommon.VolumeType.ANDROID_FILES;
     case VolumeManagerCommon.RootType.MY_FILES:
@@ -330,6 +337,8 @@ VolumeManagerCommon.getRootTypeFromVolumeType = volumeType => {
       return VolumeManagerCommon.RootType.ARCHIVE;
     case VolumeManagerCommon.VolumeType.CROSTINI:
       return VolumeManagerCommon.RootType.CROSTINI;
+    case VolumeManagerCommon.VolumeType.GUEST_OS:
+      return VolumeManagerCommon.RootType.GUEST_OS;
     case VolumeManagerCommon.VolumeType.DOWNLOADS:
       return VolumeManagerCommon.RootType.DOWNLOADS;
     case VolumeManagerCommon.VolumeType.DRIVE:

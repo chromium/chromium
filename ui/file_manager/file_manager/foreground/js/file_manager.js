@@ -51,6 +51,7 @@ import {FileTransferController} from './file_transfer_controller.js';
 import {FileTypeFiltersController} from './file_type_filters_controller.js';
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 import {GearMenuController} from './gear_menu_controller.js';
+import {GuestOsController} from './guest_os_controller.js';
 import {importer} from './import_controller.js';
 import {LastModifiedController} from './last_modified_controller.js';
 import {LaunchParam} from './launch_param.js';
@@ -1336,8 +1337,14 @@ export class FileManager extends EventTarget {
     await this.crostiniController_.redraw();
     // Never show toast in an open-file dialog.
     const maybeShowToast = this.dialogType === DialogType.FULL_PAGE;
-    return this.crostiniController_.loadSharedPaths(
+    await this.crostiniController_.loadSharedPaths(
         maybeShowToast, this.ui_.toast);
+
+    if (util.isGuestOsEnabled()) {
+      const guestOsController = new GuestOsController(
+          this.directoryModel_, assert(this.directoryTree));
+      await guestOsController.refresh();
+    }
   }
 
   /**

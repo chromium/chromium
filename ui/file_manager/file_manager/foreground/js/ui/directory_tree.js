@@ -1813,7 +1813,7 @@ class AndroidAppItem extends FilesTreeItem {
 // FakeItem
 
 /**
- * FakeItem is used by Recent and Linux files.
+ * FakeItem is used by Recent files, Drive, Crostini and other Guest OSs.
  */
 export class FakeItem extends FilesTreeItem {
   /**
@@ -2530,6 +2530,11 @@ DirectoryTree.createDirectoryItem = (modelItem, tree) => {
     case NavigationModelItemType.CROSTINI:
       return new FakeItem(
           VolumeManagerCommon.RootType.CROSTINI,
+          /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
+      break;
+    case NavigationModelItemType.GUEST_OS:
+      return new FakeItem(
+          VolumeManagerCommon.RootType.GUEST_OS,
           /** @type {!NavigationModelFakeItem} */ (modelItem), tree);
       break;
     case NavigationModelItemType.DRIVE:
