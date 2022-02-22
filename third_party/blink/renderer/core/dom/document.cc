@@ -1841,30 +1841,41 @@ TreeWalker* Document::createTreeWalker(Node* root,
   return MakeGarbageCollected<TreeWalker>(root, what_to_show, filter);
 }
 
-bool Document::NeedsLayoutTreeUpdate() const {
-  return NeedsLayoutTreeUpdateForThisDocument() ||
-         ParentFrameNeedsLayoutTreeUpdate();
+Document::StyleAndLayoutTreeUpdate Document::CalculateStyleAndLayoutTreeUpdate()
+    const {
+  Document::StyleAndLayoutTreeUpdate local =
+      CalculateStyleAndLayoutTreeUpdateForThisDocument();
+  if (local == StyleAndLayoutTreeUpdate::kFull)
+    return local;
+  Document::StyleAndLayoutTreeUpdate parent =
+      CalculateStyleAndLayoutTreeUpdateForParentFrame();
+  if (parent != StyleAndLayoutTreeUpdate::kNone)
+    return StyleAndLayoutTreeUpdate::kFull;
+  return local;
 }
 
-bool Document::NeedsFullLayoutTreeUpdate() const {
-  return NeedsFullLayoutTreeUpdateForThisDocument() ||
-         ParentFrameNeedsLayoutTreeUpdate();
-}
-
-bool Document::ParentFrameNeedsLayoutTreeUpdate() const {
-  HTMLFrameOwnerElement* owner = LocalOwner();
-  return owner && owner->GetDocument().NeedsLayoutTreeUpdate();
-}
-
-bool Document::NeedsLayoutTreeUpdateForThisDocument() const {
+Document::StyleAndLayoutTreeUpdate
+Document::CalculateStyleAndLayoutTreeUpdateForThisDocument() const {
   if (!IsActive() || !View())
-    return false;
-  if (NeedsFullLayoutTreeUpdateForThisDocument())
-    return true;
+    return StyleAndLayoutTreeUpdate::kNone;
+
+  if (style_engine_->NeedsFullStyleUpdate())
+    return StyleAndLayoutTreeUpdate::kFull;
+  if (!use_elements_needing_update_.IsEmpty())
+    return StyleAndLayoutTreeUpdate::kFull;
+  // We have scheduled an invalidation set on the document node which means any
+  // element may need a style recalc.
+  if (NeedsStyleInvalidation())
+    return StyleAndLayoutTreeUpdate::kFull;
+  if (IsSlotAssignmentDirty())
+    return StyleAndLayoutTreeUpdate::kFull;
+  if (document_animations_->NeedsAnimationTimingUpdate())
+    return StyleAndLayoutTreeUpdate::kFull;
+
   if (style_engine_->NeedsStyleRecalc())
-    return true;
+    return StyleAndLayoutTreeUpdate::kAnalyzed;
   if (style_engine_->NeedsStyleInvalidation())
-    return true;
+    return StyleAndLayoutTreeUpdate::kAnalyzed;
   if (style_engine_->NeedsLayoutTreeRebuild()) {
     // TODO(futhark): there a couple of places where call back into the top
     // frame while recursively doing a lifecycle update. One of them are for the
@@ -1872,33 +1883,17 @@ bool Document::NeedsLayoutTreeUpdateForThisDocument() const {
     // make this test unnecessary since the layout tree rebuild dirtiness is
     // internal to StyleEngine::UpdateStyleAndLayoutTree().
     DCHECK(InStyleRecalc());
-    return true;
+    return StyleAndLayoutTreeUpdate::kAnalyzed;
   }
-  return false;
+
+  return StyleAndLayoutTreeUpdate::kNone;
 }
 
-bool Document::NeedsFullLayoutTreeUpdateForThisDocument() const {
-  // This method returns true if we cannot decide which specific elements need
-  // to have its style or layout tree updated on the next lifecycle update. If
-  // this method returns false, we typically use that to walk up the ancestor
-  // chain to decide if we can let getComputedStyle() use the current
-  // ComputedStyle without doing the lifecycle update (implemented in
-  // Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked()).
-  if (!IsActive() || !View())
-    return false;
-  if (style_engine_->NeedsFullStyleUpdate())
-    return true;
-  if (!use_elements_needing_update_.IsEmpty())
-    return true;
-  // We have scheduled an invalidation set on the document node which means any
-  // element may need a style recalc.
-  if (NeedsStyleInvalidation())
-    return true;
-  if (IsSlotAssignmentDirty())
-    return true;
-  if (document_animations_->NeedsAnimationTimingUpdate())
-    return true;
-  return false;
+Document::StyleAndLayoutTreeUpdate
+Document::CalculateStyleAndLayoutTreeUpdateForParentFrame() const {
+  if (HTMLFrameOwnerElement* owner = LocalOwner())
+    return owner->GetDocument().CalculateStyleAndLayoutTreeUpdate();
+  return StyleAndLayoutTreeUpdate::kNone;
 }
 
 bool Document::ShouldScheduleLayoutTreeUpdate() const {
@@ -2232,11 +2227,16 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     return false;
   if (node.IsShadowRoot())
     return false;
-  if (NeedsFullLayoutTreeUpdate())
+  const StyleAndLayoutTreeUpdate update = CalculateStyleAndLayoutTreeUpdate();
+  if (update == StyleAndLayoutTreeUpdate::kFull)
     return true;
-  if (DisplayLockUtilities::IsUnlockedQuickCheck(node) &&
-      !NeedsLayoutTreeUpdate())
-    return false;
+  if (update == StyleAndLayoutTreeUpdate::kNone) {
+    if (DisplayLockUtilities::IsUnlockedQuickCheck(node))
+      return false;
+    // If DisplayLockUtilities::IsUnlockedQuickCheck returned 'false', then
+    // we may or may not be unlocked: we have to traverse the ancestor chain
+    // to know for sure.
+  }
 
   bool is_dirty = false;
   if (node.NeedsStyleRecalc() || node.NeedsStyleInvalidation()) {
