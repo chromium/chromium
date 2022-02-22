@@ -305,7 +305,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   bool HasWindowRestorationData();
 
   // CocoaMouseCaptureDelegate:
-  void PostCapturedEvent(NSEvent* event) override;
+  bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
   NSWindow* GetWindow() const override;
 
