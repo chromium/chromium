@@ -258,7 +258,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, collection_rate_histogram,
-      ("V8.GC.Cycle.CollectionRate.Full.Cpp", 0, 100, 20));
+      ("V8.GC.Cycle.CollectionRate.Full.Cpp", 1, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_cpp_in_percent));
 }
@@ -354,7 +354,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, collection_rate_histogram,
-      ("V8.GC.Cycle.CollectionRate.Young", 0, 100, 20));
+      ("V8.GC.Cycle.CollectionRate.Young", 1, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_in_percent));
 }

@@ -244,7 +244,7 @@ static void ProduceCacheInternal(
               static_cast<int>(100.0 * length / source_text_length);
           DEFINE_THREAD_SAFE_STATIC_LOCAL(
               CustomCountHistogram, code_cache_size_histogram,
-              ("V8.CodeCacheSizeRatio", 0, 10000, 50));
+              ("V8.CodeCacheSizeRatio", 1, 10000, 50));
           code_cache_size_histogram.Count(cache_size_ratio);
         }
         cache_handler->ClearCachedMetadata(
