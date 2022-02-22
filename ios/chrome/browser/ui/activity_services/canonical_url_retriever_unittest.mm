@@ -9,8 +9,13 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ui_metrics/canonical_url_share_metrics_types.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,15 +23,25 @@
 #endif
 
 // Test fixture for the retrieving canonical URLs.
-class CanonicalURLRetrieverTest : public ChromeWebTest {
+class CanonicalURLRetrieverTest : public PlatformTest {
  public:
-  CanonicalURLRetrieverTest() = default;
+  CanonicalURLRetrieverTest()
+      : web_client_(std::make_unique<web::FakeWebClient>()) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
 
   CanonicalURLRetrieverTest(const CanonicalURLRetrieverTest&) = delete;
   CanonicalURLRetrieverTest& operator=(const CanonicalURLRetrieverTest&) =
       delete;
 
   ~CanonicalURLRetrieverTest() override = default;
+
+  void SetUp() override { PlatformTest::SetUp(); }
 
  protected:
   // Retrieves the canonical URL and returns it through the |url| out parameter.
@@ -48,6 +63,13 @@ class CanonicalURLRetrieverTest : public ChromeWebTest {
     return success;
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
+
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
 };
@@ -55,8 +77,9 @@ class CanonicalURLRetrieverTest : public ChromeWebTest {
 // Validates that if the canonical URL is different from the visible URL, it is
 // found and given to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLDifferentFromVisible) {
-  LoadHtml(@"<link rel=\"canonical\" href=\"https://chromium.test\">",
-           GURL("https://m.chromium.test/"));
+  web::test::LoadHtml(
+      @"<link rel=\"canonical\" href=\"https://chromium.test\">",
+      GURL("https://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -71,8 +94,9 @@ TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLDifferentFromVisible) {
 // Validates that if the canonical URL is the same as the visible URL, it is
 // found and given to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLSameAsVisible) {
-  LoadHtml(@"<link rel=\"canonical\" href=\"https://chromium.test\">",
-           GURL("https://chromium.test/"));
+  web::test::LoadHtml(
+      @"<link rel=\"canonical\" href=\"https://chromium.test\">",
+      GURL("https://chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -87,8 +111,8 @@ TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLSameAsVisible) {
 // Validates that if there is no canonical URL, an empty GURL is given to the
 // completion block.
 TEST_F(CanonicalURLRetrieverTest, TestNoCanonicalURLFound) {
-  LoadHtml(@"No canonical link on this page.",
-           GURL("https://m.chromium.test/"));
+  web::test::LoadHtml(@"No canonical link on this page.",
+                      GURL("https://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -103,8 +127,8 @@ TEST_F(CanonicalURLRetrieverTest, TestNoCanonicalURLFound) {
 // Validates that if the found canonical URL is invalid, an empty GURL is
 // given to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestInvalidCanonicalFound) {
-  LoadHtml(@"<link rel=\"canonical\" href=\"chromium\">",
-           GURL("https://m.chromium.test/"));
+  web::test::LoadHtml(@"<link rel=\"canonical\" href=\"chromium\">",
+                      GURL("https://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -119,10 +143,10 @@ TEST_F(CanonicalURLRetrieverTest, TestInvalidCanonicalFound) {
 // Validates that if multiple canonical URLs are found, the first one is given
 // to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestMultipleCanonicalURLsFound) {
-  LoadHtml(
+  web::test::LoadHtml(
       @"<link rel=\"canonical\" href=\"https://chromium.test\">"
       @"<link rel=\"canonical\" href=\"https://chromium1.test\">",
-      GURL("https://m.chromium.test/"));
+      GURL("https://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -137,8 +161,8 @@ TEST_F(CanonicalURLRetrieverTest, TestMultipleCanonicalURLsFound) {
 // Validates that if the visible and canonical URLs are http, an empty GURL is
 // given to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLHTTP) {
-  LoadHtml(@"<link rel=\"canonical\" href=\"http://chromium.test\">",
-           GURL("http://m.chromium.test/"));
+  web::test::LoadHtml(@"<link rel=\"canonical\" href=\"http://chromium.test\">",
+                      GURL("http://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -153,8 +177,9 @@ TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLHTTP) {
 // Validates that if the visible URL is HTTP but the canonical URL is HTTPS, an
 // empty GURL is given to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLHTTPSUpgrade) {
-  LoadHtml(@"<link rel=\"canonical\" href=\"https://chromium.test\">",
-           GURL("http://m.chromium.test/"));
+  web::test::LoadHtml(
+      @"<link rel=\"canonical\" href=\"https://chromium.test\">",
+      GURL("http://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
@@ -169,8 +194,8 @@ TEST_F(CanonicalURLRetrieverTest, TestCanonicalURLHTTPSUpgrade) {
 // Validates that if the visible URL is HTTPS but the canonical URL is HTTP, it
 // is found and given to the completion block.
 TEST_F(CanonicalURLRetrieverTest, TestCanonicalLinkHTTPSDowngrade) {
-  LoadHtml(@"<link rel=\"canonical\" href=\"http://chromium.test\">",
-           GURL("https://m.chromium.test/"));
+  web::test::LoadHtml(@"<link rel=\"canonical\" href=\"http://chromium.test\">",
+                      GURL("https://m.chromium.test/"), web_state());
 
   GURL url = GURL("garbage");
   bool success = RetrieveCanonicalUrl(&url);
