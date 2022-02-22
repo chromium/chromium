@@ -51,19 +51,18 @@ using ExtractionError = DnsResponseResultExtractor::ExtractionError;
 void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
                                          bool is_unsolicited) {
   const HttpsRecordRdata* rdata = record.rdata<HttpsRecordRdata>();
+  DCHECK(rdata);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class UnsolicitedHttpsRecordStatus {
-    kMalformed = 0,
+    kMalformed = 0,  // No longer recorded.
     kAlias = 1,
     kService = 2,
     kMaxValue = kService
   } status;
 
-  if (!rdata || rdata->IsMalformed()) {
-    status = UnsolicitedHttpsRecordStatus::kMalformed;
-  } else if (rdata->IsAlias()) {
+  if (rdata->IsAlias()) {
     status = UnsolicitedHttpsRecordStatus::kAlias;
   } else {
     status = UnsolicitedHttpsRecordStatus::kService;
@@ -457,10 +456,7 @@ ExtractionError ExtractIntegrityResults(const DnsResponse& response,
   return extraction_error;
 }
 
-// TODO(crbug.com/1203426): Remove `malformed_record_is_fatal` and make it
-// always fatal once HTTPS queries are no longer done for pure experimental use.
 ExtractionError ExtractHttpsResults(const DnsResponse& response,
-                                    bool malformed_record_is_fatal,
                                     HostCache::Entry* out_results) {
   DCHECK(out_results);
 
@@ -479,13 +475,9 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
   // Record experimental result bools for each record.
   std::vector<bool> condensed_results;
   for (const auto& record : records) {
-    const HttpsRecordRdata& rdata = *record->rdata<HttpsRecordRdata>();
-    if (rdata.IsMalformed() && malformed_record_is_fatal) {
-      *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
-                                      HostCache::Entry::SOURCE_DNS);
-      return ExtractionError::kMalformedRecord;
-    }
-    condensed_results.push_back(!rdata.IsMalformed());
+    const HttpsRecordRdata* rdata = record->rdata<HttpsRecordRdata>();
+    DCHECK(rdata);
+    condensed_results.push_back(true);
   }
 
   // TODO(crbug.com/1225776): Output a non-experimental result representation.
@@ -530,11 +522,8 @@ DnsResponseResultExtractor::ExtractDnsResults(
     case DnsQueryType::INTEGRITY:
       return ExtractIntegrityResults(*response_, out_results);
     case DnsQueryType::HTTPS:
-      return ExtractHttpsResults(*response_, /*malformed_record_is_fatal=*/true,
-                                 out_results);
     case DnsQueryType::HTTPS_EXPERIMENTAL:
-      return ExtractHttpsResults(
-          *response_, /*malformed_record_is_fatal=*/false, out_results);
+      return ExtractHttpsResults(*response_, out_results);
   }
 }
 

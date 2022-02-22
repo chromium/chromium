@@ -27,7 +27,6 @@ TEST(HttpsRecordRdataTest, ParsesAlias) {
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
   ASSERT_TRUE(rdata);
-  EXPECT_FALSE(rdata->IsMalformed());
 
   AliasFormHttpsRecordRdata expected("chromium.org");
   EXPECT_TRUE(rdata->IsEqual(&expected));
@@ -107,7 +106,6 @@ TEST(HttpsRecordRdataTest, ParsesService) {
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
   ASSERT_TRUE(rdata);
-  EXPECT_FALSE(rdata->IsMalformed());
 
   IPAddress expected_ipv6;
   ASSERT_TRUE(expected_ipv6.AssignFromIPLiteral("2001:4860:4860::8888"));
@@ -151,9 +149,7 @@ TEST(HttpsRecordRdataTest, RejectCorruptRdata) {
 
   std::unique_ptr<HttpsRecordRdata> rdata =
       HttpsRecordRdata::Parse(base::StringPiece(kRdata, sizeof(kRdata) - 1));
-  ASSERT_TRUE(rdata);
-
-  EXPECT_TRUE(rdata->IsMalformed());
+  EXPECT_FALSE(rdata);
 }
 
 TEST(HttpsRecordRdataTest, AliasIsEqualRejectsWrongType) {
@@ -163,11 +159,9 @@ TEST(HttpsRecordRdataTest, AliasIsEqualRejectsWrongType) {
       {} /* alpn_ids */, true /* default_alpn */, absl::nullopt /* port */,
       {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
       {} /* unparsed_params */);
-  MalformedHttpsRecordRdata malformed;
 
   EXPECT_TRUE(alias.IsEqual(&alias));
   EXPECT_FALSE(alias.IsEqual(&service));
-  EXPECT_FALSE(alias.IsEqual(&malformed));
 }
 
 TEST(HttpsRecordRdataTest, ServiceIsEqualRejectsWrongType) {
@@ -177,25 +171,9 @@ TEST(HttpsRecordRdataTest, ServiceIsEqualRejectsWrongType) {
       {} /* alpn_ids */, true /* default_alpn */, absl::nullopt /* port */,
       {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
       {} /* unparsed_params */);
-  MalformedHttpsRecordRdata malformed;
 
   EXPECT_FALSE(service.IsEqual(&alias));
   EXPECT_TRUE(service.IsEqual(&service));
-  EXPECT_FALSE(service.IsEqual(&malformed));
-}
-
-TEST(HttpsRecordRdataTest, MalformedIsEqualRejectsWrongType) {
-  AliasFormHttpsRecordRdata alias("alias.name.test");
-  ServiceFormHttpsRecordRdata service(
-      1u /* priority */, "service.name.test", {} /* mandatory_keys */,
-      {} /* alpn_ids */, true /* default_alpn */, absl::nullopt /* port */,
-      {} /* ipv4_hint */, "" /* ech_config */, {} /* ipv6_hint */,
-      {} /* unparsed_params */);
-  MalformedHttpsRecordRdata malformed;
-
-  EXPECT_FALSE(malformed.IsEqual(&alias));
-  EXPECT_FALSE(malformed.IsEqual(&service));
-  EXPECT_TRUE(malformed.IsEqual(&malformed));
 }
 
 }  // namespace

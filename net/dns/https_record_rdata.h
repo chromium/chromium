@@ -30,6 +30,7 @@ class NET_EXPORT_PRIVATE HttpsRecordRdata : public RecordRdata {
  public:
   static const uint16_t kType = dns_protocol::kTypeHttps;
 
+  // Returns `nullptr` on malformed input.
   static std::unique_ptr<HttpsRecordRdata> Parse(base::StringPiece data);
 
   HttpsRecordRdata(const HttpsRecordRdata& rdata) = delete;
@@ -47,23 +48,8 @@ class NET_EXPORT_PRIVATE HttpsRecordRdata : public RecordRdata {
   ServiceFormHttpsRecordRdata* AsServiceForm();
   const ServiceFormHttpsRecordRdata* AsServiceForm() const;
 
-  // For experimental query metrics.
-  // TODO(crbug.com/1138620): Remove as HTTPS use becomes non-experimental.
-  virtual bool IsMalformed() const;
-
  protected:
   HttpsRecordRdata() = default;
-};
-
-// For experimental query metrics.
-// TODO(crbug.com/1138620): Remove as HTTPS use becomes non-experimental.
-class NET_EXPORT_PRIVATE MalformedHttpsRecordRdata : public HttpsRecordRdata {
- public:
-  MalformedHttpsRecordRdata();
-
-  bool IsEqual(const HttpsRecordRdata* other) const override;
-  bool IsAlias() const override;
-  bool IsMalformed() const override;
 };
 
 class NET_EXPORT_PRIVATE AliasFormHttpsRecordRdata : public HttpsRecordRdata {

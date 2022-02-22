@@ -713,8 +713,7 @@ TEST(DnsResponseResultExtractorTest, ExtractsNodataExperimentalHttpsResponses) {
   EXPECT_EQ(results.ttl(), kTtl);
 }
 
-TEST(DnsResponseResultExtractorTest,
-     RecognizesMalformedExperimentalHttpsRecord) {
+TEST(DnsResponseResultExtractorTest, RejectsMalformedExperimentalHttpsRecord) {
   DnsResponse response = BuildTestDnsResponse(
       "https.test", dns_protocol::kTypeHttps,
       {BuildTestDnsRecord("https.test", dns_protocol::kTypeHttps,
@@ -724,13 +723,10 @@ TEST(DnsResponseResultExtractorTest,
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
   EXPECT_EQ(
       extractor.ExtractDnsResults(DnsQueryType::HTTPS_EXPERIMENTAL, &results),
-      DnsResponseResultExtractor::ExtractionError::kOk);
+      DnsResponseResultExtractor::ExtractionError::kMalformedRecord);
 
-  // HTTPS_EXPERIMENTAL continues on finding malformed records to allow metrics
-  // to be recorded about them.
-  EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.experimental_results(),
-              testing::Optional(testing::ElementsAre(false)));
+  EXPECT_THAT(results.error(), test::IsError(ERR_DNS_MALFORMED_RESPONSE));
+  EXPECT_FALSE(results.has_ttl());
 }
 
 TEST(DnsResponseResultExtractorTest, RejectsWrongNameExperimentalHttpsRecord) {
