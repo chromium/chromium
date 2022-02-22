@@ -75,17 +75,6 @@ interface FileSystemDirectoryHandle extends FileSystemHandleBase {
 
 type FileSystemHandle = FileSystemFileHandle|FileSystemDirectoryHandle;
 
-type VarFor<T> = {
-  prototype: T;
-  // clang-format parses "new" in a wrong way.
-  // clang-format off
-  new(): T;
-  // clang-format on
-};
-
-declare const FileSystemDirectoryHandle: VarFor<FileSystemDirectoryHandle>;
-declare const FileSystemFileHandle: VarFor<FileSystemFileHandle>;
-
 interface StorageManager {
   getDirectory(): Promise<FileSystemDirectoryHandle>;
 }

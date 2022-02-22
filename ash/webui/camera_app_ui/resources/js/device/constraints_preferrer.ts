@@ -143,27 +143,27 @@ export abstract class ConstraintsPreferrer {
     const screenHeight =
         Math.floor(window.screen.height * window.devicePixelRatio);
     const aspectRatio = captureResolution.width / captureResolution.height;
-    const Rs = Math.min(screenWidth, Math.floor(screenHeight * aspectRatio));
-    const Rc = captureResolution.width;
+    const rs = Math.min(screenWidth, Math.floor(screenHeight * aspectRatio));
+    const rc = captureResolution.width;
     const cmpDescending = (r1: Resolution, r2: Resolution) =>
         r2.width - r1.width;
     const cmpAscending = (r1: Resolution, r2: Resolution) =>
         r1.width - r2.width;
 
-    if (Rc <= Rs) {
+    if (rc <= rs) {
       const notLargerThanR =
-          previewResolutions.filter((r) => r.width <= Rc).sort(cmpDescending);
+          previewResolutions.filter((r) => r.width <= rc).sort(cmpDescending);
       const largerThanR =
-          previewResolutions.filter((r) => r.width > Rc).sort(cmpAscending);
+          previewResolutions.filter((r) => r.width > rc).sort(cmpAscending);
       return notLargerThanR.concat(largerThanR);
     } else {
       const betweenRsR =
-          previewResolutions.filter((r) => Rs <= r.width && r.width <= Rc)
+          previewResolutions.filter((r) => rs <= r.width && r.width <= rc)
               .sort(cmpAscending);
       const smallerThanRs =
-          previewResolutions.filter((r) => r.width < Rs).sort(cmpDescending);
+          previewResolutions.filter((r) => r.width < rs).sort(cmpDescending);
       const largerThanR =
-          previewResolutions.filter((r) => r.width > Rc).sort(cmpAscending);
+          previewResolutions.filter((r) => r.width > rc).sort(cmpAscending);
       return betweenRsR.concat(smallerThanRs).concat(largerThanR);
     }
   }
@@ -358,7 +358,7 @@ export class VideoConstraintsPreferrer extends ConstraintsPreferrer {
           findResol(1280, 720) || new Resolution(0, -1);
       if (findResol(prefR.width, prefR.height) === undefined) {
         prefR = videoResols.reduce(
-            (maxR, R) => (maxR.area < R.area ? R : maxR),
+            (maxR, r) => (maxR.area < r.area ? r : maxR),
             new Resolution(0, -1));
       }
       this.prefResolution.set(deviceId, prefR);
@@ -572,7 +572,7 @@ export class PhotoConstraintsPreferrer extends ConstraintsPreferrer {
       assert(captureRs !== undefined);
       if (!captureRs.some((r) => r.equals(prefR))) {
         prefR = captureRs.reduce(
-            (maxR, R) => (maxR.area < R.area ? R : maxR),
+            (maxR, r) => (maxR.area < r.area ? r : maxR),
             new Resolution(0, -1));
       }
       this.prefResolution.set(deviceId, prefR);

@@ -343,7 +343,7 @@ export class CropDocument extends Review<boolean> {
     this.initialCorners = corners;
     this.cornerSpaceSize = null;
     await super.startReview(new OptionGroup({
-      template: ButtonGroupTemplate.positive,
+      template: ButtonGroupTemplate.POSITIVE,
       options:
           [new Option({text: I18nString.LABEL_CROP_DONE}, {exitValue: true})],
     }));

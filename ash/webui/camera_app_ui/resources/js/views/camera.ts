@@ -734,7 +734,7 @@ export class Camera extends View implements CameraViewUI {
         }
 
         const positive = new review.OptionGroup({
-          template: review.ButtonGroupTemplate.positive,
+          template: review.ButtonGroupTemplate.POSITIVE,
           options: [
             new review.Option({text: I18nString.LABEL_SAVE_PDF_DOCUMENT}, {
               callback: () => {
@@ -775,7 +775,7 @@ export class Camera extends View implements CameraViewUI {
               }));
         }
         const negative = new review.OptionGroup({
-          template: review.ButtonGroupTemplate.negative,
+          template: review.ButtonGroupTemplate.NEGATIVE,
           options: negOptions,
         });
 
@@ -825,7 +825,7 @@ export class Camera extends View implements CameraViewUI {
     await this.prepareReview(async () => {
       await this.review.setReviewPhoto(blob);
       const positive = new review.OptionGroup({
-        template: review.ButtonGroupTemplate.positive,
+        template: review.ButtonGroupTemplate.POSITIVE,
         options: [
           new review.Option({text: I18nString.LABEL_SAVE}, {exitValue: true}),
           new review.Option({text: I18nString.LABEL_SHARE}, {
@@ -837,7 +837,7 @@ export class Camera extends View implements CameraViewUI {
         ],
       });
       const negative = new review.OptionGroup({
-        template: review.ButtonGroupTemplate.negative,
+        template: review.ButtonGroupTemplate.NEGATIVE,
         options: [new review.Option(
             {text: I18nString.LABEL_RETAKE}, {exitValue: null})],
       });

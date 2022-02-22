@@ -9,6 +9,7 @@ import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
 import * as state from './state.js';
+import {State} from './state.js';
 import {
   Facing,
   Mode,
@@ -300,7 +301,6 @@ export function sendCaptureEvent({
             return prerequisite && states.find((s) => state.get(s)) || 'n/a';
           };
 
-  const State = state.State;
   sendEvent(
       {
         eventCategory: 'capture',

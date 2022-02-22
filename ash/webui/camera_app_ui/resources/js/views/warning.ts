@@ -11,6 +11,8 @@ import {assertEnumVariant} from '../util.js';
 
 import {EnterOptions, LeaveCondition, View} from './view.js';
 
+// This is used as an enum.
+/* eslint-disable @typescript-eslint/naming-convention */
 /**
  * The type of warning.
  */
@@ -19,6 +21,7 @@ export const WarningType = {
   FILESYSTEM_FAILURE: I18nString.ERROR_MSG_FILE_SYSTEM_FAILED,
   NO_CAMERA: I18nString.ERROR_MSG_NO_CAMERA,
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 function assertI18nString(value: unknown): I18nString {
   const stringValue = assertString(value);

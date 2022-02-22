@@ -51,7 +51,7 @@ export enum Level {
   LV62 = 62,
 }
 
-export const Levels = Object.values(Level)
+export const LEVELS = Object.values(Level)
                           .filter((x): x is Level => typeof x === 'number')
                           .sort((a, b) => a - b);
 
@@ -124,7 +124,7 @@ export function checkLevelLimits(
 export function getMinimalLevel(
     profile: Profile, bitrate: number, fps: number,
     resolution: Resolution): Level|null {
-  for (const level of Levels) {
+  for (const level of LEVELS) {
     if (checkLevelLimits(level, fps, resolution) &&
         getMaxBitrate(profile, level) >= bitrate) {
       return level;

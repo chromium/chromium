@@ -22,10 +22,10 @@ export enum State {
   EXPERT = 'expert',
   FPS_30 = 'fps-30',
   FPS_60 = 'fps-60',
-  /* eslint-disable camelcase */
+  /* eslint-disable @typescript-eslint/naming-convention */
   GRID_3x3 = 'grid-3x3',
   GRID_4x4 = 'grid-4x4',
-  /* eslint-enable camelcase */
+  /* eslint-enable @typescript-eslint/naming-convention */
   GRID_GOLDEN = 'grid-golden',
   GRID = 'grid',
   HAS_BACK_CAMERA = 'has-back-camera',

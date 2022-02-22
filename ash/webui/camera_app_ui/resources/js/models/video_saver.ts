@@ -25,6 +25,8 @@ import {
 import {createPrivateTempVideoFile} from './file_system.js';
 import {FileAccessEntry} from './file_system_access_entry.js';
 
+// This is used like a class constructor.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const FFMpegVideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
   const videoProcessorHelper =

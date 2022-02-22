@@ -143,10 +143,13 @@ export interface VideoHandler {
   onVideoCaptureDone(videoResult: VideoResult): Promise<void>;
 }
 
+// This is used as an enum.
+/* eslint-disable @typescript-eslint/naming-convention */
 const RecordType = {
   NORMAL: state.State.RECORD_TYPE_NORMAL,
   GIF: state.State.RECORD_TYPE_GIF,
 } as const;
+/* eslint-enable @typescript-eslint/naming-convention */
 
 type RecordType = typeof RecordType[keyof typeof RecordType];
 

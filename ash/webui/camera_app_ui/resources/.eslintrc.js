@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This file is also checked by ESLint, and some of the property in the
+// settings doesn't follow naming convention.
+/* eslint-disable @typescript-eslint/naming-convention */
 // From
 // https://github.com/google/eslint-config-google/blob/b8ba12f58a4d71ee1f66b504a59bfe8de381ab4b/index.js#L20
 const googleRules = {
@@ -356,6 +359,7 @@ const googleRules = {
   // 'template-curly-spacing': 'off',
   'yield-star-spacing': ['error', 'after'],
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 const typescriptEslintDir =
     '../../../../third_party/node/node_modules/@typescript-eslint';
@@ -445,5 +449,34 @@ module.exports = {
             '(go/tsstyle#type-coercion)',
       },
     ],
+
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'default',
+        format: ['camelCase'],
+      },
+      {
+        selector: 'variable',
+        format: ['camelCase', 'UPPER_CASE'],
+      },
+      {
+        selector: 'typeLike',
+        format: ['PascalCase'],
+      },
+      {
+        selector: 'enumMember',
+        format: ['UPPER_CASE'],
+      },
+      {
+        selector: 'parameter',
+        modifiers: ['unused'],
+        format: ['camelCase'],
+        leadingUnderscore: 'allow',
+      },
+    ],
+
+    // This is covered by @typescript-eslint/naming-convention.
+    'camelcase': 'off',
   }),
 };

@@ -70,7 +70,7 @@ export class CameraIntent extends Camera {
   private reviewIntentResult(metricArgs: MetricArgs): Promise<void> {
     return this.prepareReview(async () => {
       const confirmed = await this.review.startReview(new review.OptionGroup({
-        template: review.ButtonGroupTemplate.intent,
+        template: review.ButtonGroupTemplate.INTENT,
         options: [
           new review.Option(
               {

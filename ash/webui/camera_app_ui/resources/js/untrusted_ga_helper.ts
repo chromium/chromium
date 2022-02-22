@@ -17,6 +17,7 @@ declare global {
   interface Window {
     // Used for GA to support renaming, see
     // https://developers.google.com/analytics/devguides/collection/analyticsjs/tracking-snippet-reference#tracking-unminified
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     GoogleAnalyticsObject: 'ga';
   }
 }

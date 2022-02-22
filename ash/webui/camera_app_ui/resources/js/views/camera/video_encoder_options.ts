@@ -100,7 +100,7 @@ export class VideoEncoderOptions {
     const profile = this.selectedProfile;
     assert(profile !== null);
 
-    const maxLevel = h264.Levels[h264.Levels.length - 1];
+    const maxLevel = h264.LEVELS[h264.LEVELS.length - 1];
     if (!h264.checkLevelLimits(maxLevel, fps, resolution)) {
       reportError(
           ErrorType.NO_AVAILABLE_LEVEL, ErrorLevel.WARNING,
