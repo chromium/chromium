@@ -28,13 +28,15 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropDataContentProviderTest {
-    private DropDataContentProvider mDropDataContentProvider;
     private static final byte[] IMAGE_DATA_A = new byte[100];
     private static final byte[] IMAGE_DATA_B = new byte[50];
     private static final byte[] IMAGE_DATA_C = new byte[75];
     private static final String EXTENSION_A = "jpg";
     private static final String EXTENSION_B = "gif";
     private static final String EXTENSION_C = "png";
+    private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10_000;
+
+    private DropDataContentProvider mDropDataContentProvider;
 
     @Before
     public void setUp() {
@@ -102,6 +104,7 @@ public class DropDataContentProviderTest {
     @SmallTest
     public void testClearCacheWithDelay() {
         Uri uri = DropDataContentProvider.cache(IMAGE_DATA_A, EXTENSION_A);
+        DropDataContentProvider.setClearCachedDataIntervalMs(CLEAR_CACHED_DATA_INTERVAL_MS);
         DropDataContentProvider.clearCacheWithDelay();
         Assert.assertNotNull(
                 "Image bytes should not be null immediately after clear cache with delay.",
@@ -110,8 +113,7 @@ public class DropDataContentProviderTest {
                 DropDataContentProvider.getHandlerForTesting());
         Assert.assertEquals("The MIME type for jpg file should be image/jpeg", "image/jpeg",
                 mDropDataContentProvider.getType(uri));
-        ShadowLooper.idleMainLooper(
-                DropDataContentProvider.CLEAR_CACHED_DATA_INTERVAL_MS + 1, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(CLEAR_CACHED_DATA_INTERVAL_MS + 1, TimeUnit.MILLISECONDS);
         Assert.assertNull("Image bytes should be null after the delayed time.",
                 DropDataContentProvider.getImageBytesForTesting());
         Assert.assertNull("MIME type should be null after the delayed time.",
