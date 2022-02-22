@@ -4,10 +4,14 @@
 
 #include "chrome/browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_attributes.h"
+#include "chrome/browser/ash/policy/core/device_attributes_impl.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -65,7 +69,14 @@ EnterpriseDeviceAttributesGetDeviceSerialNumberFunction::Run() {
 }
 
 EnterpriseDeviceAttributesGetDeviceAssetIdFunction::
-    EnterpriseDeviceAttributesGetDeviceAssetIdFunction() {}
+    EnterpriseDeviceAttributesGetDeviceAssetIdFunction()
+    : EnterpriseDeviceAttributesGetDeviceAssetIdFunction(
+          std::make_unique<policy::DeviceAttributesImpl>()) {}
+
+EnterpriseDeviceAttributesGetDeviceAssetIdFunction::
+    EnterpriseDeviceAttributesGetDeviceAssetIdFunction(
+        std::unique_ptr<policy::DeviceAttributes> attributes)
+    : attributes_(std::move(attributes)) {}
 
 EnterpriseDeviceAttributesGetDeviceAssetIdFunction::
     ~EnterpriseDeviceAttributesGetDeviceAssetIdFunction() {}
@@ -76,9 +87,7 @@ EnterpriseDeviceAttributesGetDeviceAssetIdFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (crosapi::browser_util::IsSigninProfileOrBelongsToAffiliatedUser(
           profile)) {
-    asset_id = g_browser_process->platform_part()
-                   ->browser_policy_connector_ash()
-                   ->GetDeviceAssetID();
+    asset_id = attributes_->GetDeviceAssetID();
   }
   return RespondNow(ArgumentList(
       api::enterprise_device_attributes::GetDeviceAssetId::Results::Create(

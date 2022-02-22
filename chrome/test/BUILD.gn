@@ -3459,6 +3459,7 @@ if (!is_android) {
         "../browser/ash/policy/affiliation/user_affiliation_browsertest.cc",
         "../browser/ash/policy/arc/unaffiliated_arc_allowed_browsertest.cc",
         "../browser/ash/policy/core/browser_policy_connector_ash_browsertest.cc",
+        "../browser/ash/policy/core/device_attributes_browsertest.cc",
         "../browser/ash/policy/core/device_cloud_policy_browsertest.cc",
         "../browser/ash/policy/core/device_local_account_browsertest.cc",
         "../browser/ash/policy/core/user_cloud_policy_manager_ash_browsertest.cc",
@@ -7442,6 +7443,7 @@ test("unit_tests") {
         # TODO(b/207754758): Move the following two files into the appropriate target
         "../browser/chromeos/extensions/telemetry/api/api_guard_delegate_unittest.cc",
         "../browser/chromeos/extensions/telemetry/chromeos_permission_messages_unittest.cc",
+        "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_api_ash_unittest.cc",
         "../browser/extensions/api/file_system/consent_provider_unittest.cc",
         "../browser/extensions/api/image_writer_private/removable_storage_provider_chromeos_unittest.cc",
         "../browser/extensions/api/quick_unlock_private/quick_unlock_private_api_unittest.cc",
