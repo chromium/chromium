@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/dbus/fusebox_service_provider.h"
 
+#include <fcntl.h>
 #include <sys/stat.h>
 
 #include <string>
@@ -12,10 +13,10 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -101,9 +102,40 @@ void OnExportedCallback(const std::string& interface_name,
                           << method_name;
 }
 
-// For the ReplyToEtc functions below, the fs_context argument may look unused,
-// but we need the BindOnce below to keep the reference alive until at least
-// this function gets called back.
+// For the ReplyToEtc functions here and (§) below, the fs_context argument may
+// look unused, but we need to keep the storage::FileSystemContext reference
+// alive until these functions are called back.
+
+void ReplyToClose(scoped_refptr<storage::FileSystemContext> fs_context,
+                  dbus::MethodCall* method,
+                  dbus::ExportedObject::ResponseSender sender,
+                  base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method);
+  dbus::MessageWriter writer(response.get());
+
+  writer.AppendInt32(static_cast<int32_t>(error_code));
+
+  std::move(sender).Run(std::move(response));
+}
+
+void ReplyToOpenFailure(scoped_refptr<storage::FileSystemContext> fs_context,
+                        dbus::MethodCall* method,
+                        dbus::ExportedObject::ResponseSender sender,
+                        base::File::Error error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method);
+  dbus::MessageWriter writer(response.get());
+
+  writer.AppendInt32(static_cast<int32_t>(error_code));
+  writer.AppendUint64(0);
+
+  std::move(sender).Run(std::move(response));
+}
 
 void ReplyToReadFailure(scoped_refptr<storage::FileSystemContext> fs_context,
                         dbus::MethodCall* method,
@@ -218,7 +250,17 @@ void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
 
 }  // namespace
 
-FuseBoxServiceProvider::FuseBoxServiceProvider() = default;
+FuseBoxServiceProvider::OnCloseCallbackTracker::OnCloseCallbackTracker(
+    base::OnceClosure on_close_callback)
+    : base::RefCountedDeleteOnSequence<
+          FuseBoxServiceProvider::OnCloseCallbackTracker>(
+          content::GetIOThreadTaskRunner({})),
+      on_close_callback_runner(std::move(on_close_callback)) {}
+
+FuseBoxServiceProvider::OnCloseCallbackTracker::~OnCloseCallbackTracker() =
+    default;
+
+FuseBoxServiceProvider::FuseBoxServiceProvider() : next_tracker_key_(1) {}
 
 FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
@@ -228,6 +270,14 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
     return;
   }
 
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kCloseMethod,
+                       base::BindRepeating(&FuseBoxServiceProvider::Close,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
+  object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kOpenMethod,
+                       base::BindRepeating(&FuseBoxServiceProvider::Open,
+                                           weak_ptr_factory_.GetWeakPtr()),
+                       base::BindOnce(&OnExportedCallback));
   object->ExportMethod(fusebox::kFuseBoxServiceInterface, fusebox::kReadMethod,
                        base::BindRepeating(&FuseBoxServiceProvider::Read,
                                            weak_ptr_factory_.GetWeakPtr()),
@@ -236,6 +286,128 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
                        base::BindRepeating(&FuseBoxServiceProvider::Stat,
                                            weak_ptr_factory_.GetWeakPtr()),
                        base::BindOnce(&OnExportedCallback));
+}
+
+void FuseBoxServiceProvider::Close(
+    dbus::MethodCall* method,
+    dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method);
+  auto common = ParseCommonDBusMethodArguments(&reader);
+  if (common.error_code != base::File::Error::FILE_OK) {
+    ReplyToClose(std::move(common.fs_context), method, std::move(sender),
+                 common.error_code);
+    return;
+  }
+
+  uint64_t handle = 0;
+  if (!reader.PopUint64(&handle)) {
+    LOG(ERROR) << "No Handle";
+    ReplyToClose(std::move(common.fs_context), method, std::move(sender),
+                 base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+
+  trackers_.erase(handle);
+
+  ReplyToClose(std::move(common.fs_context), method, std::move(sender),
+               base::File::Error::FILE_OK);
+}
+
+void FuseBoxServiceProvider::Open(dbus::MethodCall* method,
+                                  dbus::ExportedObject::ResponseSender sender) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  dbus::MessageReader reader(method);
+  auto common = ParseCommonDBusMethodArguments(&reader);
+  if (common.error_code != base::File::Error::FILE_OK) {
+    ReplyToOpenFailure(std::move(common.fs_context), method, std::move(sender),
+                       common.error_code);
+    return;
+  }
+
+  int32_t flags = 0;
+  if (!reader.PopInt32(&flags)) {
+    LOG(ERROR) << "No Flags";
+    ReplyToOpenFailure(std::move(common.fs_context), method, std::move(sender),
+                       base::File::Error::FILE_ERROR_INVALID_OPERATION);
+    return;
+  }
+  int base_file_flags = base::File::FLAG_OPEN;
+  switch (mode_t(flags) & O_ACCMODE) {
+    case O_RDWR:
+      base_file_flags |= base::File::FLAG_READ | base::File::FLAG_WRITE;
+      break;
+    case O_WRONLY:
+      base_file_flags |= base::File::FLAG_WRITE;
+      break;
+    default:
+      base_file_flags |= base::File::FLAG_READ;
+      break;
+  }
+
+  auto reply_to_open_typical = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&FuseBoxServiceProvider::ReplyToOpenTypical,
+                     weak_ptr_factory_.GetWeakPtr(), common.fs_context, method,
+                     std::move(sender)));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&storage::FileSystemOperationRunner::OpenFile),
+          // Unretained is safe: common.fs_context owns its operation_runner.
+          base::Unretained(common.fs_context->operation_runner()),
+          common.fs_url, base_file_flags, std::move(reply_to_open_typical)));
+}
+
+void FuseBoxServiceProvider::ReplyToOpenTypical(
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See (§) above.
+    dbus::MethodCall* method,
+    dbus::ExportedObject::ResponseSender sender,
+    base::File file,
+    base::OnceClosure on_close_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  uint64_t handle = next_tracker_key_++;
+  scoped_refptr<OnCloseCallbackTracker> tracker;
+  if (on_close_callback) {
+    tracker = base::MakeRefCounted<OnCloseCallbackTracker>(
+        std::move(on_close_callback));
+    trackers_[handle] = tracker;
+  } else {
+    // No-op. We don't need to track when client and server have closed, since
+    // the action we'd otherwise take is to run a null on_close_callback.
+  }
+
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method);
+  dbus::MessageWriter writer(response.get());
+
+  writer.AppendInt32(static_cast<int32_t>(file.error_details()));
+  writer.AppendUint64(handle);
+  if (file.IsValid()) {
+    // AppendFileDescriptor will dup its file-descriptor argument.
+    writer.AppendFileDescriptor(file.GetPlatformFile());
+  }
+
+  std::move(sender).Run(std::move(response));
+
+  // Call base::File::Close, which can block, off the UI thread.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {
+          base::MayBlock(),
+          base::TaskPriority::BEST_EFFORT,
+          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
+      },
+      base::BindOnce(
+          [](base::File file, scoped_refptr<OnCloseCallbackTracker> tracker) {
+            file.Close();
+            // The |tracker| destructor will run after |file| was closed.
+          },
+          std::move(file), tracker));
 }
 
 void FuseBoxServiceProvider::Read(dbus::MethodCall* method,
