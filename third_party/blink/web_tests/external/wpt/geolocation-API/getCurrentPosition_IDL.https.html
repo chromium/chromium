@@ -27,13 +27,11 @@ function successCallback(position)
   */
 
   test(function() {
-    assert_equals(position.toString(), "[object GeolocationPosition]",
-        "position.toString should result in '[object GeolocationPosition]' was: " + position.toString());
+    assert_class_string(position, "GeolocationPosition");
   }, "GeolocationPosition toString");
 
   test(function() {
-    assert_equals(position.coords.toString(), "[object GeolocationCoordinates]",
-        "position.coords.toString should result in '[object GeolocationCoordinates]' was: " + position.coords.toString());
+    assert_class_string(position.coords, "GeolocationCoordinates");
   }, "GeolocationCoordinates toString");
 
   test(function() {
@@ -101,25 +99,8 @@ function BadSuccessCallback(position)
 function errorCallback(error)
 {
   test(function() {
-    assert_equals(error.toString(), "[object GeolocationPositionError]",
-        "error.toString should result in '[object GeolocationPositionError]' was: " +
-        error.toString());
+    assert_class_string(error, "GeolocationPositionError");
   }, "GeolocationPositionError toString");
-
-  test(function() {
-    assert_equals(error.PERMISSION_DENIED, 1,
-        "PERMISSION_DENIED should be 1 was: " + error.POSITION_DENIED);
-  }, "PERMISSION_DENIED value is 1");
-
-  test(function() {
-    assert_equals(error.POSITION_UNAVAILABLE, 2,
-        "POSITION_UNAVAILABLE should be 2' was: " + error.POSITION_UNAVAILABLE);
-  }, "POSITION_UNAVAILABLE is 2");
-
-  test(function() {
-    assert_equals(error.TIMEOUT, 3,
-        "TIMEOUT should be 3 was: " + error.TIMEOUT);
-  }, "TIMEOUT value is 3");
 
   fail.done();
 }
