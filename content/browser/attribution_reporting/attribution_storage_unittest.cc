@@ -52,6 +52,7 @@ using ::testing::Le;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // Default max number of conversions for a single impression for testing.
 const int kMaxConversions = 3;
@@ -1913,6 +1914,42 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
           {HistogramContribution(/*bucket=*/"a", /*value=*/9)})));
+}
+
+TEST_F(AttributionStorageTest,
+       GetAttributionsToReport_SetsRandomizedTriggerRate) {
+  delegate()->set_randomized_response_rates({
+      .navigation = .2,
+      .event = .4,
+  });
+
+  const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
+  const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(origin1)
+          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
+          .Build());
+  MaybeCreateAndStoreReport(
+      TriggerBuilder().SetReportingOrigin(origin1).Build());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(origin2)
+          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+          .Build());
+  MaybeCreateAndStoreReport(
+      TriggerBuilder().SetReportingOrigin(origin2).Build());
+
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              UnorderedElementsAre(
+                  AllOf(ReportSourceIs(SourceTypeIs(
+                            CommonSourceInfo::SourceType::kNavigation)),
+                        EventLevelDataIs(RandomizedTriggerRateIs(.2))),
+                  AllOf(ReportSourceIs(
+                            SourceTypeIs(CommonSourceInfo::SourceType::kEvent)),
+                        EventLevelDataIs(RandomizedTriggerRateIs(.4)))));
 }
 
 }  // namespace content

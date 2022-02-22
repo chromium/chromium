@@ -29,6 +29,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/attribution_reporting.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -149,6 +150,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) const override;
+  double GetRandomizedResponseRate(CommonSourceInfo::SourceType) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) const override;
   int64_t GetAggregatableBudgetPerSource() const override;
@@ -196,6 +198,12 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
     reverse_reports_on_shuffle_ = reverse;
   }
 
+  // Note that these rates are *not* used to produce a randomized response; that
+  // is controlled deterministically by `set_randomized_response()`.
+  void set_randomized_response_rates(AttributionRandomizedResponseRates rates) {
+    randomized_response_rates_ = rates;
+  }
+
   void set_randomized_response(RandomizedResponse randomized_response) {
     randomized_response_ = std::move(randomized_response);
   }
@@ -226,6 +234,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   // proper call from `AttributionStorage::GetAttributionsToReport()`.
   bool reverse_reports_on_shuffle_ = false;
 
+  AttributionRandomizedResponseRates randomized_response_rates_;
   RandomizedResponse randomized_response_ = absl::nullopt;
 };
 
@@ -433,6 +442,8 @@ class ReportBuilder {
 
   ReportBuilder& SetExternalReportId(base::GUID external_report_id);
 
+  ReportBuilder& SetRandomizedTriggerRate(double rate);
+
   ReportBuilder& SetReportId(
       absl::optional<AttributionReport::EventLevelData::Id> id);
 
@@ -444,6 +455,7 @@ class ReportBuilder {
   base::Time report_time_;
   int64_t priority_ = 0;
   base::GUID external_report_id_;
+  double randomized_trigger_rate_ = 0;
   absl::optional<AttributionReport::EventLevelData::Id> report_id_;
 };
 
@@ -623,6 +635,11 @@ MATCHER_P(TriggerDataIs, matcher, "") {
 
 MATCHER_P(TriggerPriorityIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.priority, result_listener);
+}
+
+MATCHER_P(RandomizedTriggerRateIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.randomized_trigger_rate,
+                            result_listener);
 }
 
 MATCHER_P(ReportURLIs, matcher, "") {

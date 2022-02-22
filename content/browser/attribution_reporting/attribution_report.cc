@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -18,10 +18,18 @@
 
 namespace content {
 
-AttributionReport::EventLevelData::EventLevelData(uint64_t trigger_data,
-                                                  int64_t priority,
-                                                  absl::optional<Id> id)
-    : trigger_data(trigger_data), priority(priority), id(id) {}
+AttributionReport::EventLevelData::EventLevelData(
+    uint64_t trigger_data,
+    int64_t priority,
+    double randomized_trigger_rate,
+    absl::optional<Id> id)
+    : trigger_data(trigger_data),
+      priority(priority),
+      randomized_trigger_rate(randomized_trigger_rate),
+      id(id) {
+  DCHECK_GE(randomized_trigger_rate, 0);
+  DCHECK_LE(randomized_trigger_rate, 1);
+}
 
 AttributionReport::EventLevelData::EventLevelData(const EventLevelData& other) =
     default;
@@ -140,18 +148,8 @@ base::Value AttributionReport::ReportBody() const {
 
   dict.SetStringKey("report_id", external_report_id_.AsLowercaseString());
 
-  // TODO(apaseltiner): When the values returned by
-  // `RandomizedTriggerRate()` are changed for the first time, we must
-  // remove the call to that function here and instead associate each newly
-  // stored source and report with the current configuration. One way to do that
-  // is to permanently store the configuration history in the binary with each
-  // version having a unique ID, and storing that ID in a new column in the
-  // impressions and conversions DB tables. This code would then look up the
-  // values for the particular IDs. Because such an approach would entail
-  // complicating the DB schema, we hardcode the values for now and will wait
-  // for the first time the values are changed before complicating the codebase.
   dict.SetDoubleKey("randomized_trigger_rate",
-                    RandomizedTriggerRate(common_source_info.source_type()));
+                    event_data->randomized_trigger_rate);
 
   if (absl::optional<uint64_t> debug_key = common_source_info.debug_key())
     dict.SetStringKey("source_debug_key", base::NumberToString(*debug_key));

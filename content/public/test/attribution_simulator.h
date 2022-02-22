@@ -25,6 +25,9 @@ enum class AttributionReportTimeFormat {
 struct AttributionSimulationOptions {
   AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault;
 
+  AttributionRandomizedResponseRates randomized_response_rates =
+      AttributionRandomizedResponseRates::kDefault;
+
   AttributionDelayMode delay_mode = AttributionDelayMode::kDefault;
 
   // If true, removes the `report_id` field from reports before output.

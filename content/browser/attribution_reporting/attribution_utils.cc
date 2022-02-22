@@ -119,17 +119,6 @@ uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type) {
   }
 }
 
-double RandomizedTriggerRate(CommonSourceInfo::SourceType source_type) {
-  // Note: When these values are changed from .0024 and/or .0000025, update
-  // `AttributionReport::ReportBody()` per the comment there.
-  switch (source_type) {
-    case CommonSourceInfo::SourceType::kNavigation:
-      return .0024;
-    case CommonSourceInfo::SourceType::kEvent:
-      return .0000025;
-  }
-}
-
 std::string SerializeAttributionJson(const base::Value& body,
                                      bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;

@@ -272,8 +272,9 @@ base::Value RunAttributionSimulation(
   auto manager = AttributionManagerImpl::CreateForTesting(
       std::move(always_allow_reports_callback), user_data_directory,
       /*special_storage_policy=*/nullptr,
-      std::make_unique<AttributionStorageDelegateImpl>(options.noise_mode,
-                                                       options.delay_mode),
+      AttributionStorageDelegateImpl::CreateForTesting(
+          options.noise_mode, options.delay_mode,
+          options.randomized_response_rates),
       std::make_unique<AlwaysSetCookieChecker>(),
       /*network_sender=*/
       std::make_unique<SentReportAccumulator>(

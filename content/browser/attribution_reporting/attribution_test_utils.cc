@@ -140,6 +140,16 @@ void ConfigurableStorageDelegate::ShuffleReports(
     base::ranges::reverse(reports);
 }
 
+double ConfigurableStorageDelegate::GetRandomizedResponseRate(
+    CommonSourceInfo::SourceType source_type) const {
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      return randomized_response_rates_.navigation;
+    case CommonSourceInfo::SourceType::kEvent:
+      return randomized_response_rates_.event;
+  }
+}
+
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source) const {
@@ -409,6 +419,11 @@ ReportBuilder& ReportBuilder::SetExternalReportId(
   return *this;
 }
 
+ReportBuilder& ReportBuilder::SetRandomizedTriggerRate(double rate) {
+  randomized_trigger_rate_ = rate;
+  return *this;
+}
+
 ReportBuilder& ReportBuilder::SetReportId(
     absl::optional<AttributionReport::EventLevelData::Id> id) {
   report_id_ = id;
@@ -418,7 +433,8 @@ ReportBuilder& ReportBuilder::SetReportId(
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
       attribution_info_, report_time_, external_report_id_,
-      AttributionReport::EventLevelData(trigger_data_, priority_, report_id_));
+      AttributionReport::EventLevelData(trigger_data_, priority_,
+                                        randomized_trigger_rate_, report_id_));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -505,7 +521,8 @@ bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b) {
 bool operator==(const AttributionReport::EventLevelData& a,
                 const AttributionReport::EventLevelData& b) {
   const auto tie = [](const AttributionReport::EventLevelData& data) {
-    return std::make_tuple(data.trigger_data, data.priority);
+    return std::make_tuple(data.trigger_data, data.priority,
+                           data.randomized_trigger_rate);
   };
   return tie(a) == tie(b);
 }
@@ -730,6 +747,7 @@ std::ostream& operator<<(std::ostream& out,
                          const AttributionReport::EventLevelData& data) {
   return out << "{trigger_data=" << data.trigger_data
              << ",priority=" << data.priority
+             << ",randomized_trigger_rate=" << data.randomized_trigger_rate
              << ",id=" << (data.id ? base::NumberToString(**data.id) : "null")
              << "}";
 }

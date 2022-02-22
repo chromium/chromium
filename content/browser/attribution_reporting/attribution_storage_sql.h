@@ -202,6 +202,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                                  absl::optional<uint64_t> trigger_debug_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Initializes the database if necessary, and returns whether the database is
   // open. |should_create| indicates whether the database should be created if
   // it is not already.

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/guid.h"
+#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -16,10 +17,37 @@
 
 namespace content {
 
+// static
+std::unique_ptr<AttributionStorageDelegate>
+AttributionStorageDelegateImpl::CreateForTesting(
+    AttributionNoiseMode noise_mode,
+    AttributionDelayMode delay_mode,
+    AttributionRandomizedResponseRates randomized_response_rates) {
+  return base::WrapUnique(new AttributionStorageDelegateImpl(
+      noise_mode, delay_mode, randomized_response_rates));
+}
+
 AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     AttributionNoiseMode noise_mode,
     AttributionDelayMode delay_mode)
-    : noise_mode_(noise_mode), delay_mode_(delay_mode) {
+    : AttributionStorageDelegateImpl(
+          noise_mode,
+          delay_mode,
+          AttributionRandomizedResponseRates::kDefault) {}
+
+AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
+    AttributionNoiseMode noise_mode,
+    AttributionDelayMode delay_mode,
+    AttributionRandomizedResponseRates randomized_response_rates)
+    : noise_mode_(noise_mode),
+      delay_mode_(delay_mode),
+      randomized_response_rates_(randomized_response_rates) {
+  DCHECK_GE(randomized_response_rates_.navigation, 0);
+  DCHECK_LE(randomized_response_rates_.navigation, 1);
+
+  DCHECK_GE(randomized_response_rates_.event, 0);
+  DCHECK_LE(randomized_response_rates_.event, 1);
+
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -120,6 +148,16 @@ void AttributionStorageDelegateImpl::ShuffleReports(
   }
 }
 
+double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
+    CommonSourceInfo::SourceType source_type) const {
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      return randomized_response_rates_.navigation;
+    case CommonSourceInfo::SourceType::kEvent:
+      return randomized_response_rates_.event;
+  }
+}
+
 AttributionStorageDelegate::RandomizedResponse
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     const CommonSourceInfo& source) const {
@@ -128,7 +166,7 @@ AttributionStorageDelegateImpl::GetRandomizedResponse(
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault: {
       double randomized_trigger_rate =
-          RandomizedTriggerRate(source.source_type());
+          GetRandomizedResponseRate(source.source_type());
       DCHECK_GE(randomized_trigger_rate, 0);
       DCHECK_LE(randomized_trigger_rate, 1);
 

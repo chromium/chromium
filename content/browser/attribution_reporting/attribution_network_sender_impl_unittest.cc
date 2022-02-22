@@ -133,14 +133,14 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
   } kTestCases[] = {
       {CommonSourceInfo::SourceType::kNavigation,
        R"({"attribution_destination":"https://conversion.test",)"
-       R"("randomized_trigger_rate":0.0024,)"
+       R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
       {CommonSourceInfo::SourceType::kEvent,
        R"({"attribution_destination":"https://conversion.test",)"
-       R"("randomized_trigger_rate":0.0000025,)"
+       R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"event",)"
@@ -155,6 +155,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
     AttributionReport report =
         ReportBuilder(AttributionInfoBuilder(impression).Build())
             .SetTriggerData(5)
+            .SetRandomizedTriggerRate(0.2)
             .Build();
     network_sender_->SendReport(report, base::DoNothing());
 
@@ -177,14 +178,14 @@ TEST_F(AttributionNetworkSenderTest,
   } kTestCases[] = {
       {absl::nullopt, absl::nullopt,
        R"({"attribution_destination":"https://conversion.test",)"
-       R"("randomized_trigger_rate":0.0024,)"
+       R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
        R"("trigger_data":"5"})"},
       {7, absl::nullopt,
        R"({"attribution_destination":"https://conversion.test",)"
-       R"("randomized_trigger_rate":0.0024,)"
+       R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_debug_key":"7",)"
        R"("source_event_id":"100",)"
@@ -192,7 +193,7 @@ TEST_F(AttributionNetworkSenderTest,
        R"("trigger_data":"5"})"},
       {absl::nullopt, 7,
        R"({"attribution_destination":"https://conversion.test",)"
-       R"("randomized_trigger_rate":0.0024,)"
+       R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_event_id":"100",)"
        R"("source_type":"navigation",)"
@@ -200,7 +201,7 @@ TEST_F(AttributionNetworkSenderTest,
        R"("trigger_debug_key":"7"})"},
       {7, 8,
        R"({"attribution_destination":"https://conversion.test",)"
-       R"("randomized_trigger_rate":0.0024,)"
+       R"("randomized_trigger_rate":0.2,)"
        R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
        R"("source_debug_key":"7",)"
        R"("source_event_id":"100",)"
@@ -219,6 +220,7 @@ TEST_F(AttributionNetworkSenderTest,
                           .SetDebugKey(test_case.trigger_debug_key)
                           .Build())
             .SetTriggerData(5)
+            .SetRandomizedTriggerRate(0.2)
             .Build();
     network_sender_->SendReport(report, base::DoNothing());
 

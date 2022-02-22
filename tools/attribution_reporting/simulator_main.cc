@@ -9,6 +9,8 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
@@ -31,13 +33,25 @@ constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
 constexpr char kSwitchInputMode[] = "input_mode";
 constexpr char kSwitchCopyInputToOutput[] = "copy_input_to_output";
 constexpr char kSwitchReportTimeFormat[] = "report_time_format";
+constexpr char kSwitchRandomizedResponseRateNavigation[] =
+    "randomized_response_rate_navigation";
+constexpr char kSwitchRandomizedResponseRateEvent[] =
+    "randomized_response_rate_event";
 
 constexpr const char* kAllowedSwitches[] = {
-    kSwitchHelp,         kSwitchHelpShort,         kSwitchVersion,
+    kSwitchHelp,
+    kSwitchHelpShort,
+    kSwitchVersion,
     kSwitchVersionShort,
 
-    kSwitchDelayMode,    kSwitchNoiseMode,         kSwitchRemoveReportIds,
-    kSwitchInputMode,    kSwitchCopyInputToOutput, kSwitchReportTimeFormat,
+    kSwitchDelayMode,
+    kSwitchNoiseMode,
+    kSwitchRemoveReportIds,
+    kSwitchInputMode,
+    kSwitchCopyInputToOutput,
+    kSwitchReportTimeFormat,
+    kSwitchRandomizedResponseRateNavigation,
+    kSwitchRandomizedResponseRateEvent,
 };
 
 constexpr char kHelpMsg[] = R"(
@@ -45,6 +59,8 @@ attribution_reporting_simulator
   [--copy_input_to_output]
   [--delay_mode=<mode>]
   [--noise_mode=<mode>]
+  [--randomized_response_rate_event=<rate>]
+  [--randomized_response_rate_navigation=<rate>]
   [--input_mode=<input_mode>]
   [--remove_report_ids]
   [--report_time_format=<format>]
@@ -99,6 +115,16 @@ Switches:
                               Input lines are processed independently,
                               simulating multiple users.
                               See https://jsonlines.org/.
+
+  --randomized_response_rate_event=<rate>
+                            - Optional double in the range [0, 1]. If present,
+                              overrides the default randomized response rate
+                              for event sources.
+
+  --randomized_response_rate_navigation=<rate>
+                            - Optional double in the range [0, 1]. If present,
+                              overrides the default randomized response rate
+                              for navigation sources.
 
   --remove_report_ids       - Optional. If present, removes the `report_id`
                               field from report bodies, as they are randomly
@@ -262,6 +288,30 @@ int ProcessJsonString(const std::string& json_input,
   return 0;
 }
 
+[[nodiscard]] bool ParseRandomizedResponseRateSwitch(
+    const base::CommandLine& command_line,
+    base::StringPiece switch_name,
+    double* out) {
+  if (!command_line.HasSwitch(switch_name))
+    return true;
+
+  std::string str = command_line.GetSwitchValueASCII(switch_name);
+  double rate = 0;
+  if (!base::StringToDouble(str, &rate)) {
+    std::cerr << "invalid randomized response rate: " << str << std::endl;
+    return false;
+  }
+
+  if (rate < 0 || rate > 1) {
+    std::cerr << "randomized response rate must be between 0 and 1: " << rate
+              << std::endl;
+    return false;
+  }
+
+  *out = rate;
+  return true;
+}
+
 }  // namespace
 
 int main(int argc, char* argv[]) {
@@ -308,6 +358,21 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  auto randomized_response_rates =
+      content::AttributionRandomizedResponseRates::kDefault;
+
+  if (!ParseRandomizedResponseRateSwitch(
+          command_line, kSwitchRandomizedResponseRateNavigation,
+          &randomized_response_rates.navigation)) {
+    return 1;
+  }
+
+  if (!ParseRandomizedResponseRateSwitch(command_line,
+                                         kSwitchRandomizedResponseRateEvent,
+                                         &randomized_response_rates.event)) {
+    return 1;
+  }
+
   auto delay_mode = content::AttributionDelayMode::kDefault;
   if (command_line.HasSwitch(kSwitchDelayMode)) {
     std::string str = command_line.GetSwitchValueASCII(kSwitchDelayMode);
@@ -352,6 +417,7 @@ int main(int argc, char* argv[]) {
 
   content::AttributionSimulationOptions options({
       .noise_mode = noise_mode,
+      .randomized_response_rates = randomized_response_rates,
       .delay_mode = delay_mode,
       .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),
       .report_time_format = report_time_format,

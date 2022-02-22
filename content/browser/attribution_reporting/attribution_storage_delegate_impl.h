@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_STORAGE_DELEGATE_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/sequence_checker.h"
@@ -24,6 +25,11 @@ class CommonSourceInfo;
 class CONTENT_EXPORT AttributionStorageDelegateImpl
     : public AttributionStorageDelegate {
  public:
+  static std::unique_ptr<AttributionStorageDelegate> CreateForTesting(
+      AttributionNoiseMode noise_mode,
+      AttributionDelayMode delay_mode,
+      AttributionRandomizedResponseRates randomized_response_rates);
+
   explicit AttributionStorageDelegateImpl(
       AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault,
       AttributionDelayMode delay_mode = AttributionDelayMode::kDefault);
@@ -52,6 +58,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) const override;
+  double GetRandomizedResponseRate(CommonSourceInfo::SourceType) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) const override;
   int64_t GetAggregatableBudgetPerSource() const override;
@@ -78,8 +85,14 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       int random_stars_and_bars_sequence_index) const;
 
  private:
+  AttributionStorageDelegateImpl(
+      AttributionNoiseMode noise_mode,
+      AttributionDelayMode delay_mode,
+      AttributionRandomizedResponseRates randomized_response_rates);
+
   const AttributionNoiseMode noise_mode_;
   const AttributionDelayMode delay_mode_;
+  const AttributionRandomizedResponseRates randomized_response_rates_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

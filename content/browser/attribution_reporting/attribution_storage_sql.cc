@@ -722,21 +722,43 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return CreateReportResult(AttributionTrigger::Result::kInternalError);
   }
 
-  const uint64_t trigger_data =
-      source_to_attribute->source.common_info().source_type() ==
-              CommonSourceInfo::SourceType::kEvent
-          ? trigger.event_source_trigger_data()
-          : trigger.trigger_data();
+  const CommonSourceInfo::SourceType source_type =
+      source_to_attribute->source.common_info().source_type();
+
+  uint64_t trigger_data;
+  switch (source_type) {
+    case CommonSourceInfo::SourceType::kNavigation:
+      trigger_data = trigger.trigger_data();
+      break;
+    case CommonSourceInfo::SourceType::kEvent:
+      trigger_data = trigger.event_source_trigger_data();
+      break;
+  }
 
   const base::Time report_time =
       delegate_->GetReportTime(source_to_attribute->source.common_info(),
                                /*trigger_time=*/current_time);
+
+  // TODO(apaseltiner): When the real values returned by
+  // `GetRandomizedResponseRate()` are changed for the first time, we must
+  // remove the call to that function here and instead associate each newly
+  // stored source and report with the current configuration. One way to do that
+  // is to permanently store the configuration history in the binary with each
+  // version having a unique ID, and storing that ID in a new column in the
+  // impressions and conversions DB tables. This code would then look up the
+  // values for the particular IDs. Because such an approach would entail
+  // complicating the DB schema, we hardcode the values for now and will wait
+  // for the first time the values are changed before complicating the codebase.
+  const double randomized_response_rate =
+      delegate_->GetRandomizedResponseRate(source_type);
+
   AttributionReport report(
       AttributionInfo(std::move(source_to_attribute->source),
                       /*time=*/current_time, trigger.debug_key()),
       /*report_time=*/report_time,
       /*external_report_id=*/delegate_->NewReportID(),
       AttributionReport::EventLevelData(trigger_data, trigger.priority(),
+                                        randomized_response_rate,
                                         /*id=*/absl::nullopt));
 
   switch (ReportAlreadyStored(source_id_to_attribute, trigger.dedup_key())) {
@@ -944,12 +966,10 @@ bool AttributionStorageSql::StoreReport(
   return store_report_statement.Run();
 }
 
-namespace {
-
 // Helper to deserialize report rows. See `GetReport()` for the expected
 // ordering of columns used for the input to this function.
-absl::optional<AttributionReport> ReadReportFromStatement(
-    sql::Statement& statement) {
+absl::optional<AttributionReport>
+AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   DCHECK_EQ(statement.ColumnCount(), 19);
 
   uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(0));
@@ -1002,13 +1022,12 @@ absl::optional<AttributionReport> ReadReportFromStatement(
   AttributionReport report(
       AttributionInfo(std::move(source), trigger_time, trigger_debug_key),
       report_time, std::move(external_report_id),
-      AttributionReport::EventLevelData(trigger_data, conversion_priority,
-                                        report_id));
+      AttributionReport::EventLevelData(
+          trigger_data, conversion_priority,
+          delegate_->GetRandomizedResponseRate(*source_type), report_id));
   report.set_failed_send_attempts(failed_send_attempts);
   return report;
 }
-
-}  // namespace
 
 // TODO(linnan): Move `GetAggregatableContributionReportsForTesting()` into this
 // function.

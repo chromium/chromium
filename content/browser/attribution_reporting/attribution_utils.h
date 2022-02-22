@@ -31,8 +31,6 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
 
 uint64_t TriggerDataCardinality(CommonSourceInfo::SourceType source_type);
 
-double RandomizedTriggerRate(CommonSourceInfo::SourceType source_type);
-
 std::string SerializeAttributionJson(const base::Value& body,
                                      bool pretty_print = false);
 

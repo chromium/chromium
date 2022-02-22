@@ -34,6 +34,7 @@ class CONTENT_EXPORT AttributionReport {
 
     EventLevelData(uint64_t trigger_data,
                    int64_t priority,
+                   double randomized_trigger_rate,
                    absl::optional<Id> id);
     EventLevelData(const EventLevelData& other);
     EventLevelData& operator=(const EventLevelData& other);
@@ -48,6 +49,10 @@ class CONTENT_EXPORT AttributionReport {
 
     // Priority specified in conversion redirect.
     int64_t priority;
+
+    // Randomized trigger rate used at the time this report's source was
+    // registered.
+    double randomized_trigger_rate;
 
     // Id assigned by storage to uniquely identify a completed conversion. If
     // null, an ID has not been assigned yet.
