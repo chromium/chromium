@@ -1003,7 +1003,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         getActiveLayout().show(time(), animate);
         mHost.setContentOverlayVisibility(getActiveLayout().shouldDisplayContentOverlay(),
                 getActiveLayout().canHostBeFocusable());
-        mHost.requestRender();
+        requestUpdate();
 
         // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver#onStartedShowing.
         // Notify observers about the new scene.

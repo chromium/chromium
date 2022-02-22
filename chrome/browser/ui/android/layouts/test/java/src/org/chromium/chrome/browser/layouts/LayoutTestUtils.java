@@ -24,6 +24,9 @@ public class LayoutTestUtils {
         LayoutStateObserver observer = new LayoutStateObserver() {
             @Override
             public void onFinishedShowing(int layoutType) {
+                // Ensure the layout is the one we're actually looking for.
+                if (type != layoutType) return;
+
                 finishedShowingCallbackHelper.notifyCalled();
             }
         };
@@ -40,6 +43,7 @@ public class LayoutTestUtils {
         } catch (TimeoutException e) {
             assert false : "Timed out waiting for layout (@LayoutType " + type + ") to show!";
         }
+
         TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
     }
 
