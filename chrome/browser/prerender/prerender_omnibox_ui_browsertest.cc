@@ -14,7 +14,9 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/prerender/prerender_manager.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
@@ -430,8 +432,9 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderOmniboxUIBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSupportSearchSuggestionForPrerender2);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSupportSearchSuggestionForPrerender2},
+        {prerender_utils::kHidePrefetchParameter});
   }
 
   void SetUpOnMainThread() override {
@@ -480,6 +483,11 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  void SetUp() override {
+    prerender_helper().SetUp(&search_engine_server_);
+    InProcessBrowserTest::SetUp();
   }
 
   void TearDownOnMainThread() override {
@@ -542,7 +550,40 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
         std::make_unique<net::test_server::BasicHttpResponse>();
     resp->set_code(net::HTTP_OK);
     resp->set_content_type("text/html");
-    std::string content = "<html><body> HI PRERENDER! </body></html>";
+    std::string content = R"(
+      <html><body> HI PRERENDER!
+      <script>
+        let resolveFunc;
+        const historyUpdated = new Promise((resolve, reject) => {
+            resolveFunc = resolve;
+        });
+        function removeParam() {
+          const url = new URL(document.URL);
+          // Search parameters will contain pf=cs if the document is
+          // activated from a prerendered document.
+          if (url.searchParams.get('pf') === 'cs') {
+            url.searchParams.delete('pf');
+            // After being activated, the page is no longer a prerendering
+            // page. If it defines any parameters for identifying the
+            // page type, it is also responsible for updating its history
+            // state by removing the parameters.
+            history.replaceState(null, "", url.toString());
+            resolveFunc(true);
+          } else {
+            resolveFunc(false);
+          }
+        }
+        if (document.prerendering) {
+          document.addEventListener("prerenderingchange", () => {
+              removeParam();
+          });
+        } else {
+          // If this script is executed after the page was activated.
+          removeParam();
+        }
+      </script>
+      </body></html>
+    )";
     resp->set_content(content);
     return resp;
   }
@@ -650,6 +691,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   int host_id =
       InputSearchQueryAndWaitForTrigger(search_query, expected_prerender_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
+
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper().GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(
+      base::Contains(prerender_rfh->GetLastCommittedURL().spec(), "pf=cs"));
 
   // Ensure there is a search hint.
   auto is_prerender_match = [](const AutocompleteMatch& match) {
@@ -664,11 +712,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
 
+  // Wait until the history is updated.
+  ASSERT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+                                  "historyUpdated;"));
+
+  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prerender_url));
   // The displayed url shouldn't contain the parameter of pf=cs.
-  GURL expected_displayed_url = GetSearchUrl(search_query, "prerender222",
-                                             /*is_prerender=*/false);
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
-            expected_displayed_url);
+  EXPECT_FALSE(base::Contains(
+      GetActiveWebContents()->GetLastCommittedURL().spec(), "pf=cs"));
+  EXPECT_EQ(0, prerender_helper().GetRequestCount(
+                   GetActiveWebContents()->GetLastCommittedURL()));
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
@@ -677,6 +730,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "AutocompleteActionPredictor.PrerenderStatus",
       PrerenderPredictionStatus::kNotStarted, 1);
+
+  GURL expected_reload_url = GetActiveWebContents()->GetLastCommittedURL();
+
+  // Reload the page. It is supposed to send a URL request without
+  // prefetch parameters attached.
+  chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
+  prerender_helper().WaitForRequest(expected_reload_url, 1);
 }
 
 // Tests that prerender maintain the previous prerendered page if the new
@@ -700,6 +760,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   int host_id =
       InputSearchQueryAndWaitForTrigger(search_query_1, expected_prerender_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    expected_prerender_url);
 
   std::string search_query_2 = "prerender22";
   InputSearchQuery(search_query_2);
@@ -716,10 +778,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
-  GURL expected_displayed_url =
-      GetSearchUrl(search_query_1, "prerender222", /*is_prerender=*/false);
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
-            expected_displayed_url);
+
+  // Wait until the history is updated.
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+                                  "historyUpdated;"));
+
+  // The displayed url shouldn't contain the parameter of pf=cs.
+  EXPECT_FALSE(base::Contains(
+      GetActiveWebContents()->GetLastCommittedURL().spec(), "pf=cs"));
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
@@ -759,6 +825,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   int host_id2 =
       InputSearchQueryAndWaitForTrigger(search_query_2, prerender_url2);
   ASSERT_NE(host_id, host_id2);
+  prerender_helper().WaitForPrerenderLoadCompletion(*GetActiveWebContents(),
+                                                    prerender_url2);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
   // Ensure there is a search hint.
@@ -771,10 +839,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id2);
   EXPECT_TRUE(IsPrerenderingNavigation());
-  GURL expected_displayed_url =
-      GetSearchUrl(search_query_2, "prerender333", /*is_prerender=*/false);
-  EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(),
-            expected_displayed_url);
+
+  // Wait until the history is updated.
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetMainFrame(),
+                                  "historyUpdated;"));
+
+  // The displayed url shouldn't contain the parameter of pf=cs.
+  EXPECT_FALSE(base::Contains(
+      GetActiveWebContents()->GetLastCommittedURL().spec(), "pf=cs"));
 
   histogram_tester.ExpectBucketCount(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
