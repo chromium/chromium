@@ -115,8 +115,15 @@ namespace {
 
 // This feature will only take effect if `kTwoCopyCanvasCapture` is also
 // enabled.
-const base::Feature kOneCopyCanvasCapture{"OneCopyCanvasCapture",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+// TODO(https://crbug.com/1298812): Investigate why this fails on Windows.
+const base::Feature kOneCopyCanvasCapture {
+  "OneCopyCanvasCapture",
+#if BUILDFLAG(IS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 const base::Feature kTwoCopyCanvasCapture {
   "TwoCopyCanvasCapture",
