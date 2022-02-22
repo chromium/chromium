@@ -382,14 +382,20 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1. Navigate to a cacheable page (A).
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  EXPECT_EQ(2u, render_frame_host_manager()->GetProxyCount());
+  EXPECT_EQ(2u, render_frame_host_manager()
+                    ->current_frame_host()
+                    ->browsing_context_state()
+                    ->GetProxyCount());
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
   std::string frame_tree_a = DepictFrameTree(rfh_a->frame_tree_node());
 
   // 2. Navigate from a cacheable page to an uncacheable page (A->B).
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  EXPECT_EQ(0u, render_frame_host_manager()->GetProxyCount());
+  EXPECT_EQ(0u, render_frame_host_manager()
+                    ->current_frame_host()
+                    ->browsing_context_state()
+                    ->GetProxyCount());
   RenderFrameHostImpl* rfh_b = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_b(rfh_b);
 
@@ -406,11 +412,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Note: Since we put the page B into BackForwardCache briefly, we do not
   // create a transition proxy. So there should be only proxies for i.com and
   // j.com.
-  EXPECT_EQ(2u, render_frame_host_manager()->GetProxyCount());
+  EXPECT_EQ(2u, render_frame_host_manager()
+                    ->current_frame_host()
+                    ->browsing_context_state()
+                    ->GetProxyCount());
 
   // Page B should be deleted (not cached).
   delete_observer_rfh_b.WaitUntilDeleted();
-  EXPECT_EQ(2u, render_frame_host_manager()->GetProxyCount());
+  EXPECT_EQ(2u, render_frame_host_manager()
+                    ->current_frame_host()
+                    ->browsing_context_state()
+                    ->GetProxyCount());
 
   // Page A should still have the correct frame tree.
   EXPECT_EQ(frame_tree_a,
@@ -418,7 +430,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 4. Navigate from a cacheable page to a cacheable page (A->C).
   EXPECT_TRUE(NavigateToURL(shell(), url_c));
-  EXPECT_EQ(3u, render_frame_host_manager()->GetProxyCount());
+  EXPECT_EQ(3u, render_frame_host_manager()
+                    ->current_frame_host()
+                    ->browsing_context_state()
+                    ->GetProxyCount());
   RenderFrameHostImpl* rfh_c = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_c(rfh_c);
 
@@ -432,7 +447,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 5. Navigate from a cacheable page to a cached page (C->A).
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_EQ(2u, render_frame_host_manager()->GetProxyCount());
+  EXPECT_EQ(2u, render_frame_host_manager()
+                    ->current_frame_host()
+                    ->browsing_context_state()
+                    ->GetProxyCount());
 
   // Page A should still have the correct frame tree.
   EXPECT_EQ(frame_tree_a,

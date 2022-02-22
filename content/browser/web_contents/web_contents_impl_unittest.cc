@@ -633,8 +633,11 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   EXPECT_NE(instance1, instance2);
   EXPECT_EQ(nullptr, contents()->GetSpeculativePrimaryMainFrame());
   // We keep a proxy for the original RFH's SiteInstanceGroup.
-  EXPECT_TRUE(contents()->GetRenderManagerForTesting()->GetRenderFrameProxyHost(
-      instance1->group()));
+  EXPECT_TRUE(contents()
+                  ->GetRenderManagerForTesting()
+                  ->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(instance1->group()));
   EXPECT_EQ(orig_rvh_delete_count, 0);
 
   // Going back should switch SiteInstances again.  The first SiteInstance is
@@ -655,8 +658,11 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   EXPECT_EQ(url, contents()->GetVisibleURL());
   EXPECT_EQ(instance1, contents()->GetSiteInstance());
   // There should be a proxy for the pending RFH SiteInstance.
-  EXPECT_TRUE(contents()->GetRenderManagerForTesting()->GetRenderFrameProxyHost(
-      instance2->group()));
+  EXPECT_TRUE(contents()
+                  ->GetRenderManagerForTesting()
+                  ->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(instance2->group()));
   EXPECT_EQ(pending_rvh_delete_count, 0);
 
   // Close contents and ensure RVHs are deleted.
@@ -1004,15 +1010,20 @@ TEST_F(WebContentsImplTest, FindOpenerRVHWhenPending) {
   auto opener_frame_token =
       popup->GetRenderManager()->GetOpenerFrameToken(instance->group());
   RenderFrameProxyHost* proxy =
-      contents()->GetRenderManager()->GetRenderFrameProxyHost(
-          instance->group());
+      contents()
+          ->GetRenderManager()
+          ->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(instance->group());
   EXPECT_TRUE(proxy);
   EXPECT_EQ(*opener_frame_token, proxy->GetFrameToken());
 
   // Ensure that committing the navigation removes the proxy.
   navigation->Commit();
-  EXPECT_FALSE(contents()->GetRenderManager()->GetRenderFrameProxyHost(
-      instance->group()));
+  EXPECT_FALSE(contents()
+                   ->GetMainFrame()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(instance->group()));
 }
 
 // Tests that WebContentsImpl uses the current URL, not the SiteInstance's site,

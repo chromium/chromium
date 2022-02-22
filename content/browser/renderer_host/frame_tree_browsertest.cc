@@ -2335,8 +2335,9 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   // There should not be a proxy for the root's own SiteInstance.
   SiteInstanceImpl* root_instance =
       root->current_frame_host()->GetSiteInstance();
-  EXPECT_FALSE(
-      root->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
+  EXPECT_FALSE(root->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(root_instance->group()));
 
   // Load same-site page into iframe.
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));
@@ -2360,18 +2361,22 @@ IN_PROC_BROWSER_TEST_F(CrossProcessFrameTreeBrowserTest,
   EXPECT_NE(shell()->web_contents()->GetMainFrame()->GetProcess(), rph);
 
   // Ensure that the root node has a proxy for the child node's SiteInstance.
-  EXPECT_TRUE(
-      root->render_manager()->GetRenderFrameProxyHost(child_instance->group()));
+  EXPECT_TRUE(root->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(child_instance->group()));
 
   // Also ensure that the child has a proxy for the root node's SiteInstance.
-  EXPECT_TRUE(
-      child->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
+  EXPECT_TRUE(child->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(root_instance->group()));
 
   // The nodes should not have proxies for their own SiteInstance.
-  EXPECT_FALSE(
-      root->render_manager()->GetRenderFrameProxyHost(root_instance->group()));
-  EXPECT_FALSE(child->render_manager()->GetRenderFrameProxyHost(
-      child_instance->group()));
+  EXPECT_FALSE(root->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(root_instance->group()));
+  EXPECT_FALSE(child->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(child_instance->group()));
 
   // Ensure that the RenderViews and RenderFrames are all live.
   EXPECT_TRUE(

@@ -43,6 +43,10 @@ RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
   return nullptr;
 }
 
+size_t BrowsingContextState::GetProxyCount() {
+  return proxy_hosts_.size();
+}
+
 bool BrowsingContextState::UpdateFramePolicyHeaders(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedPermissionsPolicy& parsed_header) {

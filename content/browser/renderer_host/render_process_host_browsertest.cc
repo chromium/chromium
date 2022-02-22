@@ -1620,8 +1620,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, AllowUnusedProcessToExit) {
 
   // There shouldn't be live RenderViewHosts or proxies either.
   EXPECT_FALSE(original_rfh->GetRenderViewHost()->IsRenderViewLive());
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(
-      original_rfh->GetSiteInstance()->group()));
+  EXPECT_FALSE(
+      root->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(original_rfh->GetSiteInstance()->group()));
 
   // Reset the process exit related counts.
   process_exits_ = 0;
@@ -1750,8 +1752,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   EXPECT_EQ(0, host_destructions_);
 
   // There shouldn't be live proxies either.
-  RenderFrameProxyHost* proxy = root->render_manager()->GetRenderFrameProxyHost(
-      child_rfh1->GetSiteInstance()->group());
+  RenderFrameProxyHost* proxy =
+      root->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(child_rfh1->GetSiteInstance()->group());
   EXPECT_FALSE(proxy->is_render_frame_proxy_live());
 
   // Reset the process exit related counts.

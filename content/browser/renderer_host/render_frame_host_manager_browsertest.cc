@@ -1142,10 +1142,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // We now have three windows.  The opener should have a RenderFrameProxyHost
   // for the new SiteInstanceGroup, but the _blank window should not.
   EXPECT_EQ(3u, Shell::windows().size());
-  EXPECT_TRUE(opener_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(foo_site_instance.get())->group()));
-  EXPECT_FALSE(new_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(foo_site_instance.get())->group()));
+  EXPECT_TRUE(opener_manager->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(
+                      static_cast<SiteInstanceImpl*>(foo_site_instance.get())
+                          ->group()));
+  EXPECT_FALSE(new_manager->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(
+                       static_cast<SiteInstanceImpl*>(foo_site_instance.get())
+                           ->group()));
 
   // 2) Fail to post a message from the foo window to the opener if the target
   // origin is wrong.  We won't see an error, but we can check for the right
@@ -1156,8 +1162,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       "    'http://google.com'));",
       &success));
   EXPECT_TRUE(success);
-  ASSERT_FALSE(opener_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->group()));
+  ASSERT_FALSE(opener_manager->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(
+                       static_cast<SiteInstanceImpl*>(orig_site_instance.get())
+                           ->group()));
 
   // 3) Post a message from the foo window to the opener.  The opener will
   // reply, causing the foo window to update its own title.
@@ -1168,8 +1177,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       "window.domAutomationController.send(postToOpener('msg','*'));",
       &success));
   EXPECT_TRUE(success);
-  ASSERT_FALSE(opener_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->group()));
+  ASSERT_FALSE(opener_manager->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(
+                       static_cast<SiteInstanceImpl*>(orig_site_instance.get())
+                           ->group()));
   ASSERT_EQ(expected_title, title_watcher.WaitAndGetTitle());
 
   // We should have received only 1 message in the opener and "foo" tabs,
@@ -1200,8 +1212,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // This postMessage should have created a RenderFrameProxyHost for the new
   // SiteInstanceGroup in the target=_blank window.
-  EXPECT_TRUE(new_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(foo_site_instance.get())->group()));
+  EXPECT_TRUE(new_manager->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(
+                      static_cast<SiteInstanceImpl*>(foo_site_instance.get())
+                          ->group()));
 
   // TODO(nasko): Test subframe targeting of postMessage once
   // http://crbug.com/153701 is fixed.
@@ -1264,8 +1279,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // We now have two windows. The opener should have a RenderFrameProxyHost
   // for the new SiteInstanceGroup.
   EXPECT_EQ(2u, Shell::windows().size());
-  EXPECT_TRUE(opener_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(foo_site_instance.get())->group()));
+  EXPECT_TRUE(opener_manager->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(
+                      static_cast<SiteInstanceImpl*>(foo_site_instance.get())
+                          ->group()));
 
   // 2) Post a message containing a MessagePort from opener to the the foo
   // window. The foo window will reply via the passed port, causing the opener
@@ -1276,8 +1294,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       opener_contents,
       "window.domAutomationController.send(postWithPortToFoo());", &success));
   EXPECT_TRUE(success);
-  ASSERT_FALSE(opener_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(orig_site_instance.get())->group()));
+  ASSERT_FALSE(opener_manager->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(
+                       static_cast<SiteInstanceImpl*>(orig_site_instance.get())
+                           ->group()));
   ASSERT_EQ(expected_title, title_observer.WaitAndGetTitle());
 
   // Check message counts.
@@ -2650,8 +2671,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, WebUIGetsBindings) {
   EXPECT_TRUE(site_instance2->IsRelatedSiteInstance(site_instance1));
 
   RenderFrameProxyHost* initial_rfph =
-      new_web_contents->GetRenderManagerForTesting()->GetRenderFrameProxyHost(
-          static_cast<SiteInstanceImpl*>(site_instance1)->group());
+      new_web_contents->GetRenderManagerForTesting()
+          ->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(
+              static_cast<SiteInstanceImpl*>(site_instance1)->group());
   ASSERT_TRUE(initial_rfph);
 
   // Navigate to url1 and check bindings.
@@ -2738,8 +2762,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   shell()->LoadURL(GURL(url::kAboutBlankURL));
   commit_observer.WaitForCommit();
   EXPECT_NE(web_ui_site_instance, shell()->web_contents()->GetSiteInstance());
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(
-      web_ui_site_instance->group()));
+  EXPECT_TRUE(root->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(web_ui_site_instance->group()));
 
   // The previous RFH should still be pending deletion, as we wait for either
   // the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame or a timeout.
@@ -3224,8 +3249,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // The proxy and RVH for the opener page in the foo.com SiteInstanceGroup
   // should not be live.
   RenderFrameHostManager* opener_manager = root->render_manager();
-  RenderFrameProxyHost* opener_rfph = opener_manager->GetRenderFrameProxyHost(
-      static_cast<SiteInstanceImpl*>(foo_site_instance.get())->group());
+  RenderFrameProxyHost* opener_rfph =
+      opener_manager->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(
+              static_cast<SiteInstanceImpl*>(foo_site_instance.get())->group());
   EXPECT_TRUE(opener_rfph);
   EXPECT_FALSE(opener_rfph->is_render_frame_proxy_live());
   RenderViewHostImpl* opener_rvh = opener_rfph->GetRenderViewHost();
@@ -3491,8 +3519,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   commit_observer.WaitForCommit();
   EXPECT_NE(shell()->web_contents()->GetSiteInstance(),
             new_shell->web_contents()->GetSiteInstance());
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(
-      site_instance_a->group()));
+  EXPECT_TRUE(root->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(site_instance_a->group()));
 
   // The previous RFH should still be pending deletion, as we wait for either
   // the mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame or a timeout.
@@ -3516,16 +3545,19 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // With |rfh_a| gone, the RVH should only be referenced by the (dead) proxy.
   EXPECT_TRUE(rvh_a->HasOneRef());
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(
-      site_instance_a->group()));
-  EXPECT_FALSE(root->render_manager()
+  EXPECT_TRUE(root->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(site_instance_a->group()));
+  EXPECT_FALSE(root->current_frame_host()
+                   ->browsing_context_state()
                    ->GetRenderFrameProxyHost(site_instance_a->group())
                    ->is_render_frame_proxy_live());
 
   // Close the popup so there is no proxy for a.com in the original tab.
   new_shell->Close();
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(
-      site_instance_a->group()));
+  EXPECT_FALSE(root->current_frame_host()
+                   ->browsing_context_state()
+                   ->GetRenderFrameProxyHost(site_instance_a->group()));
 
   // This should delete the RVH as well.
   EXPECT_FALSE(root->frame_tree()->GetRenderViewHost(site_instance_a));
@@ -3576,8 +3608,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   // When the previous RFH was unloaded, it should have still gotten a
   // replacement proxy even though it's the last active frame in the process.
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(
-      site_instance_a->group()));
+  EXPECT_TRUE(root->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(site_instance_a->group()));
 
   // Open a popup in the new B process.
   Shell* new_shell = OpenPopup(shell(), GURL(url::kAboutBlankURL), "foo");
@@ -3588,8 +3621,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // won't happen).  This should reuse the proxy in the original tab, which at
   // this point exists alongside the RFH pending deletion.
   new_shell->LoadURL(embedded_test_server()->GetURL("a.com", "/title2.html"));
-  EXPECT_TRUE(root->render_manager()->GetRenderFrameProxyHost(
-      site_instance_a->group()));
+  EXPECT_TRUE(root->current_frame_host()
+                  ->browsing_context_state()
+                  ->GetRenderFrameProxyHost(site_instance_a->group()));
 
   // Kill the old process.
   RenderProcessHost* process = rfh_a->GetProcess();
@@ -8918,7 +8952,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   int b2_routing_id = b2->routing_id();
 
   auto proxy_count = [](RenderFrameHostImpl* rfh) {
-    return rfh->frame_tree_node()->render_manager()->GetProxyCount();
+    return rfh->browsing_context_state()->GetProxyCount();
   };
 
   // There are 3 processes, so every frame has 2 frame proxies.
@@ -8930,8 +8964,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
   auto is_proxy_live = [](RenderFrameHostImpl* rfh,
                           scoped_refptr<SiteInstanceImpl> site_instance) {
-    return rfh->frame_tree_node()
-        ->render_manager()
+    return rfh->browsing_context_state()
         ->GetRenderFrameProxyHost(site_instance->group())
         ->is_render_frame_proxy_live();
   };

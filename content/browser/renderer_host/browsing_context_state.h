@@ -64,8 +64,9 @@ namespace content {
 // kLegacyOneToOneWithFrameTreeNode is currently enabled and will be removed
 // once the functionality gated behind kSwapForCrossBrowsingInstanceNavigations
 // is implemented.
-class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
-                             public SiteInstanceGroup::Observer {
+class CONTENT_EXPORT BrowsingContextState
+    : public base::RefCounted<BrowsingContextState>,
+      public SiteInstanceGroup::Observer {
  public:
   using RenderFrameProxyHostMap =
       std::unordered_map<SiteInstanceGroupId,
@@ -123,6 +124,9 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
 
   RenderFrameProxyHost* GetRenderFrameProxyHost(
       SiteInstanceGroup* site_instance_group) const;
+
+  // Returns the number of RenderFrameProxyHosts for this frame.
+  size_t GetProxyCount();
 
   // Set the current origin and notify proxies about the update.
   void SetCurrentOrigin(const url::Origin& origin,

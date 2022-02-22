@@ -949,9 +949,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
         https_server()->GetURL("b.test", "/title1.html"));
     OpenPopup(current_frame_host(), non_coop_cross_site_page, "");
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
 
@@ -974,9 +973,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // The COOP page should no longer have any RenderFrameHostProxies.
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               0u);
   }
@@ -993,9 +991,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Ensure it has a RenderFrameProxyHost for another cross-site page.
     OpenPopup(current_frame_host(), non_coop_cross_site_page, "");
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
 
@@ -1024,9 +1021,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // The COOP page should no longer have any RenderFrameHostProxies.
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               0u);
   }
@@ -1052,9 +1048,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Ensure it has a RenderFrameProxyHost for another cross-site page.
     OpenPopup(current_frame_host(), cross_origin_non_coop_page, "");
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
 
@@ -1077,9 +1072,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // The non COOP page should no longer have any RenderFrameHostProxies.
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               0u);
   }
@@ -1094,9 +1088,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Ensure it has a RenderFrameProxyHost for another cross-site page.
     OpenPopup(current_frame_host(), cross_origin_non_coop_page, "");
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
 
@@ -1125,9 +1118,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
     // The non COOP page should no longer have any RenderFrameHostProxies.
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               0u);
   }
@@ -1155,9 +1147,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     OpenPopup(current_frame_host(), cross_origin_non_coop_page, "");
 
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
 
@@ -1179,9 +1170,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
               CoopSameOriginAllowPopups());
 
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
   }
@@ -1196,9 +1186,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     // Ensure it has a RenderFrameProxyHost for another cross-site page.
     OpenPopup(current_frame_host(), cross_origin_non_coop_page, "");
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
 
@@ -1227,9 +1216,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
               CoopSameOriginAllowPopups());
 
     EXPECT_EQ(web_contents()
-                  ->GetPrimaryFrameTree()
-                  .root()
-                  ->render_manager()
+                  ->GetMainFrame()
+                  ->browsing_context_state()
                   ->GetProxyCount(),
               1u);
   }
@@ -1305,12 +1293,18 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   RenderFrameHostManager* main_window_rfhm =
       web_contents()->GetPrimaryFrameTree().root()->render_manager();
   EXPECT_TRUE(NavigateToURL(shell(), non_coop_page));
-  EXPECT_EQ(main_window_rfhm->GetProxyCount(), 0u);
+  EXPECT_EQ(main_window_rfhm->current_frame_host()
+                ->browsing_context_state()
+                ->GetProxyCount(),
+            0u);
 
   Shell* popup_shell = OpenPopup(shell(), coop_page, "");
 
   // The main frame should not have the popup referencing it.
-  EXPECT_EQ(main_window_rfhm->GetProxyCount(), 0u);
+  EXPECT_EQ(main_window_rfhm->current_frame_host()
+                ->browsing_context_state()
+                ->GetProxyCount(),
+            0u);
 
   // It should not have any other related SiteInstance.
   EXPECT_EQ(
@@ -1323,7 +1317,10 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
           ->GetPrimaryFrameTree()
           .root();
   RenderFrameHostManager* popup_rfhm = popup->render_manager();
-  EXPECT_EQ(popup_rfhm->GetProxyCount(), 0u);
+  EXPECT_EQ(popup_rfhm->current_frame_host()
+                ->browsing_context_state()
+                ->GetProxyCount(),
+            0u);
 
   // The popup should have an empty opener.
   EXPECT_FALSE(popup->opener());
@@ -1352,23 +1349,17 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                        "document.body.appendChild(iframe);",
                        cross_site_iframe)));
   iframe_navigation.WaitForNavigationFinished();
-  EXPECT_EQ(web_contents()
-                ->GetPrimaryFrameTree()
-                .root()
-                ->render_manager()
-                ->GetProxyCount(),
-            1u);
+  EXPECT_EQ(
+      web_contents()->GetMainFrame()->browsing_context_state()->GetProxyCount(),
+      1u);
 
   // Navigate to a COOP page.
   EXPECT_TRUE(NavigateToURL(shell(), coop_page));
 
   // The COOP page should still have a RenderFrameProxyHost.
-  EXPECT_EQ(web_contents()
-                ->GetPrimaryFrameTree()
-                .root()
-                ->render_manager()
-                ->GetProxyCount(),
-            1u);
+  EXPECT_EQ(
+      web_contents()->GetMainFrame()->browsing_context_state()->GetProxyCount(),
+      1u);
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
