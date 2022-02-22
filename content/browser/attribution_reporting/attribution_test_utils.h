@@ -149,10 +149,10 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   base::GUID NewReportID() const override;
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
-  void ShuffleReports(std::vector<AttributionReport>& reports) const override;
+  void ShuffleReports(std::vector<AttributionReport>& reports) override;
   double GetRandomizedResponseRate(CommonSourceInfo::SourceType) const override;
   RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) const override;
+      const CommonSourceInfo& source) override;
   int64_t GetAggregatableBudgetPerSource() const override;
 
   void set_max_attributions_per_source(int max) {

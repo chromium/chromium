@@ -119,8 +119,7 @@ class AttributionStorageDelegate {
   // multiple conversions for the same impression share the same report time
   // if they are within the same reporting window, and we do not want to allow
   // ordering on their conversion metadata bits.
-  virtual void ShuffleReports(
-      std::vector<AttributionReport>& reports) const = 0;
+  virtual void ShuffleReports(std::vector<AttributionReport>& reports) = 0;
 
   // Returns the rate used to determine whether to randomize the response to a
   // source with the given source type, as implemented by
@@ -133,7 +132,7 @@ class AttributionStorageDelegate {
   // more fake reports. Returns `absl::nullopt` to indicate that the response
   // should not be randomized.
   virtual RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) const = 0;
+      const CommonSourceInfo& source) = 0;
 
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.

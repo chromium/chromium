@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_timeouts.h"
@@ -18,6 +19,8 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/attribution_simulator.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -29,6 +32,7 @@ constexpr char kSwitchVersionShort[] = "v";
 
 constexpr char kSwitchDelayMode[] = "delay_mode";
 constexpr char kSwitchNoiseMode[] = "noise_mode";
+constexpr char kSwitchNoiseSeed[] = "noise_seed";
 constexpr char kSwitchRemoveReportIds[] = "remove_report_ids";
 constexpr char kSwitchInputMode[] = "input_mode";
 constexpr char kSwitchCopyInputToOutput[] = "copy_input_to_output";
@@ -46,6 +50,7 @@ constexpr const char* kAllowedSwitches[] = {
 
     kSwitchDelayMode,
     kSwitchNoiseMode,
+    kSwitchNoiseSeed,
     kSwitchRemoveReportIds,
     kSwitchInputMode,
     kSwitchCopyInputToOutput,
@@ -59,6 +64,7 @@ attribution_reporting_simulator
   [--copy_input_to_output]
   [--delay_mode=<mode>]
   [--noise_mode=<mode>]
+  [--noise_seed=<seed>]
   [--randomized_response_rate_event=<rate>]
   [--randomized_response_rate_navigation=<rate>]
   [--input_mode=<input_mode>]
@@ -104,6 +110,15 @@ Switches:
                               shuffled.
 
                               none: None of the above applies.
+
+  --noise_seed=<seed>       - Optional 128-bit hex string. If set, the value is
+                              used to seed the random number generator used for
+                              noise; in this case, the algorithm is
+                              XorShift128+. If not set, the default source of
+                              randomness is used for noising and the
+                              simulation's output may vary between runs.
+
+                              May only be set if `noise_mode` is `noise`.
 
   --input_mode=<input_mode> - Optional. Either `single` (default) or `multi`.
                               single: the input file must conform to the JSON
@@ -358,6 +373,24 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  absl::optional<absl::uint128> noise_seed;
+  if (command_line.HasSwitch(kSwitchNoiseSeed)) {
+    if (noise_mode != content::AttributionNoiseMode::kDefault) {
+      std::cerr << "noise seed may only be set when noise mode is `default`"
+                << std::endl;
+      return 1;
+    }
+
+    std::string str = command_line.GetSwitchValueASCII(kSwitchNoiseSeed);
+    absl::uint128 value;
+    if (!base::HexStringToUInt128(str, &value)) {
+      std::cerr << "invalid noise seed: " << str << std::endl;
+      return 1;
+    }
+
+    noise_seed = value;
+  }
+
   auto randomized_response_rates =
       content::AttributionRandomizedResponseRates::kDefault;
 
@@ -417,6 +450,7 @@ int main(int argc, char* argv[]) {
 
   content::AttributionSimulationOptions options({
       .noise_mode = noise_mode,
+      .noise_seed = noise_seed,
       .randomized_response_rates = randomized_response_rates,
       .delay_mode = delay_mode,
       .remove_report_ids = command_line.HasSwitch(kSwitchRemoveReportIds),

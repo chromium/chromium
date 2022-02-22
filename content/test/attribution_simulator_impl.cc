@@ -8,6 +8,7 @@
 #include <ostream>
 #include <sstream>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -19,9 +20,12 @@
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_default_random_generator.h"
+#include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
+#include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -268,12 +272,20 @@ base::Value RunAttributionSimulation(
   // This isn't needed because the DB is completely in memory for testing.
   const base::FilePath user_data_directory;
 
+  std::unique_ptr<AttributionRandomGenerator> rng;
+  if (options.noise_seed.has_value()) {
+    rng = std::make_unique<AttributionInsecureRandomGenerator>(
+        *options.noise_seed);
+  } else {
+    rng = std::make_unique<AttributionDefaultRandomGenerator>();
+  }
+
   base::Value::ListStorage reports;
   auto manager = AttributionManagerImpl::CreateForTesting(
       std::move(always_allow_reports_callback), user_data_directory,
       /*special_storage_policy=*/nullptr,
       AttributionStorageDelegateImpl::CreateForTesting(
-          options.noise_mode, options.delay_mode,
+          options.noise_mode, options.delay_mode, std::move(rng),
           options.randomized_response_rates),
       std::make_unique<AlwaysSetCookieChecker>(),
       /*network_sender=*/

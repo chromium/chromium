@@ -135,7 +135,7 @@ ConfigurableStorageDelegate::GetOfflineReportDelayConfig() const {
 }
 
 void ConfigurableStorageDelegate::ShuffleReports(
-    std::vector<AttributionReport>& reports) const {
+    std::vector<AttributionReport>& reports) {
   if (reverse_reports_on_shuffle_)
     base::ranges::reverse(reports);
 }
@@ -152,7 +152,7 @@ double ConfigurableStorageDelegate::GetRandomizedResponseRate(
 
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
-    const CommonSourceInfo& source) const {
+    const CommonSourceInfo& source) {
   return randomized_response_;
 }
 

@@ -13,11 +13,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/abseil_string_number_conversions.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "content/public/browser/attribution_reporting.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace content {
 namespace {
@@ -72,6 +74,23 @@ void ParseOptions(const base::Value& dict,
           << "unknown delay mode: " << *delay_mode;
       options.delay_mode = AttributionDelayMode::kDefault;
     }
+  }
+
+  if (const std::string* noise_mode = dict.FindStringKey("noise_mode")) {
+    if (*noise_mode == "none") {
+      options.noise_mode = AttributionNoiseMode::kNone;
+    } else {
+      ASSERT_EQ(*noise_mode, "default")
+          << "unknown noise mode: " << *noise_mode;
+      options.noise_mode = AttributionNoiseMode::kDefault;
+    }
+  }
+
+  if (const std::string* noise_seed = dict.FindStringKey("noise_seed")) {
+    absl::uint128 value;
+    ASSERT_TRUE(base::HexStringToUInt128(*noise_seed, &value))
+        << "invalid noise seed: " << *noise_seed;
+    options.noise_seed = value;
   }
 
   if (const std::string* report_time_format =

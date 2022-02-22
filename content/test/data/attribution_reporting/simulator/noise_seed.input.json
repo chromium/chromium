@@ -1,0 +1,14 @@
+{
+  "sources": [
+    {
+      "source_time": 1643235573,
+      "source_origin": "https://s.test",
+      "reporting_origin": "https://r.test",
+      "source_type": "navigation",
+      "registration_config": {
+        "destination": "https://d.test",
+        "source_event_id": "123"
+      }
+    }
+  ]
+}

@@ -8,6 +8,8 @@
 #include <iosfwd>
 
 #include "content/public/browser/attribution_reporting.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -24,6 +26,13 @@ enum class AttributionReportTimeFormat {
 
 struct AttributionSimulationOptions {
   AttributionNoiseMode noise_mode = AttributionNoiseMode::kDefault;
+
+  // If set, the value is used to seed the random number generator used for
+  // noise. If null, the default source of randomness is used for noising and
+  // the simulation's output may vary between runs.
+  //
+  // Only used if `noise_mode` is `AttributionNoiseMode::kDefault`.
+  absl::optional<absl::uint128> noise_seed;
 
   AttributionRandomizedResponseRates randomized_response_rates =
       AttributionRandomizedResponseRates::kDefault;
