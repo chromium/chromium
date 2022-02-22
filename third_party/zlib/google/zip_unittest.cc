@@ -859,7 +859,16 @@ TEST_F(ZipTest, NestedZip) {
 // (crbug.com/1221447). Tests that the big ZIP can be opened, that its entries
 // are correctly enumerated (crbug.com/1298347), and that the big file can be
 // extracted.
+//
+// This test is too slow with TSAN.
+// OS Fuchsia does not seem to support large files.
+// The trybot android-asan is running out of space when performing this test.
+#if defined(THREAD_SANITIZER) || defined(OS_FUCHSIA) || \
+    (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
 TEST_F(ZipTest, DISABLED_BigFile) {
+#else
+TEST_F(ZipTest, BigFile) {
+#endif
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
