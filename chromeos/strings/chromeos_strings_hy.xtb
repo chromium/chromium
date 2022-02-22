@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
 <translation id="1310380015393971138">Հասանելի <ph name="NETWORK_NAME" /> ցանց չկա</translation>
+<translation id="131421566576084655">Վերջին զրոյացման ամսաթվի մասին տեղեկությունները հասանելի չեն</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
 <translation id="1327977588028644528">Անցուղի</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Ես ունեմ բանալիների զույգ</translation>
+<translation id="1435763214710588005">Ամեն ամիս, նշված օրը տվյալների օգտագործման մասին տեղեկություններն ավտոմատ զրոյացվում են</translation>
 <translation id="1442433966118452622">Պատկերի աղբյուրը</translation>
 <translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
 <translation id="1459693405370120464">Եղանակ</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Չհաջողվեց թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="1567064801249837505">Ալբոմներ</translation>
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
+<translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1641857168437328880">Փաստաթղթերի մատակարար (միակողմանի)</translation>
@@ -391,6 +394,7 @@
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
+<translation id="6034694447310538551">Միացնել տեղեկությունների ամենամսյա ավտոմատ զրոյացումը</translation>
 <translation id="6037291330010597344">Սկաների փաստաթղթերի մատակարարը դատարկ է։ Ավելացրեք փաստաթղթեր և նորից փորձեք։</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6040852767465482106">Նույնականացման անանուն տվյալներ</translation>
@@ -414,6 +418,7 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Հասանելի սկաներներ չկան</translation>
 <translation id="6232017090690406397">Մարտկոց</translation>
+<translation id="6235460611964961764">Տվյալների օգտագործման մասին տեղեկությունների զրոյացումը կատարել ձեռքով</translation>
 <translation id="6243280677745499710">Այժմ տեղադրված է</translation>
 <translation id="6278428485366576908">Թեմա</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -625,6 +630,7 @@
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
+<translation id="8923267550422472772">Ամսվա օրը, երբ տեղեկությունները պետք է զրոյացվեն</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
 <translation id="8930521118335213258">Նմանակ</translation>
 <translation id="8930622219860340959">Անլար</translation>

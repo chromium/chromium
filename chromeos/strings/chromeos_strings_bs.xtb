@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite obrisati svu historiju štampanja? Vaši trenutni zadaci štampanja se neće izbrisati.</translation>
+<translation id="3413935475507503304">Da biste nastavili s ažuriranjem, kliknite Dalje.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="3456078764689556234">Odštampanih stanica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
@@ -489,6 +490,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7175037578838465313">Konfigurirajte <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" />. Administratori mogu daljinski konfigurirati uređaj.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
+<translation id="7212734716605298123">Ažuriranja opreme za vanjske uređaje</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Pokušajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

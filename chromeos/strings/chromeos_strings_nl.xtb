@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading in het rechteroordopje.</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
+<translation id="3413935475507503304">Klik op Volgende om door te gaan met de update.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3456078764689556234">Pagina <ph name="PRINTED_PAGES" /> van <ph name="TOTAL_PAGES" /> afgedrukt.</translation>
@@ -262,6 +263,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Overeenkomst voor alternatieve naam van onderwerp</translation>
 <translation id="4536864596629708641">IP-configuratie</translation>
+<translation id="4546131424594385779">Geluste video maken</translation>
 <translation id="4548483925627140043">Signaal niet gevonden</translation>
 <translation id="4556753742174065117">Alle firmware is up-to-date</translation>
 <translation id="455835558791489930">Batterij van <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -443,6 +445,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6566314079205407217">Meerdere pagina's scannen</translation>
 <translation id="6574762126505704998">Uitvullen</translation>
 <translation id="6575134580692778371">Niet geconfigureerd</translation>
+<translation id="6579509898032828423">Deze foto gebruiken</translation>
 <translation id="6596816719288285829">IP-adres</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6620487321149975369">Afdruktaken zie je in de geschiedenis, tenzij ze handmatig worden verwijderd</translation>
@@ -489,6 +492,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> configureren</translation>
 <translation id="7177485034254901881">Dit <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />. Beheerders kunnen het apparaat op afstand instellen.</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
+<translation id="7212734716605298123">Firmware-updates voor externe apparaten</translation>
 <translation id="7216409898977639127">Mobiele provider</translation>
 <translation id="7271040990581020067">De scanner wordt momenteel gebruikt. Probeer het later opnieuw.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -641,6 +645,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="9062831201344759865">DNS-omzetting heeft een lange vertraging</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Deze video gebruiken</translation>
 <translation id="9087578468327036362">Deze zoekopdracht melden</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>
 <translation id="9095415590198785865">Het apparaat gaat naar dezelfde eigenaar</translation>

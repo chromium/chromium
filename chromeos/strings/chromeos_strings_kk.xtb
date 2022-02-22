@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Оң құлақаспаптың батарея деңгейі: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">Қосылған</translation>
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
+<translation id="3413935475507503304">Жаңартуды жалғастыру үшін "Келесі" түймесін басыңыз.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> бет (жалпы саны: <ph name="TOTAL_PAGES" />) басып шығарылды.</translation>
@@ -262,6 +263,7 @@
 <translation id="4511264077854731334">Портал</translation>
 <translation id="4521826082652183069">Балама атау тақырыбы сәйкестігі</translation>
 <translation id="4536864596629708641">IP конфигурациясы</translation>
+<translation id="4546131424594385779">Қайталанатын бейне жасау</translation>
 <translation id="4548483925627140043">Сигнал жоқ.</translation>
 <translation id="4556753742174065117">Барлық микробағдарлама жаңартылған.</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> мАсағ батарея</translation>
@@ -442,6 +444,7 @@
 <translation id="6566314079205407217">Бірнеше бетті сканерлеу</translation>
 <translation id="6574762126505704998">Толтыру</translation>
 <translation id="6575134580692778371">Реттелмеген</translation>
+<translation id="6579509898032828423">Осы фотосуретті қолдану</translation>
 <translation id="6596816719288285829">IP мекенжайы</translation>
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
@@ -488,6 +491,7 @@
 <translation id="7175037578838465313"><ph name="NAME" /> желісін конфигурациялау</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады. Әкімшілер құрылғыны қашықтан конфигурациялай алады.</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
+<translation id="7212734716605298123">Сыртқы құрылғыларға арналған микробағдарламаның жаңа нұсқалары</translation>
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -640,6 +644,7 @@
 <translation id="9062831201344759865">DNS ажыратымдылығының кідірісі жоғары.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Осы бейнені қолдану</translation>
 <translation id="9087578468327036362">Осы сұрау туралы хабарлау</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
 <translation id="9095415590198785865">Құрылғы сол иеге өтеді.</translation>

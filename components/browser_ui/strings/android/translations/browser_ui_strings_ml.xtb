@@ -122,6 +122,7 @@
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">ശീർഷകം</translation>
 <translation id="4008040567710660924">ഒരു പ്രത്യേക സൈറ്റിനായി കുക്കികൾ അനുവദിക്കുക.</translation>
+<translation id="4040330681741629921">ലളിതമാക്കിയ കാഴ്ചയിൽ ഒരു സൈറ്റ് കാണിക്കാൻ കഴിയുമ്പോൾ അറിയിപ്പ് നേടുക</translation>
 <translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
 <translation id="4149994727733219643">വെബ് പേജുകൾക്കായി ലളിതവൽക്കരിച്ച കാഴ്ച</translation>
 <translation id="4165986682804962316">സൈറ്റ് ക്രമീകരണങ്ങൾ</translation>
@@ -176,6 +177,7 @@
 <translation id="5354152178998424783">സൈറ്റുകൾ സംഭരിച്ച <ph name="DATASIZE" /> ഡാറ്റയും കുക്കികളും ഇത് മായ്‌ക്കും.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ഒരെണ്ണം കൂടി)}other{(+ # എണ്ണം കൂടി)}}</translation>
 <translation id="5403592356182871684">പേരുകൾ</translation>
+<translation id="5412236728747081950">കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ ലഭിക്കുന്നു</translation>
 <translation id="5438097262470833822">ഇത് തിരഞ്ഞെടുക്കുന്നതിലൂടെ <ph name="WEBSITE" /> എന്നതിനുള്ള അനുമതികൾ റീസെറ്റ് ചെയ്യും</translation>
 <translation id="5489227211564503167">ആകെ <ph name="TOTAL_TIME" />-ൽ <ph name="ELAPSED_TIME" /> കഴിഞ്ഞു.</translation>
 <translation id="5494752089476963479">അനാവശ്യമോ തെറ്റിദ്ധരിപ്പിക്കുന്നതോ ആയ പരസ്യങ്ങള്‍ കാണിക്കുന്ന സൈറ്റുകളിലെ പരസ്യങ്ങൾ ബ്ലോക്ക് ചെയ്യുക</translation>

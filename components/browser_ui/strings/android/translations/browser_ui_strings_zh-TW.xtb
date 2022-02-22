@@ -176,6 +176,7 @@
 <translation id="5354152178998424783">這會清除網站儲存的資料和 Cookie (共 <ph name="DATASIZE" />)。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
+<translation id="5412236728747081950">這個網站會取得你在 Chrome 設定的興趣喜好，為你顯示更貼近需求的廣告</translation>
 <translation id="5438097262470833822">這會重設 <ph name="WEBSITE" /> 的權限</translation>
 <translation id="5489227211564503167">經過時間：<ph name="ELAPSED_TIME" />，影片總長：<ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">封鎖干擾性或誤導性的網站廣告</translation>

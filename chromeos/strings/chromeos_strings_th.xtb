@@ -266,6 +266,7 @@
 <translation id="4511264077854731334">พอร์ทัล</translation>
 <translation id="4521826082652183069">การจับคู่ชื่อสำรองของหัวเรื่อง</translation>
 <translation id="4536864596629708641">การกำหนดค่า IP</translation>
+<translation id="4546131424594385779">สร้างวิดีโอวนซ้ำ</translation>
 <translation id="4548483925627140043">ไม่พบสัญญาณ</translation>
 <translation id="4556753742174065117">เฟิร์มแวร์ทั้งหมดเป็นเวอร์ชันล่าสุด</translation>
 <translation id="455835558791489930">แบตเตอรี่ <ph name="CHARGE_VALUE" />mAh</translation>
@@ -449,6 +450,7 @@
 <translation id="6566314079205407217">การสแกนหลายหน้า</translation>
 <translation id="6574762126505704998">เติม</translation>
 <translation id="6575134580692778371">ไม่ได้กำหนดค่า</translation>
+<translation id="6579509898032828423">ใช้รูปภาพนี้</translation>
 <translation id="6596816719288285829">ที่อยู่ IP</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
@@ -648,6 +650,7 @@
 <translation id="9062831201344759865">การแปลง DNS มีเวลาในการตอบสนองสูง</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
+<translation id="9082718469794970195">ใช้วิดีโอนี้</translation>
 <translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
 <translation id="9095415590198785865">อุปกรณ์จะยังอยู่กับเจ้าของคนเดิม</translation>

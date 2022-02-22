@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Nakabahagi ang folder na ito sa Linux</translation>
 <translation id="1864756863218646478">Hindi mahanap ang file.</translation>
 <translation id="1884013283844450420">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kumonekta</translation>
+<translation id="1914901738028575085">CloudReady 2.0 device</translation>
 <translation id="1920670151694390848">Malayalam Transliteration</translation>
 <translation id="1920798810075583923">Pakwan</translation>
 <translation id="1924372192547904021">Na-format ang <ph name="DRIVE_NAME" /></translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Bisikleta</translation>
 <translation id="8719721339511222681">Pinili ang <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">Croatian</translation>
+<translation id="873847021056608403">Mga CloudReady 2.0 device</translation>
 <translation id="8743164338060742337">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
 <translation id="8750438273876807512">Pindutin nang matagal ang isang file at i-tap ang <ph name="ICON" />, at piliin ang "I-pin sa shelf" para sa mabilis na pag-access sa iyong mga file sa shelf.</translation>
 <translation id="8787254343425541995">Payagan ang mga proxy para sa mga nakabahaging network</translation>

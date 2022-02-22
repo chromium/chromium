@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">裝置的右側無線耳機電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
 <translation id="3368922792935385530">已連線</translation>
 <translation id="3369013195428705271">確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
+<translation id="3413935475507503304">如要繼續執行更新作業，請按「下一步」</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3456078764689556234">已列印 <ph name="PRINTED_PAGES" /> 頁 (共 <ph name="TOTAL_PAGES" /> 頁)。</translation>
@@ -489,6 +490,7 @@
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7177485034254901881">這部 <ph name="DEVICE_TYPE" /> 是由 <ph name="MANAGER" /> 管理。系統管理員可從遠端設定這部裝置。</translation>
 <translation id="7180611975245234373">重新整理</translation>
+<translation id="7212734716605298123">外部裝置適用的韌體更新</translation>
 <translation id="7216409898977639127">行動網路提供者</translation>
 <translation id="7271040990581020067">掃描器正在使用中，請稍後再試。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

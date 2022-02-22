@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux</translation>
 <translation id="1864756863218646478">ບໍ່​ສາ​ມາດພົບໄຟລ​໌ໄດ້​.</translation>
 <translation id="1884013283844450420">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ເຊື່ອມຕໍ່</translation>
+<translation id="1914901738028575085">ອຸປະກອນ CloudReady 2.0</translation>
 <translation id="1920670151694390848">ການແປທັບສັບພາສາມາລາຢາລຳ</translation>
 <translation id="1920798810075583923">ໝາກ​ໂມ</translation>
 <translation id="1924372192547904021">ຟໍແມັດ <ph name="DRIVE_NAME" /> ແລ້ວ</translation>
@@ -901,6 +902,7 @@
 <translation id="8714406895390098252">ລົດ​ຖີບ</translation>
 <translation id="8719721339511222681">ເລືອກ <ph name="ENTRY_NAME" /> ແລ້ວ.</translation>
 <translation id="872537912056138402">ພາສາໂຄຣເອເຊຍ</translation>
+<translation id="873847021056608403">ອຸປະກອນ CloudReady 2.0</translation>
 <translation id="8743164338060742337">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ເຊື່ອມຕໍ່</translation>
 <translation id="8750438273876807512">ຄລິກໄຟລ໌ຄ້າງໄວ້ ແລ້ວແຕະ <ph name="ICON" /> ແລະ ເລືອກ "ປັກໝຸດໃສ່ຖ້ານ" ເພື່ອເຂົ້າເຖິງໄຟລ໌ຂອງທ່ານໃນຖ້ານໄດ້ຢ່າງວ່ອງໄວ.</translation>
 <translation id="8787254343425541995">ອະນຸຍາດໃຫ້ພຣັອກຊີສໍາລັບເຄືອຂ່າຍແຊຣ໌ແລ້ວ</translation>
