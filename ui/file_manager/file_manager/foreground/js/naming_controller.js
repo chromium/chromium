@@ -4,9 +4,9 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
-import {getFile} from '../../common/js/api.js';
 
-import {strf, util} from '../../common/js/util.js';
+import {getFile} from '../../common/js/api.js';
+import {strf, UserCanceledError, util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
@@ -133,7 +133,7 @@ export class NamingController {
     return new Promise((fulfill, reject) => {
       this.confirmDialog_.show(
           strf('CONFIRM_OVERWRITE_FILE', filename), fulfill.bind(null, fileUrl),
-          reject.bind(null, 'Cancelled'));
+          () => reject(new UserCanceledError('Canceled')));
     });
   }
 

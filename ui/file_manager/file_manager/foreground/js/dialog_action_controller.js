@@ -8,7 +8,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 import {DialogType} from '../../common/js/dialog_type.js';
 import {metrics} from '../../common/js/metrics.js';
-import {str, util} from '../../common/js/util.js';
+import {str, UserCanceledError, util} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
@@ -135,7 +135,9 @@ export class DialogActionController {
         filterIndex: this.dialogFooter_.selectedFilterIndex
       });
     } catch (error) {
-      console.error(error);
+      if (!(error instanceof UserCanceledError)) {
+        console.error(error);
+      }
     }
   }
 

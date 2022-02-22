@@ -1706,4 +1706,12 @@ util.isInGuestMode = async () => {
   return profiles.length > 0 && profiles[0].profileId === '$guest';
 };
 
-export {util};
+/**
+ * A kind of error that represents user electing to cancel an operation. We use
+ * this specialization to differentiate between system errors and errors
+ * generated through legitimate user actions.
+ */
+class UserCanceledError extends Error {}
+
+
+export {util, UserCanceledError};
