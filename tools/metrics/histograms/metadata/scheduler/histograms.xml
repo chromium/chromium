@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.Renderer.DeadlineMode"
-    enum="RendererSchedulerDeadlineMode" expires_after="2022-06-19">
+    enum="RendererSchedulerDeadlineMode" expires_after="2022-08-21">
   <owner>weiliangc@chromium.org</owner>
   <owner>chrome-gpu-metrics@chromium.org</owner>
   <summary>
