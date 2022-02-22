@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -246,41 +247,46 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public UrlBarData getUrlBarData() {
-        if (!hasTab() || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
-            return UrlBarData.EMPTY;
-        }
+        // Part of scroll jank investigation http://crbug.com/905461. Will remove TraceEvent after
+        // the investigation is complete.
+        try (TraceEvent te = TraceEvent.scoped("LocationBarModel.getUrlBarData")) {
+            if (!hasTab() || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
+                return UrlBarData.EMPTY;
+            }
 
-        String url = getCurrentUrl();
-        if (!UrlBarData.shouldShowUrl(url, isIncognito())) {
-            return UrlBarData.EMPTY;
-        }
+            String url = getCurrentUrl();
+            if (!UrlBarData.shouldShowUrl(url, isIncognito())) {
+                return UrlBarData.EMPTY;
+            }
 
-        String formattedUrl = getFormattedFullUrl();
-        if (mTab.isFrozen()) return buildUrlBarData(url, formattedUrl);
+            String formattedUrl = getFormattedFullUrl();
+            if (mTab.isFrozen()) return buildUrlBarData(url, formattedUrl);
 
-        if (DomDistillerUrlUtils.isDistilledPage(url)) {
-            GURL originalUrl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
-            return buildUrlBarData(mUrlFormatter.format(originalUrl));
-        }
+            if (DomDistillerUrlUtils.isDistilledPage(url)) {
+                GURL originalUrl =
+                        DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
+                return buildUrlBarData(mUrlFormatter.format(originalUrl));
+            }
 
-        if (isOfflinePage()) {
-            GURL originalUrl = mTab.getOriginalUrl();
-            formattedUrl = UrlUtilities.stripScheme(mUrlFormatter.format(originalUrl));
+            if (isOfflinePage()) {
+                GURL originalUrl = mTab.getOriginalUrl();
+                formattedUrl = UrlUtilities.stripScheme(mUrlFormatter.format(originalUrl));
 
-            // Clear the editing text for untrusted offline pages.
-            if (!mOfflineStatus.isShowingTrustedOfflinePage(mTab.getWebContents())) {
-                return buildUrlBarData(url, formattedUrl, "");
+                // Clear the editing text for untrusted offline pages.
+                if (!mOfflineStatus.isShowingTrustedOfflinePage(mTab.getWebContents())) {
+                    return buildUrlBarData(url, formattedUrl, "");
+                }
+
+                return buildUrlBarData(url, formattedUrl);
+            }
+
+            String urlForDisplay = getUrlForDisplay();
+            if (!urlForDisplay.equals(formattedUrl)) {
+                return buildUrlBarData(url, urlForDisplay, formattedUrl);
             }
 
             return buildUrlBarData(url, formattedUrl);
         }
-
-        String urlForDisplay = getUrlForDisplay();
-        if (!urlForDisplay.equals(formattedUrl)) {
-            return buildUrlBarData(url, urlForDisplay, formattedUrl);
-        }
-
-        return buildUrlBarData(url, formattedUrl);
     }
 
     private UrlBarData buildUrlBarData(String url) {
