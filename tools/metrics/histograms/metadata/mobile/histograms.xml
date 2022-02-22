@@ -549,7 +549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.DownloadLaterPromptStatus"
-    enum="DownloadLaterPromptStatus" expires_after="2022-02-06">
+    enum="DownloadLaterPromptStatus" expires_after="2023-02-06">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.DownloadPromptStatus"
-    enum="DownloadPromptStatus" expires_after="2022-02-16">
+    enum="DownloadPromptStatus" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -590,21 +590,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Suggestion.Events"
-    enum="DownloadLocationSuggestionEvent" expires_after="2022-02-16">
+    enum="DownloadLocationSuggestionEvent" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the download location suggestion event.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.SuggestionSelected"
-    enum="BooleanSelected" expires_after="2022-02-16">
+    enum="BooleanSelected" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the download location suggestion choice.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Dialog.Type"
-    enum="DownloadLocationDialogType" expires_after="2022-02-16">
+    enum="DownloadLocationDialogType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -614,7 +614,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.Location.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
+    enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
@@ -626,14 +626,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileDownload.Location.Download.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
+    enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records the directory type when download is completed.</summary>
 </histogram>
 
 <histogram name="MobileDownload.Location.Setting.DirectoryType"
-    enum="DownloadLocationDirectoryType" expires_after="2022-02-16">
+    enum="DownloadLocationDirectoryType" expires_after="2023-02-16">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
