@@ -108,10 +108,6 @@ void SearchEnginePreconnector::PreconnectDSE() {
                                                    schemeful_site);
     loading_predictor->PreconnectURLIfAllowed(
         preconnect_url, /*allow_credentials=*/true, network_isolation_key);
-
-    loading_predictor->PreconnectURLIfAllowed(preconnect_url,
-                                              /*allow_credentials=*/false,
-                                              network_isolation_key);
   }
 
   // The delay beyond the idle socket timeout that net uses when

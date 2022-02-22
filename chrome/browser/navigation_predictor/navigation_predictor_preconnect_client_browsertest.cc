@@ -409,15 +409,15 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorPreconnectClientBrowserTestWithSearch,
       ->search_engine_preconnector()
       ->StartPreconnecting(/*with_startup_delay=*/false);
 
-  // There should be 2 DSE preconnects (2 NIKs).
-  WaitForPreresolveCount(2);
-  EXPECT_EQ(2, preresolve_done_count_);
+  // There should be a DSE preconnects.
+  WaitForPreresolveCount(1);
+  EXPECT_EQ(1, preresolve_done_count_);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   // Now there should be an onload preconnect as well as a navigation
   // preconnect.
-  WaitForPreresolveCount(4);
-  EXPECT_EQ(4, preresolve_done_count_);
+  WaitForPreresolveCount(3);
+  EXPECT_EQ(3, preresolve_done_count_);
 }
 
 class NavigationPredictorPreconnectClientLocalURLBrowserTest
