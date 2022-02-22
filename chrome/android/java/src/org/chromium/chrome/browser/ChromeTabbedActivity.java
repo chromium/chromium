@@ -887,6 +887,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mIntentHandlingTimeMs = SystemClock.uptimeMillis();
         super.onNewIntent(intent);
+
+        // When onNewIntent() comes, calling launchIntent() may trigger a static layout is
+        // showing without even canceling the overview layout which is about to show. It
+        // leaves the StartSurfaceState to be SHOWING_START instead of NOT_SHOWN, since
+        // hiding the overview layout won't be called. Thus we need to reset the
+        // StartSurfaceState to prevent it being a wrong state. See crbug.com/1298740.
+        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(this)
+                && getCurrentTabModel().getCount() > 0 && !isTablet()
+                && !shouldShowOverviewPageOnStart() && !isInOverviewMode()
+                && mStartSurfaceSupplier.get() != null) {
+            mStartSurfaceSupplier.get().getController().setOverviewState(
+                    StartSurfaceState.NOT_SHOWN, NewTabPageLaunchOrigin.UNKNOWN);
+        }
     }
 
     @Override
