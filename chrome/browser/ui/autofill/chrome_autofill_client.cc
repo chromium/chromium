@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
+#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
@@ -106,7 +107,6 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_manual_fallback_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
@@ -382,7 +382,6 @@ void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
     const raw_ptr<VirtualCardEnrollmentFields> virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
-#if !BUILDFLAG(IS_ANDROID)
   VirtualCardEnrollBubbleControllerImpl::CreateForWebContents(web_contents());
   VirtualCardEnrollBubbleControllerImpl* controller =
       VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
@@ -390,7 +389,6 @@ void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
   controller->ShowBubble(virtual_card_enrollment_fields,
                          std::move(accept_virtual_card_callback),
                          std::move(decline_virtual_card_callback));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

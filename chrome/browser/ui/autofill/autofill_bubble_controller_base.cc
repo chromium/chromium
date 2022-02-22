@@ -6,9 +6,12 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -36,9 +39,12 @@ void AutofillBubbleControllerBase::WebContentsDestroyed() {
 }
 
 void AutofillBubbleControllerBase::UpdatePageActionIcon() {
+// Page action icons do not exist for Android.
+#if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (browser)
     browser->window()->UpdatePageActionIcon(GetPageActionIconType());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void AutofillBubbleControllerBase::HideBubble() {

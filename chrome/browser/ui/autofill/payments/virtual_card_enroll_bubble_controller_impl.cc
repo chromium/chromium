@@ -6,13 +6,21 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
+#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_mobile.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#else
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 
@@ -29,14 +37,9 @@ void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
     const VirtualCardEnrollmentFields* virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
-  // If bubble is already showing for another card, close it.
-  if (bubble_view())
-    HideBubble();
-
   virtual_card_enrollment_fields_ = virtual_card_enrollment_fields;
   accept_virtual_card_callback_ = std::move(accept_virtual_card_callback);
   decline_virtual_card_callback_ = std::move(decline_virtual_card_callback);
-
   is_user_gesture_ = false;
   Show();
 }
@@ -130,6 +133,18 @@ VirtualCardEnrollBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
+#if BUILDFLAG(IS_ANDROID)
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  DCHECK(infobar_manager);
+  infobar_manager->RemoveAllInfoBars(true);
+  infobar_manager->AddInfoBar(CreateVirtualCardEnrollmentInfoBarMobile(
+      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
+          this)));
+#else
+  // If bubble is already showing for another card, close it.
+  if (bubble_view())
+    HideBubble();
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   set_bubble_view(browser->window()
                       ->GetAutofillBubbleHandler()
@@ -137,6 +152,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
                                                     is_user_gesture_));
   DCHECK(bubble_view());
   should_show_icon_ = true;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(VirtualCardEnrollBubbleControllerImpl);
