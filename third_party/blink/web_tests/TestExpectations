@@ -7596,4 +7596,5 @@ crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker/thorough/redirect-nocor
 crbug.com/1299858 [ Win ] http/tests/fetch/window/thorough/cors-base-https-other-https.html [ Skip Timeout Pass ]
 crbug.com/1299858 [ Win ] http/tests/fetch/workers/thorough/cookie-nocors-base-https-other-https.html [ Skip Timeout Pass ]
 crbug.com/1299903 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-move.html [ Failure Pass ]
-
+crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout Pass ]
+crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout Pass ]
