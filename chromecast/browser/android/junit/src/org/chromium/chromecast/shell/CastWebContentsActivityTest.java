@@ -8,21 +8,30 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Build;
+import android.os.PatternMatcher;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,6 +91,7 @@ public class CastWebContentsActivityTest {
     private CastWebContentsActivity mActivity;
     private ShadowActivity mShadowActivity;
     private @Mock WebContents mWebContents;
+    private String mSessionId;
 
     private static Intent defaultIntentForCastWebContentsActivity(WebContents webContents) {
         return CastWebContentsIntentUtils.requestStartCastActivity(
@@ -91,8 +101,10 @@ public class CastWebContentsActivityTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class,
-                defaultIntentForCastWebContentsActivity(mWebContents));
+        Intent defaultIntent = defaultIntentForCastWebContentsActivity(mWebContents);
+        mSessionId = CastWebContentsIntentUtils.getSessionId(defaultIntent.getExtras());
+        mActivityLifecycle =
+                Robolectric.buildActivity(CastWebContentsActivity.class, defaultIntent);
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
         mShadowActivity = Shadows.shadowOf(mActivity);
@@ -307,5 +319,61 @@ public class CastWebContentsActivityTest {
         mActivityLifecycle.create().start().resume();
         MotionEvent event = mock(MotionEvent.class);
         assertFalse(mActivity.dispatchTouchEvent(event));
+    }
+
+    @Test
+    public void testComponentClosedWhenDestroyedBeforeIsFinishingStateAndActitivityIsFinishing() {
+        mActivityLifecycle.create();
+        // This sets the Activity's "finishing" state, not to be confused with the finishing state
+        // we track separately in the Activity. This is checked in onDestroy to ensure the Activity
+        // is actually being destroyed and finished as opposed to being recreated (e.g. PIP mode or
+        // changing orientation)
+        mActivity.finish();
+        verifyBroadcastedIntent(filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> mActivityLifecycle.destroy(), true);
+    }
+
+    @Test
+    public void
+    testComponentNotClosedWhenDestroyedBeforeIsFinishingStateAndActitivityIsNotFinishing() {
+        mActivityLifecycle.create();
+        verifyBroadcastedIntent(filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> mActivityLifecycle.destroy(), false);
+    }
+
+    @Test
+    public void testComponentNotClosedWhenDestroyedAfterIsFinishingStateAndActivityIsFinishing() {
+        mActivityLifecycle.create();
+        mActivity.finishForTesting();
+        verifyBroadcastedIntent(filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED),
+                () -> mActivityLifecycle.destroy(), false);
+    }
+
+    private IntentFilter filterFor(String action) {
+        IntentFilter filter = new IntentFilter();
+        Uri instanceUri = CastWebContentsIntentUtils.getInstanceUri(mSessionId);
+        filter.addDataScheme(instanceUri.getScheme());
+        filter.addDataAuthority(instanceUri.getAuthority(), null);
+        filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
+        filter.addAction(action);
+        return filter;
+    }
+
+    private void verifyBroadcastedIntent(
+            IntentFilter filter, Runnable runnable, boolean shouldExpect) {
+        BroadcastReceiver receiver = mock(BroadcastReceiver.class);
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+                .registerReceiver(receiver, filter);
+        try {
+            runnable.run();
+        } finally {
+            LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+                    .unregisterReceiver(receiver);
+            if (shouldExpect) {
+                verify(receiver).onReceive(any(Context.class), any(Intent.class));
+            } else {
+                verify(receiver, times(0)).onReceive(any(Context.class), any(Intent.class));
+            }
+        }
     }
 }
