@@ -240,6 +240,10 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 
+  // Mark an object or subtree dirty, aka its properties have changed and it
+  // needs to be reserialized. Use the |*WithCleanLayout| versions when layout
+  // is already known to be clean.
+  void MarkAXObjectDirty(AXObject*);
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 
@@ -451,7 +455,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
   void MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj, bool subtree);
-  void MarkAXObjectDirty(AXObject*);
   void MarkAXSubtreeDirty(AXObject*);
   void MarkElementDirty(const Node*);
   void MarkElementDirtyWithCleanLayout(const Node*);

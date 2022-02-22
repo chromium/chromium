@@ -120,11 +120,12 @@ class AXRelationCache {
   void UpdateRelatedText(Node*);
 
   bool IsValidOwnsRelation(AXObject* owner, AXObject* child) const;
-  void UnmapOwnedChildren(const AXObject* owner,
-                          const Vector<AXID>& removed_child_ids,
-                          const Vector<AXID>& newly_owned_ids);
+  void UnmapOwnedChildrenWithCleanLayout(const AXObject* owner,
+                                         const Vector<AXID>& removed_child_ids,
+                                         const Vector<AXID>& newly_owned_ids);
 
-  void MapOwnedChildren(const AXObject* owner, const Vector<AXID>&);
+  void MapOwnedChildrenWithCleanLayout(const AXObject* owner,
+                                       const Vector<AXID>&);
   void GetReverseRelated(Node*, HeapVector<Member<AXObject>>& sources);
   void MaybeRestoreParentOfOwnedChild(AXObject* removed_child);
 

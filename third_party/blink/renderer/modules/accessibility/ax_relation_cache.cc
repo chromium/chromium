@@ -216,9 +216,10 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
   return true;
 }
 
-void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
-                                         const Vector<AXID>& removed_child_ids,
-                                         const Vector<AXID>& newly_owned_ids) {
+void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
+    const AXObject* owner,
+    const Vector<AXID>& removed_child_ids,
+    const Vector<AXID>& newly_owned_ids) {
   DCHECK(owner);
   DCHECK(!owner->IsDetached());
   for (AXID removed_child_id : removed_child_ids) {
@@ -254,8 +255,9 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
   }
 }
 
-void AXRelationCache::MapOwnedChildren(const AXObject* owner,
-                                       const Vector<AXID>& child_ids) {
+void AXRelationCache::MapOwnedChildrenWithCleanLayout(
+    const AXObject* owner,
+    const Vector<AXID>& child_ids) {
   DCHECK(owner);
   DCHECK(!owner->IsDetached());
   for (AXID added_child_id : child_ids) {
@@ -272,8 +274,17 @@ void AXRelationCache::MapOwnedChildren(const AXObject* owner,
     if (original_parent != owner) {
       added_child->DetachFromParent();
       added_child->SetParent(const_cast<AXObject*>(owner));
-      if (original_parent)
+      if (original_parent) {
         ChildrenChanged(original_parent);
+        // Reparenting detection requires the parent of the original parent to
+        // be reserialized.
+        // This change prevents several DumpAccessibilityEventsTest failures:
+        // - AccessibilityEventsSubtreeReparentedViaAriaOwns/linux
+        // - AccessibilityEventsSubtreeReparentedViaAriaOwns2/linux
+        // TODO(crbug.com/1299031) Find out why this is necessary.
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(
+            original_parent->ParentObject());
+      }
     }
     // Now that the child is owned, it's "included in tree" state must be
     // recomputed because owned children are always included in the tree.
@@ -438,9 +449,9 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned
   // children and add the new list of owned children.
-  UnmapOwnedChildren(owner, previously_owned_child_ids,
-                     validated_owned_child_axids);
-  MapOwnedChildren(owner, validated_owned_child_axids);
+  UnmapOwnedChildrenWithCleanLayout(owner, previously_owned_child_ids,
+                                    validated_owned_child_axids);
+  MapOwnedChildrenWithCleanLayout(owner, validated_owned_child_axids);
 
 #if DCHECK_IS_ON()
   // Owned children must be in tree to avoid serialization issues.

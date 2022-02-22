@@ -898,6 +898,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsSubtreeReparentedViaAriaOwns) {
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-aria-owns.html"));
 }
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsSubtreeReparentedViaAriaOwns2) {
+  RunEventTest(FILE_PATH_LITERAL("subtree-reparented-via-aria-owns-2.html"));
+}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsTabindexAddedOnPlainDiv) {
