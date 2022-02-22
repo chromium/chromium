@@ -38,7 +38,6 @@ class LoginDisplayMojo : public LoginDisplay,
             bool show_new_user) override;
   void OnPreferencesChanged() override;
   void SetUIEnabled(bool is_enabled) override;
-  void ShowAllowlistCheckFailedError() override;
 
   // SigninScreenHandlerDelegate:
   void Login(const UserContext& user_context,

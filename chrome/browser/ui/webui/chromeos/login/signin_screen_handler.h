@@ -47,10 +47,9 @@ class GaiaScreenHandler;
 class LoginDisplayWebUIHandler {
  public:
   virtual void OnPreferencesChanged() = 0;
-  virtual void ShowAllowlistCheckFailedError() = 0;
 
  protected:
-  virtual ~LoginDisplayWebUIHandler() {}
+  virtual ~LoginDisplayWebUIHandler() = default;
 };
 
 // An interface for SigninScreenHandler to call WebUILoginDisplay.
@@ -162,7 +161,6 @@ class SigninScreenHandler
 
   // LoginDisplayWebUIHandler implementation:
   void OnPreferencesChanged() override;
-  void ShowAllowlistCheckFailedError() override;
 
   // content::NotificationObserver implementation:
   void Observe(int type,

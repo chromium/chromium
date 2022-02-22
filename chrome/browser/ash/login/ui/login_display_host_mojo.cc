@@ -216,13 +216,6 @@ void LoginDisplayHostMojo::StartBrowserDataMigration() {
   wizard_controller_->AdvanceToScreen(LacrosDataMigrationScreenView::kScreenId);
 }
 
-void LoginDisplayHostMojo::ShowAllowlistCheckFailedError() {
-  EnsureOobeDialogLoaded();
-  DCHECK(GetOobeUI());
-  GetOobeUI()->signin_screen_handler()->ShowAllowlistCheckFailedError();
-  ShowDialog();
-}
-
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
   EnsureOobeDialogLoaded();
   if (dialog_->IsVisible())

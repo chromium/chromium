@@ -61,10 +61,6 @@ class LoginDisplayHostMojo : public LoginDisplayHostCommon,
 
   void SetUserCount(int user_count);
 
-  // Show allowlist check failed error. Happens after user completes online
-  // signin but allowlist check fails.
-  void ShowAllowlistCheckFailedError();
-
   UserSelectionScreen* user_selection_screen() {
     return user_selection_screen_.get();
   }

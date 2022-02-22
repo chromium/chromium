@@ -1180,7 +1180,7 @@ void ExistingUserController::ForceOnlineLoginForAccountId(
 void ExistingUserController::AllowlistCheckFailed(const std::string& email) {
   PerformLoginFinishedActions(true /* start auto login timer */);
 
-  GetLoginDisplay()->ShowAllowlistCheckFailedError();
+  GetLoginDisplayHost()->ShowAllowlistCheckFailedError();
 
   for (auto& auth_status_consumer : auth_status_consumers_) {
     auth_status_consumer.OnAuthFailure(

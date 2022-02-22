@@ -509,10 +509,6 @@ void SigninScreenHandler::OnPreferencesChanged() {
   }
 }
 
-void SigninScreenHandler::ShowAllowlistCheckFailedError() {
-  gaia_screen_handler_->ShowAllowlistCheckFailedError();
-}
-
 void SigninScreenHandler::Observe(int type,
                                   const content::NotificationSource& source,
                                   const content::NotificationDetails& details) {

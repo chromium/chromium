@@ -82,6 +82,12 @@ void GaiaScreen::LoadOnlineForChildSignin() {
   view_->LoadGaiaAsync(EmptyAccountId());
 }
 
+void GaiaScreen::ShowAllowlistCheckFailedError() {
+  if (!view_)
+    return;
+  view_->ShowAllowlistCheckFailedError();
+}
+
 void GaiaScreen::ShowImpl() {
   // Landed on the login screen. No longer skipping enrollment for tests.
   context()->skip_to_login_for_tests = false;

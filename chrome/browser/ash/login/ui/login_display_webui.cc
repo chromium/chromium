@@ -75,11 +75,6 @@ void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
     host->GetWebUILoginView()->SetUIEnabled(is_enabled);
 }
 
-void LoginDisplayWebUI::ShowAllowlistCheckFailedError() {
-  if (webui_handler_)
-    webui_handler_->ShowAllowlistCheckFailedError();
-}
-
 void LoginDisplayWebUI::Login(const UserContext& user_context,
                               const SigninSpecifics& specifics) {
   DCHECK(delegate_);

@@ -143,10 +143,6 @@ void LoginDisplayMojo::SetUIEnabled(bool is_enabled) {
   }
 }
 
-void LoginDisplayMojo::ShowAllowlistCheckFailedError() {
-  host_->ShowAllowlistCheckFailedError();
-}
-
 void LoginDisplayMojo::Login(const UserContext& user_context,
                              const SigninSpecifics& specifics) {
   if (delegate_)

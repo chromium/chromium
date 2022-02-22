@@ -89,6 +89,8 @@ class GaiaView {
   virtual void Unbind() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
+  // Show error UI at the end of GAIA flow when user is not allowlisted.
+  virtual void ShowAllowlistCheckFailedError() = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -140,6 +142,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void Bind(ash::GaiaScreen* screen) override;
   void Unbind() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
+  void ShowAllowlistCheckFailedError() override;
+
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
                                const std::string& services) override;
@@ -187,9 +191,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // will be sent in any case, otherwise it will be sent only when Gaia is
   // not loading right now.
   void ReloadGaia(bool force_reload);
-
-  // Show error UI at the end of GAIA flow when user is not allowlisted.
-  void ShowAllowlistCheckFailedError();
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(

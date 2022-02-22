@@ -48,6 +48,7 @@ class GaiaScreen : public BaseScreen {
   void LoadOnlineForChildSignup();
   // Loads online Gaia (for child signin) into the webview.
   void LoadOnlineForChildSignin();
+  void ShowAllowlistCheckFailedError();
 
  private:
   void ShowImpl() override;

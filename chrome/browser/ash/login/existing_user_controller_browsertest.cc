@@ -964,7 +964,8 @@ class ExistingUserControllerActiveDirectoryTest
 
   void ExpectLoginAllowlistFailure() {
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(false)).Times(2);
-    EXPECT_CALL(*mock_login_display_, ShowAllowlistCheckFailedError()).Times(1);
+    EXPECT_CALL(*mock_login_display_host_, ShowAllowlistCheckFailedError())
+        .Times(1);
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   }
 

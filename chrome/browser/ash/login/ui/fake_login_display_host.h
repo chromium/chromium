@@ -59,6 +59,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
       const AccountId& account_id,
       const absl::optional<user_manager::UserType>& user_type) override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
+  void ShowAllowlistCheckFailedError() override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
   void HideOobeDialog(bool saml_video_timeout = false) override;

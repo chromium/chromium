@@ -32,7 +32,6 @@ class LoginDisplayWebUI : public LoginDisplay,
             bool allow_new_user) override;
   void OnPreferencesChanged() override;
   void SetUIEnabled(bool is_enabled) override;
-  void ShowAllowlistCheckFailedError() override;
 
   // SigninScreenHandlerDelegate implementation:
   void Login(const UserContext& user_context,
