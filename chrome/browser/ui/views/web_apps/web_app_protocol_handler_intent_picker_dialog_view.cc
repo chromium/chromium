@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/common/custom_handlers/protocol_handler.h"
@@ -30,12 +31,6 @@ WebAppProtocolHandlerIntentPickerView::WebAppProtocolHandlerIntentPickerView(
       views::DialogContentType::kText, views::DialogContentType::kControl));
   set_fixed_width(layout_provider->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-  SetButtonLabel(
-      ui::DIALOG_BUTTON_CANCEL,
-      l10n_util::GetStringUTF16(IDS_WEB_APP_PERMISSION_NEGATIVE_BUTTON));
-  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
 }
 
 WebAppProtocolHandlerIntentPickerView::

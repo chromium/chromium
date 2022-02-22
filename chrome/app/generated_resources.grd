@@ -11358,49 +11358,30 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR" desc="Text/punctuation that separates items in a lists. For example, this is used in a list of files, such as 'todo_list.txt, shopping_list.txt', and file types/extensions, such as '.txt, .csv.'" meaning="List separator for files.">
          , '''
       </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_DIALOG_QUESTION" desc="Descriptive text in permission request dialog that is shown when the user is opening a file using a PWA.">
-        Open and edit <ph name="FILE_NAME">$1<ex>todo.txt</ex></ph> in this web app?
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION" desc="Descriptive text in permission request dialog that is shown when the user is opening a file using a PWA.">
+        <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph> wants to open this file:
       </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_DIALOG_QUESTION_MULTIPLE" desc="Descriptive text in permission request dialog that is shown when the user is opening multiple files using a PWA. [ICU_Syntax]">
-        {NUM_FILES, plural,
-          other {Open and edit # files in this web app?}
-        }
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_DESCRIPTION_MULTIPLE" desc="Descriptive text in permission request dialog that is shown when the user is opening multiple files using a PWA.">
+        <ph name="APP_ORIGIN">$1<ex>example.com</ex></ph> wants to open these files:
       </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_DIALOG_STICKY_CHOICE" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for a toggle that makes the permission decision permanent (single file format).">
-        Remember my choice for this file type: <ph name="FILE_FORMAT">$1<ex>TXT</ex></ph>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_STICKY_CHOICE" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for a toggle that makes the permission decision permanent (single file format).">
+        Don't ask again when opening this file format in this app:
+<ph name="FILE_FORMAT">$1<ex>TXT</ex></ph>
       </message>
-      <message name="IDS_WEB_APP_FILE_HANDLING_DIALOG_STICKY_CHOICE_MULTIPLE" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for a toggle that makes the permission decision permanent (multiple file formats).">
-        Remember my choice for these file types: <ph name="FILE_FORMATS">$1<ex>TXT, CSV, DOC</ex></ph>
+      <message name="IDS_WEB_APP_FILE_HANDLING_PERMISSION_STICKY_CHOICE_MULTIPLE" desc="In permission request dialog that is shown when the user is opening files in a PWA: text for a toggle that makes the permission decision permanent (multiple file formats).">
+        Don't ask again when opening these file formats in this app:
+<ph name="FILE_FORMATS">$1<ex>TXT, CSV, DOC</ex></ph>
       </message>
       <if expr="use_titlecase">
-        <message name="IDS_WEB_APP_FILE_HANDLING_POSITIVE_BUTTON" desc="In title case: label for the button in the file handler permission dialog that opens a file in the app.">
-          Open
-        </message>
-        <message name="IDS_WEB_APP_FILE_HANDLING_NEGATIVE_BUTTON" desc="In title case: label for the button in the file handler permission dialog that dismisses the dialog and does not open a file.">
-          Don&#x2019;t Open
-        </message>
-        <message name="IDS_WEB_APP_PERMISSION_NEGATIVE_BUTTON" desc="In title case: label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application.">
-          Don&#x2019;t Allow
-        </message>
+      <message name="IDS_WEB_APP_PERMISSION_DONT_ALLOW" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application.">
+        Don't Allow
+      </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_WEB_APP_FILE_HANDLING_POSITIVE_BUTTON" desc="In sentence case: label for the button in the file handler permission dialog that opens a file in the app.">
-          Open
-        </message>
-        <message name="IDS_WEB_APP_FILE_HANDLING_NEGATIVE_BUTTON" desc="In sentence case: label for the button in the file handler permission dialog that dismisses the dialog and does not open a file.">
-          Don&#x2019;t open
-        </message>
-        <message name="IDS_WEB_APP_PERMISSION_NEGATIVE_BUTTON" desc="In sentence case: label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application.">
-          Don&#x2019;t allow
-        </message>
-      </if>
-    </if>
-
-    <!-- Protocol Handling launch prompt -->
-    <if expr="not is_android">
-      <message name="IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION" desc="Label on the protocol handler intent picker.">
-        Allow app to open <ph name="PROTOCOL_SCHEME">$1<ex>mailto</ex></ph> links?
+      <message name="IDS_WEB_APP_PERMISSION_DONT_ALLOW" desc="Label for the button in the protocol handler intent picker dialog that dismisses the dialog and does not launch an application.">
+        Don't allow
       </message>
+      </if>
     </if>
 
     <!-- Font Access chooser -->
