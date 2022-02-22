@@ -113,8 +113,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
     expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the size of a compressed on-disk capture for the paint preview after
     a proto is written to disk if compressed.
@@ -124,8 +124,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.Capture.NumberOfFramesCaptured"
     units="units" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the number of frames captured by a paint preview if it succeeded.
   </summary>
@@ -134,8 +134,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.Capture.Success" enum="BooleanSuccess"
     expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records a boolean indicating whether a capture attempt was successful.
   </summary>
@@ -144,8 +144,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.Capture.TotalCaptureDuration" units="ms"
     expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the total time spent capturing a paint preview of a page. This
     includes capture and serialization of all frames and IPC time.
@@ -153,20 +153,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartedCorrectly"
-    units="BooleanSuccess" expires_after="2022-04-17">
+    units="BooleanSuccess" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records if the paint preview compositor process started correctly.
   </summary>
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartupTime"
-    units="ms" expires_after="2022-07-11">
+    units="ms" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the time it took to start the paint preview compositor process.
   </summary>
@@ -175,16 +175,16 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.Player.LinkClicked"
     units="BooleanSuccess" expires_after="2022-08-14">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>Records when a link is clicked in the paint preview player.</summary>
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.TimeToFirstBitmap" units="ms"
-    expires_after="2022-07-11">
+    expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the time taken to from the request to start the compositor process
     to the first bitmap being loaded.
@@ -194,8 +194,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.TabbedPlayer.CompositorFailureReason"
     enum="TabbedPaintPreviewCompositorFailureReason" expires_after="2022-08-14">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the the reason for exiting the compositor process for the
     TabbedPaintPreviewPlayer. Recorded when the compositor returns an error or
@@ -206,8 +206,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.TabbedPlayer.ExitCause"
     enum="TabbedPaintPreviewExitCause" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the the reason for exiting TabbedPaintPreviewPlayer. Recorded when
     paint preview is removed.
@@ -215,10 +215,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.FirstPaintBeforeTabLoad"
-    units="Boolean" expires_after="2022-04-10">
+    units="Boolean" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records whether paint preview was drawn before the tab finished loading.
     Recorded when tab has finished loading.
@@ -228,8 +228,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.TabbedPlayer.HadCapture" units="Boolean"
     expires_after="2022-08-21">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records whether a paint preview exists. Recorded when attempting to show a
     preview on startup. This in conjuction with CompositorFailureReason gives
@@ -240,8 +240,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Browser.PaintPreview.TabbedPlayer.SnackbarCount" units="units"
     expires_after="2022-08-14">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the number of times that the upgrade snackbar was shown in a session
     of TabbedPaintPreviewPlayer. Recorded when paint preview is removed.
@@ -249,10 +249,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap"
-    units="ms" expires_after="2022-07-11">
+    units="ms" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the time taken to from actvity creation to the first bitmap being
     shown. Recorded on first paint preview paint event.
@@ -261,10 +261,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.PaintPreview.TabbedPlayer.UpTime{TabbedPaintPreviewPlayerUptime}"
-    units="ms" expires_after="2022-03-31">
+    units="ms" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the length of the time that a session of TabbedPaintPreviewPlayer
     lasts. Recorded when paint preview is removed.
@@ -288,9 +288,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabService.DiskUsageAtStartup" units="KB"
-    expires_after="2022-03-06">
+    expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>yashard@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
     Records the total disk usage by the Paint Preview Tab Service at startup of

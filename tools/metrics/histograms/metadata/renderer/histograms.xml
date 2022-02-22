@@ -347,8 +347,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
     units="ms" expires_after="2022-08-14">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the number of milliseconds spent blocking Blink's main thread while
     capturing the main frame.
@@ -356,20 +356,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameSuccess"
-    enum="BooleanSuccess" expires_after="2022-03-31">
+    enum="BooleanSuccess" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records a boolean indicating whether a capture for the main frame succeeded.
   </summary>
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeBlinkCaptureDuration"
-    units="ms" expires_after="2022-07-11">
+    units="ms" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records the number of milliseconds spent blocking Blink's main thread while
     capturing a subframe.
@@ -377,10 +377,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeSuccess"
-    enum="BooleanSuccess" expires_after="2022-04-24">
+    enum="BooleanSuccess" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
-  <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
+  <owner>chrome-fdt@google.com</owner>
   <summary>
     Records a boolean indicating whether a capture for a subframe succeeded.
   </summary>
