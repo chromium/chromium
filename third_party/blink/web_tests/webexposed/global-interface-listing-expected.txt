@@ -3846,6 +3846,7 @@ interface HTMLLegendElement : HTMLElement
 interface HTMLLinkElement : HTMLElement
     attribute @@toStringTag
     getter as
+    getter blocking
     getter charset
     getter crossOrigin
     getter disabled
@@ -3868,6 +3869,7 @@ interface HTMLLinkElement : HTMLElement
     getter type
     method constructor
     setter as
+    setter blocking
     setter charset
     setter crossOrigin
     setter disabled
@@ -4199,6 +4201,7 @@ interface HTMLScriptElement : HTMLElement
     static method supports
     attribute @@toStringTag
     getter async
+    getter blocking
     getter charset
     getter crossOrigin
     getter defer
@@ -4213,6 +4216,7 @@ interface HTMLScriptElement : HTMLElement
     getter type
     method constructor
     setter async
+    setter blocking
     setter charset
     setter crossOrigin
     setter defer
@@ -4314,11 +4318,13 @@ interface HTMLSpanElement : HTMLElement
     method constructor
 interface HTMLStyleElement : HTMLElement
     attribute @@toStringTag
+    getter blocking
     getter disabled
     getter media
     getter sheet
     getter type
     method constructor
+    setter blocking
     setter disabled
     setter media
     setter type

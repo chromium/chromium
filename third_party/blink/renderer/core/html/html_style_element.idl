@@ -32,4 +32,7 @@
     // HTMLStyleElement includes LinkStyle
     // https://drafts.csswg.org/cssom/#the-linkstyle-interface
     readonly attribute StyleSheet? sheet;
+
+    // https://html.spec.whatwg.org/multipage/semantics.html#dom-style-blocking
+    [RuntimeEnabled=BlockingAttribute, SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 };

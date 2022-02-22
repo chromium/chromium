@@ -315,6 +315,11 @@
       name: "BlinkRuntimeCallStats",
     },
     {
+      // "blocking" attribute on scripts and link resources
+      name: "BlockingAttribute",
+      status: "experimental",
+    },
+    {
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },

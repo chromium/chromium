@@ -8,6 +8,8 @@ blink_core_sources_html = [
   "anchor_element_metrics_sender.cc",
   "anchor_element_metrics_sender.h",
   "battery_savings.h",
+  "blocking_attribute.cc",
+  "blocking_attribute.h",
   "canvas/canvas_async_blob_creator.cc",
   "canvas/canvas_async_blob_creator.h",
   "canvas/canvas_context_creation_attributes_core.cc",

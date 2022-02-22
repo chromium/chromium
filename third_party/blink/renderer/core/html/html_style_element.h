@@ -26,6 +26,7 @@
 #include <memory>
 #include "third_party/blink/renderer/core/css/style_element.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
@@ -42,6 +43,8 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
 
   bool disabled() const;
   void setDisabled(bool);
+
+  BlockingAttribute& blocking() const { return *blocking_attribute_; }
 
   void Trace(Visitor*) const override;
 
@@ -70,6 +73,8 @@ class CORE_EXPORT HTMLStyleElement final : public HTMLElement,
 
   const AtomicString& media() const override;
   const AtomicString& type() const override;
+
+  Member<BlockingAttribute> blocking_attribute_;
 };
 
 }  // namespace blink

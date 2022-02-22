@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
+#include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
@@ -62,6 +63,8 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
 
   void setAsync(bool);
   bool async() const;
+
+  BlockingAttribute& blocking() const { return *blocking_attribute_; }
 
   ScriptLoader* Loader() const final { return loader_.Get(); }
 
@@ -126,6 +129,7 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   ParkableString script_text_internal_slot_;
   bool children_changed_by_api_;
 
+  Member<BlockingAttribute> blocking_attribute_;
   Member<ScriptLoader> loader_;
 };
 

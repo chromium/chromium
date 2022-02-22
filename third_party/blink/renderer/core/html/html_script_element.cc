@@ -47,6 +47,7 @@ HTMLScriptElement::HTMLScriptElement(Document& document,
                                      const CreateElementFlags flags)
     : HTMLElement(html_names::kScriptTag, document),
       children_changed_by_api_(false),
+      blocking_attribute_(MakeGarbageCollected<BlockingAttribute>(this)),
       loader_(InitializeScriptLoader(flags)) {}
 
 const AttrNameToTrustedType& HTMLScriptElement::GetCheckedAttributeTypes()
@@ -103,6 +104,10 @@ void HTMLScriptElement::ParseAttribute(
     // Hints is count usage upon parsing. Processing the value happens when the
     // element loads.
     UseCounter::Count(GetDocument(), WebFeature::kPriorityHints);
+  } else if (params.name == html_names::kBlockingAttr &&
+             RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
+    blocking_attribute_->DidUpdateAttributeValue(params.old_value,
+                                                 params.new_value);
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -346,6 +351,7 @@ bool HTMLScriptElement::supports(ScriptState* script_state,
 }
 
 void HTMLScriptElement::Trace(Visitor* visitor) const {
+  visitor->Trace(blocking_attribute_);
   visitor->Trace(loader_);
   HTMLElement::Trace(visitor);
   ScriptElementBase::Trace(visitor);
