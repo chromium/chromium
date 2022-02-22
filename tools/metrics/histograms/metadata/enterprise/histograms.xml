@@ -1075,43 +1075,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram
-    name="Enterprise.EncryptedRealtimeReportingCompressionThresholdCount"
-    enum="CompressedRecordThresholdMetricEvent" expires_after="2022-02-01">
-  <owner>gbj@google.com</owner>
-  <owner>src/components/enterprise/OWNERS</owner>
-  <summary>
-    Enumeration that is recorded when compression is enabled and when the report
-    enters the report queue and before the record is encrypted. The enumeration
-    keeps track of how many records are under the compression threshold and are
-    not compressed.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.EncryptedRealtimeReportingSnappyCompressedRecordSize"
-    units="KB" expires_after="2022-02-01">
-  <owner>gbj@google.com</owner>
-  <owner>src/components/enterprise/OWNERS</owner>
-  <summary>
-    The size of a WrappedRecord after it is compressed with snappy. This metric
-    is recorded when the report enters the report queue and before the record is
-    encrypted.
-  </summary>
-</histogram>
-
-<histogram
-    name="Enterprise.EncryptedRealtimeReportingSnappyUncompressedRecordSize"
-    units="KB" expires_after="2022-02-01">
-  <owner>gbj@google.com</owner>
-  <owner>src/components/enterprise/OWNERS</owner>
-  <summary>
-    The size of a WrappedRecord before it is compressed with snappy. This metric
-    is recorded when the report enters the report queue and before the record is
-    encrypted.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.EnrolledPolicyHasDMToken" enum="Boolean"
     expires_after="never">
 <!-- expires-never: Used for monitoring the health of device policy. -->
