@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check cyclic linking between JavaScript and WebAssembly where JavaScript is higher in the module graph. assert_equals: expected 10 but got 5
+Harness: the test ran to completion.
+

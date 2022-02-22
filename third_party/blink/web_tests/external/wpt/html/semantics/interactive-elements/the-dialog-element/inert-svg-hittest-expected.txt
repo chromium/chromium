@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Hit-testing doesn't reach contents of an inert SVG promise_test: Unhandled rejection with value: object "Error: element click intercepted error"
+PASS Hit-testing can reach contents of a no longer inert SVG
+Harness: the test ran to completion.
+

@@ -1425,6 +1425,13 @@
        {}
       ]
      ],
+     "remove-block-beside-spanner-in-inline-crash.html": [
+      "7d9246cf538448d09775672b4a6534a4033de846",
+      [
+       null,
+       {}
+      ]
+     ],
      "remove-block-sibling-of-inline-with-block-crash.html": [
       "e752abc9f51aa7a42f22fd5944b37424b561fb2e",
       [
@@ -79772,6 +79779,19 @@
         {}
        ]
       ],
+      "multi-line-row-flex-fragmentation-031.html": [
+       "d491417f606b9ce47c166b9ab3d4bf1e7796a0fb",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "single-line-column-flex-fragmentation-001.html": [
        "d1411f9a16a14585b945408b162182ed343419d2",
        [
@@ -80164,6 +80184,19 @@
       ],
       "single-line-column-flex-fragmentation-031.html": [
        "5d42f9a2dfae7b50271983f30bb2c8e5b113f6bf",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "single-line-column-flex-fragmentation-032.html": [
+       "c78169725a9de3a79e5370963ae212cff63eea99",
        [
         null,
         [
@@ -114448,6 +114481,19 @@
         {}
        ]
       ],
+      "positioned-grid-items-025.html": [
+       "d4c1b01a53d9356c209f32aa2d873f933d4230ae",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/abspos/positioned-grid-items-025-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "positioned-grid-items-negative-indices-001.html": [
        "f723b2486c14bf993bfaf8bf4639f79fbac18e97",
        [
@@ -120999,12 +121045,12 @@
        ]
       ],
       "line-names-002.html": [
-       "a10a4d019b92dd0e539eecbff3e28e53601b688e",
+       "574e353f877948cdc247aa589f23b7fce462a2ae",
        [
         null,
         [
          [
-          "/css/css-grid/subgrid/line-names-001-ref.html",
+          "/css/css-grid/subgrid/line-names-002-ref.html",
           "=="
          ]
         ],
@@ -121038,7 +121084,7 @@
        ]
       ],
       "line-names-005.html": [
-       "d7bcf7a7e7b0c13e489da82b824b8e5a9b5fe1fb",
+       "26be899e93ed5d941eda3a16a21ab670abb6fca5",
        [
         null,
         [
@@ -121077,7 +121123,7 @@
        ]
       ],
       "line-names-008.html": [
-       "7b959120c31b5b58abddbe665f87e45bea703f2f",
+       "56ea9612989b067cc55196d868ce119f90205530",
        [
         null,
         [
@@ -246214,6 +246260,10 @@
        "81e1ba5e89ba840e12b22c5475412827d6db71f5",
        []
       ],
+      "never-match-container-expected.txt": [
+       "b0da6841e3c2ecd1ea4c41112f4f099e3e9c92be",
+       []
+      ],
       "percentage-padding-orthogonal-expected.txt": [
        "7dde7f870c4d04ff81e8727b5e90aec1f79907de",
        []
@@ -258314,6 +258364,10 @@
        "c94c7694ba60a69822a4ea486a527be5acdb9cf2",
        []
       ],
+      "positioned-grid-items-025-ref.html": [
+       "803539a069c21f3979821984188187412002c8a3",
+       []
+      ],
       "positioned-grid-items-negative-indices-001-ref.html": [
        "2bbc3a95136e0e61191ec10fe5ff1ca901e799b9",
        []
@@ -259268,12 +259322,16 @@
        "04c5839596c9e5b09ecce284c8cc757b6d1ef87c",
        []
       ],
+      "line-names-002-ref.html": [
+       "2399328becc4e556252db5ae7cb004e93d8a48d3",
+       []
+      ],
       "line-names-004-ref.html": [
        "6ceb9d49274bac4fc648e5c85afcad733f4e134b",
        []
       ],
       "line-names-005-ref.html": [
-       "4c7f4b50fd16601480e32924e1eaaa76c81b70c6",
+       "44bb0e0dbbc6920c40e4fe09e8ee2e842b2f1d23",
        []
       ],
       "line-names-006-ref.html": [
@@ -299463,6 +299521,10 @@
         "1b757ecf62dbdbf1a6a710525dcd1cd5aa816fa7",
         []
        ],
+       "inert-svg-hittest-expected.txt": [
+        "689c5e0318725f5ae513f4fd68db042ce95f9776",
+        []
+       ],
        "modal-dialog-backdrop-ref.html": [
         "d703b7f28e01eef831c09a4fdac9403e603a6b9d",
         []
@@ -319575,6 +319637,182 @@
       "69715cd7c8dcf53d95af41fdd5396e4ea34dc2ce",
       []
      ],
+     "esm-integration": {
+      "execute-start.tentative-expected.txt": [
+       "b7f367f59ae9ba606657e5da8750fb846af9458d",
+       []
+      ],
+      "invalid-bytecode.tentative-expected.txt": [
+       "06da2263af5b4be6ce5edf6407fe27787c4d8c73",
+       []
+      ],
+      "js-wasm-cycle-errors.tentative-expected.txt": [
+       "d55dcfb40b1f0eb28b58a6e93cc222c65cabf2cb",
+       []
+      ],
+      "module-parse-error.tentative-expected.txt": [
+       "06da2263af5b4be6ce5edf6407fe27787c4d8c73",
+       []
+      ],
+      "resolve-export.js": [
+       "e0dcf493f8e7809fad35daef7854ae28a9bb7c87",
+       []
+      ],
+      "resolve-export.tentative-expected.txt": [
+       "93b7767d110d4d073f5861fd6c8267f4ce74347b",
+       []
+      ],
+      "resources": {
+       "execute-start.wasm": [
+        "ecfdda1f9af82c65ac7276449161288990a31df7",
+        []
+       ],
+       "exported-names.wasm": [
+        "ebffad193c342c00bbe6a8a8a52d69111f843d7d",
+        []
+       ],
+       "invalid-bytecode.wasm": [
+        "1ae8b721f3be9caa43cd18ad27ab4baadfb5e41b",
+        []
+       ],
+       "invalid-module.wasm": [
+        "dd711f0953bf8f81c8ff43bc955fb401f1c98803",
+        []
+       ],
+       "js-wasm-cycle-function-error.js": [
+        "06cb8a0ad9f328f0f86cbc1e3efca7ebb429baa9",
+        []
+       ],
+       "js-wasm-cycle-function-error.wasm": [
+        "b89d94dde74dc74c3665440a6f9c8c62833e6939",
+        []
+       ],
+       "js-wasm-cycle-global.js": [
+        "1f375b8ce1576a974f7ca53b29c53185b8e765e9",
+        []
+       ],
+       "js-wasm-cycle-global.wasm": [
+        "2a9017f87b123e894a9b8e97e09d4bac22f4ba02",
+        []
+       ],
+       "js-wasm-cycle-memory.js": [
+        "92e37a86acd86624447ebe31531cfac673db0f9a",
+        []
+       ],
+       "js-wasm-cycle-memory.wasm": [
+        "e699a9b3c47c4923e7a3868a88272c48dc04f819",
+        []
+       ],
+       "js-wasm-cycle-table.js": [
+        "5d6794489f0e168042699d292d1f55aa27b0fd64",
+        []
+       ],
+       "js-wasm-cycle-table.wasm": [
+        "ec4883e652e468b6efde418d02cb35a54b429eb5",
+        []
+       ],
+       "js-wasm-cycle-value.js": [
+        "f7b0d62080b31dbf8d3c8e1be9e857bded633cef",
+        []
+       ],
+       "js-wasm-cycle-value.wasm": [
+        "083409e2606b67b6c260e28f2c39102a7da9c89c",
+        []
+       ],
+       "js-wasm-cycle.js": [
+        "8ee579e2ad342184c6331d29dff8031735e2edae",
+        []
+       ],
+       "js-wasm-cycle.wasm": [
+        "77a3b86ab67528e404eef4aae4a7c76511b1f863",
+        []
+       ],
+       "log.js": [
+        "0c4f5ed519b0fd220a26cce71779039198bec18b",
+        []
+       ],
+       "resolve-export.wasm": [
+        "d8fc92d022fbf4d1072da17bc8e0840054b51ddc",
+        []
+       ],
+       "wasm-export-i64-global.wasm": [
+        "f9f0cf27992d4b8e0ba2b3e982eac3c0ba0caf8f",
+        []
+       ],
+       "wasm-export-to-wasm.wasm": [
+        "0ee948f96fdfbb44bfaf41ebe8271c717ef3904d",
+        []
+       ],
+       "wasm-import-error-from-wasm.wasm": [
+        "c27bcb068de86e3d0d77aae5486035ee4e6fe5ba",
+        []
+       ],
+       "wasm-import-from-wasm.wasm": [
+        "652ff143100f832bf3e4e16c4427e17e2a651148",
+        []
+       ],
+       "wasm-import-func.js": [
+        "78982c32dc69d7054664e38a9be2c91728769b14",
+        []
+       ],
+       "wasm-import-func.wasm": [
+        "2f23c58520fe59ab3c9944ab9631d1c14e94f8d6",
+        []
+       ],
+       "wasm-import-global.js": [
+        "4258cd2d7d1e9537672afe09250b90ef609a6827",
+        []
+       ],
+       "wasm-import-global.wasm": [
+        "2f8bd77940cc21f5f94579af75822fbe7296cc03",
+        []
+       ],
+       "wasm-import-memory.js": [
+        "4cee8898383784571d1627b1a03e5153204e810c",
+        []
+       ],
+       "wasm-import-memory.wasm": [
+        "d9474047cd334b4e2a7742eae5d3418e17adf22a",
+        []
+       ],
+       "wasm-import-table.js": [
+        "ca823646cbb365f33d16381f137876dabd5f660a",
+        []
+       ],
+       "wasm-import-table.wasm": [
+        "8ccc8be7f213827ef8fae8c93e1e780441631d8c",
+        []
+       ],
+       "wasm-js-cycle.js": [
+        "161edab4f6f1f15c2184d0284e49a9d91401a50c",
+        []
+       ],
+       "wasm-js-cycle.wasm": [
+        "b700377b279031a68074ed05345b22c411b20a08",
+        []
+       ],
+       "worker-helper.js": [
+        "fe007bbf32954af7f752935ac1e0e57dc37537e8",
+        []
+       ],
+       "worker.js": [
+        "c72464f71a45614ef2ecf97fcd4e6d604e998a2b",
+        []
+       ],
+       "worker.wasm": [
+        "e942dc54acf77e0877aa64ec3b88eaffc1f5d51b",
+        []
+       ]
+      },
+      "wasm-import.tentative-expected.txt": [
+       "1dc9199a2ac583fbed5941eca00259244c785058",
+       []
+      ],
+      "wasm-to-wasm-link-error.tentative-expected.txt": [
+       "2d73ff8ddec030847fb9323c68518d2ee5788c53",
+       []
+      ]
+     },
      "resources": {
       "incrementer.no_mime_type.wasm": [
        "47afcdef2a2812acccecd0f203d30d3023593f3d",
@@ -363743,6 +363981,13 @@
         {}
        ]
       ],
+      "never-match-container.html": [
+       "5d79ec03ffafaf78a86cf1767ff998e9e084839b",
+       [
+        null,
+        {}
+       ]
+      ],
       "orthogonal-wm-container-query.html": [
        "30e58f857cd28e524bfa5b4c420f4b268904a4e4",
        [
@@ -370672,21 +370917,21 @@
      },
      "subgrid": {
       "grid-template-computed-nogrid.html": [
-       "6c2042fde784a42c24c7a967693f95734eff50e4",
+       "ccfe67a5c0f27a0aa00c47120a74e2b3dbff997b",
        [
         null,
         {}
        ]
       ],
       "grid-template-invalid.html": [
-       "8853bea7c966b98f06e05a2c5d7c0dd41f5626e1",
+       "d7c12be3fde5592ce6a9fc1c3f10686ab7ecaaad",
        [
         null,
         {}
        ]
       ],
       "grid-template-valid.html": [
-       "76ac318bd3800c89e53c4bbb44cd513ffb8c898b",
+       "d568e973e9a9a62236a3854dfbc4a9d38d0b80ac",
        [
         null,
         {}
@@ -460138,6 +460383,15 @@
          {}
         ]
        ],
+       "inert-svg-hittest.html": [
+        "6eb4965ec736c905467b936f1ad803e0f7d4a229",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "inertness-with-modal-dialogs-and-iframes.html": [
         "1a509f7f36579f241c756aaa1d804c76e9beb574",
         [
@@ -469978,6 +470232,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "inert-svg-hittest.tentative.html": [
+     "f743ed25f45f1243acf30a6fd430e707a928ebe6",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ],
     "inert-with-modal-dialog-001.tentative.html": [
@@ -523292,6 +523555,99 @@
        }
       ]
      ],
+     "esm-integration": {
+      "execute-start.tentative.html": [
+       "a35adbe8ebfc1cc1bf92b9979621da29c797889f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "exported-names.tentative.html": [
+       "16a9c59787bc94f050c2fcdc522625858adcd03f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "invalid-bytecode.tentative.html": [
+       "0e447dbee510428691de42e7b34f0b9daef56565",
+       [
+        null,
+        {}
+       ]
+      ],
+      "js-wasm-cycle-errors.tentative.html": [
+       "f45e06ece5f3bc411ffa1e0c45b39f6b7afe75b9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "js-wasm-cycle.tentative.html": [
+       "38b0d3203c27d82fa6a0008d2ebdac31af3ac935",
+       [
+        null,
+        {}
+       ]
+      ],
+      "module-parse-error.tentative.html": [
+       "0e447dbee510428691de42e7b34f0b9daef56565",
+       [
+        null,
+        {}
+       ]
+      ],
+      "resolve-export.tentative.html": [
+       "14688221021d53725a503a763a60ee8ddbafb9c9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "wasm-import-wasm-export.tentative.html": [
+       "3761a22f218db0b4a5e9cafd246aa58935e9d4fd",
+       [
+        null,
+        {}
+       ]
+      ],
+      "wasm-import.tentative.html": [
+       "243cfd46e4bdf0685a3340f90cae44b1fdf8c11e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "wasm-js-cycle.tentative.html": [
+       "298d4d40b0006e2b6505a9d09383e083ad0039c0",
+       [
+        null,
+        {}
+       ]
+      ],
+      "wasm-to-wasm-link-error.tentative.html": [
+       "6c43e72b09bfe7ea43ca7d589ada5692297f865e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "worker-import.tentative.html": [
+       "82ba83aee3278de61e7db18f806590a03deee7b6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "worker.tentative.html": [
+       "8002e07ce7f1cfea078329f0ed7a705eb830fdda",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "historical.any.js": [
       "257112c4160f5424d12d175319322c2f5ae1576b",
       [
