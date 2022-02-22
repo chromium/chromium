@@ -1774,8 +1774,11 @@ static PhysicalOffset VisualOffsetFromPaintOffsetRoot(
   if (const auto* properties =
           paint_offset_root->FirstFragment().PaintProperties()) {
     if (const auto* scroll_translation = properties->ScrollTranslation()) {
-      result -= PhysicalOffset::FromVector2dFRound(
-          scroll_translation->Translation2D());
+      // VisualOffsetFromAncestor() uses integer-snapped scroll offsets. Do the
+      // same here, to cancel out the scroll offset correctly.
+      gfx::Vector2dF scroll_offset = -scroll_translation->Translation2D();
+      result += PhysicalOffset::FromVector2dFFloor(
+          gfx::ToFlooredVector2d(scroll_offset));
     }
   }
   return result;
