@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_store_sync.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/statistics_table.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -29,6 +28,10 @@
 #if BUILDFLAG(IS_IOS)
 #include "base/gtest_prod_util.h"
 #endif
+
+namespace syncer {
+class MetadataBatch;
+}
 
 namespace password_manager {
 

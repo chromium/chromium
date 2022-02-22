@@ -9,12 +9,13 @@
 
 #include "base/callback.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_store_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
+
+class MetadataBatch;
 
 // ModelTypeStore is leveldb backed store for model type's data, metadata and
 // global metadata.

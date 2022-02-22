@@ -8,6 +8,7 @@
 
 #include "base/big_endian.h"
 #include "base/logging.h"
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"

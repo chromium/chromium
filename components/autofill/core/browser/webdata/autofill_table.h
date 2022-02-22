@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/sync_metadata_store.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -22,6 +21,10 @@ class WebDatabase;
 
 namespace base {
 class Time;
+}
+
+namespace syncer {
+class MetadataBatch;
 }
 
 namespace autofill {
