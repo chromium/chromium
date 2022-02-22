@@ -507,6 +507,7 @@ TEST_F(NativeFileUtilTest, PreserveLastModified) {
   EXPECT_EQ(file_info1.last_modified, file_info2.last_modified);
 }
 
+// This test is disabled on Fuchsia because file permissions are not supported.
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
   // Ensure both the src and dest files exist.
@@ -584,6 +585,7 @@ TEST_F(NativeFileUtilTest, PreserveDestinationPermissions) {
 }
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
+// This test is disabled on Fuchsia because file permissions are not supported.
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 TEST_F(NativeFileUtilTest, PreserveLastModifiedAndDestinationPermissions) {
   base::FilePath from_file = Path("fromfile");
