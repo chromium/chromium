@@ -62,10 +62,6 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
-        // Remove androidx_window_window from being depended upon since we don't use it and it bloats binary size due to
-        // overly broad proguard keep rules. Perhaps when http://b/165268619 is fixed then we can allow it to be
-        // depended upon again.
-        androidx_window_window: EXCLUDE_THIS_LIB,
     ]
 
     /**
