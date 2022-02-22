@@ -152,8 +152,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
 
 // Confirms that a page using a dedicated worker with WebTransport is not
 // cached.
+// TODO(crbug.com/1299018): Flakes on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransport \
+  DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransport
+#else
+#define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransport \
+  DoNotCacheWithDedicatedWorkerWithWebTransport
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheWithDedicatedWorkerBrowserTest,
-                       DoNotCacheWithDedicatedWorkerWithWebTransport) {
+                       MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransport) {
   CreateHttpsServer();
   ASSERT_TRUE(https_server()->Start());
 
