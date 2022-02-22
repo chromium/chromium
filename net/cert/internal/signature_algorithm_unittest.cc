@@ -1073,6 +1073,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssNonDefaultHashAndMaskGenAndSalt) {
 }
 
 // Parses a rsaPss algorithm that specifies default hash (SHA1).
+// It is invalid to specify the default.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1098,15 +1099,11 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultHash) {
   std::unique_ptr<SignatureAlgorithm> algorithm;
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha1, algorithm->digest());
-
-  histogram_tester.ExpectUniqueSample("Net.CertVerifier.InvalidRsaPssParams",
-                                      true, 1);
+  ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that specifies default mask gen algorithm (SHA1).
+// It is invalid to specify the default.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1137,19 +1134,11 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultMaskGen) {
   std::unique_ptr<SignatureAlgorithm> algorithm;
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha1, params->mgf1_hash());
-
-  histogram_tester.ExpectUniqueSample("Net.CertVerifier.InvalidRsaPssParams",
-                                      true, 1);
+  ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that specifies default salt length.
+// It is invalid to specify the default.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1171,19 +1160,11 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultSaltLength) {
   std::unique_ptr<SignatureAlgorithm> algorithm;
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(20u, params->salt_length());
-
-  histogram_tester.ExpectUniqueSample("Net.CertVerifier.InvalidRsaPssParams",
-                                      true, 1);
+  ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that specifies default trailer field.
+// It is invalid to specify the default.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1205,18 +1186,11 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssSpecifiedDefaultTrailerField) {
   std::unique_ptr<SignatureAlgorithm> algorithm;
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-
-  histogram_tester.ExpectUniqueSample("Net.CertVerifier.InvalidRsaPssParams",
-                                      true, 1);
+  ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
 // Parses a rsaPss algorithm that specifies multiple default parameter values.
+// It is invalid to specify a default value.
 //
 //   SEQUENCE (2 elem)
 //       OBJECT IDENTIFIER  1.2.840.113549.1.1.10
@@ -1266,18 +1240,7 @@ TEST(SignatureAlgorithmTest, ParseDerRsaPssMultipleDefaultParameterValues) {
   std::unique_ptr<SignatureAlgorithm> algorithm;
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(ParseDer(kData, &algorithm));
-  ASSERT_EQ(SignatureAlgorithmId::RsaPss, algorithm->algorithm());
-  EXPECT_EQ(DigestAlgorithm::Sha1, algorithm->digest());
-
-  const RsaPssParameters* params = algorithm->ParamsForRsaPss();
-
-  ASSERT_TRUE(params);
-  EXPECT_EQ(DigestAlgorithm::Sha1, params->mgf1_hash());
-  EXPECT_EQ(20u, params->salt_length());
-
-  histogram_tester.ExpectUniqueSample("Net.CertVerifier.InvalidRsaPssParams",
-                                      true, 1);
+  ASSERT_FALSE(ParseDer(kData, &algorithm));
 }
 
 TEST(SignatureAlgorithmTest, RsaPssClassification) {

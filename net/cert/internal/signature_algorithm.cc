@@ -471,13 +471,6 @@ RsaPssClassification ClassifyRsaPssParams(DigestAlgorithm digest,
 // specifying default values explicitly. The parameter should instead be
 // omitted to indicate a default value.
 std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
-  // Right now, whether some unenforced DER error is recorded with this bool,
-  // and that bool is reported via a UMA metric below.
-  // TODO(crbug.com/525829): After the UMA metric shows rare occurrence of
-  // unenforced errors, then add a Finch flag to toggle to enforcing these
-  // errors by returning nullptr.
-  bool der_error = false;
-
   der::Parser parser(params);
   der::Parser params_parser;
   if (!parser.ReadSequence(&params_parser))
@@ -500,7 +493,8 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   if (field.has_value() && !ParseHashAlgorithm(field.value(), &hash))
     return nullptr;
   // Default hash should be specified by omission.
-  der_error |= (field.has_value() && hash == DigestAlgorithm::Sha1);
+  if (field.has_value() && hash == DigestAlgorithm::Sha1)
+    return nullptr;
 
   // Parse:
   //     maskGenAlgorithm  [1] MaskGenAlgorithm DEFAULT mgf1SHA1,
@@ -512,7 +506,8 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
   if (field.has_value() && !ParseMaskGenAlgorithm(field.value(), &mgf1_hash))
     return nullptr;
   // Default mask generation should be specified by omission.
-  der_error |= (field.has_value() && mgf1_hash == DigestAlgorithm::Sha1);
+  if (field.has_value() && mgf1_hash == DigestAlgorithm::Sha1)
+    return nullptr;
 
   // Parse:
   //     saltLength        [2] INTEGER DEFAULT 20,
@@ -521,52 +516,19 @@ std::unique_ptr<SignatureAlgorithm> ParseRsaPss(const der::Input& params) {
     return nullptr;
   }
   // Default salt length should be specified by omission.
-  der_error |= (opt_salt_length.has_value() && opt_salt_length.value() == 20u);
+  if (opt_salt_length.has_value() && opt_salt_length.value() == 20u)
+    return nullptr;
   uint32_t salt_length = opt_salt_length.value_or(20u);
-
-  // Parse:
-  //     trailerField      [3] INTEGER DEFAULT 1
-  absl::optional<uint32_t> opt_trailer_field;
-  if (!ReadOptionalContextSpecificUint32(&params_parser, 3,
-                                         &opt_trailer_field)) {
-    return nullptr;
-  }
-  // Default trailer field should be specified by omission.
-  der_error |=
-      (opt_trailer_field.has_value() && opt_trailer_field.value() == 1u);
-  uint32_t trailer_field = opt_trailer_field.value_or(1u);
-
-  // Parse:
-  //     trailerField      [3] INTEGER DEFAULT 1
-  //
-  // The trailer field parameter is expected to not be present, because of
-  // the combination of two requirements:
-  //
-  // 1. RFC 4055 says that the trailer field must be 1:
-  //
-  //     The trailerField field is an integer.  It provides
-  //     compatibility with IEEE Std 1363a-2004 [P1363A].  The value
-  //     MUST be 1, which represents the trailer field with hexadecimal
-  //     value 0xBC.  Other trailer fields, including the trailer field
-  //     composed of HashID concatenated with 0xCC that is specified in
-  //     IEEE Std 1363a, are not supported.  Implementations that
-  //     perform signature generation MUST omit the trailerField field,
-  //     indicating that the default trailer field value was used.
-  //     Implementations that perform signature validation MUST
-  //     recognize both a present trailerField field with value 1 and an
-  //     absent trailerField field.
-  //
-  // 2. DER encoding prohibits specifying a default value, which in this
-  //    case is 1.
-  if (trailer_field != 1)
-    return nullptr;
 
   // There must not be any unconsumed data left. (RFC 5912 does not explicitly
   // include an extensibility point for RSASSA-PSS-params)
+  //
+  // This check will also reject trailerField if present. We only support
+  // a value of 1, which is the default value and thus must be omitted. If
+  // trailerField is present, it is either an incorrect encoding of the
+  // default value, or a value we do not support.
   if (params_parser.HasMore())
     return nullptr;
-
-  UMA_HISTOGRAM_BOOLEAN("Net.CertVerifier.InvalidRsaPssParams", der_error);
 
   // See https://crbug.com/1279975.
   UMA_HISTOGRAM_ENUMERATION("Net.CertVerifier.RsaPssClassification",
