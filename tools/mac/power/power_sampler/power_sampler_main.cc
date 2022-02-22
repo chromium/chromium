@@ -4,6 +4,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -27,6 +28,7 @@
 #include "tools/mac/power/power_sampler/sampler.h"
 #include "tools/mac/power/power_sampler/sampling_controller.h"
 #include "tools/mac/power/power_sampler/smc_sampler.h"
+#include "tools/mac/power/power_sampler/user_active_simulator.h"
 #include "tools/mac/power/power_sampler/user_idle_level_sampler.h"
 
 namespace {
@@ -50,6 +52,7 @@ constexpr char kSwitchTimeout[] = "timeout";
 constexpr char kSwitchJsonOutputFile[] = "json-output-file";
 constexpr char kSwitchSampleOnNotification[] = "sample-on-notification";
 constexpr char kSwitchResourceCoalitionPid[] = "resource-coalition-pid";
+constexpr char kSwitchSimulateUserActive[] = "simulate-user-active";
 constexpr char kUsageString[] = R"(Usage: power_sampler [options]
 
 A tool that samples power-related metrics and states. The tool outputs samples
@@ -66,6 +69,9 @@ Options:
       By default output is in CSV format on STDOUT.
   --resource-coalition-pid=<pid>  The pid of a process that is part of a
       resource coalition for which to sample resource usage.
+  --simulate-user-active          Simulate user activity periodically, to
+                                  perform measurements in the same context as
+                                  when the user is active.
 )";
 
 // Prints main usage text.
@@ -208,6 +214,13 @@ int main(int argc, char** argv) {
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::NS_RUNLOOP);
   power_sampler::SamplingController controller;
+
+  std::unique_ptr<power_sampler::UserActiveSimulator> user_active_simulator;
+  if (command_line.HasSwitch(kSwitchSimulateUserActive)) {
+    user_active_simulator =
+        std::make_unique<power_sampler::UserActiveSimulator>();
+    user_active_simulator->Start();
+  }
 
   const base::TimeTicks start_time = base::TimeTicks::Now();
 

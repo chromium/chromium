@@ -47,6 +47,8 @@ static_library("power_sampler_lib") {
     "power_sampler/sampling_controller.h",
     "power_sampler/smc_sampler.h",
     "power_sampler/smc_sampler.mm",
+    "power_sampler/user_active_simulator.cc",
+    "power_sampler/user_active_simulator.h",
     "power_sampler/user_idle_level_sampler.cc",
     "power_sampler/user_idle_level_sampler.h",
   ]
