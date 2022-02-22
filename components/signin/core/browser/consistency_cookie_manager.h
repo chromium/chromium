@@ -6,6 +6,7 @@
 #define COMPONENTS_SIGNIN_CORE_BROWSER_CONSISTENCY_COOKIE_MANAGER_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -25,12 +26,29 @@ namespace signin {
 // adding an account to the OS account manager.
 // The value of the cookie depends on the state of the `AccountReconcilor` and
 // whether there is a native account addition flow in progress.
-//
-// TODO(https://crbug.com/1260291): The `ConsistencyCookieManager` only
-// listens to the `AccountReconcilor` for now, it is not updated by UI flows
-// yet.
 class ConsistencyCookieManager : public AccountReconcilor::Observer {
  public:
+  // Sets the cookie state to "Updating" while it's alive.
+  // Instances are vended by `CreateScopedAccountUpdate()` and are allowed to
+  // outlive the `ConsistencyCookieManager`.
+  class ScopedAccountUpdate final {
+   public:
+    ~ScopedAccountUpdate();
+
+    // Move operations.
+    ScopedAccountUpdate(ScopedAccountUpdate&& other);
+    ScopedAccountUpdate& operator=(ScopedAccountUpdate&& other);
+
+    // `ScopedAccountUpdate` is not copyable.
+    ScopedAccountUpdate(const ScopedAccountUpdate&) = delete;
+    ScopedAccountUpdate& operator=(const ScopedAccountUpdate&) = delete;
+
+   private:
+    friend ConsistencyCookieManager;
+    ScopedAccountUpdate(base::WeakPtr<ConsistencyCookieManager> manager);
+    base::WeakPtr<ConsistencyCookieManager> consistency_cookie_manager_;
+  };
+
   explicit ConsistencyCookieManager(SigninClient* signin_client,
                                     AccountReconcilor* reconcilor);
   ~ConsistencyCookieManager() override;
@@ -38,9 +56,20 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   ConsistencyCookieManager& operator=(const ConsistencyCookieManager&) = delete;
   ConsistencyCookieManager(const ConsistencyCookieManager&) = delete;
 
+  // Web-signin UI flows should guarantee that at least a scoped update is alive
+  // for the whole flow. This starts from the user interaction and finishes when
+  // the account has been added to the `IdentityManager`.
+  ScopedAccountUpdate CreateScopedAccountUpdate();
+
  private:
   friend class ConsistencyCookieManagerTest;
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, MoveOperations);
   FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, ReconcilorState);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest, ScopedAccountUpdate);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest,
+                           ScopedAccountUpdate_Inactive);
+  FRIEND_TEST_ALL_PREFIXES(ConsistencyCookieManagerTest,
+                           UpdateAfterDestruction);
 
   enum class CookieValue { kConsistent, kInconsistent, kUpdating };
 
@@ -57,7 +86,8 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   // AccountReconcilor::Observer:
   void OnStateChanged(signin_metrics::AccountReconcilorState state) override;
 
-  // Calculates the cookie value based on the reconcilor state.
+  // Calculates the cookie value based on the reconcilor state and the count of
+  // live `ScopedAccountUpdate` instances.
   absl::optional<CookieValue> CalculateCookieValue() const;
 
   // Gets the new value using `CalculateCookieValue()` and sets the cookie if it
@@ -67,9 +97,12 @@ class ConsistencyCookieManager : public AccountReconcilor::Observer {
   SigninClient* const signin_client_;
   AccountReconcilor* const account_reconcilor_;
   absl::optional<CookieValue> cookie_value_ = absl::nullopt;
+  int scoped_update_count_ = 0;
 
   base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
       account_reconcilor_observation_{this};
+
+  base::WeakPtrFactory<ConsistencyCookieManager> weak_factory_{this};
 };
 
 }  // namespace signin
