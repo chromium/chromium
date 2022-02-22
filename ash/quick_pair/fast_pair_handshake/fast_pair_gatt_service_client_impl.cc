@@ -65,6 +65,31 @@ constexpr const char* ToString(
   }
 }
 
+constexpr const char* ToString(
+    device::BluetoothDevice::ConnectErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED:
+      return "ERROR_AUTH_CANCELED";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED:
+      return "ERROR_AUTH_FAILED";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED:
+      return "ERROR_AUTH_REJECTED";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_TIMEOUT:
+      return "ERROR_AUTH_TIMEOUT";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED:
+      return "ERROR_FAILED";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_INPROGRESS:
+      return "ERROR_INPROGRESS";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN:
+      return "ERROR_UNKNOWN";
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE:
+      return "ERROR_UNSUPPORTED_DEVICE";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
 }  // namespace
 
 namespace ash {
@@ -129,7 +154,8 @@ void FastPairGattServiceClientImpl::OnGattConnection(
   RecordGattConnectionResult(/*success=*/!error_code.has_value());
 
   if (error_code) {
-    QP_LOG(WARNING) << "Error creating GATT connection to device.";
+    QP_LOG(WARNING) << "Error creating GATT connection to device: "
+                    << ToString(error_code.value());
     RecordGattConnectionErrorCode(error_code.value());
     NotifyInitializedError(PairFailure::kCreateGattConnection);
   } else {
