@@ -93,6 +93,7 @@ void PerUserStateManagerChromeOS::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kMetricsUserConsent, false);
   registry->RegisterBooleanPref(prefs::kMetricsRequiresClientIdResetOnConsent,
                                 false);
+  registry->RegisterBooleanPref(prefs::kMetricsUserInheritOwnerConsent, true);
 }
 
 absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
@@ -331,11 +332,35 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
     local_state_->ClearPref(prefs::kMetricsCurrentUserId);
   }
 
+  auto* user_prefs = GetCurrentUserPrefs();
+
+  // Inherit owner consent if needed. This is to migrate existing users logging
+  // in for the first time since the feature was enabled.
+  //
+  // New users will inherit the device owner consent initially but will be asked
+  // on OOBE to set the consent.
+  bool should_inherit_owner_consent =
+      user_prefs->GetBoolean(prefs::kMetricsUserInheritOwnerConsent) &&
+      IsUserAllowedToChangeConsent(current_user_);
+
+  if (should_inherit_owner_consent) {
+    bool device_metrics_reporting = GetDeviceMetricsConsent();
+
+    user_prefs->SetBoolean(prefs::kMetricsUserConsent,
+                           device_metrics_reporting);
+    user_prefs->SetBoolean(prefs::kMetricsUserInheritOwnerConsent, false);
+
+    // Generate and set user ID if device owner enabled metrics reporting.
+    if (device_metrics_reporting) {
+      UpdateCurrentUserId(GenerateUserId());
+      UpdateLocalStatePrefs(device_metrics_reporting);
+    }
+  }
+
   // Only initialize metrics consent to user metrics consent if user is
   // allowed to change the metrics consent.
   if (IsUserAllowedToChangeConsent(current_user_)) {
-    SetReportingState(
-        GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent));
+    SetReportingState(user_prefs->GetBoolean(prefs::kMetricsUserConsent));
   }
 }
 

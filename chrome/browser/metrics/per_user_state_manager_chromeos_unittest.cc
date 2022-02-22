@@ -152,6 +152,13 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
     profile_->GetPrefs()->SetBoolean(
         prefs::kMetricsRequiresClientIdResetOnConsent,
         has_consented_to_metrics);
+    profile_->GetPrefs()->SetBoolean(prefs::kMetricsUserInheritOwnerConsent,
+                                     false);
+  }
+
+  void SetShouldInheritOwnerConsent(bool should_inherit) {
+    profile_->GetPrefs()->SetBoolean(prefs::kMetricsUserInheritOwnerConsent,
+                                     should_inherit);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -327,6 +334,34 @@ TEST_F(PerUserStateManagerChromeOSTest, OwnerCannotUsePerUser) {
       GetPerUserStateManager()->GetCurrentUserReportingConsentIfApplicable());
 
   // User logs should still be persisted in the owner's cryptohome.
+  EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
+}
+
+TEST_F(PerUserStateManagerChromeOSTest,
+       NewOrMigratingUserInheritsOwnerConsent) {
+  auto* test_user =
+      RegisterUser(AccountId::FromUserEmailGaiaId("test@example.com", "1"));
+  InitializeProfileState(/*user_id=*/"", /*metrics_consent=*/false,
+                         /*has_consented_to_metrics=*/false);
+
+  // User should inherit owner consent if migrating or new user.
+  SetShouldInheritOwnerConsent(true);
+
+  GetPerUserStateManager()->SetIsManaged(false);
+  GetPerUserStateManager()->SetDeviceMetricsConsent(true);
+
+  // Simulate user login.
+  LoginRegularUser(test_user);
+
+  // User log store is created async. Ensure that the log store loading
+  // finishes.
+  RunUntilIdle();
+
+  // User consent should be set to true since pref is true and device metrics
+  // consent is also true.
+  EXPECT_TRUE(
+      GetPerUserStateManager()->GetCurrentUserReportingConsentIfApplicable());
+
   EXPECT_TRUE(GetPerUserStateManager()->is_log_store_set());
 }
 
