@@ -111,12 +111,12 @@ class RecursiveObserver : public AppRegistryCache::Observer {
         if (num_apps_seen_on_app_update_ == 0) {
           // If this is the first time that OnAppUpdate is called, after a
           // PrepareForOnApps call, then just populate the names_snapshot_ map.
-          names_snapshot_[inner.GetAppId()] = inner.GetName();
+          names_snapshot_[inner.GetAppId()] = inner.Name();
         } else {
           // Otherwise, check that the names found during this OnAppUpdate call
           // match those during the first OnAppUpdate call.
           auto iter = names_snapshot_.find(inner.GetAppId());
-          EXPECT_EQ(inner.GetName(),
+          EXPECT_EQ(inner.Name(),
                     (iter != names_snapshot_.end()) ? iter->second : "");
         }
       }
@@ -126,7 +126,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
       }
 
       if (inner.GetAppId() == "p") {
-        EXPECT_EQ(expected_name_for_p_, inner.GetName());
+        EXPECT_EQ(expected_name_for_p_, inner.Name());
       }
 
       num_apps++;
@@ -150,9 +150,9 @@ class RecursiveObserver : public AppRegistryCache::Observer {
       // The way the tests are configured, if an app's name changes, it should
       // increase (in string comparison order): e.g. from "" to "mango" or from
       // "mango" to "mulberry" and never from "mulberry" to "melon".
-      EXPECT_LT(old_name, outer.GetName());
+      EXPECT_LT(old_name, outer.Name());
     }
-    old_names_[outer.GetAppId()] = outer.GetName();
+    old_names_[outer.GetAppId()] = outer.Name();
 
     std::vector<AppPtr> super_recursive;
     while (!super_recursive_apps_.empty()) {
@@ -183,7 +183,7 @@ class RecursiveObserver : public AppRegistryCache::Observer {
     EXPECT_EQ(outer.GetAppId(), inner.GetAppId());
     EXPECT_EQ(outer.StateIsNull(), inner.StateIsNull());
     EXPECT_EQ(outer.GetReadiness(), inner.GetReadiness());
-    EXPECT_EQ(outer.GetName(), inner.GetName());
+    EXPECT_EQ(outer.Name(), inner.Name());
   }
 
   raw_ptr<AppRegistryCache> cache_;
@@ -305,7 +305,7 @@ class AppRegistryCacheTest : public testing::Test,
     EXPECT_EQ(account_id_, update.AccountId());
 
     if (IsOnAppUpdateWithoutMojomEnabled()) {
-      EXPECT_NE("", update.GetName());
+      EXPECT_NE("", update.Name());
       if (!apps_util::IsInstalled(update.GetReadiness())) {
         return;
       }
@@ -314,7 +314,7 @@ class AppRegistryCacheTest : public testing::Test,
         num_freshly_installed_++;
       }
       updated_ids_.insert(update.GetAppId());
-      updated_names_.insert(update.GetName());
+      updated_names_.insert(update.Name());
     } else {
       EXPECT_NE("", update.Name());
       if (!apps_util::IsInstalled(update.Readiness())) {
@@ -336,11 +336,15 @@ class AppRegistryCacheTest : public testing::Test,
     NOTREACHED();
   }
 
-  std::string GetName(const AppRegistryCache& cache,
-                      const std::string& app_id) {
+  std::string GetName(AppRegistryCache& cache, const std::string& app_id) {
     std::string name;
-    cache.ForApp(app_id,
-                 [&name](const AppUpdate& update) { name = update.GetName(); });
+    if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+      cache.ForApp(app_id,
+                   [&name](const AppUpdate& update) { name = update.Name(); });
+    } else {
+      cache.ForOneApp(
+          app_id, [&name](const AppUpdate& update) { name = update.Name(); });
+    }
     return name;
   }
 

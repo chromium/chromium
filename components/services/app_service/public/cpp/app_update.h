@@ -88,7 +88,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool ReadinessChanged() const;
 
   const std::string& Name() const;
-  const std::string& GetName() const;
   bool NameChanged() const;
 
   const std::string& ShortName() const;

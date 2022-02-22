@@ -323,6 +323,10 @@ bool AppUpdate::ReadinessChanged() const {
 }
 
 const std::string& AppUpdate::Name() const {
+  if (base::FeatureList::IsEnabled(kAppServiceOnAppUpdateWithoutMojom)) {
+    GET_VALUE_WITH_FALLBACK(name, base::EmptyString())
+  }
+
   if (mojom_delta_ && mojom_delta_->name.has_value()) {
     return mojom_delta_->name.value();
   }
@@ -330,10 +334,6 @@ const std::string& AppUpdate::Name() const {
     return mojom_state_->name.value();
   }
   return base::EmptyString();
-}
-
-const std::string& AppUpdate::GetName() const {
-  GET_VALUE_WITH_FALLBACK(name, base::EmptyString())
 }
 
 bool AppUpdate::NameChanged() const {

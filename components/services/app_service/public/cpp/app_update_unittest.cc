@@ -172,7 +172,7 @@ class AppUpdateTest : public testing::Test {
     EXPECT_EQ(expect_prior_readiness_, u.GetPriorReadiness());
     EXPECT_EQ(expect_readiness_changed_, u.ReadinessChanged());
 
-    EXPECT_EQ(expect_name_, u.GetName());
+    EXPECT_EQ(expect_name_, u.Name());
     EXPECT_EQ(expect_name_changed_, u.NameChanged());
 
     EXPECT_EQ(expect_short_name_, u.GetShortName());
