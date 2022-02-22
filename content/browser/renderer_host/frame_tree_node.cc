@@ -874,4 +874,10 @@ void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
 }
 
+const scoped_refptr<BrowsingContextState>&
+FrameTreeNode::GetBrowsingContextStateForSubframe() const {
+  DCHECK(!IsMainFrame());
+  return current_frame_host()->browsing_context_state();
+}
+
 }  // namespace content

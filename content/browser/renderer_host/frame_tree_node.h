@@ -530,6 +530,17 @@ class CONTENT_EXPORT FrameTreeNode {
   void SetSrcdocValue(const std::string& srcdoc_value);
   const std::string& srcdoc_value() const { return srcdoc_value_; }
 
+  // Accessor to BrowsingContextState for subframes only. Only main frame
+  // navigations can change BrowsingInstances and BrowsingContextStates,
+  // therefore for subframes associated BrowsingContextState never changes. This
+  // helper method makes this more explicit and guards against calling this on
+  // main frames (there an appropriate BrowsingContextState should be obtained
+  // from RenderFrameHost or from RenderFrameProxyHost as e.g. during
+  // cross-BrowsingInstance navigations multiple BrowsingContextStates exist in
+  // the same frame).
+  const scoped_refptr<BrowsingContextState>&
+  GetBrowsingContextStateForSubframe() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicyDynamic);
