@@ -2407,13 +2407,23 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
     Node* node = current->GetNode();
     DCHECK(node) << "Refresh() is currently only supported for objects "
                     "with a backing node.";
+    bool is_ax_layout_object = current->GetLayoutObject();
+    bool will_be_ax_layout_object =
+        node->GetLayoutObject() &&
+        IsLayoutObjectRelevantForAccessibility(*node->GetLayoutObject()) &&
+        !IsDisplayLocked(node->GetLayoutObject());
+    if (is_ax_layout_object == will_be_ax_layout_object)
+      return static_cast<AXObject*>(nullptr);  // No change in the AXObject.
+
     AXID retained_axid = current->AXObjectID();
     // Remove from relevant maps, but not from relation cache, as the relations
     // between AXIDs will still be the same.
     node_object_mapping_.erase(node);
-    if (current->GetLayoutObject()) {
+    if (is_ax_layout_object) {
       layout_object_mapping_.erase(current->GetLayoutObject());
-    } else if (node->GetLayoutObject()) {
+    } else {
+      DCHECK(will_be_ax_layout_object);
+      DCHECK(node->GetLayoutObject());
       DCHECK(!layout_object_mapping_.Contains(node->GetLayoutObject()))
           << node << " " << node->GetLayoutObject();
     }
@@ -2938,7 +2948,7 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChanged(Element* element) {
   if (ax_object->RoleValue() == ax_object->DetermineAccessibilityRole())
     return;
 
-  Invalidate(element->GetDocument(), ax_object->AXObjectID());
+  HandleRoleChangeWithCleanLayout(element);
 }
 
 // Be as safe as possible about changes that could alter the accessibility role,
