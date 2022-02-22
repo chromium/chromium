@@ -97,6 +97,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
   const char* GetClassName() const override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // Overridden from SearchResultContainerView:
   SearchResultView* GetResultViewAt(size_t index) override;
