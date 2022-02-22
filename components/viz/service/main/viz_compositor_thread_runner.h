@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_MAIN_VIZ_COMPOSITOR_THREAD_RUNNER_H_
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/threading/platform_thread.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 
@@ -20,7 +21,6 @@ class CommandBufferTaskExecutor;
 namespace viz {
 
 class GpuServiceImpl;
-class HintSessionFactory;
 
 // Starts and runs the VizCompositorThread. The thread will be started when this
 // object is constructed. Objects on the thread will be initialized after
@@ -32,7 +32,9 @@ class VizCompositorThreadRunner {
 
   // Returns the TaskRunner for VizCompositorThread.
   virtual base::SingleThreadTaskRunner* task_runner() = 0;
-  virtual base::PlatformThreadId thread_id() = 0;
+  virtual bool CreateHintSessionFactory(
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::RepeatingClosure* wake_up_closure) = 0;
 
   // Creates FrameSinkManager from |params|. The version with |gpu_service| and
   // |task_executor| supports both GPU and software compositing, while the
@@ -43,8 +45,7 @@ class VizCompositorThreadRunner {
   virtual void CreateFrameSinkManager(
       mojom::FrameSinkManagerParamsPtr params,
       gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service,
-      HintSessionFactory* hint_session_factory) = 0;
+      GpuServiceImpl* gpu_service) = 0;
 };
 
 }  // namespace viz

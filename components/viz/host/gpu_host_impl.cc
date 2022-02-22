@@ -466,10 +466,6 @@ void GpuHostImpl::DidInitialize(
     const gfx::GpuExtraInfo& gpu_extra_info) {
   UMA_HISTOGRAM_BOOLEAN("GPU.GPUProcessInitialized", true);
 
-  // Set GPU driver bug workaround flags that are checked on the browser side.
-  wake_up_gpu_before_drawing_ =
-      gpu_feature_info.IsWorkaroundEnabled(gpu::WAKE_UP_GPU_BEFORE_DRAWING);
-
   delegate_->DidInitialize(gpu_info, gpu_feature_info,
                            gpu_info_for_hardware_gpu,
                            gpu_feature_info_for_hardware_gpu, gpu_extra_info);

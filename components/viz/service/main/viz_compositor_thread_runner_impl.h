@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -18,11 +19,13 @@
 
 namespace base {
 class Thread;
+class WaitableEvent;
 }  // namespace base
 
 namespace viz {
 class FrameSinkManagerImpl;
 class GmbVideoFramePoolContextProvider;
+class HintSessionFactory;
 class InProcessGpuMemoryBufferManager;
 class OutputSurfaceProvider;
 class ServerSharedBitmapManager;
@@ -46,33 +49,39 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
 
   // VizCompositorThreadRunner overrides.
   base::SingleThreadTaskRunner* task_runner() override;
-  base::PlatformThreadId thread_id() override;
+  bool CreateHintSessionFactory(
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::RepeatingClosure* wake_up_closure) override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
-  void CreateFrameSinkManager(
-      mojom::FrameSinkManagerParamsPtr params,
-      gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service,
-      HintSessionFactory* hint_session_factory) override;
+  void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
+                              gpu::CommandBufferTaskExecutor* task_executor,
+                              GpuServiceImpl* gpu_service) override;
 
  private:
+  void CreateHintSessionFactoryOnCompositorThread(
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      base::RepeatingClosure* wake_up_closure,
+      base::WaitableEvent* event);
+  void WakeUpOnCompositorThread();
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
       gpu::CommandBufferTaskExecutor* task_executor,
-      GpuServiceImpl* gpu_service,
-      HintSessionFactory* hint_session_factory);
+      GpuServiceImpl* gpu_service);
   void TearDownOnCompositorThread();
 
+  std::unique_ptr<VizCompositorThreadType> thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
   // Start variables to be accessed only on |task_runner_|.
+  std::unique_ptr<HintSessionFactory> hint_session_factory_;
   std::unique_ptr<ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<InProcessGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<OutputSurfaceProvider> output_surface_provider_;
   std::unique_ptr<GmbVideoFramePoolContextProvider>
       gmb_video_frame_pool_context_provider_;
   std::unique_ptr<FrameSinkManagerImpl> frame_sink_manager_;
+  base::WeakPtrFactory<VizCompositorThreadRunnerImpl> weak_factory_{this};
   // End variables to be accessed only on |task_runner_|.
-
-  std::unique_ptr<VizCompositorThreadType> thread_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace viz

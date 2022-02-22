@@ -10,6 +10,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -23,6 +25,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
@@ -105,8 +108,42 @@ VizCompositorThreadRunnerImpl::~VizCompositorThreadRunnerImpl() {
   thread_->Stop();
 }
 
-base::PlatformThreadId VizCompositorThreadRunnerImpl::thread_id() {
-  return thread_->GetThreadId();
+bool VizCompositorThreadRunnerImpl::CreateHintSessionFactory(
+    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::RepeatingClosure* wake_up_closure) {
+  base::WaitableEvent event;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
+                                    CreateHintSessionFactoryOnCompositorThread,
+                                base::Unretained(this), std::move(thread_ids),
+                                wake_up_closure, &event));
+  event.Wait();
+  return !!*wake_up_closure;
+}
+
+void VizCompositorThreadRunnerImpl::CreateHintSessionFactoryOnCompositorThread(
+    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::RepeatingClosure* wake_up_closure,
+    base::WaitableEvent* event) {
+  thread_ids.insert(base::PlatformThread::CurrentId());
+  auto hint_session_factory = HintSessionFactory::Create(std::move(thread_ids));
+  // Written this way so finch only considers the experiment active on device
+  // which supports hint session.
+  if (hint_session_factory && features::IsAdpfEnabled()) {
+    hint_session_factory_ = std::move(hint_session_factory);
+    *wake_up_closure = base::BindPostTask(
+        task_runner_,
+        base::BindRepeating(
+            &VizCompositorThreadRunnerImpl::WakeUpOnCompositorThread,
+            weak_factory_.GetWeakPtr()));
+  }
+  event->Signal();
+}
+
+void VizCompositorThreadRunnerImpl::WakeUpOnCompositorThread() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+  if (hint_session_factory_)
+    hint_session_factory_->WakeUp();
 }
 
 base::SingleThreadTaskRunner* VizCompositorThreadRunnerImpl::task_runner() {
@@ -119,14 +156,13 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
       FROM_HERE, base::BindOnce(&VizCompositorThreadRunnerImpl::
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
-                                nullptr, nullptr, nullptr));
+                                nullptr, nullptr));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    GpuServiceImpl* gpu_service,
-    HintSessionFactory* hint_session_factory) {
+    GpuServiceImpl* gpu_service) {
   // All of the unretained objects are owned on the GPU thread and destroyed
   // after VizCompositorThread has been shutdown.
   task_runner_->PostTask(
@@ -134,15 +170,13 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
                                     CreateFrameSinkManagerOnCompositorThread,
                                 base::Unretained(this), std::move(params),
                                 base::Unretained(task_executor),
-                                base::Unretained(gpu_service),
-                                base::Unretained(hint_session_factory)));
+                                base::Unretained(gpu_service)));
 }
 
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
-    GpuServiceImpl* gpu_service,
-    HintSessionFactory* hint_session_factory) {
+    GpuServiceImpl* gpu_service) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(!frame_sink_manager_);
   if (features::IsUsingSkiaRenderer())
@@ -200,7 +234,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
       features::ShouldWebRtcLogCapturePipeline();
   init_params.debug_renderer_settings = params->debug_renderer_settings;
   init_params.host_process_id = gpu_service->host_process_id();
-  init_params.hint_session_factory = hint_session_factory;
+  init_params.hint_session_factory = hint_session_factory_.get();
 
   frame_sink_manager_ = std::make_unique<FrameSinkManagerImpl>(init_params);
   frame_sink_manager_->BindAndSetClient(
@@ -211,12 +245,15 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
 void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
+  weak_factory_.InvalidateWeakPtrs();
+
   if (server_shared_bitmap_manager_) {
     base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
         server_shared_bitmap_manager_.get());
   }
 
   frame_sink_manager_.reset();
+  hint_session_factory_.reset();
   output_surface_provider_.reset();
   gpu_memory_buffer_manager_.reset();
   server_shared_bitmap_manager_.reset();

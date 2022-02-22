@@ -1090,17 +1090,30 @@ void GpuServiceImpl::LoadedShader(int32_t client_id,
   gpu_channel_manager_->PopulateShaderCache(client_id, key, data);
 }
 
+void GpuServiceImpl::SetWakeUpGpuClosure(base::RepeatingClosure closure) {
+  wake_up_closure_ = std::move(closure);
+}
+
 void GpuServiceImpl::WakeUpGpu() {
-  if (!main_runner_->BelongsToCurrentThread()) {
-    main_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&GpuServiceImpl::WakeUpGpu, weak_ptr_));
+  if (wake_up_closure_)
+    wake_up_closure_.Run();
+  if (main_runner_->BelongsToCurrentThread()) {
+    WakeUpGpuOnMainThread();
     return;
   }
+  main_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpuServiceImpl::WakeUpGpuOnMainThread, weak_ptr_));
+}
+
+void GpuServiceImpl::WakeUpGpuOnMainThread() {
+  if (gpu_feature_info_.IsWorkaroundEnabled(gpu::WAKE_UP_GPU_BEFORE_DRAWING)) {
 #if BUILDFLAG(IS_ANDROID)
-  gpu_channel_manager_->WakeUpGpu();
+    gpu_channel_manager_->WakeUpGpu();
 #else
-  NOTREACHED() << "WakeUpGpu() not supported on this platform.";
+    NOTREACHED() << "WakeUpGpu() not supported on this platform.";
 #endif
+  }
 }
 
 void GpuServiceImpl::GpuSwitched(gl::GpuPreference active_gpu_heuristic) {

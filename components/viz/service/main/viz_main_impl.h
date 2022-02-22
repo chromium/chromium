@@ -45,7 +45,6 @@ class MojoUkmRecorder;
 }
 
 namespace viz {
-class HintSessionFactory;
 #if BUILDFLAG(IS_WIN)
 class InfoCollectionGpuServiceImpl;
 #endif
@@ -203,8 +202,6 @@ class VizMainImpl : public mojom::VizMain,
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
-
-  std::unique_ptr<HintSessionFactory> hint_session_factory_;
 };
 
 }  // namespace viz

@@ -165,9 +165,7 @@ void RecordToolTypeForActionDown(const ui::MotionEventAndroid& event) {
 }
 
 void WakeUpGpu(GpuProcessHost* host) {
-  if (host && host->gpu_host()->wake_up_gpu_before_drawing()) {
-    host->gpu_service()->WakeUpGpu();
-  }
+  host->gpu_service()->WakeUpGpu();
 }
 
 std::string CompressAndSaveBitmap(const std::string& dir,
@@ -1840,8 +1838,7 @@ RenderWidgetHostViewAndroid::FilterInputEvent(
   if (!host())
     return blink::mojom::InputEventResultState::kNotConsumed;
 
-  if (input_event.GetType() == blink::WebInputEvent::Type::kGestureTapDown ||
-      input_event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
+  if (input_event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
     GpuProcessHost::CallOnIO(GPU_PROCESS_KIND_SANDBOXED,
                              false /* force_create */,
                              base::BindOnce(&WakeUpGpu));

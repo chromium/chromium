@@ -45,6 +45,9 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
   virtual std::unique_ptr<HintSession> CreateSession(
       base::flat_set<base::PlatformThreadId> transient_thread_ids,
       base::TimeDelta target_duration) = 0;
+
+  // Issue an early hint to wake up some session.
+  virtual void WakeUp() = 0;
 };
 
 }  // namespace viz

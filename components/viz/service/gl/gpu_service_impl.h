@@ -127,6 +127,9 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   // accordingly. This can safely be called from any thread.
   void DisableGpuCompositing();
 
+  // Set a closure to be called on each WakeUpGpu on the IO thread.
+  void SetWakeUpGpuClosure(base::RepeatingClosure closure);
+
   // mojom::GpuService:
   void EstablishGpuChannel(int32_t client_id,
                            uint64_t client_tracing_id,
@@ -394,6 +397,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   void GetPeakMemoryUsageOnMainThread(uint32_t sequence_num,
                                       GetPeakMemoryUsageCallback callback);
 
+  void WakeUpGpuOnMainThread();
+
   // Update overlay info and HDR status on the GPU process and send the updated
   // info back to the browser process if there is a change.
 #if BUILDFLAG(IS_WIN)
@@ -415,7 +420,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   gpu::GPUInfo gpu_info_;
 
   // Information about general chrome feature support for the GPU.
-  gpu::GpuFeatureInfo gpu_feature_info_;
+  const gpu::GpuFeatureInfo gpu_feature_info_;
 
   const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
 
@@ -487,6 +492,8 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl : public gpu::GpuChannelManagerDelegate,
   VisibilityChangedCallback visibility_changed_callback_;
 
   base::ProcessId host_process_id_ = base::kNullProcessId;
+
+  base::RepeatingClosure wake_up_closure_;
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};

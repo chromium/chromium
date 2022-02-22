@@ -17,6 +17,7 @@
 #include "base/android/build_info.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
 
 static_assert(sizeof(base::PlatformThreadId) == sizeof(int32_t),
@@ -41,6 +42,8 @@ using pAPerformanceHint_closeSession =
 
 namespace viz {
 namespace {
+
+class HintSessionFactoryImpl;
 
 #define LOAD_FUNCTION(lib, func)                                \
   do {                                                          \
@@ -86,42 +89,88 @@ struct AdpfMethods {
 
 class AdpfHintSession : public HintSession {
  public:
-  explicit AdpfHintSession(APerformanceHintSession* session)
-      : hint_session_(session) {}
+  AdpfHintSession(APerformanceHintSession* session,
+                  HintSessionFactoryImpl* factory,
+                  base::TimeDelta target_duration);
+  ~AdpfHintSession() override;
 
-  ~AdpfHintSession() override {
-    AdpfMethods::Get().APerformanceHint_closeSessionFn(hint_session_);
-  }
+  void ReportCpuCompletionTime(base::TimeDelta actual_duration) override;
 
-  void ReportCpuCompletionTime(base::TimeDelta actual_duration) override {
-    AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
-        hint_session_, actual_duration.InNanoseconds());
-  }
+  void WakeUp();
 
  private:
-  APerformanceHintSession* const hint_session_ = nullptr;
+  APerformanceHintSession* const hint_session_;
+  HintSessionFactoryImpl* const factory_;
+  const base::TimeDelta target_duration_;
 };
 
 class HintSessionFactoryImpl : public HintSessionFactory {
  public:
   HintSessionFactoryImpl(
       APerformanceHintManager* manager,
-      base::flat_set<base::PlatformThreadId> permanent_thread_ids)
-      : manager_(manager),
-        permanent_thread_ids_(std::move(permanent_thread_ids)) {}
+      base::flat_set<base::PlatformThreadId> permanent_thread_ids);
+  ~HintSessionFactoryImpl() override;
 
   std::unique_ptr<HintSession> CreateSession(
       base::flat_set<base::PlatformThreadId> transient_thread_ids,
       base::TimeDelta target_duration) override;
+  void WakeUp() override;
 
  private:
+  friend class AdpfHintSession;
+  friend class HintSessionFactory;
+
   APerformanceHintManager* const manager_;
   const base::flat_set<base::PlatformThreadId> permanent_thread_ids_;
+  base::flat_set<AdpfHintSession*> hint_sessions_;
+  THREAD_CHECKER(thread_checker_);
 };
+
+AdpfHintSession::AdpfHintSession(APerformanceHintSession* session,
+                                 HintSessionFactoryImpl* factory,
+                                 base::TimeDelta target_duration)
+    : hint_session_(session),
+      factory_(factory),
+      target_duration_(target_duration) {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  factory_->hint_sessions_.insert(this);
+}
+
+AdpfHintSession::~AdpfHintSession() {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  factory_->hint_sessions_.erase(this);
+  AdpfMethods::Get().APerformanceHint_closeSessionFn(hint_session_);
+}
+
+void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration) {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
+      hint_session_, actual_duration.InNanoseconds());
+}
+
+void AdpfHintSession::WakeUp() {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  ReportCpuCompletionTime(target_duration_ * 1.5f);
+}
+
+HintSessionFactoryImpl::HintSessionFactoryImpl(
+    APerformanceHintManager* manager,
+    base::flat_set<base::PlatformThreadId> permanent_thread_ids)
+    : manager_(manager),
+      permanent_thread_ids_(std::move(permanent_thread_ids)) {
+  // Can be created on any thread.
+  DETACH_FROM_THREAD(thread_checker_);
+}
+
+HintSessionFactoryImpl::~HintSessionFactoryImpl() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(hint_sessions_.empty());
+}
 
 std::unique_ptr<HintSession> HintSessionFactoryImpl::CreateSession(
     base::flat_set<base::PlatformThreadId> transient_thread_ids,
     base::TimeDelta target_duration) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   transient_thread_ids.insert(permanent_thread_ids_.cbegin(),
                               permanent_thread_ids_.cend());
   std::vector<int32_t> thread_ids(transient_thread_ids.begin(),
@@ -132,7 +181,14 @@ std::unique_ptr<HintSession> HintSessionFactoryImpl::CreateSession(
           target_duration.InNanoseconds());
   if (!hint_session)
     return nullptr;
-  return std::make_unique<AdpfHintSession>(hint_session);
+  return std::make_unique<AdpfHintSession>(hint_session, this, target_duration);
+}
+
+void HintSessionFactoryImpl::WakeUp() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (hint_sessions_.empty())
+    return;
+  (*hint_sessions_.begin())->WakeUp();
 }
 
 }  // namespace
@@ -155,9 +211,12 @@ std::unique_ptr<HintSessionFactory> HintSessionFactory::Create(
 
   // CreateSession is allowed to return null on unsupported device. Detect this
   // at run time to avoid polluting any experiments with unsupported devices.
-  auto session = factory->CreateSession({}, base::Milliseconds(10));
-  if (!session)
-    return nullptr;
+  {
+    auto session = factory->CreateSession({}, base::Milliseconds(10));
+    if (!session)
+      return nullptr;
+  }
+  DETACH_FROM_THREAD(factory->thread_checker_);
   return factory;
 }
 

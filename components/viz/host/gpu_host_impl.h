@@ -206,10 +206,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
   mojom::InfoCollectionGpuService* info_collection_gpu_service();
 #endif
 
-  bool wake_up_gpu_before_drawing() const {
-    return wake_up_gpu_before_drawing_;
-  }
-
  private:
   friend class GpuHostImplTestApi;
 
@@ -291,11 +287,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 
   // List of connection error handlers for the GpuService.
   std::vector<base::OnceClosure> connection_error_handlers_;
-
-  // The following are a list of driver bug workarounds that will only be
-  // set to true in DidInitialize(), where GPU service has started and GPU
-  // driver bug workarounds have been computed and sent back.
-  bool wake_up_gpu_before_drawing_ = false;
 
   // Track the URLs of the pages which have live offscreen contexts, assumed to
   // be associated with untrusted content such as WebGL. For best robustness,

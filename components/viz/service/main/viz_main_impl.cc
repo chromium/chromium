@@ -105,7 +105,7 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
       base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this)));
 
   {
-    // Gather the thread IDs of viz, display GPU, and IO for performance hint.
+    // Gather the thread IDs of display GPU, and IO for performance hint.
     // These are the viz threads that are on the critical path of all frames.
     base::flat_set<base::PlatformThreadId> gpu_process_thread_ids;
 
@@ -114,7 +114,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
     gpu_process_thread_ids.insert(compositor_gpu_thread
                                       ? compositor_gpu_thread->GetThreadId()
                                       : base::PlatformThread::CurrentId());
-    gpu_process_thread_ids.insert(viz_compositor_thread_runner_->thread_id());
 
     base::WaitableEvent event;
     base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
@@ -129,12 +128,10 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
     event.Wait();
     gpu_process_thread_ids.insert(io_thread_id);
 
-    // Written this way so finch only considers the experiment active on device
-    // which supports hint session.
-    auto hint_session_factory =
-        HintSessionFactory::Create(std::move(gpu_process_thread_ids));
-    if (hint_session_factory && features::IsAdpfEnabled()) {
-      hint_session_factory_ = std::move(hint_session_factory);
+    base::RepeatingClosure wake_up_closure;
+    if (viz_compositor_thread_runner_->CreateHintSessionFactory(
+            std::move(gpu_process_thread_ids), &wake_up_closure)) {
+      gpu_service_->SetWakeUpGpuClosure(std::move(wake_up_closure));
     }
   }
 
@@ -291,8 +288,7 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
       gpu_service_->gpu_channel_manager()->program_cache());
 
   viz_compositor_thread_runner_->CreateFrameSinkManager(
-      std::move(params), task_executor_.get(), gpu_service_.get(),
-      hint_session_factory_.get());
+      std::move(params), task_executor_.get(), gpu_service_.get());
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
