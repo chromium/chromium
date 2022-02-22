@@ -323,6 +323,7 @@
       "use_allocator_shim": false,
       "use_crash_key_stubs": true,
       "use_goma": true,
+      "use_partition_alloc": false,
       "use_platform_icu_alternatives": true
     }
   },
