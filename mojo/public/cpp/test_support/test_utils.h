@@ -40,14 +40,16 @@ bool SerializeAndDeserialize(UserStructType& input,
 // structure using the struct traits. This allows malformed data to be put in
 // the StructPtr<MojomType>, in order to verify the behaviour of deserialization
 // back to the C++ structure type.
-template <
-    typename MojomType,
-    typename UserStructType,
-    typename MojomStructPtr,
-    std::enable_if_t<std::is_same<mojo::StructPtr<MojomType>,
-                                  std::remove_const_t<MojomStructPtr>>::value &&
-                         !std::is_enum<UserStructType>::value,
-                     int> = 0>
+template <typename MojomType,
+          typename UserStructType,
+          typename MojomStructPtr,
+          std::enable_if_t<
+              (std::is_same<mojo::InlinedStructPtr<MojomType>,
+                            std::remove_const_t<MojomStructPtr>>::value ||
+               std::is_same<mojo::StructPtr<MojomType>,
+                            std::remove_const_t<MojomStructPtr>>::value) &&
+                  !std::is_enum<UserStructType>::value,
+              int> = 0>
 bool SerializeAndDeserialize(MojomStructPtr& input, UserStructType& output) {
   mojo::Message message = MojomType::SerializeAsMessage(&input);
 
