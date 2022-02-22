@@ -417,6 +417,14 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsAudioDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsEntSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsEntDeviceIsSelected, false);
+
+  registry->RegisterInt64Pref(::prefs::kHatsStabilitySurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsStabilityDeviceIsSelected, false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(
