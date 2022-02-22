@@ -15,6 +15,7 @@ weblayer_resource_exclusion_exceptions = [
   # Referenced by Widget.Material3.AutoCompleteTextView. For context:
   # https://crbug.com/1298549
   "${_material_package}/layout/m3_auto_complete_simple_item.xml",
+  "${_material_package}/layout/mtrl_auto_complete_simple_item.xml",
 ]
 
 # Copied from chrome_public_apk_tmpl.gni.
