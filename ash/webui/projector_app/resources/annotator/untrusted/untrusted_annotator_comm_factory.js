@@ -5,7 +5,7 @@
 import {PostMessageAPIClient} from '//resources/js/post_message_api_client.m.js';
 import {RequestHandler} from '//resources/js/post_message_api_request_handler.m.js';
 
-const TARGET_URL = 'chrome://projector/';
+const TARGET_URL = 'chrome://projector-annotator/';
 
 /**
  * Returns the projector app element inside this current DOM.

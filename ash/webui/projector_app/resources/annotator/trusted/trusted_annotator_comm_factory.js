@@ -7,7 +7,7 @@ import {RequestHandler} from 'chrome://resources/js/post_message_api_request_han
 
 import {ProjectorBrowserProxy, ProjectorBrowserProxyImpl} from '../../communication/projector_browser_proxy.js';
 
-const TARGET_URL = 'chrome-untrusted://projector/';
+const TARGET_URL = 'chrome-untrusted://projector-annotator/';
 
 // A PostMessageAPIClient that sends messages to chrome-untrusted://projector.
 export class UntrustedAnnotatorClient extends PostMessageAPIClient {
