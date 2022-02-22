@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -52,6 +53,7 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -661,6 +663,9 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   DragAndDropBrowserTest& operator=(const DragAndDropBrowserTest&) = delete;
 
   struct DragImageBetweenFrames_TestState;
+  void DragImageBetweenFrames_Start(bool image_same_origin,
+                                    bool image_crossorigin_attr,
+                                    const std::string& expected_mime_types);
   void DragImageBetweenFrames_Step2(DragImageBetweenFrames_TestState*);
   void DragImageBetweenFrames_Step3(DragImageBetweenFrames_TestState*);
 
@@ -731,10 +736,29 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   // Navigates the left frame to |filename| (found under
   // chrome/test/data/drag_and_drop directory).
-  bool NavigateLeftFrame(const std::string& origin,
+  bool NavigateLeftFrame(const std::string& frame_origin,
+                         const std::string& image_origin,
+                         bool image_crossorigin_attr,
                          const std::string& filename) {
     AssertTestPageIsLoaded();
-    return NavigateNamedFrame("left", origin, filename);
+    base::StringPairs replacement_text;
+    replacement_text.push_back(
+        std::make_pair("REPLACE_WITH_HOST_AND_PORT",
+                       base::StringPrintf("%s:%d", image_origin.c_str(),
+                                          embedded_test_server()->port())));
+    replacement_text.push_back(std::make_pair(
+        "REPLACE_WITH_CROSSORIGIN",
+        std::string(image_crossorigin_attr ? "crossorigin" : "")));
+    std::string path = net::test_server::GetFilePathWithReplacements(
+        filename, replacement_text);
+    return NavigateNamedFrame("left", frame_origin, path);
+  }
+
+  // Navigates the left frame to |filename| (found under
+  // chrome/test/data/drag_and_drop directory).
+  bool NavigateLeftFrame(const std::string& origin,
+                         const std::string& filename) {
+    return NavigateLeftFrame(origin, origin, false, filename);
   }
 
   // Navigates the right frame to |filename| (found under
@@ -1217,12 +1241,11 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
     drag_start_waiter.WaitUntilDragStart(&text, &html, &operation,
                                          &location_inside_web_contents);
     EXPECT_EQ(embedded_test_server()->GetURL(frame_site,
-                                             "/image_decoding/droids.jpg"),
+                                             "/drag_and_drop/cors-allowed.jpg"),
               text);
-    EXPECT_THAT(html,
-                testing::MatchesRegex("<img .*src=\""
-                                      "http://.*/image_decoding/droids.jpg"
-                                      "\">"));
+    EXPECT_THAT(
+        html, testing::MatchesRegex(
+                  R"(<img .*src="http://.*/drag_and_drop/cors-allowed.jpg">)"));
     EXPECT_EQ(expected_location_of_drag_start_in_left_frame(),
               location_inside_web_contents);
     EXPECT_EQ(ui::DragDropTypes::DRAG_COPY, operation);
@@ -1235,11 +1258,10 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragStartInFrame) {
 #if defined(OS_WIN)
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
-#define MAYBE_DragImageBetweenFrames DISABLED_DragImageBetweenFrames
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_DragImageBetweenFrames DISABLED_DragImageBetweenFrames
+#define MAYBE_DragSameOriginImageBetweenFrames \
+  DISABLED_DragSameOriginImageBetweenFrames
 #else
-#define MAYBE_DragImageBetweenFrames DragImageBetweenFrames
+#define MAYBE_DragSameOriginImageBetweenFrames DragSameOriginImageBetweenFrames
 #endif
 
 // Data that needs to be shared across multiple test steps below
@@ -1253,15 +1275,66 @@ struct DragAndDropBrowserTest::DragImageBetweenFrames_TestState {
   std::unique_ptr<DOMDragEventCounter> right_frame_events_counter;
 };
 
-// Scenario: drag an image from the left into the right frame.
+// Scenario: drag a same-origin image from the left into the right frame.
 // Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
-IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragImageBetweenFrames) {
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
+                       MAYBE_DragSameOriginImageBetweenFrames) {
+  DragImageBetweenFrames_Start(/*image_same_origin=*/true,
+                               /*image_crossorigin_attr=*/false,
+                               "Files,text/html,text/plain,text/uri-list");
+}
+
+#if defined(OS_WIN)
+#define MAYBE_DragCorsSameOriginImageBetweenFrames \
+  DISABLED_DragCorsSameOriginImageBetweenFrames
+#else
+#define MAYBE_DragCorsSameOriginImageBetweenFrames \
+  DragCorsSameOriginImageBetweenFrames
+#endif
+
+// Scenario: drag a CORS same-orign (different origin with `<img crossorigin>`
+// attribute, and `Access-Control-Allow-Origin: *` header) image from the left
+// into the right frame. Image should be accessible.
+// Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
+                       MAYBE_DragCorsSameOriginImageBetweenFrames) {
+  DragImageBetweenFrames_Start(/*image_same_origin=*/false,
+                               /*image_crossorigin_attr=*/true,
+                               "Files,text/html,text/plain,text/uri-list");
+}
+
+#if defined(OS_WIN)
+#define MAYBE_DragCrossOriginImageBetweenFrames \
+  DISABLED_DragCrossOriginImageBetweenFrames
+#else
+#define MAYBE_DragCrossOriginImageBetweenFrames \
+  DragCrossOriginImageBetweenFrames
+#endif
+
+// Scenario: drag a cross-orign image from the left into the right frame. Image
+// should not be accessible to the drag/drop events.
+// Test coverage: dragleave, dragenter, dragover, dragend, drop DOM events.
+// Regression test for https://crbug.com/1264873.
+IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest,
+                       MAYBE_DragCrossOriginImageBetweenFrames) {
+  DragImageBetweenFrames_Start(/*image_same_origin=*/false,
+                               /*image_crossorigin_attr=*/false,
+                               // No 'Files' in expected mime types.
+                               "text/html,text/plain,text/uri-list");
+}
+
+void DragAndDropBrowserTest::DragImageBetweenFrames_Start(
+    bool image_same_origin,
+    bool image_crossorigin_attr,
+    const std::string& expected_mime_types) {
   // Note that drag and drop will not expose data across cross-site frames on
   // the same page - this is why the same |frame_site| is used below both for
   // the left and the right frame.  See also https://crbug.com/59081.
   std::string frame_site = use_cross_site_subframe() ? "b.com" : "a.com";
   ASSERT_TRUE(NavigateToTestPage("a.com"));
-  ASSERT_TRUE(NavigateLeftFrame(frame_site, "image_source.html"));
+  ASSERT_TRUE(NavigateLeftFrame(frame_site,
+                                image_same_origin ? frame_site : "c.com",
+                                image_crossorigin_attr, "image_source.html"));
   ASSERT_TRUE(NavigateRightFrame(frame_site, "drop_target.html"));
 
   // Setup test expectations.
@@ -1274,8 +1347,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DragImageBetweenFrames) {
   state.expected_dom_event_data.set_expected_drop_effect("none");
   // (dragstart event handler in image_source.html is asking for "copy" only).
   state.expected_dom_event_data.set_expected_effect_allowed("copy");
-  state.expected_dom_event_data.set_expected_mime_types(
-      "Files,text/html,text/plain,text/uri-list");
+  state.expected_dom_event_data.set_expected_mime_types(expected_mime_types);
   state.expected_dom_event_data.set_expected_page_position("(55, 50)");
 
   // Start the drag in the left frame.

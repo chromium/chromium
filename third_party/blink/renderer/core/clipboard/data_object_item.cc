@@ -96,8 +96,9 @@ DataObjectItem* DataObjectItem::CreateFromHTML(const String& html,
 }
 
 // static
-DataObjectItem* DataObjectItem::CreateFromSharedBuffer(
+DataObjectItem* DataObjectItem::CreateFromFileSharedBuffer(
     scoped_refptr<SharedBuffer> buffer,
+    bool is_accessible_from_start_frame,
     const KURL& source_url,
     const String& filename_extension,
     const AtomicString& content_disposition) {
@@ -105,6 +106,7 @@ DataObjectItem* DataObjectItem::CreateFromSharedBuffer(
       kFileKind,
       MIMETypeRegistry::GetWellKnownMIMETypeForExtension(filename_extension));
   item->shared_buffer_ = std::move(buffer);
+  item->is_accessible_from_start_frame = is_accessible_from_start_frame;
   item->filename_extension_ = filename_extension;
   // TODO(dcheng): Rename these fields to be more generically named.
   item->title_ = content_disposition;
