@@ -419,18 +419,7 @@ bool ZipReader::ExtractCurrentEntryToString(uint64_t max_read_bytes,
       max_read_bytes, base::checked_cast<uint64_t>(entry_.original_size))));
 
   StringWriterDelegate writer(output);
-  if (!ExtractCurrentEntry(&writer, max_read_bytes)) {
-    if (output->size() < max_read_bytes) {
-      // There was an error in extracting entry. If ExtractCurrentEntry()
-      // returns false, the entire file was not read - in which case
-      // output->size() should equal |max_read_bytes| unless an error occurred
-      // which caused extraction to be aborted.
-      output->clear();
-    }
-    return false;
-  }
-
-  return true;
+  return ExtractCurrentEntry(&writer, max_read_bytes);
 }
 
 bool ZipReader::OpenInternal() {

@@ -442,7 +442,6 @@ TEST_F(ZipReaderTest, EncryptedFile_WrongPassword) {
     EXPECT_TRUE(entry->is_encrypted);
     std::string contents = "dummy";
     EXPECT_FALSE(reader.ExtractCurrentEntryToString(&contents));
-    EXPECT_EQ("", contents);
   }
 
   EXPECT_FALSE(reader.Next());
@@ -872,12 +871,14 @@ TEST_F(ZipReaderTest, WrongCrc) {
 
   std::string contents = "dummy";
   EXPECT_FALSE(reader.ExtractCurrentEntryToString(&contents));
-  EXPECT_EQ("", contents);
+  EXPECT_EQ("This file has been changed after its CRC was computed.\n",
+            contents);
 
   contents = "dummy";
   EXPECT_FALSE(
       reader.ExtractCurrentEntryToString(entry->original_size + 1, &contents));
-  EXPECT_EQ("", contents);
+  EXPECT_EQ("This file has been changed after its CRC was computed.\n",
+            contents);
 
   contents = "dummy";
   EXPECT_FALSE(

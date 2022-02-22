@@ -212,21 +212,18 @@ class ZipReader {
       const ProgressCallback& progress_callback);
 
   // Extracts the current entry into memory. If the current entry is a
-  // directory, the |output| parameter is set to the empty string. If the
-  // current entry is a file, the |output| parameter is filled with its
-  // contents.
+  // directory, |*output| is set to the empty string. If the current entry is a
+  // file, |*output| is filled with its contents.
   //
-  // The |output| parameter can be filled with a big amount of data, avoid
-  // passing it around by value, but by reference or pointer.
-  //
-  // The value in Entry::original_size cannot be trusted, so the real size of
+  // The value in |Entry::original_size| cannot be trusted, so the real size of
   // the uncompressed contents can be different. |max_read_bytes| limits the
-  // ammount of memory used to carry the entry.
+  // amount of memory used to carry the entry.
   //
-  // Returns true if the entire content is read. If the entry is bigger than
-  // |max_read_bytes|, returns false and |output| is filled with
-  // |max_read_bytes| of data. If an error occurs, returns false, and |output|
-  // is set to the empty string.
+  // Returns true if the entire content is read without error. If the content is
+  // bigger than |max_read_bytes|, this function returns false and |*output| is
+  // filled with |max_read_bytes| of data. If an error occurs, this function
+  // returns false and |*output| contains the content extracted so far, which
+  // might be garbage data.
   //
   // Precondition: Next() returned a non-null Entry.
   bool ExtractCurrentEntryToString(uint64_t max_read_bytes,
