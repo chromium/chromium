@@ -177,7 +177,7 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     submit_time_ = AdvanceNowByMs(10);
     ++current_token_;
     reporting_controller_.DidSubmitCompositorFrame(
-        *current_token_, current_id_, last_activated_id_,
+        *current_token_, submit_time_, current_id_, last_activated_id_,
         std::move(events_metrics),
         /*has_missing_content=*/false);
   }
@@ -385,7 +385,8 @@ TEST_F(CompositorFrameReportingControllerTest, ActiveReporterCounts) {
 
   last_activated_id_ = current_id_3;
   reporting_controller_.DidSubmitCompositorFrame(
-      0, current_id_3, last_activated_id_, {}, /*has_missing_content=*/false);
+      0, AdvanceNowByMs(10), current_id_3, last_activated_id_, {},
+      /*has_missing_content=*/false);
   EXPECT_EQ(0, reporting_controller_.ActiveReporters());
 
   // Start a frame and take it all the way to the activate stage.
@@ -547,8 +548,9 @@ TEST_F(CompositorFrameReportingControllerTest, DidNotProduceFrame) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_2, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_2, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
@@ -613,8 +615,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
   reporting_controller_.OnFinishImplFrame(current_id_3);
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_3, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_3, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   viz::FrameTimingDetails details;
   details.presentation_feedback = {args_3.frame_time + args_3.interval,
                                    args_3.interval, 0};
@@ -647,7 +650,8 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted) {
       current_id_, CommitEarlyOutReason::FINISHED_NO_UPDATES);
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_, last_activated_id_, {}, /*has_missing_content=*/false);
+      1, AdvanceNowByMs(10), current_id_, last_activated_id_, {},
+      /*has_missing_content=*/false);
 
   viz::FrameTimingDetails details = {};
   reporting_controller_.DidPresentCompositorFrame(1, details);
@@ -702,8 +706,9 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   reporting_controller_.OnFinishImplFrame(current_id_2);
   reporting_controller_.BeginMainFrameAborted(
       current_id_2, CommitEarlyOutReason::FINISHED_NO_UPDATES);
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_2, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_2, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   reporting_controller_.DidPresentCompositorFrame(1, details);
   histogram_tester.ExpectTotalCount(
@@ -721,8 +726,9 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
   histogram_tester.ExpectTotalCount(
       "CompositorLatency.SubmitCompositorFrameToPresentationCompositorFrame",
       2);
-  reporting_controller_.DidSubmitCompositorFrame(
-      2, current_id_2, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(2, AdvanceNowByMs(10),
+                                                 current_id_2, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(2, details);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency.DroppedFrame.BeginImplFrameToSendBeginMainFrame", 0);
@@ -741,8 +747,9 @@ TEST_F(CompositorFrameReportingControllerTest, MainFrameAborted2) {
       2);
   reporting_controller_.WillBeginImplFrame(args_3);
   reporting_controller_.OnFinishImplFrame(current_id_3);
-  reporting_controller_.DidSubmitCompositorFrame(
-      3, current_id_3, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(3, AdvanceNowByMs(10),
+                                                 current_id_3, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(3, details);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency.DroppedFrame.BeginImplFrameToSendBeginMainFrame", 0);
@@ -780,8 +787,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_1, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_1, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
   histogram_tester.ExpectTotalCount(
@@ -803,8 +811,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.WillBeginImplFrame(args_2);
   reporting_controller_.WillBeginMainFrame(args_2);
   reporting_controller_.OnFinishImplFrame(current_id_2);
-  reporting_controller_.DidSubmitCompositorFrame(
-      2, current_id_2, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(2, AdvanceNowByMs(10),
+                                                 current_id_2, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(2, details);
 
   // The reporting for the second frame is delayed until the main-thread
@@ -843,8 +852,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.DidSubmitCompositorFrame(
-      3, current_id_3, current_id_2, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(3, AdvanceNowByMs(10),
+                                                 current_id_3, current_id_2, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(3, details);
 
   // The main-thread responded, so the metrics for |args_2| should now be
@@ -894,8 +904,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_1, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_1, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(1, details);
 
   histogram_tester.ExpectTotalCount(
@@ -918,8 +929,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.OnFinishImplFrame(current_id_2);
-  reporting_controller_.DidSubmitCompositorFrame(
-      2, current_id_2, current_id_1, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(2, AdvanceNowByMs(10),
+                                                 current_id_2, current_id_1, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(2, details);
 
   histogram_tester.ExpectTotalCount(
@@ -959,8 +971,9 @@ TEST_F(CompositorFrameReportingControllerTest, LongMainFrame2) {
   reporting_controller_.DidActivate();
   reporting_controller_.WillBeginImplFrame(args_3);
   reporting_controller_.OnFinishImplFrame(current_id_3);
-  reporting_controller_.DidSubmitCompositorFrame(
-      3, current_id_3, current_id_2, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(3, AdvanceNowByMs(10),
+                                                 current_id_3, current_id_2, {},
+                                                 /*has_missing_content=*/false);
   reporting_controller_.DidPresentCompositorFrame(3, details);
   histogram_tester.ExpectTotalCount(
       "CompositorLatency.BeginImplFrameToSendBeginMainFrame", 4);
@@ -1044,8 +1057,9 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame1) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_, current_id_, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_, current_id_, {},
+                                                 /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   details.presentation_feedback.timestamp =
       args_.frame_time + args_.interval * 1.5 - base::Microseconds(100);
@@ -1082,8 +1096,9 @@ TEST_F(CompositorFrameReportingControllerTest, ReportingMissedDeadlineFrame2) {
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
-  reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_, current_id_, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1, AdvanceNowByMs(10),
+                                                 current_id_, current_id_, {},
+                                                 /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   details.presentation_feedback.timestamp =
       args_.frame_time + args_.interval * 1.5 + base::Microseconds(100);
@@ -1116,7 +1131,8 @@ TEST_F(CompositorFrameReportingControllerTest, LongCompositorAnimation) {
   reporting_controller_.WillBeginImplFrame(args_);
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(
-      1, current_id_, last_activated_id_, {}, /*has_missing_content=*/false);
+      1, AdvanceNowByMs(10), current_id_, last_activated_id_, {},
+      /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   reporting_controller_.DidPresentCompositorFrame(*current_token_, details);
 
@@ -1474,7 +1490,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // for the pending main-thread frame).
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
-  reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {},
+  reporting_controller_.DidSubmitCompositorFrame(1u, AdvanceNowByMs(10),
+                                                 current_id_, {}, {},
                                                  /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
@@ -1493,8 +1510,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   // and R2M.
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
-  reporting_controller_.DidSubmitCompositorFrame(
-      1u, current_id_, previous_id, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(1u, AdvanceNowByMs(10),
+                                                 current_id_, previous_id, {},
+                                                 /*has_missing_content=*/false);
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
   reporting_controller_.DidPresentCompositorFrame(1u, details);
 
@@ -1524,7 +1542,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // main reporter and adopted by it.
   SimulateBeginImplFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
-  reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {},
+  reporting_controller_.DidSubmitCompositorFrame(1u, AdvanceNowByMs(10),
+                                                 current_id_, {}, {},
                                                  /*has_missing_content=*/false);
 
   viz::FrameTimingDetails details_1 = {};
@@ -1547,7 +1566,8 @@ TEST_F(CompositorFrameReportingControllerTest,
   // failure, hence not adopted by the main reporter.
   SimulateBeginImplFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
-  reporting_controller_.DidSubmitCompositorFrame(2u, current_id_, {}, {},
+  reporting_controller_.DidSubmitCompositorFrame(2u, AdvanceNowByMs(10),
+                                                 current_id_, {}, {},
                                                  /*has_missing_content=*/false);
 
   viz::FrameTimingDetails details_2 = {};
@@ -1836,7 +1856,8 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
-  reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {},
+  reporting_controller_.DidSubmitCompositorFrame(1u, AdvanceNowByMs(10),
+                                                 current_id_, {}, {},
                                                  /*has_missing_content=*/false);
   viz::FrameTimingDetails details = {};
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
@@ -1856,8 +1877,9 @@ TEST_F(CompositorFrameReportingControllerTest,
   reporting_controller_.WillActivate();
   reporting_controller_.DidActivate();
 
-  reporting_controller_.DidSubmitCompositorFrame(
-      2u, current_id_, previous_id, {}, /*has_missing_content=*/false);
+  reporting_controller_.DidSubmitCompositorFrame(2u, AdvanceNowByMs(10),
+                                                 current_id_, previous_id, {},
+                                                 /*has_missing_content=*/false);
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
   reporting_controller_.DidPresentCompositorFrame(2u, details);
 

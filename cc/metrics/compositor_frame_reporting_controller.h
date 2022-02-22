@@ -66,6 +66,7 @@ class CC_EXPORT CompositorFrameReportingController {
   virtual void DidActivate();
   virtual void DidSubmitCompositorFrame(
       uint32_t frame_token,
+      base::TimeTicks submit_time,
       const viz::BeginFrameId& current_frame_id,
       const viz::BeginFrameId& last_activated_frame_id,
       EventMetricsSet events_metrics,

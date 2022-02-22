@@ -824,12 +824,13 @@ DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
     draw_result = host_impl_->PrepareToDraw(frame);
     draw_frame = draw_result == DRAW_SUCCESS;
     if (draw_frame) {
-      if (absl::optional<EventMetricsSet> events_metrics =
+      if (absl::optional<LayerTreeHostImpl::SubmitInfo> submit_info =
               host_impl_->DrawLayers(frame)) {
         if (scheduler_on_impl_thread_) {
           // Drawing implies we submitted a frame to the LayerTreeFrameSink.
           scheduler_on_impl_thread_->DidSubmitCompositorFrame(
-              frame->frame_token, std::move(*events_metrics),
+              frame->frame_token, submit_info->time,
+              std::move(submit_info->events_metrics),
               frame->has_missing_content);
         }
         single_thread_client_->DidSubmitCompositorFrame();

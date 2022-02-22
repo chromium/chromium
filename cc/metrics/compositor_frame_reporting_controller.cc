@@ -203,6 +203,7 @@ void CompositorFrameReportingController::DidActivate() {
 
 void CompositorFrameReportingController::DidSubmitCompositorFrame(
     uint32_t frame_token,
+    base::TimeTicks submit_time,
     const viz::BeginFrameId& current_frame_id,
     const viz::BeginFrameId& last_activated_frame_id,
     EventMetricsSet events_metrics,
@@ -305,7 +306,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
 
   if (main_reporter) {
     main_reporter->StartStage(
-        StageType::kSubmitCompositorFrameToPresentationCompositorFrame, Now());
+        StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
+        submit_time);
     main_reporter->AddEventsMetrics(
         std::move(events_metrics.main_event_metrics));
     main_reporter->set_has_missing_content(has_missing_content);
@@ -316,7 +318,8 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
   if (impl_reporter) {
     impl_reporter->EnableCompositorOnlyReporting();
     impl_reporter->StartStage(
-        StageType::kSubmitCompositorFrameToPresentationCompositorFrame, Now());
+        StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
+        submit_time);
     impl_reporter->AddEventsMetrics(
         std::move(events_metrics.impl_event_metrics));
     impl_reporter->set_has_missing_content(has_missing_content);

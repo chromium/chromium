@@ -182,6 +182,7 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // Drawing should result in submitting a CompositorFrame to the
   // LayerTreeFrameSink and then calling this.
   void DidSubmitCompositorFrame(uint32_t frame_token,
+                                base::TimeTicks submit_time,
                                 EventMetricsSet events_metrics,
                                 bool has_missing_content);
   // The LayerTreeFrameSink acks when it is ready for a new frame which

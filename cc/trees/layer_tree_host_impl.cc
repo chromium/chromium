@@ -2468,7 +2468,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   return metadata;
 }
 
-absl::optional<EventMetricsSet> LayerTreeHostImpl::DrawLayers(
+absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     FrameData* frame) {
   DCHECK(CanDraw());
   DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
@@ -2502,6 +2502,7 @@ absl::optional<EventMetricsSet> LayerTreeHostImpl::DrawLayers(
       events_metrics_manager_.TakeSavedEventsMetrics());
   lag_tracking_manager_.CollectScrollEventsFromFrame(frame_token,
                                                      events_metrics);
+  base::TimeTicks submit_time = base::TimeTicks::Now();
   layer_tree_frame_sink_->SubmitCompositorFrame(
       std::move(compositor_frame),
       /*hit_test_data_changed=*/false);
@@ -2572,7 +2573,7 @@ absl::optional<EventMetricsSet> LayerTreeHostImpl::DrawLayers(
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
   }
 
-  return events_metrics;
+  return SubmitInfo{submit_time, std::move(events_metrics)};
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(

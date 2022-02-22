@@ -250,8 +250,8 @@ class LayerTreeHostImplForTesting : public LayerTreeHostImpl {
     return test_hooks_->PrepareToDrawOnThread(this, frame, draw_result);
   }
 
-  absl::optional<EventMetricsSet> DrawLayers(FrameData* frame) override {
-    absl::optional<EventMetricsSet> r = LayerTreeHostImpl::DrawLayers(frame);
+  absl::optional<SubmitInfo> DrawLayers(FrameData* frame) override {
+    auto r = LayerTreeHostImpl::DrawLayers(frame);
     test_hooks_->DrawLayersOnThread(this);
     return r;
   }
