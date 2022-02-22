@@ -344,6 +344,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   learnMore.editable = NO;
   learnMore.delegate = self;
   learnMore.attributedText = FormatHTMLForLearnMoreSection();
+  learnMore.textAlignment = NSTextAlignmentCenter;
   learnMore.layer.masksToBounds = YES;
   learnMore.layer.cornerRadius = 17;
   learnMore.backgroundColor = TextBackgroudColor();
