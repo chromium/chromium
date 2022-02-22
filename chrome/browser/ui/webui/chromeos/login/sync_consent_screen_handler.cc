@@ -25,29 +25,11 @@ namespace {
 // This helper function gets strings from WebUI and a set of known string
 // resource ids, and converts strings back to IDs. It CHECKs if string is not
 // found in resources.
-void GetConsentIDs(const std::unordered_set<int>& known_ids,
+void GetConsentIDs(const std::unordered_map<std::string, int>& known_strings,
                    const login::StringList& consent_description,
                    const std::string& consent_confirmation,
                    std::vector<int>* consent_description_ids,
                    int* consent_confirmation_id) {
-  std::unordered_map<std::string, int> known_strings;
-  std::vector<std::u16string> str_substitute;
-  str_substitute.push_back(ui::GetChromeOSDeviceName());
-  for (const int& id : known_ids) {
-    // When the strings are passed to the HTML, the Unicode NBSP symbol
-    // (\u00A0) will be automatically replaced with "&nbsp;". This change must
-    // be mirrored in the string-to-ids map. Note that "\u00A0" is actually two
-    // characters, so we must use base::ReplaceSubstrings* rather than
-    // base::ReplaceChars.
-    // TODO(alemate): Find a more elegant solution.
-    std::u16string raw_string = base::ReplaceStringPlaceholders(
-        l10n_util::GetStringUTF16(id), str_substitute, nullptr);
-    std::string sanitized_string = base::UTF16ToUTF8(raw_string);
-    base::ReplaceSubstringsAfterOffset(&sanitized_string, 0,
-                                       "\u00A0" /* NBSP */, "&nbsp;");
-    known_strings[sanitized_string] = id;
-  }
-
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in `string_to_grd_id_map_`). As
   // this has privacy and legal implications, CHECK the integrity of the strings
@@ -77,30 +59,45 @@ SyncConsentScreenHandler::SyncConsentScreenHandler(
   set_user_acted_method_path("login.SyncConsentScreen.userActed");
 }
 
-SyncConsentScreenHandler::~SyncConsentScreenHandler() {}
+SyncConsentScreenHandler::~SyncConsentScreenHandler() = default;
+
+std::string Sanitize(const std::u16string& raw_string) {
+  // When the strings are passed to the HTML, the Unicode NBSP symbol
+  // (\u00A0) will be automatically replaced with "&nbsp;". This change must
+  // be mirrored in the string-to-ids map. Note that "\u00A0" is actually two
+  // characters, so we must use base::ReplaceSubstrings* rather than
+  // base::ReplaceChars.
+  // TODO(alemate): Find a more elegant solution.
+  std::string sanitized_string = base::UTF16ToUTF8(raw_string);
+  base::ReplaceSubstringsAfterOffset(&sanitized_string, 0, "\u00A0" /* NBSP */,
+                                     "&nbsp;");
+  return sanitized_string;
+}
 
 void SyncConsentScreenHandler::RememberLocalizedValue(
     const std::string& name,
     const int resource_id,
     ::login::LocalizedValuesBuilder* builder) {
-  CHECK(known_string_ids_.count(resource_id) == 0);
-  known_string_ids_.insert(resource_id);
   builder->Add(name, resource_id);
+  std::u16string raw_string = l10n_util::GetStringUTF16(resource_id);
+  known_strings_[Sanitize(raw_string)] = resource_id;
 }
 
 void SyncConsentScreenHandler::RememberLocalizedValueWithDeviceName(
     const std::string& name,
     const int resource_id,
     ::login::LocalizedValuesBuilder* builder) {
-  CHECK(known_string_ids_.count(resource_id) == 0);
-  known_string_ids_.insert(resource_id);
   builder->AddF(name, resource_id, ui::GetChromeOSDeviceName());
+
+  std::vector<std::u16string> str_substitute;
+  str_substitute.push_back(ui::GetChromeOSDeviceName());
+  std::u16string raw_string = base::ReplaceStringPlaceholders(
+      l10n_util::GetStringUTF16(resource_id), str_substitute, nullptr);
+  known_strings_[Sanitize(raw_string)] = resource_id;
 }
 
 void SyncConsentScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  known_string_ids_.clear();
-
   RememberLocalizedValueWithDeviceName(
       "syncConsentScreenTitle", IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
       builder);
@@ -213,7 +210,7 @@ void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
     const std::string& consent_confirmation) {
   std::vector<int> consent_description_ids;
   int consent_confirmation_id;
-  GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,
+  GetConsentIDs(known_strings_, consent_description, consent_confirmation,
                 &consent_description_ids, &consent_confirmation_id);
   screen_->OnNonSplitSettingsContinue(
       opted_in, review_sync, consent_description_ids, consent_confirmation_id);

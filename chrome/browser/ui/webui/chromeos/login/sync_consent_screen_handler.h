@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SYNC_CONSENT_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SYNC_CONSENT_SCREEN_HANDLER_H_
 
-#include <unordered_set>
+#include <string>
+#include <unordered_map>
 
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
@@ -98,7 +99,7 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder);
 
   // Resource IDs of the displayed strings.
-  std::unordered_set<int> known_string_ids_;
+  std::unordered_map<std::string, int> known_strings_;
 
   ash::SyncConsentScreen* screen_ = nullptr;
 };
