@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 
-#include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
+#include "ash/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {

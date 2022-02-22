@@ -94,10 +94,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #endif
 
 using base::Bucket;

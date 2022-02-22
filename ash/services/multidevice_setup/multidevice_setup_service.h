@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 class PrefService;
 class PrefRegistrySimple;

@@ -38,7 +38,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/services/multidevice_setup/public/cpp/first_run_field_trial.h"
+#include "ash/services/multidevice_setup/public/cpp/first_run_field_trial.h"
 #endif
 
 namespace {

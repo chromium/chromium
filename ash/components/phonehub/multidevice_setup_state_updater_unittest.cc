@@ -5,8 +5,8 @@
 #include "ash/components/phonehub/multidevice_setup_state_updater.h"
 
 #include "ash/components/phonehub/fake_notification_access_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

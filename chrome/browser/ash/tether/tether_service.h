@@ -9,6 +9,7 @@
 
 #include "ash/components/tether/tether_component.h"
 #include "ash/components/tether/tether_host_fetcher.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -16,7 +17,6 @@
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 

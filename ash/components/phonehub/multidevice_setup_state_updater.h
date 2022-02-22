@@ -6,7 +6,7 @@
 #define ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_
 
 #include "ash/components/phonehub/notification_access_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 class PrefRegistrySimple;
 class PrefService;

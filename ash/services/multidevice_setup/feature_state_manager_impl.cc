@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/global_state_feature_manager.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -18,7 +19,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

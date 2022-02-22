@@ -3121,7 +3121,7 @@ if (!is_android) {
         sources += [
           "../browser/ui/views/select_file_dialog_extension_browsertest.cc",
         ]
-        deps += [ "//chromeos/services/multidevice_setup/public/cpp:prefs" ]
+        deps += [ "//ash/services/multidevice_setup/public/cpp:prefs" ]
       }
       if (!is_chromeos) {
         sources += [
@@ -3788,6 +3788,7 @@ if (!is_android) {
         "//ash/components/timezone",
         "//ash/keyboard/ui:test_support",
         "//ash/public/cpp/external_arc",
+        "//ash/services/multidevice_setup/public/cpp:test_support",
         "//ash/webui/diagnostics_ui",
         "//ash/webui/eche_app_ui",
         "//ash/webui/file_manager:constants",
@@ -3863,7 +3864,6 @@ if (!is_android) {
         "//chromeos/services/assistant/public/cpp",
         "//chromeos/services/assistant/public/proto",
         "//chromeos/services/machine_learning/public/cpp:stub",
-        "//chromeos/services/multidevice_setup/public/cpp:test_support",
         "//chromeos/services/tts",
         "//chromeos/system",
         "//chromeos/ui/base",
@@ -6498,6 +6498,7 @@ test("unit_tests") {
         "//ash/components/proximity_auth",
         "//ash/components/proximity_auth:test_support",
         "//ash/public/cpp:test_support",
+        "//ash/services/multidevice_setup/public/cpp:test_support",
         "//ash/services/secure_channel/public/cpp/client:test_support",
         "//ash/shortcut_viewer",
         "//ash/shortcut_viewer/strings:strings_grit",
@@ -6540,7 +6541,6 @@ test("unit_tests") {
         "//chromeos/services/assistant/public/cpp",
         "//chromeos/services/assistant/public/shared",
         "//chromeos/services/device_sync/public/cpp:test_support",
-        "//chromeos/services/multidevice_setup/public/cpp:test_support",
         "//chromeos/system",
         "//chromeos/ui/base",
         "//components/services/app_service/public/cpp:app_update",

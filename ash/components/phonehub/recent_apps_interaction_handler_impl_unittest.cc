@@ -9,8 +9,8 @@
 #include "ash/components/phonehub/fake_notification_access_manager.h"
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

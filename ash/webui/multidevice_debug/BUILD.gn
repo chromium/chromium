@@ -18,6 +18,7 @@ static_library("multidevice_debug") {
 
   deps = [
     "//ash/constants",
+    "//ash/services/multidevice_setup/public/mojom",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/mojom",
     "//ash/webui/resources:multidevice_debug_resources",
@@ -27,7 +28,6 @@ static_library("multidevice_debug") {
     "//chromeos/services/device_sync/proto",
     "//chromeos/services/device_sync/proto:util",
     "//chromeos/services/device_sync/public/cpp",
-    "//chromeos/services/multidevice_setup/public/mojom",
     "//components/prefs",
     "//components/resources",
     "//content/public/browser",

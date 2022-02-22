@@ -8,6 +8,7 @@
 
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/services/secure_channel/public/cpp/client/presence_monitor_client_impl.h"
@@ -20,7 +21,6 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"

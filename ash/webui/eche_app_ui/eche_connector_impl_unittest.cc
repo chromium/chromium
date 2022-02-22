@@ -10,8 +10,8 @@
 
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -19,8 +21,6 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/user_manager/scoped_user_manager.h"

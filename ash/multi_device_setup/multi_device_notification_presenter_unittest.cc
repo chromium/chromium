@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
@@ -20,8 +22,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/token.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/fake_message_center.h"

@@ -7,8 +7,8 @@
 
 #include "ash/components/phonehub/feature_status_provider.h"
 #include "ash/components/phonehub/onboarding_ui_tracker.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/callback.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 class PrefRegistrySimple;
 class PrefService;

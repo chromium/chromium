@@ -1372,7 +1372,6 @@
                   '|chrome/test/data/webui/multidevice_setup/'\
                   '|chromeos/components/multidevice/'\
                   '|chromeos/services/device_sync/'\
-                  '|chromeos/services/multidevice_setup/'\
                   '|ui/webui/resources/cr_components/chromeos/multidevice_setup/'
     },
     'multipaste': {

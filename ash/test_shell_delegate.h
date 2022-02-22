@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/shell_delegate.h"
 #include "base/callback.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
 

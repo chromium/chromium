@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
@@ -18,8 +20,6 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_system.h"

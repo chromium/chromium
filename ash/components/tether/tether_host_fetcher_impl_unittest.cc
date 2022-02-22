@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chromeos/components/multidevice/remote_device.h"
@@ -15,8 +17,6 @@
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

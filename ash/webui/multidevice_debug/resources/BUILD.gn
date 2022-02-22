@@ -27,6 +27,6 @@ js_library("proximity_auth") {
   deps = [
     ":logs",
     ":webui",
-    "//chromeos/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
   ]
 }

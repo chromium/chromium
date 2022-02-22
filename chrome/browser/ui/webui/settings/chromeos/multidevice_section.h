@@ -7,13 +7,13 @@
 
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

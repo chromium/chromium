@@ -38,7 +38,7 @@ js_library("button_bar.m") {
 js_library("fake_mojo_service.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.m.js" ]
   deps = [
-    "//chromeos/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]
@@ -47,7 +47,7 @@ js_library("fake_mojo_service.m") {
 js_library("mojo_api.m") {
   sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/multidevice_setup/mojo_api.m.js" ]
   deps = [
-    "//chromeos/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
+    "//ash/services/multidevice_setup/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":modulize" ]

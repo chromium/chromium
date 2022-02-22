@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "content/public/browser/service_worker_context_observer.h"
 
 class Profile;

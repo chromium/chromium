@@ -1,3 +1,0 @@
-# TODO(https://crbug.com/1164001): Share OWNERS until the migration of
-# //chromeos/services/multidevice_setup completes.
-file://ash/services/multidevice_setup/OWNERS

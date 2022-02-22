@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/tether/tether_service_factory.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,8 +19,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/session_manager/core/session_manager.h"

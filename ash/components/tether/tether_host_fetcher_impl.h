@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "ash/components/tether/tether_host_fetcher.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace ash {
 

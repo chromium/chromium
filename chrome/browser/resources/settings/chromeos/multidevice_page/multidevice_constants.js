@@ -32,7 +32,7 @@ cr.define('settings', function() {
   /**
    * Enum of MultiDevice features. Note that this is copied from (and must
    * include an analog of all values in) the Feature enum in
-   * //chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
+   * //ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
    * @enum {number}
    */
   /* #export */ const MultiDeviceFeature = {
@@ -51,7 +51,7 @@ cr.define('settings', function() {
   /**
    * Possible states of MultiDevice features. Note that this is copied from (and
    * must include an analog of all values in) the FeatureState enum in
-   * //chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
+   * //ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
    * @enum {number}
    */
   /* #export */ const MultiDeviceFeatureState = {

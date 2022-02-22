@@ -117,6 +117,8 @@ static_library("phonehub") {
   deps = [
     "//ash/components/phonehub/proto",
     "//ash/constants",
+    "//ash/services/multidevice_setup/public/cpp",
+    "//ash/services/multidevice_setup/public/cpp:prefs",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/mojom",
     "//base",
@@ -124,8 +126,6 @@ static_library("phonehub") {
     "//chromeos/components/multidevice/logging",
     "//chromeos/dbus/power",
     "//chromeos/services/device_sync/public/cpp",
-    "//chromeos/services/multidevice_setup/public/cpp",
-    "//chromeos/services/multidevice_setup/public/cpp:prefs",
     "//chromeos/services/network_config",
     "//chromeos/services/network_config:in_process_instance",
     "//components/keyed_service/core",
@@ -179,9 +179,9 @@ static_library("debug") {
   deps = [
     "//ash/components/phonehub/proto",
     "//ash/constants",
+    "//ash/services/multidevice_setup/public/mojom",
     "//base",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/services/multidevice_setup/public/mojom",
   ]
 }
 
@@ -252,6 +252,9 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/components/phonehub/proto",
     "//ash/constants",
+    "//ash/services/multidevice_setup/public/cpp",
+    "//ash/services/multidevice_setup/public/cpp:prefs",
+    "//ash/services/multidevice_setup/public/cpp:test_support",
     "//ash/services/secure_channel/public/cpp/client:test_support",
     "//ash/services/secure_channel/public/mojom",
     "//base",
@@ -263,9 +266,6 @@ source_set("unit_tests") {
     "//chromeos/network:test_support",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/cpp:test_support",
-    "//chromeos/services/multidevice_setup/public/cpp",
-    "//chromeos/services/multidevice_setup/public/cpp:prefs",
-    "//chromeos/services/multidevice_setup/public/cpp:test_support",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//components/prefs:test_support",

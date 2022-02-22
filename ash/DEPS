@@ -79,7 +79,6 @@ include_rules = [
   "+chromeos/services/bluetooth_config",
   "+chromeos/services/libassistant/public",
   "+chromeos/services/machine_learning/public",
-  "+chromeos/services/multidevice_setup/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",
   "+chromeos/strings",

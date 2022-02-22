@@ -11,6 +11,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/host_status_provider.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/services/multidevice_setup/wifi_sync_notification_controller.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -26,8 +28,6 @@
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

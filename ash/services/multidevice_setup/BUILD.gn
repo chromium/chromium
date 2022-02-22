@@ -62,6 +62,11 @@ static_library("multidevice_setup") {
   deps = [
     "//ash/constants",
     "//ash/services/multidevice_setup/proto",
+    "//ash/services/multidevice_setup/public/cpp:android_sms_app_helper_delegate",
+    "//ash/services/multidevice_setup/public/cpp:android_sms_pairing_state_tracker",
+    "//ash/services/multidevice_setup/public/cpp:auth_token_validator",
+    "//ash/services/multidevice_setup/public/cpp:oobe_completion_tracker",
+    "//ash/services/multidevice_setup/public/cpp:prefs",
     "//ash/services/secure_channel/public/cpp/client",
     "//ash/services/secure_channel/public/mojom",
     "//base",
@@ -70,26 +75,21 @@ static_library("multidevice_setup") {
     "//chromeos/services/device_sync/proto:util",
     "//chromeos/services/device_sync/public/cpp",
     "//chromeos/services/device_sync/public/mojom",
-    "//chromeos/services/multidevice_setup/public/cpp:android_sms_app_helper_delegate",
-    "//chromeos/services/multidevice_setup/public/cpp:android_sms_pairing_state_tracker",
-    "//chromeos/services/multidevice_setup/public/cpp:auth_token_validator",
-    "//chromeos/services/multidevice_setup/public/cpp:oobe_completion_tracker",
-    "//chromeos/services/multidevice_setup/public/cpp:prefs",
     "//components/pref_registry",
     "//components/prefs:prefs",
     "//components/session_manager/core",
     "//url",
   ]
 
-  public_deps = [ "//chromeos/services/multidevice_setup/public/mojom" ]
+  public_deps = [ "//ash/services/multidevice_setup/public/mojom" ]
 
   visibility = [
     ":*",
+    "//ash/services/multidevice_setup/public/cpp:test_support",
+    "//ash/services/multidevice_setup/public/cpp:unit_tests",
     "//chrome/browser",
     "//chrome/browser/chromeos",
     "//chrome/browser/ui",
-    "//chromeos/services/multidevice_setup/public/cpp:test_support",
-    "//chromeos/services/multidevice_setup/public/cpp:unit_tests",
   ]
 }
 
@@ -122,9 +122,9 @@ static_library("test_support") {
 
   deps = [
     ":multidevice_setup",
+    "//ash/services/multidevice_setup/public/mojom",
     "//base",
     "//chromeos/components/multidevice",
-    "//chromeos/services/multidevice_setup/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
@@ -154,17 +154,17 @@ source_set("unit_tests") {
     ":multidevice_setup",
     ":test_support",
     "//ash/constants",
+    "//ash/services/multidevice_setup/public/cpp:oobe_completion_tracker",
+    "//ash/services/multidevice_setup/public/cpp:prefs",
+    "//ash/services/multidevice_setup/public/cpp:test_support",
+    "//ash/services/multidevice_setup/public/cpp:unit_tests",
+    "//ash/services/multidevice_setup/public/mojom",
     "//ash/services/secure_channel/public/cpp/client:test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/services/device_sync/public/cpp:test_support",
-    "//chromeos/services/multidevice_setup/public/cpp:oobe_completion_tracker",
-    "//chromeos/services/multidevice_setup/public/cpp:prefs",
-    "//chromeos/services/multidevice_setup/public/cpp:test_support",
-    "//chromeos/services/multidevice_setup/public/cpp:unit_tests",
-    "//chromeos/services/multidevice_setup/public/mojom",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
     "//testing/gmock",

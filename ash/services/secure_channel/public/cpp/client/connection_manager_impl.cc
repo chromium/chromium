@@ -5,6 +5,7 @@
 #include "ash/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
@@ -13,7 +14,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace chromeos {
 namespace secure_channel {

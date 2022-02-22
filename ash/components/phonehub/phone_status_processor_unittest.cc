@@ -24,11 +24,11 @@
 #include "ash/components/phonehub/phone_status_model.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ash/constants/ash_features.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image.h"
 
