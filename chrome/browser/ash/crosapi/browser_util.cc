@@ -161,7 +161,6 @@ DetermineLacrosLaunchSwitchFromPolicyValue(base::StringPiece policy_value) {
 // IsLacrosEnabledForMigration with the user that the
 // IsLacrosEnabledForMigration was passed.
 bool IsLacrosAllowedToBeEnabledWithUser(const User* user,
-                                        Channel channel,
                                         LacrosLaunchSwitch launch_switch) {
   if (g_lacros_enabled_for_test)
     return true;
@@ -181,17 +180,7 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user,
       return true;
   }
 
-  switch (channel) {
-    case Channel::UNKNOWN:
-    case Channel::CANARY:
-    case Channel::DEV:
-    case Channel::BETA:
-      // Canary/dev/beta builds can use Lacros.
-      // Developer builds can use lacros.
-      return true;
-    case Channel::STABLE:
-      return base::FeatureList::IsEnabled(kLacrosAllowOnStableChannel);
-  }
+  return true;
 }
 
 // Called from `IsDataWipeRequired()` or `IsDataWipeRequiredForTesting()`.
@@ -269,10 +258,6 @@ const ComponentInfo kLacrosDogfoodBetaInfo = {
 const ComponentInfo kLacrosDogfoodStableInfo = {
     "lacros-dogfood-stable", "ehpjbaiafkpkmhjocnenjbbhmecnfcjb"};
 
-// When this feature is enabled, Lacros will be available on stable channel.
-const base::Feature kLacrosAllowOnStableChannel{
-    "LacrosAllowOnStableChannel", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // A kill switch for lacros chrome apps.
 const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -341,7 +326,7 @@ base::FilePath GetUserDataDir() {
   return base_path.Append("lacros");
 }
 
-bool IsLacrosAllowedToBeEnabled(Channel channel) {
+bool IsLacrosAllowedToBeEnabled() {
   // Allows tests to avoid enabling the flag, constructing a fake user manager,
   // creating g_browser_process->local_state(), etc.
   if (g_lacros_enabled_for_test)
@@ -360,20 +345,16 @@ bool IsLacrosAllowedToBeEnabled(Channel channel) {
     return false;
   }
 
-  return IsLacrosAllowedToBeEnabledWithUser(user, channel, GetLaunchSwitch());
+  return IsLacrosAllowedToBeEnabledWithUser(user, GetLaunchSwitch());
 }
 
 bool IsLacrosEnabled() {
-  return IsLacrosEnabled(chrome::GetChannel());
-}
-
-bool IsLacrosEnabled(Channel channel) {
   // Allows tests to avoid enabling the flag, constructing a fake user manager,
   // creating g_browser_process->local_state(), etc.
   if (g_lacros_enabled_for_test)
     return true;
 
-  if (!IsLacrosAllowedToBeEnabled(channel))
+  if (!IsLacrosAllowedToBeEnabled())
     return false;
 
   // If profile migration is enabled for the user, then make profile migration a
@@ -395,7 +376,6 @@ bool IsLacrosEnabled(Channel channel) {
     case LacrosLaunchSwitch::kUserChoice:
       break;
     case LacrosLaunchSwitch::kLacrosDisallowed:
-      DCHECK_EQ(channel, Channel::UNKNOWN);
       return false;
     case LacrosLaunchSwitch::kSideBySide:
     case LacrosLaunchSwitch::kLacrosPrimary:
@@ -445,10 +425,8 @@ bool IsLacrosEnabledForMigration(const User* user,
     launch_switch = GetLaunchSwitch();
   }
 
-  if (!IsLacrosAllowedToBeEnabledWithUser(user, chrome::GetChannel(),
-                                          launch_switch)) {
+  if (!IsLacrosAllowedToBeEnabledWithUser(user, launch_switch))
     return false;
-  }
 
   switch (launch_switch) {
     case LacrosLaunchSwitch::kUserChoice:
@@ -464,8 +442,8 @@ bool IsLacrosEnabledForMigration(const User* user,
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
-bool IsLacrosSupportFlagAllowed(Channel channel) {
-  return IsLacrosAllowedToBeEnabled(channel) &&
+bool IsLacrosSupportFlagAllowed() {
+  return IsLacrosAllowedToBeEnabled() &&
          (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
 }
 
@@ -474,12 +452,8 @@ void SetLacrosEnabledForTest(bool force_enabled) {
 }
 
 bool IsAshWebBrowserEnabled() {
-  return IsAshWebBrowserEnabled(chrome::GetChannel());
-}
-
-bool IsAshWebBrowserEnabled(Channel channel) {
   // If Lacros is not a primary browser, Ash browser is always enabled.
-  if (!IsLacrosPrimaryBrowser(channel))
+  if (!IsLacrosPrimaryBrowser())
     return true;
 
   switch (GetLaunchSwitch()) {
@@ -497,14 +471,10 @@ bool IsAshWebBrowserEnabled(Channel channel) {
 }
 
 bool IsLacrosPrimaryBrowser() {
-  return IsLacrosPrimaryBrowser(chrome::GetChannel());
-}
-
-bool IsLacrosPrimaryBrowser(Channel channel) {
   if (g_lacros_primary_browser_for_test.has_value())
     return g_lacros_primary_browser_for_test.value();
 
-  if (!IsLacrosEnabled(channel))
+  if (!IsLacrosEnabled())
     return false;
 
   // Lacros-chrome will always be the primary browser if Lacros is enabled in
@@ -512,7 +482,7 @@ bool IsLacrosPrimaryBrowser(Channel channel) {
   if (user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp())
     return true;
 
-  if (!IsLacrosPrimaryBrowserAllowed(channel))
+  if (!IsLacrosPrimaryBrowserAllowed())
     return false;
 
   switch (GetLaunchSwitch()) {
@@ -535,13 +505,12 @@ void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value) {
   g_lacros_primary_browser_for_test = value;
 }
 
-bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
-  if (!IsLacrosAllowedToBeEnabled(channel))
+bool IsLacrosPrimaryBrowserAllowed() {
+  if (!IsLacrosAllowedToBeEnabled())
     return false;
 
   switch (GetLaunchSwitch()) {
     case LacrosLaunchSwitch::kLacrosDisallowed:
-      DCHECK_EQ(channel, Channel::UNKNOWN);
       return false;
     case LacrosLaunchSwitch::kLacrosPrimary:
     case LacrosLaunchSwitch::kLacrosOnly:
@@ -555,18 +524,17 @@ bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
   return true;
 }
 
-bool IsLacrosPrimaryFlagAllowed(Channel channel) {
-  return IsLacrosPrimaryBrowserAllowed(channel) &&
+bool IsLacrosPrimaryFlagAllowed() {
+  return IsLacrosPrimaryBrowserAllowed() &&
          (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
 }
 
-bool IsLacrosOnlyBrowserAllowed(Channel channel) {
-  if (!IsLacrosAllowedToBeEnabled(channel))
+bool IsLacrosOnlyBrowserAllowed() {
+  if (!IsLacrosAllowedToBeEnabled())
     return false;
 
   switch (GetLaunchSwitch()) {
     case LacrosLaunchSwitch::kLacrosDisallowed:
-      DCHECK_EQ(channel, Channel::UNKNOWN);
       return false;
     case LacrosLaunchSwitch::kLacrosOnly:
       // Forcibly allow to use Lacros as a Primary respecting the policy.
@@ -581,8 +549,8 @@ bool IsLacrosOnlyBrowserAllowed(Channel channel) {
   return true;
 }
 
-bool IsLacrosOnlyFlagAllowed(Channel channel) {
-  return IsLacrosOnlyBrowserAllowed(channel) &&
+bool IsLacrosOnlyFlagAllowed() {
+  return IsLacrosOnlyBrowserAllowed() &&
          (GetLaunchSwitch() == LacrosLaunchSwitch::kUserChoice);
 }
 

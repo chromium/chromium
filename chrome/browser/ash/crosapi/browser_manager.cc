@@ -1252,7 +1252,7 @@ void BrowserManager::RecordLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;
   LacrosLaunchModeAndSource lacros_mode_and_source;
 
-  if (!browser_util::IsAshWebBrowserEnabled(chrome::GetChannel())) {
+  if (!browser_util::IsAshWebBrowserEnabled()) {
     // As Ash is disabled, Lacros is the only available browser.
     lacros_mode = LacrosLaunchMode::kLacrosOnly;
     lacros_mode_and_source =

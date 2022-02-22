@@ -94,7 +94,6 @@ extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
 extern const ComponentInfo kLacrosDogfoodStableInfo;
 
-extern const base::Feature kLacrosAllowOnStableChannel;
 extern const base::Feature kLacrosGooglePolicyRollout;
 
 // The default update channel to leverage for Lacros when the channel is
@@ -151,13 +150,10 @@ base::FilePath GetUserDataDir();
 
 // Returns true if the Lacros feature is allowed to be enabled for primary user.
 // This checks user type, chrome channel and enterprise policy.
-bool IsLacrosAllowedToBeEnabled(version_info::Channel channel);
+bool IsLacrosAllowedToBeEnabled();
 
 // Returns true if the Lacros feature is enabled for the primary user.
 bool IsLacrosEnabled();
-
-// As above, but takes a channel. Exposed for testing.
-bool IsLacrosEnabled(version_info::Channel channel);
 
 // Represents whether the function is being called before the Policy is
 // initialized or not.
@@ -176,7 +172,7 @@ bool IsLacrosEnabledForMigration(const user_manager::User* user,
                                  PolicyInitState policy_init_state);
 
 // Returns true if |chromeos::features::kLacrosSupport| flag is allowed.
-bool IsLacrosSupportFlagAllowed(version_info::Channel channel);
+bool IsLacrosSupportFlagAllowed();
 
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);
@@ -185,14 +181,8 @@ void SetLacrosEnabledForTest(bool force_enabled);
 // enabled and is the only browser.
 bool IsAshWebBrowserEnabled();
 
-// As above, but takes a channel. Exposed for testing.
-bool IsAshWebBrowserEnabled(version_info::Channel channel);
-
 // Returns true if the lacros should be used as a primary browser.
 bool IsLacrosPrimaryBrowser();
-
-// As above, but takes a channel. Exposed for testing.
-bool IsLacrosPrimaryBrowser(version_info::Channel channel);
 
 // Forces IsLacrosPrimaryBrowser() to return true or false for testing.
 // Passing absl::nullopt will reset the state.
@@ -202,17 +192,17 @@ void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value);
 // for the current session.
 // Note that IsLacrosPrimaryBrowser may return false, even if this returns
 // true, specifically, the feature is disabled by user/policy.
-bool IsLacrosPrimaryBrowserAllowed(version_info::Channel channel);
+bool IsLacrosPrimaryBrowserAllowed();
 
 // Returns true if |chromeos::features::kLacrosPrimary| flag is allowed.
-bool IsLacrosPrimaryFlagAllowed(version_info::Channel channel);
+bool IsLacrosPrimaryFlagAllowed();
 
 // Returns true if the lacros can be used as a only browser
 // for the current session.
-bool IsLacrosOnlyBrowserAllowed(version_info::Channel channel);
+bool IsLacrosOnlyBrowserAllowed();
 
 // Returns true if |chromeos::features::kLacrosOnly| flag is allowed.
-bool IsLacrosOnlyFlagAllowed(version_info::Channel channel);
+bool IsLacrosOnlyFlagAllowed();
 
 // Returns true if Lacros is allowed to launch and show a window. This can
 // return false if the user is using multi-signin, which is mutually exclusive
