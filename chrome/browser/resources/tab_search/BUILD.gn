@@ -7,6 +7,7 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
@@ -78,7 +79,7 @@ generate_grd("build_fuse_grdp") {
 preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_tabs") {
@@ -88,11 +89,14 @@ preprocess_if_expr("preprocess_tabs") {
   in_files = [ "tabs.mojom-webui.js" ]
 }
 
-preprocess_if_expr("preprocess_web_components") {
-  deps = [ ":web_components" ]
+preprocess_if_expr("preprocess_generated") {
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
 copy("copy_fuse") {
@@ -143,8 +147,12 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 ts_library("build_ts") {
@@ -152,7 +160,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + non_web_component_files + mojo_js_files
+  in_files = ts_files + css_wrapper_files + html_wrapper_files + mojo_js_files
   definitions = [
     "//tools/typescript/definitions/metrics_private.d.ts",
     "$target_gen_dir/$preprocess_folder/fuse.d.ts",
@@ -168,9 +176,9 @@ ts_library("build_ts") {
     ":copy_fuse_dts",
     ":copy_fuse_dts_tsc",
     ":preprocess",
+    ":preprocess_generated",
     ":preprocess_mojo",
     ":preprocess_mojo_tab_groups",
     ":preprocess_tabs",
-    ":preprocess_web_components",
   ]
 }

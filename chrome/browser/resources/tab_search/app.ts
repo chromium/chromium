@@ -21,7 +21,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './app.html.js';
 
 import {fuzzySearch, FuzzySearchOptions} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
@@ -719,7 +720,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

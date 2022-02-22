@@ -9,7 +9,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrSearchFieldBehavior} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_behavior.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './tab_search_search_field.html.js';
 
 const TabSearchSearchFieldBase =
     mixinBehaviors([CrSearchFieldBehavior], PolymerElement) as
@@ -29,7 +30,7 @@ export class TabSearchSearchField extends TabSearchSearchFieldBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

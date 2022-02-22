@@ -21,9 +21,10 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {calculateSplices, html, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {calculateSplices, PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BiMap} from './bimap.js';
+import {getTemplate} from './infinite_list.html.js';
 
 export const NO_SELECTION: number = -1;
 
@@ -48,7 +49,7 @@ export class InfiniteList extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
