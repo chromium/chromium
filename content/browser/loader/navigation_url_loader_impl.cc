@@ -1026,6 +1026,7 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   // closing the socket and presenting a different ALPS setting with each new
   // handshake.
   if (redirect_limit_-- == 0) {
+    LogAcceptCHFrameStatus(AcceptCHFrameRestart::kRedirectOverflow);
     std::move(callback).Run(net::ERR_TOO_MANY_REDIRECTS);
     return;
   }

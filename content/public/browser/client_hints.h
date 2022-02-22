@@ -30,7 +30,8 @@ CONTENT_EXPORT void AddClientHintsHeadersToPrefetchNavigation(
 enum class AcceptCHFrameRestart {
   kFramePresent = 0,
   kNavigationRestarted = 1,
-  kMaxValue = kNavigationRestarted,
+  kRedirectOverflow = 2,
+  kMaxValue = kRedirectOverflow,
 };
 
 }  // namespace content

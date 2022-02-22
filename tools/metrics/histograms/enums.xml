@@ -91,6 +91,7 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="AcceptCHFrameRestart">
   <int value="0" label="Frame present"/>
   <int value="1" label="Navigation restarted"/>
+  <int value="2" label="Restart caused network error"/>
 </enum>
 
 <enum name="AccessibilityAndroidAnimationsEnabled">
