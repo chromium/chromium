@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
@@ -286,6 +287,14 @@ constexpr base::StringPiece kLottieDataWith2Assets =
 std::string CreateCustomLottieDataWith2Assets(
     base::StringPiece custom_asset_id_0,
     base::StringPiece custom_asset_id_1);
+
+// cc/test/data/lottie/animation_with_2_text_nodes.json
+constexpr base::FilePath::CharType kLottieDataWith2TextFileName[] =
+    FILE_PATH_LITERAL("animation_with_2_text_nodes.json");
+constexpr base::StringPiece kLottieDataWith2TextNode1 = "text_node_1";
+constexpr base::StringPiece kLottieDataWith2TextNode1Text = "test_text_1";
+constexpr base::StringPiece kLottieDataWith2TextNode2 = "text_node_2";
+constexpr base::StringPiece kLottieDataWith2TextNode2Text = "test_text_2";
 
 }  // namespace cc
 

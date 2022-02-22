@@ -92,12 +92,13 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     const SkSamplingOptions&,
                     const cc::PaintFlags* flags,
                     SkCanvas::SrcRectConstraint constraint));
-  MOCK_METHOD5(drawSkottie,
+  MOCK_METHOD6(drawSkottie,
                void(scoped_refptr<cc::SkottieWrapper> skottie,
                     const SkRect& dst,
                     float t,
                     cc::SkottieFrameDataMap images,
-                    const cc::SkottieColorMap& color_map));
+                    const cc::SkottieColorMap& color_map,
+                    cc::SkottieTextPropertyValueMap text_map));
   MOCK_METHOD4(drawBitmap,
                void(const SkBitmap& bitmap,
                     SkScalar left,

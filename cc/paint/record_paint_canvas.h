@@ -100,7 +100,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                    const SkRect& dst,
                    float t,
                    SkottieFrameDataMap images,
-                   const SkottieColorMap& color_map) override;
+                   const SkottieColorMap& color_map,
+                   SkottieTextPropertyValueMap text_map) override;
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,

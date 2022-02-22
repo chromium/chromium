@@ -819,7 +819,8 @@ class CC_PAINT_EXPORT DrawSkottieOp final : public PaintOp {
                 SkRect dst,
                 float t,
                 SkottieFrameDataMap images,
-                const SkottieColorMap& color_map);
+                const SkottieColorMap& color_map,
+                SkottieTextPropertyValueMap text_map);
   ~DrawSkottieOp();
   static void Raster(const DrawSkottieOp* op,
                      SkCanvas* canvas,

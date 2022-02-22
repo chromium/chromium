@@ -324,7 +324,8 @@ void SkiaPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                   const SkRect& dst,
                                   float t,
                                   SkottieFrameDataMap images,
-                                  const SkottieColorMap& color_map) {
+                                  const SkottieColorMap& color_map,
+                                  SkottieTextPropertyValueMap text_map) {
   if (!images.empty()) {
     // This is not implemented solely because there's no use case yet. To
     // implement, we could retrieve the underlying SkImage from each
@@ -333,8 +334,8 @@ void SkiaPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
         << "Rendering skottie frames with image assets directly to a "
            "SkiaPaintCanvas is currently not supported.";
   }
-  skottie->Draw(canvas_, t, dst, SkottieWrapper::FrameDataCallback(),
-                color_map);
+  skottie->Draw(canvas_, t, dst, SkottieWrapper::FrameDataCallback(), color_map,
+                std::move(text_map));
 }
 
 void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

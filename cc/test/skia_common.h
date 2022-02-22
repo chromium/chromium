@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -78,6 +79,8 @@ PaintImage CreateBitmapImage(const gfx::Size& size,
 scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                                             int duration_secs);
 scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json);
+scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
+    base::FilePath::StringPieceType animation_file_name);
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size);
 

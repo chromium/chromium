@@ -691,6 +691,39 @@ size_t DrawRRectOp::Serialize(const PaintOp* base_op,
   return helper.size();
 }
 
+namespace {
+
+template <typename T>
+void SerializeSkottieMap(
+    const base::flat_map<SkottieResourceIdHash, T>& map,
+    PaintOpWriter& helper,
+    const base::RepeatingCallback<void(const T&, PaintOpWriter&)>&
+        value_serializer) {
+  // Write the size of the map first so that we know how many entries to read
+  // from the buffer during deserialization.
+  helper.WriteSize(map.size());
+  for (const auto& [resource_id, val] : map) {
+    helper.WriteSize(resource_id.GetUnsafeValue());
+    value_serializer.Run(val, helper);
+  }
+}
+
+void SerializeSkottieFrameData(const SkM44& current_ctm,
+                               const SkottieFrameData& frame_data,
+                               PaintOpWriter& helper) {
+  // |scale_adjustment| is not ultimately used; Skottie handles image
+  // scale adjustment internally when rastering.
+  SkSize scale_adjustment = SkSize::MakeEmpty();
+  helper.Write(DrawImage(frame_data.image, /*use_dark_mode=*/false,
+                         SkIRect::MakeWH(frame_data.image.width(),
+                                         frame_data.image.height()),
+                         frame_data.quality, current_ctm),
+               &scale_adjustment);
+  helper.Write(frame_data.quality);
+}
+
+}  // namespace
+
 size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
                                 void* memory,
                                 size_t size,
@@ -705,38 +738,32 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
   helper.Write(op->skottie);
 
   SkottieFrameDataMap images_to_serialize = op->images;
-  // TODO(esum): Serialize/deserialize the |text_map| and use it in
-  // DrawSkottieOp::Raster().
   SkottieTextPropertyValueMap text_map_to_serialize = op->text_map;
   if (options.skottie_serialization_history) {
     options.skottie_serialization_history->FilterNewSkottieFrameState(
         *op->skottie, images_to_serialize, text_map_to_serialize);
   }
 
-  // Write number of images in the map first so that we know how many images to
-  // read from the buffer during deserialization.
-  helper.WriteSize(images_to_serialize.size());
-  for (const auto& image_asset_pair : images_to_serialize) {
-    const SkottieResourceIdHash& asset_id_hash = image_asset_pair.first;
-    const SkottieFrameData& frame_data = image_asset_pair.second;
-    helper.WriteSize(asset_id_hash.GetUnsafeValue());
-    // |scale_adjustment| is not ultimately used; Skottie handles image scale
-    // adjustment internally when rastering.
-    SkSize scale_adjustment = SkSize::MakeEmpty();
-    helper.Write(DrawImage(frame_data.image, /*use_dark_mode=*/false,
-                           SkIRect::MakeWH(frame_data.image.width(),
-                                           frame_data.image.height()),
-                           frame_data.quality, current_ctm),
-                 &scale_adjustment);
-    helper.Write(frame_data.quality);
-  }
-  // Write number of colors in the map first so that we know how many colors to
-  // read from the buffer during deserialization.
-  helper.WriteSize(op->color_map.size());
-  for (const auto& map_color : op->color_map) {
-    helper.WriteSize(map_color.first.GetUnsafeValue());
-    helper.Write(map_color.second);
-  }
+  SerializeSkottieMap(
+      images_to_serialize, helper,
+      base::BindRepeating(&SerializeSkottieFrameData, std::cref(current_ctm)));
+  SerializeSkottieMap(
+      op->color_map, helper,
+      base::BindRepeating([](const SkColor& color, PaintOpWriter& helper) {
+        helper.Write(color);
+      }));
+  SerializeSkottieMap(
+      text_map_to_serialize, helper,
+      base::BindRepeating([](const SkottieTextPropertyValue& text_property_val,
+                             PaintOpWriter& helper) {
+        helper.WriteSize(text_property_val.text().size());
+        // If there is not enough space in the underlying buffer, WriteData()
+        // will mark the |helper| as invalid and the buffer will keep growing
+        // until a max size is reached (currently 64MB which should be ample for
+        // text).
+        helper.WriteData(text_property_val.text().size(),
+                         text_property_val.text().c_str());
+      }));
   return helper.size();
 }
 
@@ -946,6 +973,8 @@ class PaintOpDeserializer {
   void Read(Args&&... args) {
     reader_.Read(std::forward<Args>(args)...);
   }
+
+  void ReadData(size_t bytes, void* data) { reader_.ReadData(bytes, data); }
 
   void ReadSize(size_t* size) { reader_.ReadSize(size); }
 
@@ -1203,6 +1232,73 @@ PaintOp* DrawRRectOp::Deserialize(const volatile void* input,
   return deserializer.FinalizeOp();
 }
 
+namespace {
+
+// |max_map_size| is purely a safety mechanism to prevent disastrous behavior
+// (trying to allocate an enormous map, looping for long periods of time, etc)
+// in case the serialization buffer is corrupted somehow.
+template <typename T>
+bool DeserializeSkottieMap(
+    base::flat_map<SkottieResourceIdHash, T>& map,
+    absl::optional<size_t> max_map_size,
+    PaintOpDeserializer<DrawSkottieOp>& deserializer,
+    const base::RepeatingCallback<absl::optional<T>(
+        PaintOpDeserializer<DrawSkottieOp>&)>& value_deserializer) {
+  size_t map_size = 0;
+  deserializer.ReadSize(&map_size);
+  if (max_map_size && map_size > *max_map_size)
+    return false;
+
+  for (size_t i = 0; i < map_size; ++i) {
+    size_t resource_id_hash_raw = 0;
+    deserializer.ReadSize(&resource_id_hash_raw);
+    SkottieResourceIdHash resource_id_hash =
+        SkottieResourceIdHash::FromUnsafeValue(resource_id_hash_raw);
+    if (!resource_id_hash)
+      return false;
+
+    absl::optional<T> value = value_deserializer.Run(deserializer);
+    if (!value)
+      return false;
+
+    // Duplicate keys should not happen by design, but defend against it
+    // gracefully in case the underlying buffer is corrupted.
+    bool is_new_entry = map.emplace(resource_id_hash, std::move(*value)).second;
+    if (!is_new_entry)
+      return false;
+  }
+  return true;
+}
+
+absl::optional<SkottieFrameData> DeserializeSkottieFrameData(
+    PaintOpDeserializer<DrawSkottieOp>& deserializer) {
+  SkottieFrameData frame_data;
+  deserializer.Read(&frame_data.image);
+  if (!frame_data.image)
+    return absl::nullopt;
+
+  deserializer.Read(&frame_data.quality);
+  return frame_data;
+}
+
+absl::optional<SkColor> DeserializeSkottieColor(
+    PaintOpDeserializer<DrawSkottieOp>& deserializer) {
+  SkColor color = SK_ColorTRANSPARENT;
+  deserializer.Read(&color);
+  return color;
+}
+
+absl::optional<SkottieTextPropertyValue> DeserializeSkottieTextPropertyValue(
+    PaintOpDeserializer<DrawSkottieOp>& deserializer) {
+  size_t text_size = 0u;
+  deserializer.ReadSize(&text_size);
+  std::string text(text_size, char());
+  deserializer.ReadData(text_size, const_cast<char*>(text.c_str()));
+  return SkottieTextPropertyValue(std::move(text));
+}
+
+}  // namespace
+
 PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
                                     size_t input_size,
                                     void* output,
@@ -1223,59 +1319,23 @@ PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
   if (!deserializer->skottie || !deserializer->skottie->is_valid())
     return deserializer.InvalidateAndFinalizeOp();
 
-  size_t num_images = 0;
-  deserializer.ReadSize(&num_images);
-  // In the off chance that there's a bug or corruption in the underlying
-  // buffer, |num_images| may be some invalid enormous value. Sanity check it
-  // with the animation to prevent looping below for long periods of time if an
-  // unexpected error happens.
   size_t num_assets_in_animation =
       deserializer->skottie->GetImageAssetMetadata().asset_storage().size();
-  if (num_images > num_assets_in_animation)
-    return deserializer.InvalidateAndFinalizeOp();
-
-  for (size_t i = 0; i < num_images; ++i) {
-    size_t asset_id_hash_raw = 0;
-    deserializer.ReadSize(&asset_id_hash_raw);
-    SkottieResourceIdHash asset_id_hash =
-        SkottieResourceIdHash::FromUnsafeValue(asset_id_hash_raw);
-
-    SkottieFrameData frame_data;
-    deserializer.Read(&frame_data.image);
-    deserializer.Read(&frame_data.quality);
-    if (!asset_id_hash || !frame_data.image)
-      return deserializer.InvalidateAndFinalizeOp();
-
-    // If we've inserted a duplicate, that means the buffer specifies 2
-    // different images for the same asset in this frame. This should not happen
-    // by design since |images| is a map with the asset id as the key. But
-    // defend against it gracefully in case the underlying buffer is corrupted.
-    bool new_entry =
-        deserializer->images.emplace(asset_id_hash, std::move(frame_data))
-            .second;
-    if (!new_entry)
-      return deserializer.InvalidateAndFinalizeOp();
-  }
-
-  size_t num_map_colors = 0u;
-  deserializer.ReadSize(&num_map_colors);
-  for (size_t i = 0u; i < num_map_colors; ++i) {
-    size_t node_name_hash_raw = 0u;
-    deserializer.ReadSize(&node_name_hash_raw);
-    const SkottieResourceIdHash node_name_hash =
-        SkottieResourceIdHash::FromUnsafeValue(node_name_hash_raw);
-
-    SkColor color = SK_ColorTRANSPARENT;
-    deserializer.Read(&color);
-    // If we are inserting a duplicate, that means the buffer specifies two
-    // colors for the same node name hash. This should not happen, by design,
-    // because |color_map| is a map with the node name hash as the key. But
-    // defend against it gracefully in case the underlying buffer is corrupted.
-    if (!deserializer->color_map.emplace(node_name_hash, color).second)
-      return deserializer.InvalidateAndFinalizeOp();
-  }
-
-  return deserializer.FinalizeOp();
+  size_t num_text_nodes_in_animation =
+      deserializer->skottie->GetTextNodeNames().size();
+  bool deserialized_all_maps =
+      DeserializeSkottieMap(
+          deserializer->images, /*max_map_size=*/num_assets_in_animation,
+          deserializer, base::BindRepeating(&DeserializeSkottieFrameData)) &&
+      DeserializeSkottieMap(deserializer->color_map,
+                            /*max_map_size=*/absl::nullopt, deserializer,
+                            base::BindRepeating(&DeserializeSkottieColor)) &&
+      DeserializeSkottieMap(
+          deserializer->text_map, /*max_map_size=*/num_text_nodes_in_animation,
+          deserializer,
+          base::BindRepeating(&DeserializeSkottieTextPropertyValue));
+  return deserialized_all_maps ? deserializer.FinalizeOp()
+                               : deserializer.InvalidateAndFinalizeOp();
 }
 
 PaintOp* DrawTextBlobOp::Deserialize(const volatile void* input,
@@ -1698,7 +1758,7 @@ void DrawSkottieOp::Raster(const DrawSkottieOp* op,
       canvas, op->t, op->dst,
       base::BindRepeating(&DrawSkottieOp::GetImageAssetForRaster,
                           base::Unretained(op), canvas, std::cref(params)),
-      op->color_map);
+      op->color_map, op->text_map);
 }
 
 SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
@@ -2196,6 +2256,10 @@ bool DrawSkottieOp::AreEqual(const PaintOp* base_left,
 
   if (left->color_map != right->color_map)
     return false;
+
+  if (left->text_map != right->text_map)
+    return false;
+
   return true;
 }
 
@@ -2734,13 +2798,15 @@ DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
                              SkRect dst,
                              float t,
                              SkottieFrameDataMap images,
-                             const SkottieColorMap& color_map)
+                             const SkottieColorMap& color_map,
+                             SkottieTextPropertyValueMap text_map)
     : PaintOp(kType),
       skottie(std::move(skottie)),
       dst(dst),
       t(t),
       images(std::move(images)),
-      color_map(color_map) {}
+      color_map(color_map),
+      text_map(std::move(text_map)) {}
 
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 

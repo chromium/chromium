@@ -899,6 +899,10 @@ cc_test("cc_unittests") {
     data_deps += [ "//clank/build/bot/filters:cc_unittests_filters" ]
   }
 
+  if (skia_support_skottie) {
+    data += [ "test/data/" ]
+  }
+
   if (is_fuchsia) {
     use_cfv2 = false
     additional_manifest_fragments = [

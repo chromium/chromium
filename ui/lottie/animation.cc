@@ -234,7 +234,7 @@ void Animation::PaintFrame(gfx::Canvas* canvas,
                                         base::Unretained(this), canvas,
                                         std::ref(all_frame_data)));
   canvas->DrawSkottie(skottie(), gfx::Rect(size), t, std::move(all_frame_data),
-                      color_map_);
+                      color_map_, cc::SkottieTextPropertyValueMap());
 }
 
 cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(

@@ -5,14 +5,17 @@
 #ifndef CC_PAINT_SKOTTIE_WRAPPER_H_
 #define CC_PAINT_SKOTTIE_WRAPPER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_resource_metadata.h"
+#include "cc/paint/skottie_text_property_value.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 
@@ -53,6 +56,16 @@ class CC_PAINT_EXPORT SkottieWrapper
   // does not change during SkottieWrapper's lifetime.
   virtual const SkottieResourceMetadataMap& GetImageAssetMetadata() const = 0;
 
+  // Returns the set of text nodes in the animation. There shall be an entry in
+  // GetCurrentTextPropertyValues() for each returned node. The returned set is
+  // immutable and does not change during SkottieWrapper's lifetime.
+  virtual const base::flat_set<std::string>& GetTextNodeNames() const = 0;
+
+  // Returns the set of all text nodes in the animation, along with their
+  // corresponding current values. The nodes' values can only be updated via
+  // the |text_map| argument in Draw().
+  virtual SkottieTextPropertyValueMap GetCurrentTextPropertyValues() const = 0;
+
   // FrameDataCallback is implemented by the caller and invoked
   // synchronously during calls to Seek() and Draw(). The callback is used by
   // SkottieWrapper to fetch the corresponding image for each asset that is
@@ -90,11 +103,16 @@ class CC_PAINT_EXPORT SkottieWrapper
 
   // A thread safe call that will draw an image with bounds |rect| for the
   // frame at normalized time instant |t| onto the |canvas|.
+  //
+  // |text_map| may be an incremental update and only contain a subset of the
+  // text nodes in the animation. If a text node is absent from |text_map|, it
+  // will maintain the same contents as the previous call to Draw().
   virtual void Draw(SkCanvas* canvas,
                     float t,
                     const SkRect& rect,
                     FrameDataCallback frame_data_cb,
-                    const SkottieColorMap& color_map) = 0;
+                    const SkottieColorMap& color_map,
+                    const SkottieTextPropertyValueMap& text_map) = 0;
 
   virtual float duration() const = 0;
   virtual SkSize size() const = 0;
