@@ -612,7 +612,7 @@ ci.builder(
     ),
     goma_jobs = 250,
     executable = "recipe:reclient_goma_comparison",
-    execution_timeout = 6 * time.hour,
+    execution_timeout = 10 * time.hour,
     reclient_cache_silo = "Comparison Android - cache siloed",
     reclient_instance = rbe_instance.DEFAULT,
     reclient_jobs = 250,
