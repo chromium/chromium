@@ -1065,13 +1065,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* object) {
   // these rare cases, assuming that some remain.
   //
   // On Chromecast, this is already checked in PartitionFree() in the shim.
-  //
-  // On Linux, this is intended to ease debugging of crbug.com/1266412. Enabled
-  // on 64 bit only, as the check is pretty cheap in this case (range check,
-  // essentially).
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&              \
-    ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)) || \
-     (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_64_BITS)))
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    ((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)))
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
 #endif
 
