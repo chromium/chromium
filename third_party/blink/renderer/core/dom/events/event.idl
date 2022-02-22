@@ -56,5 +56,6 @@
     [MeasureAs=EventCancelBubble, CallWith=ScriptState] attribute boolean cancelBubble;
 
     // Non-standard APIs
-    [MeasureAs=EventPath, CallWith=ScriptState] readonly attribute object path;
+    [MeasureAs=EventPath, CallWith=ScriptState, RuntimeEnabled=EventPath]
+    readonly attribute object path;
 };

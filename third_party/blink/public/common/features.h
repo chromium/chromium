@@ -654,6 +654,9 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // Enables the WindowPlacement RuntimeEnabledFeature.
 BLINK_COMMON_EXPORT extern const base::Feature kWindowPlacement;
 
+// Gates the non-standard API Event.path to help its deprecation and removal.
+BLINK_COMMON_EXPORT extern const base::Feature kEventPath;
+
 }  // namespace features
 }  // namespace blink
 
