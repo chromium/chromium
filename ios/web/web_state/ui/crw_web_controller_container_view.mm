@@ -149,6 +149,16 @@
   [self setNeedsLayout];
 }
 
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+- (void)updateWebViewContentViewFullscreenState:
+    (WKFullscreenState)fullscreenState {
+  DCHECK(_webViewContentView);
+  if (@available(iOS 15.4, *)) {
+    [self.webViewContentView updateFullscreenState:fullscreenState];
+  }
+}
+#endif  // defined(__IPHONE_15_4)
+
 #pragma mark UIView (printing)
 
 // Only print the web view by returning the web view printformatter.

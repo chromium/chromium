@@ -480,6 +480,17 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
     }];
   }
+
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+  if (@available(iOS 15, *)) {
+    if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {
+      [observers addEntriesFromDictionary:@{
+        @"fullscreenState" : @"fullscreenStateDidChange"
+      }];
+    }
+  }
+#endif  // defined(__IPHONE_15_4)
+
   return observers;
 }
 
@@ -1633,10 +1644,21 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   if (!self.webView || [_containerView webViewContentView])
     return;
 
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+  if (@available(iOS 15, *)) {
+    CRWWebViewContentView* webViewContentView = [[CRWWebViewContentView alloc]
+        initWithWebView:self.webView
+             scrollView:self.webScrollView
+        fullscreenState:self.webView.fullscreenState];
+    [_containerView displayWebViewContentView:webViewContentView];
+    return;
+  }
+#else
   CRWWebViewContentView* webViewContentView =
       [[CRWWebViewContentView alloc] initWithWebView:self.webView
                                           scrollView:self.webScrollView];
   [_containerView displayWebViewContentView:webViewContentView];
+#endif  // defined(__IPHONE_15_4)
 }
 
 - (void)removeWebView {
@@ -1795,6 +1817,13 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 - (void)webViewMicrophoneCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
   self.webStateImpl->OnStateChangedForPermission(web::PermissionMicrophone);
 }
+
+#if defined(__IPHONE_15_4) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_4
+- (void)fullscreenStateDidChange API_AVAILABLE(ios(15.0)) {
+  [_containerView
+      updateWebViewContentViewFullscreenState:self.webView.fullscreenState];
+}
+#endif  // defined (__IPHONE_15_4)
 
 #pragma mark - CRWWebViewHandlerDelegate
 
