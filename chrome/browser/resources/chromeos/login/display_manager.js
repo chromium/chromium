@@ -8,8 +8,6 @@
 
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.m.js';
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-// #import {toCssPx} from 'chrome://resources/js/cr/ui.m.js';
 // #import {loadTimeData} from './i18n_setup.js';
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
@@ -176,19 +174,6 @@ cr.define('cr.ui.login', function() {
      */
     get hasUserPods() {
       return this.showingViewsLogin && this.userCount_ > 0;
-    }
-
-    /**
-     * Sets the current size of the client area (display size).
-     * @param {number} width client area width
-     * @param {number} height client area height
-     */
-    setClientAreaSize(width, height) {
-      if (!cr.isChromeOS) {
-        var clientArea = $('outer-container');
-        var bottom = parseInt(window.getComputedStyle(clientArea).bottom, 10);
-        clientArea.style.minHeight = cr.ui.toCssPx(height - bottom);
-      }
     }
 
     /**

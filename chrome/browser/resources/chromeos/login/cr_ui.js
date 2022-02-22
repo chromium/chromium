@@ -131,15 +131,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Sets the current size of the client area (display size).
-     * @param {number} width client area width
-     * @param {number} height client area height
-     */
-    static setClientAreaSize(width, height) {
-      Oobe.getInstance().setClientAreaSize(width, height);
-    }
-
-    /**
      * Sets the current height of the shelf area.
      * @param {number} height current shelf height
      */
