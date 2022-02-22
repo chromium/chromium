@@ -11,9 +11,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeFilePayloadListener::FakeFilePayloadListener() = default;
 
@@ -38,6 +39,4 @@ void FakeFilePayloadListener::OnFileTransferUpdate(
   received_updates_.push_back(std::move(update));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

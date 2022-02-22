@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test BleConnectionManager implementation. Each of the overridden functions
 // has an empty body.
@@ -53,13 +51,11 @@ class FakeBleConnectionManager : public BleConnectionManager {
       const DeviceIdPair& device_id_pair) override;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeBleConnectionManager;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeBleConnectionManager;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_BLE_CONNECTION_MANAGER_H_

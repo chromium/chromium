@@ -9,9 +9,7 @@
 #include "base/timer/mock_timer.h"
 #include "base/unguessable_token.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Fake base::OneShotTimer implementation, which extends MockTimer and provides
 // a mechanism for alerting its creator when it is destroyed.
@@ -32,13 +30,6 @@ class FakeOneShotTimer : public base::MockOneShotTimer {
   base::UnguessableToken id_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeOneShotTimer;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_ONE_SHOT_TIMER_H_

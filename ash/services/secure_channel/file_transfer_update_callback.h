@@ -8,22 +8,18 @@
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/callback.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Syntactic sugar to make it easier to declare callbacks to the
 // RegisterPayloadFile APIs.
-using FileTransferUpdateCallback =
-    base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>;
+using FileTransferUpdateCallback = base::RepeatingCallback<void(
+    chromeos::secure_channel::mojom::FileTransferUpdatePtr)>;
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FileTransferUpdateCallback;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FileTransferUpdateCallback;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FILE_TRANSFER_UPDATE_CALLBACK_H_

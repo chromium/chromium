@@ -9,9 +9,7 @@
 
 #include "ash/services/secure_channel/wire_message.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeWireMessage::FakeWireMessage(const std::string& payload,
                                  const std::string& feature)
@@ -21,6 +19,4 @@ std::string FakeWireMessage::Serialize() const {
   return feature() + "," + payload();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

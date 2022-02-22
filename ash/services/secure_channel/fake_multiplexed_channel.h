@@ -13,9 +13,7 @@
 #include "ash/services/secure_channel/multiplexed_channel.h"
 #include "base/callback.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test MultiplexedChannel implementation.
 class FakeMultiplexedChannel : public MultiplexedChannel {
@@ -78,13 +76,11 @@ class FakeMultiplexedChannelDelegate : public MultiplexedChannel::Delegate {
   absl::optional<ConnectionDetails> disconnected_connection_details_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeMultiplexedChannel;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeMultiplexedChannelDelegate;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_MULTIPLEXED_CHANNEL_H_

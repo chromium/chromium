@@ -6,9 +6,7 @@
 
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeBleAdvertisementGenerator::FakeBleAdvertisementGenerator() {}
 
@@ -21,6 +19,4 @@ FakeBleAdvertisementGenerator::GenerateBleAdvertisementInternal(
   return std::move(advertisement_);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -10,9 +10,7 @@
 
 #include "ash/services/secure_channel/wire_message.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class FakeWireMessage : public WireMessage {
  public:
@@ -25,13 +23,6 @@ class FakeWireMessage : public WireMessage {
   std::string Serialize() const override;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeWireMessage;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_WIRE_MESSAGE_H_

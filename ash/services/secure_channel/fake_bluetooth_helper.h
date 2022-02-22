@@ -15,9 +15,7 @@
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test BluetoothHelper implementation.
 class FakeBluetoothHelper : public BluetoothHelper {
@@ -65,13 +63,11 @@ class FakeBluetoothHelper : public BluetoothHelper {
       device_id_to_bluetooth_public_address_map_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeBluetoothHelper;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeBluetoothHelper;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_BLUETOOTH_HELPER_H_

@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_secure_channel_disconnector.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeSecureChannelDisconnector::FakeSecureChannelDisconnector() = default;
 
@@ -26,6 +24,4 @@ void FakeSecureChannelDisconnector::DisconnectSecureChannel(
   handled_channels_.insert(std::move(channel_to_disconnect));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

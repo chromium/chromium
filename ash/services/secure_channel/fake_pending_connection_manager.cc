@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/check_op.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakePendingConnectionManager::FakePendingConnectionManager(Delegate* delegate)
     : PendingConnectionManager(delegate) {}
@@ -77,6 +75,4 @@ void FakePendingConnectionManagerDelegate::OnConnection(
                       connection_details));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

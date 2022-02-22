@@ -9,9 +9,10 @@
 #include "ash/services/secure_channel/register_payload_file_request.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeAuthenticatedChannel::FakeAuthenticatedChannel() : AuthenticatedChannel() {}
 
@@ -58,6 +59,4 @@ void FakeAuthenticatedChannelObserver::OnMessageReceived(
   received_messages_.push_back(std::make_pair(feature, payload));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

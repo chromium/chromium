@@ -11,25 +11,29 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test FilePayloadListener implementation.
-class FakeFilePayloadListener : public mojom::FilePayloadListener {
+class FakeFilePayloadListener
+    : public chromeos::secure_channel::mojom::FilePayloadListener {
  public:
   FakeFilePayloadListener();
   FakeFilePayloadListener(const FakeFilePayloadListener&) = delete;
   FakeFilePayloadListener& operator=(const FakeFilePayloadListener&) = delete;
   ~FakeFilePayloadListener() override;
 
-  mojo::PendingRemote<mojom::FilePayloadListener> GenerateRemote();
+  mojo::PendingRemote<chromeos::secure_channel::mojom::FilePayloadListener>
+  GenerateRemote();
 
   void OnDisconnect();
 
-  mojo::Receiver<mojom::FilePayloadListener>& receiver() { return receiver_; }
+  mojo::Receiver<chromeos::secure_channel::mojom::FilePayloadListener>&
+  receiver() {
+    return receiver_;
+  }
 
-  const std::vector<mojom::FileTransferUpdatePtr>& received_updates() const {
+  const std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>&
+  received_updates() const {
     return received_updates_;
   }
 
@@ -37,16 +41,22 @@ class FakeFilePayloadListener : public mojom::FilePayloadListener {
 
  private:
   // mojom::MessageReceiver:
-  void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override;
+  void OnFileTransferUpdate(
+      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
 
-  mojo::Receiver<mojom::FilePayloadListener> receiver_{this};
+  mojo::Receiver<chromeos::secure_channel::mojom::FilePayloadListener>
+      receiver_{this};
 
-  std::vector<mojom::FileTransferUpdatePtr> received_updates_;
+  std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>
+      received_updates_;
   bool is_connected_ = false;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeFilePayloadListener;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_FILE_PAYLOAD_LISTENER_H_

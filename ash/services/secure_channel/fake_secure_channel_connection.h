@@ -15,9 +15,7 @@
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // A fake implementation of SecureChannel to use in tests.
 class FakeSecureChannelConnection : public SecureChannel {
@@ -71,7 +69,7 @@ class FakeSecureChannelConnection : public SecureChannel {
                   const std::string& payload) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void Disconnect() override;
@@ -93,13 +91,11 @@ class FakeSecureChannelConnection : public SecureChannel {
   base::OnceClosure destructor_callback_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeSecureChannelConnection;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeSecureChannelConnection;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CHANNEL_CONNECTION_H_

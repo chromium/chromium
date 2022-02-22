@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/ble_scanner.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test BleScanner implementation.
 class FakeBleScanner : public BleScanner {
@@ -78,14 +76,11 @@ class FakeBleScannerObserver : public BleScanner::Observer {
   std::vector<Result> handled_scan_results_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeBleScanner;
-using ::chromeos::secure_channel::FakeBleScannerObserver;
-}  // namespace ash::secure_channel
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeBleScanner;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_BLE_SCANNER_H_

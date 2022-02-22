@@ -10,12 +10,15 @@
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
 const char kDisconnectionDescription[] = "Remote device disconnected.";
+
 }  // namespace
 
 FakeChannel::FakeChannel() = default;
@@ -60,6 +63,4 @@ void FakeChannel::GetConnectionMetadata(
   std::move(callback).Run(std::move(connection_metadata_for_next_call_));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

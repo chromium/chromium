@@ -13,9 +13,10 @@
 #include "base/callback.h"
 #include "base/check.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeSecureChannelConnection::SentMessage::SentMessage(
     const std::string& feature,
@@ -108,6 +109,4 @@ FakeSecureChannelConnection::GetChannelBindingData() {
   return channel_binding_data_;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_ble_scanner.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeBleScanner::FakeBleScanner() = default;
 
@@ -53,6 +51,4 @@ void FakeBleScannerObserver::OnReceivedAdvertisement(
                                      connection_medium, connection_role);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

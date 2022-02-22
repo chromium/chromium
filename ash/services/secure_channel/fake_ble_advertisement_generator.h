@@ -8,9 +8,7 @@
 #include "ash/services/secure_channel/ble_advertisement_generator.h"
 #include "ash/services/secure_channel/data_with_timestamp.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test double for BleAdvertisementGenerator.
 class FakeBleAdvertisementGenerator : public BleAdvertisementGenerator {
@@ -40,13 +38,6 @@ class FakeBleAdvertisementGenerator : public BleAdvertisementGenerator {
   std::unique_ptr<DataWithTimestamp> advertisement_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeBleAdvertisementGenerator;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_BLE_ADVERTISEMENT_GENERATOR_H_

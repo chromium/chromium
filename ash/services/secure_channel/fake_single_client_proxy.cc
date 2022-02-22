@@ -10,9 +10,10 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeSingleClientProxy::FakeSingleClientProxy(
     Delegate* delegate,
@@ -75,6 +76,4 @@ void FakeSingleClientProxyDelegate::OnClientDisconnected(
     std::move(on_client_disconnected_closure_).Run();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

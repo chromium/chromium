@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_nearby_connection_manager.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeNearbyConnectionManager::FakeNearbyConnectionManager() = default;
 
@@ -18,6 +16,4 @@ void FakeNearbyConnectionManager::PerformAttemptNearbyInitiatorConnection(
 void FakeNearbyConnectionManager::PerformCancelNearbyInitiatorConnectionAttempt(
     const DeviceIdPair& device_id_pair) {}
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

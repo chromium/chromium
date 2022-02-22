@@ -12,6 +12,13 @@
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace ash {
+namespace secure_channel {
+class FakeBleAdvertiser;
+}
+}  // namespace ash
+
 namespace chromeos {
 
 namespace secure_channel {
@@ -58,7 +65,7 @@ class SharedResourceScheduler {
   bool empty() const { return request_to_priority_map_.empty(); }
 
  private:
-  friend class FakeBleAdvertiser;
+  friend class ash::secure_channel::FakeBleAdvertiser;
 
   // Map from priority to a list of pending requests. Each list is ordered such
   // that requests that should be processed first reside before requests that

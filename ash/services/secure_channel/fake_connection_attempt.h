@@ -9,8 +9,6 @@
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/pending_connection_request.h"
 #include "base/callback.h"
@@ -18,9 +16,9 @@
 #include "base/time/default_clock.h"
 #include "base/unguessable_token.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class ConnectionAttemptDelegate;
 
 // Fake ConnectionAttempt implementation.
 template <typename FailureDetailType>
@@ -90,8 +88,11 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
       client_data_for_extraction_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeConnectionAttempt;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_ATTEMPT_H_

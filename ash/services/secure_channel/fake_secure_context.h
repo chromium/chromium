@@ -12,9 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class FakeSecureContext : public SecureContext {
  public:
@@ -46,8 +44,11 @@ class FakeSecureContext : public SecureContext {
   absl::optional<std::string> channel_binding_data_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeSecureContext;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CONTEXT_H_

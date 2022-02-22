@@ -6,9 +6,7 @@
 
 #include "base/containers/contains.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeBluetoothHelper::FakeBluetoothHelper() = default;
 
@@ -74,6 +72,4 @@ std::string FakeBluetoothHelper::ExpectedServiceDataToString(
   return std::string();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

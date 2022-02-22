@@ -6,9 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeBackgroundEidGenerator::FakeBackgroundEidGenerator() = default;
 FakeBackgroundEidGenerator::~FakeBackgroundEidGenerator() = default;
@@ -36,6 +34,4 @@ std::string FakeBackgroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
   return identified_device_id_;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

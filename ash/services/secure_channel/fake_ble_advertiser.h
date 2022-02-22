@@ -13,14 +13,11 @@
 
 #include "ash/services/secure_channel/ble_advertiser.h"
 #include "ash/services/secure_channel/device_id_pair.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/shared_resource_scheduler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test BleAdvertisementScheduler implementation, which internally uses a
 // SharedResourceScheduler to store the provided requests.
@@ -103,14 +100,6 @@ class FakeBleAdvertiserDelegate : public BleAdvertiser::Delegate {
   std::vector<DeviceIdPair> advertisement_generation_failures_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeBleAdvertiser;
-using ::chromeos::secure_channel::FakeBleAdvertiserDelegate;
 }  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_BLE_ADVERTISER_H_

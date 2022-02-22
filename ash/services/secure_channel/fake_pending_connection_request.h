@@ -10,13 +10,11 @@
 
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/pending_connection_request.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "base/unguessable_token.h"
 
-namespace chromeos {
-
-namespace secure_channel {
-
-class PendingConnectionRequestDelegate;
+namespace ash::secure_channel {
 
 // Fake PendingConnectionRequest implementation.
 template <typename FailureDetailType>
@@ -70,13 +68,11 @@ class FakePendingConnectionRequest
   std::unique_ptr<ClientConnectionParameters> client_data_for_extraction_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakePendingConnectionRequest;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakePendingConnectionRequest;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_PENDING_CONNECTION_REQUEST_H_

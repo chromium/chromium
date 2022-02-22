@@ -6,9 +6,10 @@
 
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeSecureChannel::FakeSecureChannel() = default;
 
@@ -34,6 +35,4 @@ void FakeSecureChannel::InitiateConnectionToDevice(
   delegate_from_last_initiate_call_.Bind(std::move(delegate));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

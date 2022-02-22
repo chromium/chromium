@@ -11,12 +11,11 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test ConnectionDelegate implementation.
-class FakeConnectionDelegate : public mojom::ConnectionDelegate {
+class FakeConnectionDelegate
+    : public chromeos::secure_channel::mojom::ConnectionDelegate {
  public:
   FakeConnectionDelegate();
 
@@ -25,10 +24,12 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
 
   ~FakeConnectionDelegate() override;
 
-  mojo::PendingRemote<mojom::ConnectionDelegate> GenerateRemote();
+  mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+  GenerateRemote();
   void DisconnectGeneratedRemotes();
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason>&
   connection_attempt_failure_reason() const {
     return connection_attempt_failure_reason_;
   }
@@ -37,9 +38,12 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
     closure_for_next_delegate_callback_ = std::move(closure);
   }
 
-  const mojo::Remote<mojom::Channel>& channel() const { return channel_; }
+  const mojo::Remote<chromeos::secure_channel::mojom::Channel>& channel()
+      const {
+    return channel_;
+  }
 
-  const mojo::PendingReceiver<mojom::MessageReceiver>&
+  const mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>&
   message_receiver_receiver() const {
     return message_receiver_receiver_;
   }
@@ -47,30 +51,33 @@ class FakeConnectionDelegate : public mojom::ConnectionDelegate {
  private:
   // mojom::ConnectionDelegate:
   void OnConnectionAttemptFailure(
-      mojom::ConnectionAttemptFailureReason reason) override;
-  void OnConnection(mojo::PendingRemote<mojom::Channel> channel,
-                    mojo::PendingReceiver<mojom::MessageReceiver>
-                        message_receiver_receiver) override;
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
+      override;
+  void OnConnection(
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver_receiver) override;
 
   void OnChannelDisconnected(uint32_t disconnection_reason,
                              const std::string& disconnection_description);
 
-  mojo::ReceiverSet<mojom::ConnectionDelegate> receivers_;
+  mojo::ReceiverSet<chromeos::secure_channel::mojom::ConnectionDelegate>
+      receivers_;
   base::OnceClosure closure_for_next_delegate_callback_;
 
-  absl::optional<mojom::ConnectionAttemptFailureReason>
+  absl::optional<
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason>
       connection_attempt_failure_reason_;
-  mojo::Remote<mojom::Channel> channel_;
-  mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver_;
+  mojo::Remote<chromeos::secure_channel::mojom::Channel> channel_;
+  mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+      message_receiver_receiver_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeConnectionDelegate;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeConnectionDelegate;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_DELEGATE_H_

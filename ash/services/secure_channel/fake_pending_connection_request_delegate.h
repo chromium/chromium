@@ -11,9 +11,7 @@
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test PendingConnectionRequestDelegate implementation.
 class FakePendingConnectionRequestDelegate
@@ -49,8 +47,11 @@ class FakePendingConnectionRequestDelegate
   base::OnceClosure closure_for_next_delegate_callback_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakePendingConnectionRequestDelegate;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_PENDING_CONNECTION_REQUEST_DELEGATE_H_

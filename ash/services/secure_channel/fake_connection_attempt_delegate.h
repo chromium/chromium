@@ -7,15 +7,13 @@
 
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/connection_attempt_delegate.h"
 #include "ash/services/secure_channel/connection_details.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class AuthenticatedChannel;
 
 class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
  public:
@@ -53,13 +51,6 @@ class FakeConnectionAttemptDelegate : public ConnectionAttemptDelegate {
   std::unique_ptr<AuthenticatedChannel> authenticated_channel_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeConnectionAttemptDelegate;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_ATTEMPT_DELEGATE_H_

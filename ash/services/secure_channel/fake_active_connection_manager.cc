@@ -7,9 +7,7 @@
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/check_op.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeActiveConnectionManager::FakeActiveConnectionManager(
     ActiveConnectionManager::Delegate* delegate)
@@ -81,6 +79,4 @@ void FakeActiveConnectionManagerDelegate::OnDisconnected(
   ++connection_details_to_num_disconnections_map_[connection_details];
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

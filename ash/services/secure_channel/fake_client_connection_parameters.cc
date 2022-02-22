@@ -5,9 +5,10 @@
 #include "ash/services/secure_channel/fake_client_connection_parameters.h"
 #include "base/bind.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 FakeClientConnectionParameters::FakeClientConnectionParameters(
     const std::string& feature,
@@ -71,6 +72,4 @@ void FakeClientConnectionParametersObserver::OnConnectionRequestCanceled() {
     std::move(closure_for_next_callback_).Run();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -6,9 +6,7 @@
 
 #include "base/check.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeBleAdvertiser::FakeBleAdvertiser(Delegate* delegate)
     : BleAdvertiser(delegate),
@@ -93,6 +91,4 @@ void FakeBleAdvertiserDelegate::OnFailureToGenerateAdvertisement(
   advertisement_generation_failures_.emplace_back(device_id_pair);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

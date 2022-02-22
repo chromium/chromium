@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_pending_connection_request_delegate.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakePendingConnectionRequestDelegate::FakePendingConnectionRequestDelegate() =
     default;
@@ -29,6 +27,4 @@ void FakePendingConnectionRequestDelegate::OnRequestFinishedWithoutConnection(
     std::move(closure_for_next_delegate_callback_).Run();
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

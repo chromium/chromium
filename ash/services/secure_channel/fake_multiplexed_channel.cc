@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_multiplexed_channel.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeMultiplexedChannel::FakeMultiplexedChannel(
     Delegate* delegate,
@@ -56,6 +54,4 @@ void FakeMultiplexedChannelDelegate::OnDisconnected(
   disconnected_connection_details_ = connection_details;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

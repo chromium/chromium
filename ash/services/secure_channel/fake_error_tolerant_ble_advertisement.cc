@@ -6,9 +6,7 @@
 
 #include "base/bind.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeErrorTolerantBleAdvertisement::FakeErrorTolerantBleAdvertisement(
     const DeviceIdPair& device_id_pair,
@@ -36,6 +34,4 @@ void FakeErrorTolerantBleAdvertisement::Stop(base::OnceClosure callback) {
   stop_callback_ = std::move(callback);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

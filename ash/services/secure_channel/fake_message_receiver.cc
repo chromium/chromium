@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_message_receiver.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeMessageReceiver::FakeMessageReceiver() = default;
 
@@ -16,6 +14,4 @@ void FakeMessageReceiver::OnMessageReceived(const std::string& message) {
   received_messages_.push_back(message);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

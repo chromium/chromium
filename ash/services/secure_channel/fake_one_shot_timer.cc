@@ -6,9 +6,7 @@
 
 #include "base/callback.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeOneShotTimer::FakeOneShotTimer(
     base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback)
@@ -20,6 +18,4 @@ FakeOneShotTimer::~FakeOneShotTimer() {
   std::move(destructor_callback_).Run(id_);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

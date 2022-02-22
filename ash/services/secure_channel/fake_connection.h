@@ -8,17 +8,15 @@
 #include <vector>
 
 #include "ash/services/secure_channel/connection.h"
-// TODO(https://crbug.com/1164001): move to forward  declaration.
-#include "ash/services/secure_channel/connection_observer.h"
 #include "ash/services/secure_channel/file_transfer_update_callback.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "ash/services/secure_channel/register_payload_file_request.h"
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class ConnectionObserver;
 
 // A fake implementation of Connection to use in tests.
 class FakeConnection : public Connection {
@@ -75,7 +73,7 @@ class FakeConnection : public Connection {
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
   void RegisterPayloadFileImpl(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   std::unique_ptr<WireMessage> DeserializeWireMessage(
@@ -98,13 +96,11 @@ class FakeConnection : public Connection {
   const bool should_auto_connect_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeConnection;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeConnection;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CONNECTION_H_

@@ -8,11 +8,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
-
-FakeTimerFactory::FakeTimerFactory() {}
+FakeTimerFactory::FakeTimerFactory() = default;
 
 FakeTimerFactory::~FakeTimerFactory() = default;
 
@@ -36,6 +34,4 @@ void FakeTimerFactory::OnOneShotTimerDeleted(
   DCHECK_EQ(1u, num_deleted);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

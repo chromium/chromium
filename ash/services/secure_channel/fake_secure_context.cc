@@ -8,9 +8,7 @@
 
 #include "base/strings/string_util.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -51,6 +49,4 @@ void FakeSecureContext::DecodeAndDequeue(const std::string& encoded_message,
   std::move(callback).Run(decoded_message);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

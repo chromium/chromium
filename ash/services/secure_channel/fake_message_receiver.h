@@ -10,12 +10,11 @@
 
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test MessageReceiver implementation.
-class FakeMessageReceiver : public mojom::MessageReceiver {
+class FakeMessageReceiver
+    : public chromeos::secure_channel::mojom::MessageReceiver {
  public:
   FakeMessageReceiver();
 
@@ -35,8 +34,11 @@ class FakeMessageReceiver : public mojom::MessageReceiver {
   std::vector<std::string> received_messages_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeMessageReceiver;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_MESSAGE_RECEIVER_H_

@@ -14,9 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test ClientConnectionParameters implementation.
 class FakeClientConnectionParameters : public ClientConnectionParameters {
@@ -34,15 +32,19 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
 
   ~FakeClientConnectionParameters() override;
 
-  const absl::optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason>&
   failure_reason() {
     return failure_reason_;
   }
 
-  mojo::Remote<mojom::Channel>& channel() { return channel_; }
+  mojo::Remote<chromeos::secure_channel::mojom::Channel>& channel() {
+    return channel_;
+  }
 
   void set_message_receiver(
-      std::unique_ptr<mojom::MessageReceiver> message_receiver) {
+      std::unique_ptr<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver) {
     message_receiver_ = std::move(message_receiver);
   }
 
@@ -55,24 +57,29 @@ class FakeClientConnectionParameters : public ClientConnectionParameters {
   // ClientConnectionParameters:
   bool HasClientCanceledRequest() override;
   void PerformSetConnectionAttemptFailed(
-      mojom::ConnectionAttemptFailureReason reason) override;
-  void PerformSetConnectionSucceeded(
-      mojo::PendingRemote<mojom::Channel> channel,
-      mojo::PendingReceiver<mojom::MessageReceiver> message_receiver_receiver)
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason reason)
       override;
+  void PerformSetConnectionSucceeded(
+      mojo::PendingRemote<chromeos::secure_channel::mojom::Channel> channel,
+      mojo::PendingReceiver<chromeos::secure_channel::mojom::MessageReceiver>
+          message_receiver_receiver) override;
 
   void OnChannelDisconnected(uint32_t disconnection_reason,
                              const std::string& disconnection_description);
 
   bool has_canceled_client_request_ = false;
 
-  std::unique_ptr<mojom::MessageReceiver> message_receiver_;
-  std::unique_ptr<mojo::Receiver<mojom::MessageReceiver>>
+  std::unique_ptr<chromeos::secure_channel::mojom::MessageReceiver>
+      message_receiver_;
+  std::unique_ptr<
+      mojo::Receiver<chromeos::secure_channel::mojom::MessageReceiver>>
       message_receiver_receiver_;
 
-  absl::optional<mojom::ConnectionAttemptFailureReason> failure_reason_;
+  absl::optional<
+      chromeos::secure_channel::mojom::ConnectionAttemptFailureReason>
+      failure_reason_;
 
-  mojo::Remote<mojom::Channel> channel_;
+  mojo::Remote<chromeos::secure_channel::mojom::Channel> channel_;
   uint32_t disconnection_reason_ = 0u;
 
   base::OnceCallback<void(const base::UnguessableToken&)> destructor_callback_;
@@ -111,14 +118,11 @@ class FakeClientConnectionParametersObserver
   base::OnceClosure closure_for_next_callback_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeClientConnectionParameters;
-using ::chromeos::secure_channel::FakeClientConnectionParametersObserver;
-}  // namespace ash::secure_channel
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeClientConnectionParameters;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_CLIENT_CONNECTION_PARAMETERS_H_

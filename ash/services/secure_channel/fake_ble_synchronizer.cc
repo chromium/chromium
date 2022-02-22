@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/fake_ble_synchronizer.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeBleSynchronizer::FakeBleSynchronizer() = default;
 
@@ -88,6 +86,4 @@ FakeBleSynchronizer::GetStopDiscoveryErrorCallback(size_t index) {
 // commands.
 void FakeBleSynchronizer::ProcessQueue() {}
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -15,9 +15,7 @@
 #include "ash/services/secure_channel/pending_connection_manager.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test PendingConnectionManager implementation.
 class FakePendingConnectionManager : public PendingConnectionManager {
@@ -86,8 +84,12 @@ class FakePendingConnectionManagerDelegate
   ReceivedConnectionsList received_connections_list_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakePendingConnectionManager;
+using ::ash::secure_channel::FakePendingConnectionManagerDelegate;
+}  // namespace chromeos::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_PENDING_CONNECTION_MANAGER_H_

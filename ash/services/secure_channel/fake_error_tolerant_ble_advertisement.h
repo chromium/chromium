@@ -10,9 +10,7 @@
 #include "base/callback.h"
 #include "base/unguessable_token.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test double for ErrorTolerantBleAdvertisement.
 class FakeErrorTolerantBleAdvertisement : public ErrorTolerantBleAdvertisement {
@@ -43,13 +41,6 @@ class FakeErrorTolerantBleAdvertisement : public ErrorTolerantBleAdvertisement {
   bool stopped_ = false;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::FakeErrorTolerantBleAdvertisement;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_ERROR_TOLERANT_BLE_ADVERTISEMENT_H_

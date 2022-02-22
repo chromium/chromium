@@ -7,9 +7,7 @@
 #include "ash/services/secure_channel/authenticated_channel.h"
 #include "base/check.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 FakeConnectionAttemptDelegate::FakeConnectionAttemptDelegate() = default;
 
@@ -30,6 +28,4 @@ void FakeConnectionAttemptDelegate::
   connection_attempt_details_ = connection_attempt_details;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

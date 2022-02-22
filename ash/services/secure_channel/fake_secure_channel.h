@@ -16,9 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Test double SecureChannel implementation.
 class FakeSecureChannel : public SecureChannelBase {
@@ -30,11 +28,13 @@ class FakeSecureChannel : public SecureChannelBase {
 
   ~FakeSecureChannel() override;
 
-  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call() {
+  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
+  delegate_from_last_listen_call() {
     return std::move(delegate_from_last_listen_call_);
   }
 
-  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call() {
+  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
+  delegate_from_last_initiate_call() {
     return std::move(delegate_from_last_initiate_call_);
   }
 
@@ -46,23 +46,31 @@ class FakeSecureChannel : public SecureChannelBase {
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+          delegate) override;
   void InitiateConnectionToDevice(
       const multidevice::RemoteDevice& device_to_connect,
       const multidevice::RemoteDevice& local_device,
       const std::string& feature,
       ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
-      mojo::PendingRemote<mojom::ConnectionDelegate> delegate) override;
+      mojo::PendingRemote<chromeos::secure_channel::mojom::ConnectionDelegate>
+          delegate) override;
   void SetNearbyConnector(
-      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector) override {}
+      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
+          nearby_connector) override {}
 
-  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_listen_call_;
-  mojo::Remote<mojom::ConnectionDelegate> delegate_from_last_initiate_call_;
+  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
+      delegate_from_last_listen_call_;
+  mojo::Remote<chromeos::secure_channel::mojom::ConnectionDelegate>
+      delegate_from_last_initiate_call_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::FakeSecureChannel;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_FAKE_SECURE_CHANNEL_H_

@@ -6,19 +6,15 @@
 
 #include <utility>
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+FakeAuthenticator::FakeAuthenticator() = default;
 
-FakeAuthenticator::FakeAuthenticator() {}
-
-FakeAuthenticator::~FakeAuthenticator() {}
+FakeAuthenticator::~FakeAuthenticator() = default;
 
 void FakeAuthenticator::Authenticate(
     Authenticator::AuthenticationCallback callback) {
   last_callback_ = std::move(callback);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
