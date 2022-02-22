@@ -5588,18 +5588,18 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledTfLiteAndBaseline_20220111",
+                    "name": "EnabledTfLiteAndBaseline_20220217",
                     "params": {
-                        "reporter_omaha_tag": "27.4"
+                        "reporter_omaha_tag": "27.6"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
                     ]
                 },
                 {
-                    "name": "EnabledTfLiteOnly_20220111",
+                    "name": "EnabledTfLiteOnly_20220217",
                     "params": {
-                        "reporter_omaha_tag": "27.3"
+                        "reporter_omaha_tag": "27.7"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
