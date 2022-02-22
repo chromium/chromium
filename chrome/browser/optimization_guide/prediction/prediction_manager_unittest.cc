@@ -698,6 +698,8 @@ TEST_F(PredictionManagerTest,
 #if !BUILDFLAG(IS_WIN)
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelCommandLineOverride) {
+  base::HistogramTester histogram_tester;
+
   optimization_guide::proto::Any metadata;
   metadata.set_type_url(
       "type.googleapis.com/"
@@ -730,6 +732,12 @@ TEST_F(PredictionManagerTest,
 
   // Make sure no models are fetched.
   EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
+  // However, expect that the histogram for model engine version is recorded.
+  // We don't check for value here since that is too much toil for someone
+  // whenever they add a new version.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
+      features::IsModelDownloadingEnabled() ? 1 : 0);
 
   EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));

@@ -342,6 +342,24 @@ void PredictionManager::SetPredictionModelDownloadManagerForTesting(
 void PredictionManager::FetchModels() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // The histogram that gets recorded here is used for integration tests that
+  // pass in a model override. For simplicity, we place the recording of this
+  // histogram here rather than somewhere else earlier in the session
+  // initialization flow since the model engine version needs to continuously be
+  // updated for the fetch.
+  proto::ModelInfo base_model_info;
+  if (features::IsModelDownloadingEnabled()) {
+    // There should only be one supported model engine version at a time.
+    base_model_info.add_supported_model_engine_versions(
+        proto::MODEL_ENGINE_VERSION_TFLITE_2_9_0_1);
+    // This histogram is used for integration tests. Do not remove.
+    // Update this to be 10000 if/when we exceed 100 model engine versions.
+    LOCAL_HISTOGRAM_COUNTS_100(
+        "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
+        static_cast<int>(
+            *base_model_info.supported_model_engine_versions().begin()));
+  }
+
   if (switches::IsModelOverridePresent())
     return;
 
@@ -396,19 +414,7 @@ void PredictionManager::FetchModels() {
   }
 
   std::vector<proto::ModelInfo> models_info = std::vector<proto::ModelInfo>();
-
-  proto::ModelInfo base_model_info;
-  if (features::IsModelDownloadingEnabled()) {
-    // There should only be one supported model engine version at a time.
-    base_model_info.add_supported_model_engine_versions(
-        proto::MODEL_ENGINE_VERSION_TFLITE_2_9_0_1);
-    // This histogram is used for integration tests. Do not remove.
-    // Update this to be 10000 if/when we exceed 100 model engine versions.
-    LOCAL_HISTOGRAM_COUNTS_100(
-        "OptimizationGuide.PredictionManager.SupportedModelEngineVersion",
-        static_cast<int>(
-            *base_model_info.supported_model_engine_versions().begin()));
-  }
+  models_info.reserve(registered_optimization_targets_and_metadata_.size());
 
   std::string debug_msg;
   // For now, we will fetch for all registered optimization targets.
