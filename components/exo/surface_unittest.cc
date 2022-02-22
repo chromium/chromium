@@ -14,6 +14,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -1254,6 +1255,46 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
                     ->shared_quad_state->quad_to_target_transform);
       EXPECT_EQ(gfx::ToNearestRect(testing_rect),
                 frame.render_pass_list.back()->quad_list.back()->rect);
+    }
+  }
+}
+
+TEST_P(SurfaceTest, ColorBufferAlpha) {
+  gfx::Size buffer_size(1, 1);
+  constexpr SkColor4f kBuffColorExpected[] = {{1.f, 0.5f, 0.f, 1.f},
+                                              {0.f, 0.5f, 1.f, 0.f}};
+  constexpr bool kExpectedOpaque[] = {true, false};
+  for (size_t i = 0; i < base::size(kBuffColorExpected); i++) {
+    auto buffer =
+        std::make_unique<SolidColorBuffer>(kBuffColorExpected[i], buffer_size);
+    auto surface = std::make_unique<Surface>();
+    auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+    surface->Attach(buffer.get());
+    surface->SetAlpha(1.0f);
+
+    surface->SetEmbeddedSurfaceSize(gfx::Size(1, 1));
+    surface->SetEmbeddedSurfaceId(base::BindRepeating([]() -> viz::SurfaceId {
+      return viz::SurfaceId(
+          viz::FrameSinkId(1, 1),
+          viz::LocalSurfaceId(1, 1, base::UnguessableToken::Create()));
+    }));
+
+    {
+      surface->Commit();
+      base::RunLoop().RunUntilIdle();
+
+      const viz::CompositorFrame& frame =
+          GetFrameFromSurface(shell_surface.get());
+      EXPECT_EQ(1u, frame.render_pass_list.size());
+      EXPECT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+      EXPECT_EQ(0u, frame.resource_list.size());
+      auto* draw_quad = frame.render_pass_list.back()->quad_list.back();
+      EXPECT_EQ(viz::DrawQuad::Material::kSolidColor, draw_quad->material);
+      EXPECT_EQ(kExpectedOpaque[i],
+                draw_quad->shared_quad_state->are_contents_opaque);
+      auto* solid_color_quad = viz::SolidColorDrawQuad::MaterialCast(draw_quad);
+      EXPECT_EQ(kBuffColorExpected[i].SkColor4f::toSkColor(),
+                solid_color_quad->color);
     }
   }
 }
