@@ -40,9 +40,9 @@
     attribute EventHandler onchange;
     attribute EventHandler onclick;
     attribute EventHandler onclose;
-    [RuntimeEnabled=NewCanvas2DAPI] attribute EventHandler oncontextlost;
+    attribute EventHandler oncontextlost;
     attribute EventHandler oncontextmenu;
-    [RuntimeEnabled=NewCanvas2DAPI] attribute EventHandler oncontextrestored;
+    attribute EventHandler oncontextrestored;
     attribute EventHandler oncuechange;
     attribute EventHandler ondblclick;
     attribute EventHandler ondrag;

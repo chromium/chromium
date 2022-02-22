@@ -3194,7 +3194,7 @@ enum WebFeature {
   kRTCPeerConnectionOfferAllowExtmapMixedFalse = 3885,
   // The items above roughly this point are available in the M91 branch.
 
-  kNewCanvas2DAPI = 3886,
+  kOBSOLETE_NewCanvas2DAPI = 3886,
   kOBSOLETE_ServiceWorkerSubresourceFilterBypassedRequest = 3887,
   kWebGPU = 3888,
   kCSSFilterColorMatrix = 3889,

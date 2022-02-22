@@ -13,7 +13,7 @@
     [RuntimeEnabled=Canvas2dLayers] void beginLayer(); // push state on state stack and creates bitmap for subsequent draw ops
     [RuntimeEnabled=Canvas2dLayers] void endLayer(); // pop state stack if top state was pushed by beginLayer, restore state and draw the bitmap
     // Clear the canvas and reset the path
-    [RuntimeEnabled=NewCanvas2DAPI] void reset();
+    void reset();
 
     // transformations (default transform is the identity matrix)
     void scale(unrestricted double x, unrestricted double y);
@@ -41,7 +41,7 @@
     CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
     [RaisesException] CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
     [RaisesException] CanvasPattern? createPattern(CanvasImageSource image, [TreatNullAs=EmptyString] DOMString repetitionType);
-    [RuntimeEnabled=NewCanvas2DAPI] CanvasGradient createConicGradient(double startAngle, double cx, double cy);
+    CanvasGradient createConicGradient(double startAngle, double cx, double cy);
 
     // shadows
     attribute unrestricted double shadowOffsetX;

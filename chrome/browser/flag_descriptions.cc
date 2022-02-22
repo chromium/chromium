@@ -1662,11 +1662,6 @@ const char kCanvas2DLayersName[] =
 const char kCanvas2DLayersDescription[] =
     "Enables the canvas 2D methods BeginLayer and EndLayer.";
 
-const char kNewCanvas2DAPIName[] = "Experimental canvas 2D API features";
-const char kNewCanvas2DAPIDescription[] =
-    "Enables in-progress features for the canvas 2D API. See "
-    "https://github.com/fserb/canvas2d.";
-
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =

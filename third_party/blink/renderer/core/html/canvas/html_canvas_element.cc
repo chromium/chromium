@@ -338,9 +338,6 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   if (attributes.color_space != PredefinedColorSpace::kSRGB)
     UseCounter::Count(doc, WebFeature::kCanvasUseColorSpace);
 
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetExecutionContext()))
-    UseCounter::Count(doc, WebFeature::kNewCanvas2DAPI);
-
   if (ContentsCcLayer() != old_contents_cc_layer)
     SetNeedsCompositingUpdate();
 

@@ -958,9 +958,6 @@ extern const char kUsernameFirstFlowFillingDescription[];
 extern const char kCanvas2DLayersName[];
 extern const char kCanvas2DLayersDescription[];
 
-extern const char kNewCanvas2DAPIName[];
-extern const char kNewCanvas2DAPIDescription[];
-
 extern const char kDestroyProfileOnBrowserCloseName[];
 extern const char kDestroyProfileOnBrowserCloseDescription[];
 

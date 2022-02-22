@@ -76,7 +76,6 @@ WebPreferences::WebPreferences()
       webgl_errors_to_console_enabled(true),
       hide_scrollbars(false),
       accelerated_2d_canvas_enabled(false),
-      new_canvas_2d_api_enabled(false),
       antialiased_2d_canvas_disabled(false),
       antialiased_clips_2d_canvas_enabled(true),
       accelerated_filters_enabled(false),

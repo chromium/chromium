@@ -6823,10 +6823,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvas2DLayersDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableCanvas2DLayers)},
 
-    {"new-canvas-2d-api", flag_descriptions::kNewCanvas2DAPIName,
-     flag_descriptions::kNewCanvas2DAPIDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnableNewCanvas2DAPI)},
-
     {"enable-translate-sub-frames",
      flag_descriptions::kEnableTranslateSubFramesName,
      flag_descriptions::kEnableTranslateSubFramesDescription, kOsAll,

@@ -307,9 +307,6 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     if (attributes.color_space != PredefinedColorSpace::kSRGB)
       UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
-
-    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext()))
-      UseCounter::Count(window->document(), WebFeature::kNewCanvas2DAPI);
   }
 
   CanvasRenderingContextFactory* factory =

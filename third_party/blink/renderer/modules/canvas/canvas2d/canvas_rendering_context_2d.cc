@@ -232,15 +232,8 @@ void CanvasRenderingContext2D::DidSetSurfaceSize() {
   DCHECK(context_lost_mode_ != kNotLostContext && !IsPaintable());
 
   if (CanCreateCanvas2dResourceProvider()) {
-    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-            canvas()->GetTopExecutionContext())) {
-      dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
-                                                          FROM_HERE);
-    } else {
-      // legacy synchronous context restoration.
-      Reset();
-      context_lost_mode_ = kNotLostContext;
-    }
+    dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
+                                                        FROM_HERE);
   }
 }
 
@@ -1105,9 +1098,7 @@ CanvasRenderingContext2D::getContextAttributes() const {
   if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled())
     settings->setPixelFormat(color_params_.GetPixelFormatAsString());
   settings->setDesynchronized(Host()->LowLatencyEnabled());
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          canvas()->GetTopExecutionContext()))
-    settings->setWillReadFrequently(CreationAttributes().will_read_frequently);
+  settings->setWillReadFrequently(CreationAttributes().will_read_frequently);
   return settings;
 }
 

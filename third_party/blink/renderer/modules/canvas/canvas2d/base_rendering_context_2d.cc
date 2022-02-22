@@ -430,9 +430,6 @@ void BaseRenderingContext2D::setStrokeStyle(
   switch (style->GetContentType()) {
     case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
         ContentType::kCSSColorValue:
-      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-              GetTopExecutionContext()))
-        return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
           style->GetAsCSSColorValue()->ToColor().Rgb());
       break;
@@ -492,9 +489,6 @@ void BaseRenderingContext2D::setFillStyle(
   switch (style->GetContentType()) {
     case V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString::
         ContentType::kCSSColorValue:
-      if (!RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-              GetTopExecutionContext()))
-        return;
       canvas_style = MakeGarbageCollected<CanvasStyle>(
           style->GetAsCSSColorValue()->ToColor().Rgb());
       break;
@@ -750,15 +744,12 @@ void BaseRenderingContext2D::setFilter(
 
   switch (input->GetContentType()) {
     case V8UnionCanvasFilterOrString::ContentType::kCanvasFilter:
-      if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-              GetTopExecutionContext())) {
-        UseCounter::Count(GetTopExecutionContext(),
-                          WebFeature::kCanvasRenderingContext2DCanvasFilter);
-        GetState().SetCanvasFilter(input->GetAsCanvasFilter());
-        SnapshotStateForFilter();
-        // TODO(crbug.com/1234113): Instrument new canvas APIs.
-        identifiability_study_helper_.set_encountered_skipped_ops();
-      }
+      UseCounter::Count(GetTopExecutionContext(),
+                        WebFeature::kCanvasRenderingContext2DCanvasFilter);
+      GetState().SetCanvasFilter(input->GetAsCanvasFilter());
+      SnapshotStateForFilter();
+      // TODO(crbug.com/1234113): Instrument new canvas APIs.
+      identifiability_study_helper_.set_encountered_skipped_ops();
       break;
     case V8UnionCanvasFilterOrString::ContentType::kString: {
       const String& filter_string = input->GetAsString();
@@ -1458,16 +1449,13 @@ bool BaseRenderingContext2D::ShouldDrawImageAntialiased(
 }
 
 void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
-  if (GetCanvasRenderingContextHost() &&
-      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext())) {
-    Event* event = Event::CreateCancelable(event_type_names::kContextlost);
-    GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+  Event* event = Event::CreateCancelable(event_type_names::kContextlost);
+  GetCanvasRenderingContextHost()->HostDispatchEvent(event);
 
-    UseCounter::Count(GetTopExecutionContext(),
-                      WebFeature::kCanvasRenderingContext2DContextLostEvent);
-    if (event->defaultPrevented()) {
-      context_restorable_ = false;
-    }
+  UseCounter::Count(GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DContextLostEvent);
+  if (event->defaultPrevented()) {
+    context_restorable_ = false;
   }
 
   if (context_restorable_ &&
@@ -1488,14 +1476,10 @@ void BaseRenderingContext2D::DispatchContextRestoredEvent(TimerBase*) {
     return;
   ResetInternal();
   context_lost_mode_ = CanvasRenderingContext::kNotLostContext;
-  if (GetCanvasRenderingContextHost() &&
-      RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext())) {
-    Event* event(Event::Create(event_type_names::kContextrestored));
-    GetCanvasRenderingContextHost()->HostDispatchEvent(event);
-    UseCounter::Count(
-        GetTopExecutionContext(),
-        WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
-  }
+  Event* event(Event::Create(event_type_names::kContextrestored));
+  GetCanvasRenderingContextHost()->HostDispatchEvent(event);
+  UseCounter::Count(GetTopExecutionContext(),
+                    WebFeature::kCanvasRenderingContext2DContextRestoredEvent);
 }
 
 void BaseRenderingContext2D::DrawImageInternal(

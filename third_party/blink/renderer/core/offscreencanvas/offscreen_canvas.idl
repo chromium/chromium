@@ -15,6 +15,6 @@
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasTransferToImageBitmap, RaisesException] ImageBitmap transferToImageBitmap();
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
 
-    [RuntimeEnabled=NewCanvas2DAPI] attribute EventHandler oncontextlost;
-    [RuntimeEnabled=NewCanvas2DAPI] attribute EventHandler oncontextrestored;
+    attribute EventHandler oncontextlost;
+    attribute EventHandler oncontextrestored;
 };

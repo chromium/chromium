@@ -1230,7 +1230,6 @@ TEST_P(CanvasRenderingContext2DTest,
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfNormalLatencyWillReadFrequently) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kNormalLatency,
                 ReadFrequencyMode::kWillReadFrequency);
   DrawSomething();
@@ -1241,7 +1240,6 @@ TEST_P(CanvasRenderingContext2DTest,
 
 TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedIfLowLatencyWillReadFrequently) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque, kLowLatency, ReadFrequencyMode::kWillReadFrequency);
   // No need to set-up the layer bridge when testing low latency mode.
   DrawSomething();
@@ -1250,7 +1248,6 @@ TEST_P(CanvasRenderingContext2DTest,
 }
 
 TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
@@ -1266,7 +1263,6 @@ TEST_P(CanvasRenderingContext2DTest, RemainAcceleratedAfterGetImageData) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
@@ -1291,7 +1287,6 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlush) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
@@ -1330,7 +1325,6 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushPinnedImages) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
@@ -1357,7 +1351,6 @@ TEST_P(CanvasRenderingContext2DTest, OverdrawResetsPinnedImageBytes) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
@@ -1385,7 +1378,6 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushSameImage) {
 }
 
 TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
-  ScopedNewCanvas2DAPIForTest new_api(true);
   CreateContext(kNonOpaque);
   gfx::Size size(10, 10);
   auto fake_accelerate_surface = std::make_unique<FakeCanvas2DLayerBridge>(
