@@ -109,10 +109,7 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
     return false;
   const auto& layout_shape = To<LayoutSVGShape>(*layout_object);
 
-  StrokeData stroke_data;
-  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
-      stroke_data, layout_shape.StyleRef(), layout_shape,
-      PathLengthScaleFactor());
+  AffineTransform root_transform;
 
   Path path = AsPath();
   gfx::PointF local_point = point->Target()->Value();
@@ -124,14 +121,19 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
 
     // Un-scale to get back to the root-transform (cheaper than re-computing
     // the root transform from scratch).
-    AffineTransform root_transform;
     root_transform.Scale(layout_shape.StyleRef().EffectiveZoom())
         .Multiply(transform);
-    return path.StrokeContains(local_point, stroke_data, root_transform);
+  } else {
+    root_transform = layout_shape.ComputeRootTransform();
   }
+
+  StrokeData stroke_data;
+  SVGLayoutSupport::ApplyStrokeStyleToStrokeData(
+      stroke_data, layout_shape.StyleRef(), layout_shape,
+      PathLengthScaleFactor());
+
   // Path::StrokeContains will reject points with a non-finite component.
-  return path.StrokeContains(local_point, stroke_data,
-                             layout_shape.ComputeRootTransform());
+  return path.StrokeContains(local_point, stroke_data, root_transform);
 }
 
 Path SVGGeometryElement::ToClipPath() const {

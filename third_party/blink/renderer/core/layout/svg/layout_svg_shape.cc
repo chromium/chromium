@@ -200,10 +200,9 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
     if (!HasPath())
       CreatePath();
 
-    StrokeData stroke_data;
-    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(),
-                                                   *this, DashScaleFactor());
+    const Path* path = path_.get();
 
+    AffineTransform root_transform;
     if (HasNonScalingStroke()) {
       // The reason is similar to the above code about HasPath().
       if (!rare_data_)
@@ -211,16 +210,20 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
 
       // Un-scale to get back to the root-transform (cheaper than re-computing
       // the root transform from scratch).
-      AffineTransform root_transform;
       root_transform.Scale(StyleRef().EffectiveZoom())
           .Multiply(NonScalingStrokeTransform());
 
-      stroke_path_cache_ = std::make_unique<Path>(
-          NonScalingStrokePath().StrokePath(stroke_data, root_transform));
+      path = &NonScalingStrokePath();
     } else {
-      stroke_path_cache_ = std::make_unique<Path>(
-          path_->StrokePath(stroke_data, ComputeRootTransform()));
+      root_transform = ComputeRootTransform();
     }
+
+    StrokeData stroke_data;
+    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(),
+                                                   *this, DashScaleFactor());
+
+    stroke_path_cache_ =
+        std::make_unique<Path>(path->StrokePath(stroke_data, root_transform));
   }
 
   DCHECK(stroke_path_cache_);
