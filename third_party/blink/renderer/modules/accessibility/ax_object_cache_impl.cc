@@ -3766,6 +3766,8 @@ void AXObjectCacheImpl::DidHideMenuListPopupWithCleanLayout(Node* menu_list) {
 void AXObjectCacheImpl::HandleLoadStart(Document* document) {
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(*document);
   MarkAXObjectDirty(Get(document));
+  DeferTreeUpdate(&AXObjectCacheImpl::EnsurePostNotification, document,
+                  ax::mojom::blink::Event::kLoadStart);
 }
 
 void AXObjectCacheImpl::HandleLoadComplete(Document* document) {

@@ -534,6 +534,7 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kHover:
     case ax::mojom::Event::kLoadComplete:
+    case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kTextSelectionChanged:
     case ax::mojom::Event::kValueChanged:
       return true;
@@ -564,7 +565,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kFocusContext:
     case ax::mojom::Event::kHitTestResult:
     case ax::mojom::Event::kImageFrameUpdated:
-    case ax::mojom::Event::kLoadStart:
     case ax::mojom::Event::kLiveRegionCreated:
     case ax::mojom::Event::kLiveRegionChanged:
     case ax::mojom::Event::kMediaStartedPlaying:
