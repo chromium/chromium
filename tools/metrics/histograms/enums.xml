@@ -70982,6 +70982,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Peripheral blocked"/>
   <int value="6" label="Billboard device"/>
   <int value="7" label="Invalid DP alternate mode cable"/>
+  <int value="8" label="USB4 device uses Thunderbolt due to the cable"/>
+  <int value="9" label="USB4 device with incompatible cable"/>
+  <int value="10" label="Thunderbolt device with incompatible cable"/>
+  <int value="11" label="USB device speed limited by the cable"/>
 </enum>
 
 <enum name="PermissionAction">
