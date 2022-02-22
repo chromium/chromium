@@ -7610,3 +7610,5 @@ crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker-proxied/thorough/nocors
 crbug.com/1299858 [ Win ] http/tests/fetch/serviceworker/thorough/redirect-nocors-base-https-other-https.html [ Skip Timeout Pass ]
 crbug.com/1299858 [ Win ] http/tests/fetch/window/thorough/cors-base-https-other-https.html [ Skip Timeout Pass ]
 crbug.com/1299858 [ Win ] http/tests/fetch/workers/thorough/cookie-nocors-base-https-other-https.html [ Skip Timeout Pass ]
+crbug.com/1299903 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-move.html [ Failure Pass ]
+
