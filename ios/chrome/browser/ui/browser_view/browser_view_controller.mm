@@ -99,7 +99,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/presenters/vertical_animation_container.h"
-#import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_coordinator.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
@@ -328,10 +327,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The controller that shows the bookmarking UI after the user taps the star
   // button.
   BookmarkInteractionController* _bookmarkInteractionController;
-
-  // Coordinator for displaying Sad Tab.
-  // TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
-  SadTabCoordinator* _sadTabCoordinator;
 
   ToolbarCoordinatorAdaptor* _toolbarCoordinatorAdaptor;
 
@@ -671,11 +666,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
   }
   return _sideSwipeController;
-}
-
-// TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
-- (SadTabCoordinator*)sadTabCoordinator {
-  return _sadTabCoordinator;
 }
 
 // TODO(crbug.com/1272495): Move DownloadManagerCoordinator to
@@ -1197,9 +1187,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   [self.browserViewHiderCoordinator stop];
   self.browserViewHiderCoordinator = nil;
-
-  [_sadTabCoordinator stop];
-  _sadTabCoordinator = nil;
 
   [self.commandDispatcher stopDispatchingToTarget:self.bubblePresenter];
   self.bubblePresenter = nil;
@@ -1780,12 +1767,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self.currentWebState) {
     self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
   }
-
-  // TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
-  _sadTabCoordinator = [[SadTabCoordinator alloc]
-      initWithBaseViewController:self.browserContainerViewController
-                         browser:self.browser];
-  _sadTabCoordinator.overscrollDelegate = self;
 }
 
 // On iOS7, iPad should match iOS6 status bar.  Install a simple black bar under
@@ -2126,18 +2107,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   self.omniboxHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
-
-  // If there are any existing SadTabHelpers in
-  // |self.browser->GetWebStateList()|, update the helpers delegate with the new
-  // |_sadTabCoordinator|.
-  // TODO(crbug.com/1272496) : Move this update into TabLifecycleMediator.
-  DCHECK(_sadTabCoordinator);
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    SadTabTabHelper* sadTabHelper =
-        SadTabTabHelper::FromWebState(webStateList->GetWebStateAt(i));
-    sadTabHelper->SetDelegate(_sadTabCoordinator);
-  }
 }
 
 // Sets up the frame for the fake status bar. View must be loaded.
@@ -3148,7 +3117,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [overlays addObject:downloadManagerView];
   }
 
-  UIView* sadTabView = _sadTabCoordinator.viewController.view;
+  UIView* sadTabView = self.sadTabViewController.view;
   if (sadTabView) {
     [overlays addObject:sadTabView];
   }

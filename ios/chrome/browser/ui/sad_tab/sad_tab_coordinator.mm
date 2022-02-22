@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/web_state.h"
 
@@ -26,12 +27,28 @@
 #error "This file requires ARC support."
 #endif
 
-@interface SadTabCoordinator () <SadTabViewControllerDelegate> {
+@interface SadTabCoordinator () <SadTabViewControllerDelegate,
+                                 DependencyInstalling> {
   SadTabViewController* _viewController;
+  // Bridge to observe the web state list from Objective-C.
+  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
 }
 @end
 
 @implementation SadTabCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _dependencyInstallerBridge =
+        std::make_unique<WebStateDependencyInstallerBridge>(
+            self, self.browser->GetWebStateList());
+  }
+  return self;
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   if (_viewController)
@@ -76,6 +93,12 @@
   [_viewController.view removeFromSuperview];
   [_viewController removeFromParentViewController];
   _viewController = nil;
+}
+
+- (void)disconnect {
+  // Deleting the installer bridge will cause all web states to have
+  // dependencies uninstalled.
+  _dependencyInstallerBridge.reset();
 }
 
 - (void)setOverscrollDelegate:
@@ -136,6 +159,12 @@
 
 - (void)sadTabTabHelperDidHide:(SadTabTabHelper*)tabHelper {
   [self stop];
+}
+
+#pragma mark - DependencyInstalling
+
+- (void)installDependencyForWebState:(web::WebState*)webState {
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(self);
 }
 
 @end

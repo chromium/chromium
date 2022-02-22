@@ -23,6 +23,11 @@
 // YES if page load for this URL has failed more than once.
 @property(nonatomic) BOOL repeatedFailure;
 
+// Disconnects all delegates set by the coordinator on any web states in its web
+// state list. After |disconnect| is called, the coordinator will not add
+// delegates to further webstates.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SAD_TAB_SAD_TAB_COORDINATOR_H_

@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
+#import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_coordinator.h"
@@ -227,6 +228,9 @@
 
 // Coordinator for displaying Repost Form dialog.
 @property(nonatomic, strong) RepostFormCoordinator* repostFormCoordinator;
+
+// Coordinator for displaying Sad Tab.
+@property(nonatomic, strong) SadTabCoordinator* sadTabCoordinator;
 
 // Coordinator for sharing scenarios.
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
@@ -523,6 +527,14 @@
 
   /* RepostFormCoordinator is created and started by a delegate method */
 
+  // TODO(crbug.com/1298934): Should start when the Sad Tab UI appears.
+  self.sadTabCoordinator =
+      [[SadTabCoordinator alloc] initWithBaseViewController:self.viewController
+                                                    browser:self.browser];
+  [self.sadTabCoordinator setOverscrollDelegate:self.viewController];
+  self.viewController.sadTabViewController =
+      self.sadTabCoordinator.viewController;
+
   /* SharingCoordinator is created and started by an ActivityServiceCommand */
 
   self.storeKitCoordinator = [[StoreKitCoordinator alloc]
@@ -603,6 +615,11 @@
   [self.repostFormCoordinator stop];
   self.repostFormCoordinator = nil;
 
+  // TODO(crbug.com/1298934): Should stop when the Sad Tab UI appears.
+  [self.sadTabCoordinator stop];
+  [self.sadTabCoordinator disconnect];
+  self.sadTabCoordinator = nil;
+
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 
@@ -647,7 +664,6 @@
   dependencies.prerenderService =
       PrerenderServiceFactory::GetForBrowserState(browserState);
   dependencies.sideSwipeController = browserViewController.sideSwipeController;
-  dependencies.sadTabCoordinator = browserViewController.sadTabCoordinator;
   dependencies.downloadManagerCoordinator =
       browserViewController.downloadManagerCoordinator;
   dependencies.baseViewController = browserViewController;

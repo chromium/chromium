@@ -10,9 +10,7 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
-#import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
-#import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -38,7 +36,6 @@
   // Other tab helper dependencies.
   PrerenderService* _prerenderService;
   __weak SideSwipeController* _sideSwipeController;
-  __weak SadTabCoordinator* _sadTabCoordinator;
   __weak DownloadManagerCoordinator* _downloadManagerCoordinator;
   __weak UIViewController* _baseViewController;
   __weak CommandDispatcher* _commandDispatcher;
@@ -51,7 +48,6 @@
   if (self = [super init]) {
     _prerenderService = dependencies.prerenderService;
     _sideSwipeController = dependencies.sideSwipeController;
-    _sadTabCoordinator = dependencies.sadTabCoordinator;
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
     _baseViewController = dependencies.baseViewController;
     _commandDispatcher = dependencies.commandDispatcher;
@@ -97,7 +93,6 @@
   }
 
   web_deprecated::SetSwipeRecognizerProvider(webState, _sideSwipeController);
-  SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerCoordinator);

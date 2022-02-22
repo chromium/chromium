@@ -18,7 +18,6 @@ class WebStateList;
 
 typedef struct {
   SideSwipeController* sideSwipeController;
-  SadTabCoordinator* sadTabCoordinator;
   DownloadManagerCoordinator* downloadManagerCoordinator;
   PrerenderService* prerenderService;
   UIViewController* baseViewController;

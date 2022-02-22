@@ -60,6 +60,9 @@ TEST_F(SadTabCoordinatorTest, Start) {
   EXPECT_FALSE(view_controller.offTheRecord);
   EXPECT_FALSE(view_controller.repeatedFailure);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests stopping coordinator.
@@ -72,6 +75,9 @@ TEST_F(SadTabCoordinatorTest, Stop) {
   ASSERT_EQ(1U, base_view_controller_.childViewControllers.count);
 
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
 }
 
@@ -87,6 +93,9 @@ TEST_F(SadTabCoordinatorTest, Dismiss) {
   [coordinator sadTabTabHelperDismissSadTab:nullptr];
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests hiding Sad Tab.
@@ -101,6 +110,9 @@ TEST_F(SadTabCoordinatorTest, Hide) {
   [coordinator sadTabTabHelperDidHide:nullptr];
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests SadTabViewController state for the first failure in non-incognito mode.
@@ -125,6 +137,9 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInNonIncognito) {
   EXPECT_FALSE(view_controller.offTheRecord);
   EXPECT_FALSE(view_controller.repeatedFailure);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests SadTabViewController state for the repeated failure in incognito mode.
@@ -151,6 +166,9 @@ TEST_F(SadTabCoordinatorTest, FirstFailureInIncognito) {
   EXPECT_TRUE(view_controller.offTheRecord);
   EXPECT_TRUE(view_controller.repeatedFailure);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests SadTabViewController state for the repeated failure in incognito mode.
@@ -173,6 +191,9 @@ TEST_F(SadTabCoordinatorTest, ShowFirstFailureInIncognito) {
   EXPECT_TRUE(view_controller.offTheRecord);
   EXPECT_TRUE(view_controller.repeatedFailure);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests action button tap for the first failure.
@@ -197,6 +218,9 @@ TEST_F(SadTabCoordinatorTest, FirstFailureAction) {
   [view_controller.actionButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests action button tap for the repeated failure.
@@ -231,6 +255,9 @@ TEST_F(SadTabCoordinatorTest, RepeatedFailureAction) {
       sendActionsForControlEvents:UIControlEventTouchUpInside];
   EXPECT_OCMOCK_VERIFY(mock_application_commands_handler_);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }
 
 // Tests that view controller is not presented for the hidden web state.
@@ -247,4 +274,7 @@ TEST_F(SadTabCoordinatorTest, IgnoreSadTabFromHiddenWebState) {
   // Verify that view controller was not presented for the hidden web state.
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   [coordinator stop];
+  // TODO(crbug.com/1298934): To remove after cleaning as it should be handle in
+  // the stop function.
+  [coordinator disconnect];
 }

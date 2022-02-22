@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
 
 @class DownloadManagerCoordinator;
-@class SadTabCoordinator;
 @class SideSwipeController;
 
 // Category on BrowserViewController that that exposes some internal controllers
@@ -22,9 +21,6 @@
 @interface BrowserViewController (Delegates) <CommonTabHelperDelegate>
 
 @property(nonatomic, strong, readonly) SideSwipeController* sideSwipeController;
-
-// TODO(crbug.com/1272494): Move this to BrowserCoordinator.
-@property(nonatomic, strong, readonly) SadTabCoordinator* sadTabCoordinator;
 
 // TODO(crbug.com/1272495): Move this to BrowserCoordinator.
 @property(nonatomic, strong, readonly)
