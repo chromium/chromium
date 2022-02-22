@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <set>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -29,6 +30,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
@@ -136,21 +138,15 @@ std::vector<HostPortPair> SortServiceTargets(
 ExtractionError ValidateNamesAndAliases(
     base::StringPiece query_name,
     const AliasMap& aliases,
-    const std::vector<std::unique_ptr<const RecordParsed>>& results,
-    std::vector<std::string>* out_ordered_aliases) {
-  DCHECK(out_ordered_aliases);
-
+    const std::vector<std::unique_ptr<const RecordParsed>>& results) {
   // Validate that all aliases form a single non-looping chain, starting from
   // `query_name`.
   size_t aliases_in_chain = 0;
   base::StringPiece final_chain_name = query_name;
-  std::vector<std::string> reordered_aliases;
-  reordered_aliases.push_back(std::string(query_name));
   auto alias = aliases.find(std::string(query_name));
   while (alias != aliases.end() && aliases_in_chain <= aliases.size()) {
     aliases_in_chain++;
     final_chain_name = alias->second;
-    reordered_aliases.emplace_back(alias->second);
     alias = aliases.find(alias->second);
   }
 
@@ -165,16 +161,6 @@ ExtractionError ValidateNamesAndAliases(
     }
   }
 
-  // Reverse the ordered aliases so that `final_chain_name` is first and
-  // `query_name` is last.
-  using iter_t = std::vector<std::string>::reverse_iterator;
-  std::vector<std::string> reversed_aliases;
-  reversed_aliases.insert(
-      reversed_aliases.end(),
-      std::move_iterator<iter_t>(reordered_aliases.rbegin()),
-      std::move_iterator<iter_t>(reordered_aliases.rend()));
-  *out_ordered_aliases = reversed_aliases;
-
   return ExtractionError::kOk;
 }
 
@@ -183,7 +169,7 @@ ExtractionError ExtractResponseRecords(
     uint16_t result_qtype,
     std::vector<std::unique_ptr<const RecordParsed>>* out_records,
     absl::optional<base::TimeDelta>* out_response_ttl,
-    std::vector<std::string>* out_aliases) {
+    std::set<std::string>* out_aliases) {
   DCHECK_EQ(response.question_count(), 1u);
   DCHECK(out_records);
   DCHECK(out_response_ttl);
@@ -231,9 +217,8 @@ ExtractionError ExtractResponseRecords(
     }
   }
 
-  std::vector<std::string> out_ordered_aliases;
-  ExtractionError name_and_alias_validation_error = ValidateNamesAndAliases(
-      response.GetSingleDottedName(), aliases, records, &out_ordered_aliases);
+  ExtractionError name_and_alias_validation_error =
+      ValidateNamesAndAliases(response.GetSingleDottedName(), aliases, records);
   if (name_and_alias_validation_error != ExtractionError::kOk)
     return name_and_alias_validation_error;
 
@@ -271,8 +256,21 @@ ExtractionError ExtractResponseRecords(
 
   *out_records = std::move(records);
   *out_response_ttl = response_ttl;
-  if (out_aliases)
-    *out_aliases = std::move(out_ordered_aliases);
+
+  if (out_aliases) {
+    out_aliases->clear();
+    for (const auto& alias : aliases) {
+      std::string canonicalized_alias =
+          dns_alias_utility::ValidateAndCanonicalizeAlias(alias.second);
+      if (!canonicalized_alias.empty())
+        out_aliases->insert(std::move(canonicalized_alias));
+    }
+    std::string canonicalized_query =
+        dns_alias_utility::ValidateAndCanonicalizeAlias(
+            response.GetSingleDottedName());
+    if (!canonicalized_query.empty())
+      out_aliases->insert(std::move(canonicalized_query));
+  }
 
   return ExtractionError::kOk;
 }
@@ -287,7 +285,7 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
 
   std::vector<std::unique_ptr<const RecordParsed>> records;
   absl::optional<base::TimeDelta> response_ttl;
-  std::vector<std::string> aliases;
+  std::set<std::string> aliases;
   ExtractionError extraction_error = ExtractResponseRecords(
       response, address_qtype, &records, &response_ttl, &aliases);
 
@@ -297,10 +295,10 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
     return extraction_error;
   }
 
-  AddressList addresses;
+  std::vector<IPEndPoint> ip_endpoints;
   std::string canonical_name;
   for (const auto& record : records) {
-    if (addresses.empty())
+    if (ip_endpoints.empty())
       canonical_name = record->name();
 
     // Expect that ExtractResponseRecords validates that all results correctly
@@ -320,28 +318,15 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
       address = rdata->address();
       DCHECK(address.IsIPv6());
     }
-    addresses.push_back(IPEndPoint(address, 0 /* port */));
+    ip_endpoints.emplace_back(address, /*port=*/0);
   }
 
-  // If addresses were found, then a canonical name exists. Verify that the
-  // canonical name is the first entry in the alias vector to be stored in
-  // `addresses.dns_aliases_`. The alias chain order should have been preserved
-  // from canonical name (i.e. record name) through to query name.
-  if (!addresses.empty()) {
-    DCHECK(!aliases.empty());
-    DCHECK(base::EqualsCaseInsensitiveASCII(aliases.front(), canonical_name))
-        << "aliases.front(): " << aliases.front()
-        << "\ncanonical_name: " << canonical_name;
-    DCHECK(base::EqualsCaseInsensitiveASCII(aliases.back(),
-                                            response.GetSingleDottedName()))
-        << "aliases.back(): " << aliases.back()
-        << "\nresponse.GetDottedName(): " << response.GetSingleDottedName();
-    addresses.SetDnsAliases(std::move(aliases));
-  }
+  HostCache::Entry results(ip_endpoints.empty() ? ERR_NAME_NOT_RESOLVED : OK,
+                           std::move(ip_endpoints),
+                           HostCache::Entry::SOURCE_DNS, response_ttl);
+  results.set_aliases(std::move(aliases));
 
-  *out_results = HostCache::Entry(
-      addresses.empty() ? ERR_NAME_NOT_RESOLVED : OK, std::move(addresses),
-      HostCache::Entry::SOURCE_DNS, response_ttl);
+  *out_results = std::move(results);
   return ExtractionError::kOk;
 }
 

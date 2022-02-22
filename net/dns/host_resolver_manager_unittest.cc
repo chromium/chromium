@@ -7697,8 +7697,8 @@ TEST_F(HostResolverManagerDnsTest, DnsAliases) {
   ASSERT_THAT(response.result_error(), IsOk());
   ASSERT_TRUE(response.request()->GetAddressResults());
   EXPECT_THAT(response.request()->GetAddressResults()->dns_aliases(),
-              testing::ElementsAre("fourth.test", "third.test", "second.test",
-                                   "first.test"));
+              testing::UnorderedElementsAre("fourth.test", "third.test",
+                                            "second.test", "first.test"));
 
   EXPECT_THAT(response.request()->GetDnsAliasResults(),
               testing::Pointee(testing::UnorderedElementsAre(
@@ -7775,64 +7775,6 @@ TEST_F(HostResolverManagerDnsTest, NoAdditionalDnsAliases) {
               testing::ElementsAre("first.test"));
   EXPECT_THAT(response.request()->GetDnsAliasResults(),
               testing::Pointee(testing::UnorderedElementsAre("first.test")));
-}
-
-TEST_F(HostResolverManagerDnsTest, SortsAndDeduplicatesAddresses) {
-  MockDnsClientRuleList rules;
-
-  {
-    std::vector<DnsResourceRecord> answers(
-        3, BuildTestAddressRecord("duplicate", IPAddress::IPv4Localhost()));
-    std::string dns_name;
-    CHECK(DNSDomainFromDot("duplicate", &dns_name));
-    absl::optional<DnsQuery> query(absl::in_place, 0, dns_name,
-                                   dns_protocol::kTypeA);
-
-    rules.emplace_back(
-        "duplicate", dns_protocol::kTypeA, false /* secure */,
-        MockDnsClientRule::Result(DnsResponse(
-            0, false, std::move(answers),
-            std::vector<DnsResourceRecord>() /* authority_records */,
-            std::vector<DnsResourceRecord>() /* additional_records */, query)),
-        false /* delay */);
-  }
-
-  {
-    std::vector<DnsResourceRecord> answers(
-        3, BuildTestAddressRecord("duplicate", IPAddress::IPv6Localhost()));
-    std::string dns_name;
-    CHECK(DNSDomainFromDot("duplicate", &dns_name));
-    absl::optional<DnsQuery> query(absl::in_place, 0, dns_name,
-                                   dns_protocol::kTypeAAAA);
-
-    rules.emplace_back(
-        "duplicate", dns_protocol::kTypeAAAA, false /* secure */,
-        MockDnsClientRule::Result(DnsResponse(
-            0, false, std::move(answers),
-            std::vector<DnsResourceRecord>() /* authority_records */,
-            std::vector<DnsResourceRecord>() /* additional_records */, query)),
-        false /* delay */);
-  }
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair("duplicate", 80), NetworkIsolationKey(), NetLogWithSource(),
-      absl::nullopt, resolve_context_.get(), resolve_context_->host_cache()));
-  ASSERT_THAT(response.result_error(), IsOk());
-
-  EXPECT_THAT(
-      response.request()->GetAddressResults(),
-      testing::Pointee(testing::Property(
-          &AddressList::endpoints,
-          testing::ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 80),
-                               IPEndPoint(IPAddress::IPv4Localhost(), 80)))));
-  EXPECT_THAT(
-      response.request()->GetEndpointResults(),
-      testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
-          testing::ElementsAre(IPEndPoint(IPAddress::IPv6Localhost(), 80),
-                               IPEndPoint(IPAddress::IPv4Localhost(), 80))))));
 }
 
 TEST_F(HostResolverManagerTest, ResolveLocalHostname) {
@@ -13985,8 +13927,9 @@ TEST_F(HostResolverManagerBootstrapTest, OnlyBootstrap) {
   const auto* secure_result = resolve_context_->host_cache()->Lookup(
       MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
   ASSERT_THAT(secure_result, testing::NotNull());
-  EXPECT_THAT(secure_result->second.legacy_addresses(),
-              Optional(AddressesMatch(kRemoteAddrs)));
+  EXPECT_THAT(secure_result->second.GetEndpoints(),
+              testing::Optional(testing::ElementsAre(
+                  ExpectEndpointResult(AddressesMatch(kRemoteAddrs)))));
 }
 
 // The insecure cache is ignored, so the results are identical to
@@ -14016,8 +13959,9 @@ TEST_F(HostResolverManagerBootstrapTest, BootstrapAndInsecureCache) {
   const auto* secure_result = resolve_context_->host_cache()->Lookup(
       MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
   ASSERT_THAT(secure_result, testing::NotNull());
-  EXPECT_THAT(secure_result->second.legacy_addresses(),
-              Optional(AddressesMatch(kRemoteAddrs)));
+  EXPECT_THAT(secure_result->second.GetEndpoints(),
+              testing::Optional(testing::ElementsAre(
+                  ExpectEndpointResult(AddressesMatch(kRemoteAddrs)))));
 }
 
 // The bootstrap addrs are ignored, so the results are identical to
@@ -14197,8 +14141,9 @@ TEST_F(HostResolverManagerBootstrapTest, OnlyBootstrapTwice) {
   const auto* secure_result = resolve_context_->host_cache()->Lookup(
       MakeCacheKey(/*secure=*/true), GetMockTickClock()->NowTicks());
   ASSERT_THAT(secure_result, testing::NotNull());
-  EXPECT_THAT(secure_result->second.legacy_addresses(),
-              Optional(AddressesMatch(kRemoteAddrs)));
+  EXPECT_THAT(secure_result->second.GetEndpoints(),
+              testing::Optional(testing::ElementsAre(
+                  ExpectEndpointResult(AddressesMatch(kRemoteAddrs)))));
 }
 
 }  // namespace net

@@ -1045,8 +1045,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
         if (extraction_error ==
                 DnsResponseResultExtractor::ExtractionError::kOk &&
-            results.legacy_addresses() &&
-            !results.legacy_addresses().value().empty()) {
+            results.ip_endpoints() && !results.ip_endpoints()->empty()) {
           // The DoH probe queries don't go through the standard DnsAttempt
           // path, so the ServerStats have not been updated yet.
           context_->RecordServerSuccess(
