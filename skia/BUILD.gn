@@ -128,7 +128,7 @@ config("skia_config") {
 
 # Internal-facing config for Skia library code.
 config("skia_library_config") {
-  defines = [ "SK_IGNORE_FREETYPE_COLRV0_LOAD_FLAGS_FIX" ]
+  defines = []
 
   # Skia uses C++17 language features in its internal code. Previously Skia was built with
   # "-std=c++17". See http://crbug.com/1257145 for why this was a bad idea.
