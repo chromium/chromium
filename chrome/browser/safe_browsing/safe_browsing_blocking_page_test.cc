@@ -156,6 +156,9 @@ const char kUnrelatedUrl[] = "https://www.google.com";
 const char kEnhancedProtectionUrl[] = "chrome://settings/security?q=enhanced";
 const char kMaliciousJsPage[] = "/safe_browsing/malware_js.html";
 const char kMaliciousJs[] = "/safe_browsing/script.js";
+const char kMaliciousFencedFrameOwner[] =
+    "/safe_browsing/malware_in_fenced_frame.html";
+const char kMaliciousFencedFrame[] = "/safe_browsing/malware_fenced_frame.html";
 
 }  // namespace
 
@@ -736,7 +739,7 @@ class SafeBrowsingBlockingPageBrowserTest
       const ClientSafeBrowsingReportRequest& report,
       const HTMLElement& actual_element,
       const std::string& expected_tag_name,
-      const int expected_child_ids_size,
+      int expected_child_ids_size,
       const std::vector<mojom::AttributeNameValuePtr>& expected_attributes) {
     EXPECT_EQ(expected_tag_name, actual_element.tag());
     EXPECT_EQ(expected_child_ids_size, actual_element.child_ids_size());
@@ -1040,7 +1043,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
     for (const HTMLElement& elem : report.dom()) {
       if (elem.tag() == "IFRAME") {
         iframe_node_id = elem.id();
-        VerifyElement(report, elem, "IFRAME", /*child_size=*/0,
+        VerifyElement(report, elem, "IFRAME", /*expected_child_ids_size=*/0,
                       std::vector<mojom::AttributeNameValuePtr>());
         break;
       }
@@ -1052,8 +1055,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       if (elem.id() != iframe_node_id) {
         std::vector<mojom::AttributeNameValuePtr> attributes;
         attributes.push_back(mojom::AttributeNameValue::New("foo", "1"));
-        // Not the IIFRAME, so this is the parent DIV
-        VerifyElement(report, elem, "DIV", /*child_size=*/1, attributes);
+        // Not the IFRAME, so this is the parent DIV
+        VerifyElement(report, elem, "DIV", /*expected_child_ids_size=*/1,
+                      attributes);
         // Make sure this DIV has the IFRAME as a child.
         EXPECT_EQ(iframe_node_id, elem.child_ids(0));
       }
@@ -3539,6 +3543,95 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest, UnsafeFencedFrame) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   AddFencedFrameAndExpectInterstitial(fenced_frame_url);
+}
+
+// This test is modeled after IframeOptInAndReportThreatDetails above.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
+                       FencedFrameInThreatDetails) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  const bool expect_threat_details =
+      SafeBrowsingBlockingPage::ShouldReportThreatDetails(GetThreatType());
+  const GURL initial_url =
+      embedded_test_server()->GetURL(kMaliciousFencedFrameOwner);
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL(kMaliciousFencedFrame);
+  SetURLThreatType(fenced_frame_url, GetThreatType());
+
+  base::RunLoop threat_report_sent_run_loop;
+  if (expect_threat_details)
+    SetReportSentCallback(threat_report_sent_run_loop.QuitClosure());
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  // TODO(1257133): Once issue 1257133 is fixed, and fenced frame load state
+  // is considered, we would then be able to use NavigateToURL on its own.
+  content::TestNavigationObserver error_observer(contents,
+                                                 net::ERR_BLOCKED_BY_CLIENT);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  error_observer.Wait();
+  EXPECT_TRUE(IsShowingInterstitial(contents));
+
+  ThreatDetails* threat_details = details_factory_.get_details();
+  EXPECT_EQ(expect_threat_details, threat_details != nullptr);
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+  AssertNoInterstitial(true);
+  EXPECT_TRUE(IsExtendedReportingEnabled(*browser()->profile()->GetPrefs()));
+  EXPECT_EQ(initial_url, contents->GetLastCommittedURL());
+
+  if (expect_threat_details) {
+    threat_report_sent_run_loop.Run();
+    std::string serialized = GetReportSent();
+    ClientSafeBrowsingReportRequest report;
+    ASSERT_TRUE(report.ParseFromString(serialized));
+    EXPECT_TRUE(report.complete());
+
+    // Do some basic verification of report contents.
+    EXPECT_EQ(initial_url.spec(), report.page_url());
+    EXPECT_EQ(fenced_frame_url.spec(), report.url());
+    std::vector<ClientSafeBrowsingReportRequest::Resource> resources;
+    for (auto resource : report.resources()) {
+      resources.push_back(resource);
+    }
+    // Sort resources since their order is not deterministic.
+    std::sort(resources.begin(), resources.end(),
+              [](const ClientSafeBrowsingReportRequest::Resource& a,
+                 const ClientSafeBrowsingReportRequest::Resource& b) -> bool {
+                return a.url() < b.url();
+              });
+    ASSERT_EQ(2U, resources.size());
+    VerifyResource(report, resources[1], initial_url.spec(), initial_url.spec(),
+                   1, "");
+    VerifyResource(report, resources[0], fenced_frame_url.spec(),
+                   initial_url.spec(), 0, "FENCEDFRAME");
+
+    ASSERT_EQ(2, report.dom_size());
+    // Because the order of elements is not deterministic, we just verify the
+    // relationship that there is a FENCEDFRAME element that has a DIV as its
+    // parent.
+    int fenced_frame_node_id = -1;
+    for (const HTMLElement& elem : report.dom()) {
+      if (elem.tag() == "FENCEDFRAME") {
+        fenced_frame_node_id = elem.id();
+        VerifyElement(report, elem, "FENCEDFRAME",
+                      /*expected_child_ids_size=*/0,
+                      std::vector<mojom::AttributeNameValuePtr>());
+        break;
+      }
+    }
+    EXPECT_GT(fenced_frame_node_id, -1);
+
+    // Find the parent DIV of the FENCEDFRAME.
+    for (const HTMLElement& elem : report.dom()) {
+      if (elem.id() != fenced_frame_node_id) {
+        std::vector<mojom::AttributeNameValuePtr> attributes;
+        attributes.push_back(mojom::AttributeNameValue::New("foo", "1"));
+        VerifyElement(report, elem, "DIV", /*expected_child_ids_size=*/1,
+                      attributes);
+        // Make sure this DIV has the FENCEDFRAME as a child.
+        EXPECT_EQ(fenced_frame_node_id, elem.child_ids(0));
+      }
+    }
+  }
 }
 
 }  // namespace safe_browsing
