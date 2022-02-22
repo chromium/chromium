@@ -1460,6 +1460,13 @@
        {}
       ]
      ],
+     "subpixel-scroll-crash.html": [
+      "5a429085052352093bfe135c00103f5953792deb",
+      [
+       null,
+       {}
+      ]
+     ],
      "table": {
       "balance-breakafter-before-table-section-crash.html": [
        "119b44607eb977901c9f43b4e6871bc2efb03a30",
@@ -1565,6 +1572,13 @@
      ]
     },
     "css-pseudo": {
+     "chrome-bug-1299142-crash.html": [
+      "8a4b7553a28350d269b9f00b91f8e9dd53b267b3",
+      [
+       null,
+       {}
+      ]
+     ],
      "file-selector-button-display-none-overflow-crash.html": [
       "81051741c29824bb79460f6dba1b147b9e79de45",
       [
@@ -11255,36 +11269,6 @@
       ]
      ]
     }
-   },
-   "geolocation-API": {
-    "getCurrentPosition_permission-manual.html": [
-     "20003cdff1d0f3b623f4046c8058bcd68105ee98",
-     [
-      null,
-      {}
-     ]
-    ],
-    "getCurrentPosition_permission_allow-manual.html": [
-     "4628275e321916d80cac4ce9a764fae48495aa29",
-     [
-      null,
-      {}
-     ]
-    ],
-    "getCurrentPosition_permission_deny-manual.html": [
-     "b468a65da2b09875ce7e8312cba34d9ebf704292",
-     [
-      null,
-      {}
-     ]
-    ],
-    "watchPosition_permission-manual.html": [
-     "e00980192d5e4861dfae8f69c6a0463986389209",
-     [
-      null,
-      {}
-     ]
-    ]
    },
    "graphics-aam": {
     "graphics-document_on_html_element-manual.html": [
