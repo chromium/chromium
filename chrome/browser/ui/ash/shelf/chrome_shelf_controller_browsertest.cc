@@ -2849,7 +2849,8 @@ IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest,
 
 // Verify that the in-app shelf should be shown when the app icon receives
 // the accessibility focus.
-IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, EnableChromeVox) {
+// TODO(https://crbug.com/1299759): Re-enable once flaky timeouts are fixed.
+IN_PROC_BROWSER_TEST_F(HotseatShelfAppBrowserTest, DISABLED_EnableChromeVox) {
   ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ash::test::SpeechMonitor speech_monitor;
 
