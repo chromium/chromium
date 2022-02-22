@@ -1889,5 +1889,54 @@ TEST_F(NGOutOfFlowLayoutPartTest, FragmentainerBreakTokenBeforeSpanner) {
   const auto& column4 = To<NGPhysicalBoxFragment>(*children[4]);
   EXPECT_FALSE(column4.BreakToken());
 }
+
+// crbug.com/1296900
+TEST_F(NGOutOfFlowLayoutPartTest, RelayoutNestedMulticolWithOOF) {
+  SetBodyInnerHTML(
+      R"HTML(
+      <div id="outer" style="columns:1; column-fill:auto; width:333px; height:100px;">
+        <div style="width:50px;">
+          <div id="inner" style="columns:1; column-fill:auto; height:50px;">
+            <div style="position:relative; height:10px;">
+              <div id="oof" style="position:absolute; width:1px; height:1px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      )HTML");
+
+  Element* outer = GetElementById("outer");
+  const LayoutBox* inner = GetLayoutBoxByElementId("inner");
+
+  auto GetInnerFragmentainer = [&inner]() -> const NGPhysicalBoxFragment* {
+    if (inner->PhysicalFragmentCount() != 1u)
+      return nullptr;
+    if (inner->GetPhysicalFragment(0)->Children().size() != 1u)
+      return nullptr;
+    return To<NGPhysicalBoxFragment>(
+        inner->GetPhysicalFragment(0)->Children()[0].fragment);
+  };
+
+  const NGPhysicalBoxFragment* fragmentainer = GetInnerFragmentainer();
+  ASSERT_TRUE(fragmentainer);
+  // It should have two children: the relpos and the OOF.
+  EXPECT_EQ(fragmentainer->Children().size(), 2u);
+
+  outer->SetInlineStyleProperty(CSSPropertyID::kWidth, "334px");
+  UpdateAllLifecyclePhasesForTest();
+
+  fragmentainer = GetInnerFragmentainer();
+  ASSERT_TRUE(fragmentainer);
+  // It should still have two children: the relpos and the OOF.
+  EXPECT_EQ(fragmentainer->Children().size(), 2u);
+
+  outer->SetInlineStyleProperty(CSSPropertyID::kWidth, "335px");
+  UpdateAllLifecyclePhasesForTest();
+
+  fragmentainer = GetInnerFragmentainer();
+  ASSERT_TRUE(fragmentainer);
+  // It should still have two children: the relpos and the OOF.
+  EXPECT_EQ(fragmentainer->Children().size(), 2u);
+}
 }  // namespace
 }  // namespace blink

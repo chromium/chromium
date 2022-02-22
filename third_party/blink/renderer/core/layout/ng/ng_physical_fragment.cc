@@ -496,6 +496,11 @@ NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
   return oof_data;
 }
 
+bool NGPhysicalFragment::HasNestedMulticolsWithOOFs() const {
+  const NGFragmentedOutOfFlowData* oof_data = FragmentedOutOfFlowData();
+  return oof_data && !oof_data->multicols_with_pending_oofs.IsEmpty();
+}
+
 bool NGPhysicalFragment::NeedsOOFPositionedInfoPropagation() const {
   // If we have |oof_data_|, it should mean at least one of OOF propagation data
   // exists.

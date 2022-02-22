@@ -3746,6 +3746,16 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (cache_status != NGLayoutCacheStatus::kHit)
         return nullptr;
 
+      // Miss the cache if we have nested multicol containers inside that also
+      // have OOF descendants. OOFs in nested multicol containers are handled in
+      // a special way during layout: When we have returned to the outermost
+      // fragmentation context root, we'll go through the nested multicol
+      // containers and lay out the OOFs inside. If we do that after having hit
+      // the cache (and thus kept the fragment with the OOF), we'd end up with
+      // extraneous OOF fragments.
+      if (UNLIKELY(physical_fragment.HasNestedMulticolsWithOOFs()))
+        return nullptr;
+
       // If the node didn't break into multiple fragments, we might be able to
       // re-use the result. If the fragmentainer block-size has changed, or if
       // the fragment's block-offset within the fragmentainer has changed, we

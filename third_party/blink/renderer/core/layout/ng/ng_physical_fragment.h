@@ -634,6 +634,10 @@ class CORE_EXPORT NGPhysicalFragment
 
   NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
 
+  // Return true if there are nested multicol container descendants with OOFs
+  // inside.
+  bool HasNestedMulticolsWithOOFs() const;
+
   // Figure out if the child has any out-of-flow positioned descendants, in
   // which case we'll need to propagate this to the fragment builder.
   bool NeedsOOFPositionedInfoPropagation() const;
