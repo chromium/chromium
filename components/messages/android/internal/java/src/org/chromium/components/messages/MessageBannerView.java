@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -86,6 +87,8 @@ public class MessageBannerView extends BoundedLinearLayout {
     void setDescriptionIcon(Drawable drawable) {
         mDescription.setVisibility(drawable == null ? GONE : VISIBLE);
         mDescriptionDrawable = drawable;
+        mDescription.setDrawableTintColor(AppCompatResources.getColorStateList(
+                getContext(), R.color.default_icon_color_secondary_tint_list));
         ((TextView) mDescription).setCompoundDrawablesRelative(drawable, null, null, null);
     }
 
