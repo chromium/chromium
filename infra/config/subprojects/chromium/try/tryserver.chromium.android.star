@@ -229,6 +229,7 @@ try_.builder(
 
 try_.builder(
     name = "android-oreo-arm64-dbg",
+    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 try_.builder(
@@ -454,6 +455,7 @@ try_.builder(
 
 try_.builder(
     name = "try-nougat-phone-tester",
+    branch_selector = branches.STANDARD_MILESTONE,
 )
 
 try_.gpu.optional_tests_builder(
