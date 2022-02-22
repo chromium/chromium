@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

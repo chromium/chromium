@@ -542,50 +542,35 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
         InitializeTrackSizes(grid_properties, &row_track_collection));
 
     bool needs_additional_pass = false;
-    if (grid_properties.HasBaseline(kForColumns)) {
-      CalculateAlignmentBaselines(kForColumns, sizing_constraint,
-                                  &grid_geometry, &grid_items,
-                                  &needs_additional_pass);
-    }
-
-    grid_geometry.column_geometry =
-        ComputeUsedTrackSizes(grid_geometry, grid_properties, sizing_constraint,
-                              &column_track_collection, &grid_items);
+    grid_geometry.column_geometry = ComputeUsedTrackSizes(
+        grid_properties, sizing_constraint, &column_track_collection,
+        &grid_geometry, &grid_items, &needs_additional_pass);
 
     if (needs_additional_pass || HasBlockSizeDependentGridItem(grid_items)) {
       // If we need to calculate the row geometry, we have a dependency on our
       // block constraints.
       depends_on_block_constraints = true;
 
-      if (grid_properties.HasBaseline(kForRows)) {
-        CalculateAlignmentBaselines(kForRows, sizing_constraint, &grid_geometry,
-                                    &grid_items, &needs_additional_pass);
-      }
-
       absl::optional<SetGeometry> initial_row_geometry;
       if (!needs_additional_pass)
         initial_row_geometry = grid_geometry.row_geometry;
 
       grid_geometry.row_geometry = ComputeUsedTrackSizes(
-          grid_geometry, grid_properties, sizing_constraint,
-          &row_track_collection, &grid_items);
+          grid_properties, sizing_constraint, &row_track_collection,
+          &grid_geometry, &grid_items, &needs_additional_pass);
 
-      if (initial_row_geometry) {
-        DCHECK(!needs_additional_pass);
+      if (!needs_additional_pass) {
+        DCHECK(initial_row_geometry);
         needs_additional_pass = MayChangeOrthogonalItemContributions(
             grid_items, *initial_row_geometry, grid_geometry.row_geometry);
       }
 
       if (needs_additional_pass) {
-        if (grid_properties.HasBaseline(kForColumns)) {
-          CalculateAlignmentBaselines(kForColumns, sizing_constraint,
-                                      &grid_geometry, &grid_items);
-        }
         grid_geometry.column_geometry =
             InitializeTrackSizes(grid_properties, &column_track_collection);
         grid_geometry.column_geometry = ComputeUsedTrackSizes(
-            grid_geometry, grid_properties, sizing_constraint,
-            &column_track_collection, &grid_items);
+            grid_properties, sizing_constraint, &column_track_collection,
+            &grid_geometry, &grid_items);
       }
     }
     return ComputeSetSpanSize(
@@ -740,13 +725,13 @@ LayoutUnit NGGridLayoutAlgorithm::Baseline(
   if (track_direction == kForColumns) {
     const wtf_size_t set_index = grid_item.column_set_indices.begin;
     return (grid_item.column_baseline_type == BaselineType::kMajor)
-               ? grid_geometry.major_inline_baselines[set_index]
-               : grid_geometry.minor_inline_baselines[set_index];
+               ? grid_geometry.column_geometry.major_baselines[set_index]
+               : grid_geometry.column_geometry.minor_baselines[set_index];
   } else {
     const wtf_size_t set_index = grid_item.row_set_indices.begin;
     return (grid_item.row_baseline_type == BaselineType::kMajor)
-               ? grid_geometry.major_block_baselines[set_index]
-               : grid_geometry.minor_block_baselines[set_index];
+               ? grid_geometry.row_geometry.major_baselines[set_index]
+               : grid_geometry.row_geometry.minor_baselines[set_index];
   }
 }
 
@@ -795,37 +780,20 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
         InitializeTrackSizes(grid_properties, column_track_collection),
         InitializeTrackSizes(grid_properties, row_track_collection));
 
-    // Store column baselines, as these contributions can influence column
-    // sizing.
     bool needs_additional_pass = false;
-    if (grid_properties.HasBaseline(kForColumns)) {
-      CalculateAlignmentBaselines(kForColumns, SizingConstraint::kLayout,
-                                  &grid_geometry, grid_items,
-                                  &needs_additional_pass);
-    }
-
-    // Resolve inline size.
     grid_geometry.column_geometry = ComputeUsedTrackSizes(
-        grid_geometry, grid_properties, SizingConstraint::kLayout,
-        column_track_collection, grid_items);
-
-    if (grid_properties.HasBaseline(kForRows)) {
-      CalculateAlignmentBaselines(kForRows, SizingConstraint::kLayout,
-                                  &grid_geometry, grid_items,
-                                  &needs_additional_pass);
-    }
+        grid_properties, SizingConstraint::kLayout, column_track_collection,
+        &grid_geometry, grid_items, &needs_additional_pass);
 
     absl::optional<SetGeometry> initial_row_geometry;
     if (!needs_additional_pass && HasBlockSizeDependentGridItem(*grid_items))
       initial_row_geometry = grid_geometry.row_geometry;
 
-    // Resolve block size.
     grid_geometry.row_geometry = ComputeUsedTrackSizes(
-        grid_geometry, grid_properties, SizingConstraint::kLayout,
-        row_track_collection, grid_items);
+        grid_properties, SizingConstraint::kLayout, row_track_collection,
+        &grid_geometry, grid_items, &needs_additional_pass);
 
-    if (initial_row_geometry) {
-      DCHECK(!needs_additional_pass);
+    if (!needs_additional_pass && initial_row_geometry) {
       needs_additional_pass = MayChangeOrthogonalItemContributions(
           *grid_items, *initial_row_geometry, grid_geometry.row_geometry);
     }
@@ -833,36 +801,17 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
     // If we had an orthogonal item which may have depended on the resolved row
     // tracks, re-run the track sizing algorithm for both dimensions.
     if (needs_additional_pass) {
-      if (grid_properties.HasBaseline(kForColumns)) {
-        CalculateAlignmentBaselines(kForColumns, SizingConstraint::kLayout,
-                                    &grid_geometry, grid_items);
-      }
-
       grid_geometry.column_geometry =
           InitializeTrackSizes(grid_properties, column_track_collection);
       grid_geometry.column_geometry = ComputeUsedTrackSizes(
-          grid_geometry, grid_properties, SizingConstraint::kLayout,
-          column_track_collection, grid_items);
-
-      if (grid_properties.HasBaseline(kForRows)) {
-        CalculateAlignmentBaselines(kForRows, SizingConstraint::kLayout,
-                                    &grid_geometry, grid_items);
-      }
+          grid_properties, SizingConstraint::kLayout, column_track_collection,
+          &grid_geometry, grid_items);
 
       grid_geometry.row_geometry =
           InitializeTrackSizes(grid_properties, row_track_collection);
       grid_geometry.row_geometry = ComputeUsedTrackSizes(
-          grid_geometry, grid_properties, SizingConstraint::kLayout,
-          row_track_collection, grid_items);
-    }
-
-    if (grid_properties.HasBaseline(kForColumns)) {
-      CalculateAlignmentBaselines(kForColumns, SizingConstraint::kLayout,
-                                  &grid_geometry, grid_items);
-    }
-    if (grid_properties.HasBaseline(kForRows)) {
-      CalculateAlignmentBaselines(kForRows, SizingConstraint::kLayout,
-                                  &grid_geometry, grid_items);
+          grid_properties, SizingConstraint::kLayout, row_track_collection,
+          &grid_geometry, grid_items);
     }
   };
 
@@ -896,17 +845,12 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
         ConstraintSpace(), container_style, BorderPadding(),
         *intrinsic_block_size, container_builder_.InlineSize());
 
+    DCHECK_NE(block_size, kIndefiniteSize);
+
     grid_available_size_.block_size = grid_min_available_size_.block_size =
         grid_max_available_size_.block_size =
             (block_size - BorderScrollbarPadding().BlockSum())
                 .ClampNegativeToZero();
-
-    // Re-compute the row geometry now that we have the resolved available
-    // block-size. "align-content: space-evenly" etc, require the resolved size.
-    if (container_style.AlignContent() !=
-        ComputedStyleInitialValues::InitialAlignContent()) {
-      grid_geometry.row_geometry = ComputeSetGeometry(*row_track_collection);
-    }
 
     // If we have any rows, gaps which will resolve differently if we have a
     // definite |grid_available_size_| re-compute the grid using the
@@ -933,14 +877,27 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
     }
 
     if (should_recompute_grid) {
-      DCHECK_NE(grid_available_size_.block_size, kIndefiniteSize);
-
       *row_track_collection = NGGridLayoutAlgorithmTrackCollection(
           row_block_track_collection, /* is_available_size_indefinite */ false);
       CacheGridTrackSpanProperties(*row_track_collection, grid_items,
                                    &grid_properties);
       ComputeGrid();
+    } else if (container_style.AlignContent() !=
+               ComputedStyleInitialValues::InitialAlignContent()) {
+      // Re-compute the row geometry now that we resolved the available block
+      // size. "align-content: space-evenly", etc, require the resolved size.
+      grid_geometry.row_geometry = ComputeSetGeometry(*row_track_collection);
     }
+  }
+
+  // Calculate final alignment baselines for grid item layout.
+  if (grid_properties.HasBaseline(kForColumns)) {
+    CalculateAlignmentBaselines(kForColumns, SizingConstraint::kLayout,
+                                &grid_geometry, grid_items);
+  }
+  if (grid_properties.HasBaseline(kForRows)) {
+    CalculateAlignmentBaselines(kForRows, SizingConstraint::kLayout,
+                                &grid_geometry, grid_items);
   }
   return grid_geometry;
 }
@@ -984,9 +941,9 @@ LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
       InitializeTrackSizes(grid_properties, &row_track_collection));
 
   // Resolve the rows.
-  grid_geometry.row_geometry = ComputeUsedTrackSizes(
-      grid_geometry, grid_properties, SizingConstraint::kLayout,
-      &row_track_collection, &grid_items);
+  grid_geometry.row_geometry =
+      ComputeUsedTrackSizes(grid_properties, SizingConstraint::kLayout,
+                            &row_track_collection, &grid_geometry, &grid_items);
 
   return grid_geometry.row_geometry.sets.back().offset -
          grid_geometry.row_geometry.FinalGutterSize() +
@@ -1449,16 +1406,13 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     bool* needs_additional_pass) const {
   DCHECK(grid_geometry && grid_items);
 
-  // Reset existing baselines from geometry so they are clean with each call to
-  // this method. Use 'WTF::Vector::Fill()' over 'WTF::Vector::clear()', as
-  // 'clear' will reset the capacity to zero and require re-allocations.
-  if (track_direction == kForColumns) {
-    grid_geometry->major_inline_baselines.Fill(LayoutUnit::Min());
-    grid_geometry->minor_inline_baselines.Fill(LayoutUnit::Min());
-  } else {
-    grid_geometry->major_block_baselines.Fill(LayoutUnit::Min());
-    grid_geometry->minor_block_baselines.Fill(LayoutUnit::Min());
-  }
+  const bool is_for_columns = track_direction == kForColumns;
+  auto& set_geometry = is_for_columns ? grid_geometry->column_geometry
+                                      : grid_geometry->row_geometry;
+
+  const wtf_size_t set_count = set_geometry.sets.size();
+  set_geometry.major_baselines.Fill(LayoutUnit::Min(), set_count);
+  set_geometry.minor_baselines.Fill(LayoutUnit::Min(), set_count);
 
   auto UpdateBaseline = [&](const GridItemData& grid_item,
                             LayoutUnit candidate_baseline) {
@@ -1467,19 +1421,17 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     // alignment context along that axis", so we only need to look at the first
     // index for baseline/first-baseline support.
     // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-    LayoutUnit* track_baseline;
-    if (track_direction == kForColumns) {
-      const wtf_size_t set_index = grid_item.column_set_indices.begin;
-      track_baseline = (grid_item.column_baseline_type == BaselineType::kMajor)
-                           ? &grid_geometry->major_inline_baselines[set_index]
-                           : &grid_geometry->minor_inline_baselines[set_index];
-    } else {
-      const wtf_size_t set_index = grid_item.row_set_indices.begin;
-      track_baseline = (grid_item.row_baseline_type == BaselineType::kMajor)
-                           ? &grid_geometry->major_block_baselines[set_index]
-                           : &grid_geometry->minor_block_baselines[set_index];
-    }
-    *track_baseline = std::max(*track_baseline, candidate_baseline);
+    const wtf_size_t set_index = is_for_columns
+                                     ? grid_item.column_set_indices.begin
+                                     : grid_item.row_set_indices.begin;
+    const bool is_major_baseline =
+        BaselineType::kMajor == (is_for_columns ? grid_item.column_baseline_type
+                                                : grid_item.row_baseline_type);
+
+    LayoutUnit& track_baseline = is_major_baseline
+                                     ? set_geometry.major_baselines[set_index]
+                                     : set_geometry.minor_baselines[set_index];
+    track_baseline = std::max(track_baseline, candidate_baseline);
   };
 
   for (auto& grid_item : grid_items->item_data) {
@@ -1630,16 +1582,26 @@ SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
 
 // https://drafts.csswg.org/css-grid-2/#algo-track-sizing
 SetGeometry NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
-    const NGGridGeometry& grid_geometry,
     const NGGridProperties& grid_properties,
     const SizingConstraint sizing_constraint,
     NGGridLayoutAlgorithmTrackCollection* track_collection,
-    GridItems* grid_items) const {
-  DCHECK(track_collection && grid_items);
+    NGGridGeometry* grid_geometry,
+    GridItems* grid_items,
+    bool* needs_additional_pass) const {
+  DCHECK(track_collection && grid_geometry && grid_items);
+
+  const auto track_direction = track_collection->Direction();
+
+  // Cache baselines, as these contributions can influence track sizing.
+  if (grid_properties.HasBaseline(track_direction)) {
+    CalculateAlignmentBaselines(track_direction, sizing_constraint,
+                                grid_geometry, grid_items,
+                                needs_additional_pass);
+  }
 
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
-  if (grid_properties.HasIntrinsicTrack(track_collection->Direction())) {
-    ResolveIntrinsicTrackSizes(grid_geometry, sizing_constraint,
+  if (grid_properties.HasIntrinsicTrack(track_direction)) {
+    ResolveIntrinsicTrackSizes(*grid_geometry, sizing_constraint,
                                track_collection, grid_items);
   }
 
@@ -1654,8 +1616,8 @@ SetGeometry NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 
   // 4. This step sizes flexible tracks using the largest value it can assign to
   // an 'fr' without exceeding the available space.
-  if (grid_properties.HasFlexibleTrack(track_collection->Direction())) {
-    ExpandFlexibleTracks(grid_geometry, sizing_constraint, track_collection,
+  if (grid_properties.HasFlexibleTrack(track_direction)) {
+    ExpandFlexibleTracks(*grid_geometry, sizing_constraint, track_collection,
                          grid_items);
   }
 
@@ -2456,8 +2418,9 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     return;
 
   const auto track_direction = track_collection->Direction();
-  const LayoutUnit gutter_size =
-      grid_geometry.Geometry(track_direction).gutter_size;
+  const LayoutUnit gutter_size = (track_direction == kForColumns)
+                                     ? grid_geometry.column_geometry.gutter_size
+                                     : grid_geometry.row_geometry.gutter_size;
 
   // https://drafts.csswg.org/css-grid-2/#algo-find-fr-size
   GridSetVector flexible_sets;

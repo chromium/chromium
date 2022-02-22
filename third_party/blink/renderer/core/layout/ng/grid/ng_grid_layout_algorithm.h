@@ -116,11 +116,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Calculates from the min and max track sizing functions the used track size.
   SetGeometry ComputeUsedTrackSizes(
-      const NGGridGeometry& grid_geometry,
       const NGGridProperties& grid_properties,
       const SizingConstraint sizing_constraint,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
-      GridItems* grid_items) const;
+      NGGridGeometry* grid_geometry,
+      GridItems* grid_items,
+      bool* needs_additional_pass = nullptr) const;
 
   // These methods implement the steps of the algorithm for intrinsic track size
   // resolution defined in https://drafts.csswg.org/css-grid-2/#algo-content.

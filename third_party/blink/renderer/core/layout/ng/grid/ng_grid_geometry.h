@@ -71,35 +71,23 @@ struct SetGeometry {
   }
 
   Vector<wtf_size_t> last_indefinite_indices;
+  Vector<LayoutUnit> major_baselines;
+  Vector<LayoutUnit> minor_baselines;
   Vector<SetOffsetData> sets;
+
   LayoutUnit gutter_size;
 };
 
 // Contains all the geometry information relevant to the final grid. This
 // should have all the grid information needed to size and position items.
 struct NGGridGeometry {
-  NGGridGeometry(SetGeometry&& column_geometry, SetGeometry&& row_geometry)
-      : column_geometry(column_geometry),
-        row_geometry(row_geometry),
-        major_inline_baselines(column_geometry.sets.size(), LayoutUnit::Min()),
-        minor_inline_baselines(column_geometry.sets.size(), LayoutUnit::Min()),
-        major_block_baselines(row_geometry.sets.size(), LayoutUnit::Min()),
-        minor_block_baselines(row_geometry.sets.size(), LayoutUnit::Min()) {}
-
   NGGridGeometry() = default;
 
-  const SetGeometry& Geometry(
-      const GridTrackSizingDirection track_direction) const {
-    return (track_direction == kForColumns) ? column_geometry : row_geometry;
-  }
+  NGGridGeometry(SetGeometry&& column_geometry, SetGeometry&& row_geometry)
+      : column_geometry(column_geometry), row_geometry(row_geometry) {}
 
   SetGeometry column_geometry;
   SetGeometry row_geometry;
-
-  Vector<LayoutUnit> major_inline_baselines;
-  Vector<LayoutUnit> minor_inline_baselines;
-  Vector<LayoutUnit> major_block_baselines;
-  Vector<LayoutUnit> minor_block_baselines;
 };
 
 }  // namespace blink
