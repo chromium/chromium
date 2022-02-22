@@ -76,7 +76,11 @@ enum class InstallResultCode {
   // Web App update due to manifest change failed.
   kUpdateTaskFailed = 26,
 
-  kMaxValue = kUpdateTaskFailed,
+  // Web App was not present in the registrar after a successful database
+  // commit.
+  kAppNotInRegistrarAfterCommit = 27,
+
+  kMaxValue = kAppNotInRegistrarAfterCommit,
 };
 
 // Checks if InstallResultCode is not a failure.

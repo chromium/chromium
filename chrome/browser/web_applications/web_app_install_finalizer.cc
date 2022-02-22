@@ -643,7 +643,14 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   install_manager_->NotifyWebAppInstalled(app_id);
 
   const WebApp* web_app = GetWebAppRegistrar().GetAppById(app_id);
-  CHECK(web_app);
+  // TODO(dmurph): Verify this check is not needed and remove after
+  // isolation work is done. https://crbug.com/1298130
+  if (!web_app) {
+    std::move(callback).Run(
+        AppId(), webapps::InstallResultCode::kAppNotInRegistrarAfterCommit,
+        OsHooksErrors());
+    return;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
   const bool should_install_os_hooks = !finalize_options.bypass_os_hooks;
