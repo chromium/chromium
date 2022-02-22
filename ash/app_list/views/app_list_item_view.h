@@ -231,7 +231,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void SetContextMenuShownCallbackForTest(base::RepeatingClosure closure);
 
  private:
-  friend class AppListItemViewProductivityLauncherTest;
+  friend class AppListItemViewTest;
   friend class AppListMainViewTest;
   friend class test::AppsGridViewTest;
 
@@ -383,8 +383,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
   IconImageView* icon_ = nullptr;  // Strongly typed child view.
   views::Label* title_ = nullptr;  // Strongly typed child view.
 
-  // Draws a dot next to the title for newly installed apps. The view always
-  // exists, but is only visible when ProductivityLauncher is enabled.
+  // Draws a dot next to the title for newly installed apps. Only exists when
+  // ProductivityLauncher is enabled.
   views::View* new_install_dot_ = nullptr;
 
   // The context menu model adapter used for app item view.
