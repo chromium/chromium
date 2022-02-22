@@ -186,6 +186,7 @@ bool Unzip(const base::PlatformFile& src_file,
            DirectoryCreator directory_creator,
            UnzipOptions options) {
   ZipReader reader;
+  reader.SetEncoding(std::move(options.encoding));
   reader.SetPassword(std::move(options.password));
 
   if (!reader.OpenFromPlatformFile(src_file)) {

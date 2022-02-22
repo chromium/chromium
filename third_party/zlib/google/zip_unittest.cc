@@ -519,6 +519,62 @@ TEST_F(ZipTest, UnzipWithDelegates) {
   ASSERT_TRUE(base::PathExists(dir_foo_bar.AppendASCII("quux.txt")));
 }
 
+// Tests that a ZIP archive containing SJIS-encoded file names can be correctly
+// extracted if the encoding is specified.
+TEST_F(ZipTest, UnzipSjis) {
+  ASSERT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII("SJIS Bug 846195.zip"),
+                         test_dir_, {.encoding = "Shift_JIS"}));
+
+  const base::FilePath dir =
+      test_dir_.Append(base::FilePath::FromUTF8Unsafe("新しいフォルダ"));
+  EXPECT_TRUE(base::DirectoryExists(dir));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(
+      dir.Append(base::FilePath::FromUTF8Unsafe("SJIS_835C_ソ.txt")),
+      &contents));
+  EXPECT_EQ(
+      "This file's name contains 0x5c (backslash) as the 2nd byte of Japanese "
+      "characater \"\x83\x5c\" when encoded in Shift JIS.",
+      contents);
+
+  ASSERT_TRUE(base::ReadFileToString(dir.Append(base::FilePath::FromUTF8Unsafe(
+                                         "新しいテキスト ドキュメント.txt")),
+                                     &contents));
+  EXPECT_EQ("This file name is coded in Shift JIS in the archive.", contents);
+}
+
+// Tests that a ZIP archive containing SJIS-encoded file names can be extracted
+// even if the encoding is not specified. In this case, file names are
+// interpreted as UTF-8, which leads to garbled names where invalid UTF-8
+// sequences are replaced with the character �. Nevertheless, the files are
+// safely extracted and readable.
+TEST_F(ZipTest, UnzipSjisAsUtf8) {
+  ASSERT_TRUE(zip::Unzip(GetDataDirectory().AppendASCII("SJIS Bug 846195.zip"),
+                         test_dir_));
+
+  EXPECT_FALSE(base::DirectoryExists(
+      test_dir_.Append(base::FilePath::FromUTF8Unsafe("新しいフォルダ"))));
+
+  const base::FilePath dir =
+      test_dir_.Append(base::FilePath::FromUTF8Unsafe("�V�����t�H���_"));
+  EXPECT_TRUE(base::DirectoryExists(dir));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(
+      dir.Append(base::FilePath::FromUTF8Unsafe("SJIS_835C_�\\.txt")),
+      &contents));
+  EXPECT_EQ(
+      "This file's name contains 0x5c (backslash) as the 2nd byte of Japanese "
+      "characater \"\x83\x5c\" when encoded in Shift JIS.",
+      contents);
+
+  ASSERT_TRUE(base::ReadFileToString(dir.Append(base::FilePath::FromUTF8Unsafe(
+                                         "�V�����e�L�X�g �h�L�������g.txt")),
+                                     &contents));
+  EXPECT_EQ("This file name is coded in Shift JIS in the archive.", contents);
+}
+
 TEST_F(ZipTest, Zip) {
   base::FilePath src_dir = GetDataDirectory().AppendASCII("test");
 

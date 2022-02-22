@@ -172,8 +172,12 @@ bool ZipFiles(const base::FilePath& src_dir,
 
 // Options of the Unzip function, with valid default values.
 struct UnzipOptions {
-  // Only extract the entries for which |filter_cb| returns true. If no filter
-  // is provided, everything gets extracted.
+  // Encoding of entry paths in the ZIP archive. By default, paths are assumed
+  // to be in UTF-8.
+  std::string encoding;
+
+  // Only extract the entries for which |filter_cb| returns true. By default,
+  // everything gets extracted.
   FilterCallback filter;
 
   // Password to decrypt the encrypted files.
