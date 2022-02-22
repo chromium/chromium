@@ -918,9 +918,10 @@ TEST_F(ZipTest, NestedZip) {
 //
 // This test is too slow with TSAN.
 // OS Fuchsia does not seem to support large files.
-// The trybot android-asan is running out of space when performing this test.
-#if defined(THREAD_SANITIZER) || defined(OS_FUCHSIA) || \
-    (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
+// Some Android waterfall and CQ try bots are running out of space when
+// performing this test (android-asan, android-11-x86-rel,
+// android-marshmallow-x86-rel-non-cq).
+#if defined(THREAD_SANITIZER) || defined(OS_FUCHSIA) || defined(OS_ANDROID)
 TEST_F(ZipTest, DISABLED_BigFile) {
 #else
 TEST_F(ZipTest, BigFile) {
