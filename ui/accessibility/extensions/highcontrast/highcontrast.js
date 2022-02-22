@@ -10,8 +10,6 @@ class HighContrast {
     this.enabled = false;
     /** @type {string} */
     this.scheme = '';
-    /** @type {?number} */
-    this.timeoutId = null;
 
     this.init_();
   }
@@ -109,7 +107,7 @@ class HighContrast {
     if (this.enabled) {
       if (!document.body) {
         // TODO: listen for appropriate ready event.
-        window.setTimeout(update, 100);
+        window.setTimeout(this.update.bind(this), 100);
         return;
       }
       this.addOrUpdateExtraElements();
@@ -127,7 +125,7 @@ class HighContrast {
         window.scrollBy(0, -1);
       }
     } else {
-      html.setAttribute(HighContrast.FULL_MODE_ATTRIBUTE, mode + '0');
+      html.setAttribute(HighContrast.FULL_MODE_ATTRIBUTE, this.mode + '0');
       html.setAttribute(HighContrast.SCHEME_ATTRIBUTE, '0');
       window.setTimeout(() => {
         html.removeAttribute(HighContrast.FULL_MODE_ATTRIBUTE);

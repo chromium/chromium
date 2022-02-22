@@ -88,10 +88,10 @@ class Popup {
     var radios = document.querySelectorAll('input[name="scheme"]');
     for (var i = 0; i < radios.length; i++) {
       radios[i].addEventListener('change', (event) => {
-        this.onSchemeChange(event.target.value);
+        this.onSchemeChange(Number(event.target.value));
       }, false);
       radios[i].addEventListener('click', (event) => {
-        this.onSchemeChange(event.target.value);
+        this.onSchemeChange(Number(event.target.value));
       }, false);
     }
   }
