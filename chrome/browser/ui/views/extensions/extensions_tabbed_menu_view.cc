@@ -59,24 +59,25 @@ void CreateTab(raw_ptr<views::TabbedPane> tabbed_pane,
                int title_string_id,
                std::unique_ptr<views::View> contents,
                std::unique_ptr<views::View> footer) {
-  auto tab_container = std::make_unique<views::View>();
-  tab_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
   // This is set so that the extensions menu doesn't fall outside the monitor in
   // a maximized window in 1024x768. See https://crbug.com/1096630.
   // TODO(pbos): Consider making this dynamic and handled by views. Ideally we
   // wouldn't ever pop up so that they pop outside the screen.
   constexpr int kMaxExtensionButtonsHeightDp = 448;
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->ClipHeightTo(0, kMaxExtensionButtonsHeightDp);
-  scroll_view->SetDrawOverflowIndicator(false);
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetContents(std::move(contents));
 
-  tab_container->AddChildView(std::move(scroll_view));
-  tab_container->AddChildView(std::move(footer));
+  auto tab_container =
+      views::Builder<views::View>()
+          .SetLayoutManager(std::make_unique<views::BoxLayout>(
+              views::BoxLayout::Orientation::kVertical))
+          .AddChildren(
+              views::Builder<views::ScrollView>()
+                  .SetContents(views::Builder<views::View>(std::move(contents)))
+                  .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
+                  .SetDrawOverflowIndicator(false)
+                  .SetHorizontalScrollBarMode(
+                      views::ScrollView::ScrollBarMode::kDisabled),
+              views::Builder<views::View>(std::move(footer)))
+          .Build();
 
   tabbed_pane->AddTabAtIndex(index, l10n_util::GetStringUTF16(title_string_id),
                              std::move(tab_container));
@@ -403,98 +404,89 @@ void ExtensionsTabbedMenuView::Update() {
 }
 
 void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
-  auto site_access_items = std::make_unique<views::View>();
-  site_access_items->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-
   auto current_site = base::UTF8ToUTF16(browser_->tab_strip_model()
                                             ->GetActiveWebContents()
                                             ->GetLastCommittedURL()
                                             .host());
 
-  // Create the site access items divided in requests access and has access
-  // sections.
-  auto create_section =
+  auto create_section_builder =
       [current_site](ExtensionsTabbedMenuView::SiteAccessSection* section) {
-        auto section_container = std::make_unique<views::View>();
-        section->container = section_container.get();
-        section_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-
         const int horizontal_spacing =
             ChromeLayoutProvider::Get()->GetDistanceMetric(
                 views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
 
-        // Add an emphasized short header explaining the section.
-        auto header = std::make_unique<views::Label>(
-            l10n_util::GetStringFUTF16(section->header_string_id, current_site),
-            ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-            ChromeTextStyle::STYLE_EMPHASIZED);
-        header->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-        header->SetBorder(views::CreateEmptyBorder(
-            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                DISTANCE_CONTROL_LIST_VERTICAL),
-            horizontal_spacing, 0, horizontal_spacing));
-        section_container->AddChildView(std::move(header));
-
-        // Add an empty section for the menu items of the section. Items will be
-        // populated later.
-        auto items = std::make_unique<views::View>();
-        items->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kVertical));
-        section->items = items.get();
-        section_container->AddChildView(std::move(items));
-
-        // Start off with the section invisible. We'll update it as we add items
-        // if necessary.
-        section_container->SetVisible(false);
-
-        return section_container;
+        return views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&section->container)
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            // Start off with the section invisible. We'll update it as we
+            // add items if necessary.
+            .SetVisible(false)
+            .AddChildren(
+                // Emphasized short header explaining the section.
+                views::Builder<views::Label>(
+                    std::make_unique<views::Label>(
+                        l10n_util::GetStringFUTF16(section->header_string_id,
+                                                   current_site),
+                        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+                        ChromeTextStyle::STYLE_EMPHASIZED))
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetBorder(views::CreateEmptyBorder(
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_CONTROL_LIST_VERTICAL),
+                        horizontal_spacing, 0, horizontal_spacing)),
+                // Empty section for the menu items. Items
+                // will be populated later.
+                views::Builder<views::BoxLayoutView>()
+                    .CopyAddressTo(&section->items)
+                    .SetOrientation(views::BoxLayout::Orientation::kVertical));
       };
 
-  site_access_items->AddChildView(create_section(&requests_access_));
-  site_access_items->AddChildView(create_section(&has_access_));
+  auto site_access_items =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .AddChildren(create_section_builder(&requests_access_),
+                       create_section_builder(&has_access_))
+          .Build();
 
-  // Create the site access footer with site settings and a button that opens
-  // them.
+  const auto create_radio_button_builder =
+      [current_site](int label_id, bool replace_current_site) {
+        auto label = replace_current_site
+                         ? l10n_util::GetStringFUTF16(label_id, current_site)
+                         : l10n_util::GetStringUTF16(label_id);
+        // TODO(crbug.com/1263310): Add callback. Differentiate between types
+        // with a SiteSettings enum.
+        return views::Builder<views::RadioButton>(
+            std::make_unique<views::RadioButton>(label, kGroupId));
+      };
+
   auto site_access_footer =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .AddChildren(
+              // The following bind is safe because the button will be owned by
+              // the parent views and therefore callback can only happen if the
+              // button exists and can be clicked.
+              views::Builder<SiteSettingsExpandButton>(
+                  std::make_unique<
+                      SiteSettingsExpandButton>(base::BindRepeating(
+                      &ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed,
+                      base::Unretained(this))))
+                  .CopyAddressTo(&site_settings_button_),
+              views::Builder<views::BoxLayoutView>()
+                  .CopyAddressTo(&site_settings_)
+                  .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                  .SetVisible(show_site_settings_)
+                  .AddChildren(
+                      create_radio_button_builder(
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT,
+                          true),
+                      create_radio_button_builder(
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT,
+                          true),
+                      create_radio_button_builder(
+                          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT,
+                          false)))
           .Build();
-
-  // The following bind is safe because the button will be owned by the parent
-  // views and therefore callback can only happen if the button exists and can
-  // be clicked.
-  auto site_settings_button =
-      std::make_unique<SiteSettingsExpandButton>(base::BindRepeating(
-          &ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed,
-          base::Unretained(this)));
-
-  auto site_settings =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetVisible(show_site_settings_)
-          .Build();
-
-  const auto create_radio_button = [](std::u16string label) {
-    auto radio_button = std::make_unique<views::RadioButton>(label, kGroupId);
-    // TODO(crbug.com/1263310): Add callback. Differentiate between types with a
-    // SiteSettings enum.
-    return radio_button;
-  };
-
-  site_settings->AddChildView(create_radio_button(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_ALLOW_ALL_TEXT,
-      current_site)));
-  site_settings->AddChildView(create_radio_button(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_BLOCK_ALL_TEXT,
-      current_site)));
-  site_settings->AddChildView(create_radio_button(l10n_util::GetStringUTF16(
-      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_CUSTOMIZE_EACH_TEXT)));
-
-  site_settings_button_ =
-      site_access_footer->AddChildView(std::move(site_settings_button));
-  site_settings_ = site_access_footer->AddChildView(std::move(site_settings));
 
   CreateTab(tabbed_pane_, 0, IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_TITLE,
             std::move(site_access_items), std::move(site_access_footer));
@@ -511,10 +503,11 @@ void ExtensionsTabbedMenuView::OnSiteSettingsButtonPressed() {
 }
 
 void ExtensionsTabbedMenuView::CreateExtensionsTab() {
-  auto installed_items = std::make_unique<views::View>();
-  installed_items->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  installed_items_ = installed_items.get();
+  auto installed_items =
+      views::Builder<views::BoxLayoutView>()
+          .CopyAddressTo(&installed_items_)
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .Build();
 
   auto webstore_icon = std::make_unique<views::ImageView>(
       ui::ImageModel::FromResourceId(IDR_WEBSTORE_ICON_16));
@@ -522,13 +515,17 @@ void ExtensionsTabbedMenuView::CreateExtensionsTab() {
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kOpenInNewIcon, ui::kColorIcon,
           webstore_icon->GetImageModel().Size().width()));
-  auto installed_tab_footer = std::make_unique<HoverButton>(
-      base::BindRepeating(&chrome::ShowWebStore, browser_),
-      std::move(webstore_icon),
-      l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_DISCOVER_MORE_TITLE),
-      /*subtitle=*/std::u16string(), std::move(open_icon));
-  discover_more_button_ = installed_tab_footer.get();
+
+  auto installed_tab_footer =
+      views::Builder<HoverButton>(
+          std::make_unique<HoverButton>(
+              base::BindRepeating(&chrome::ShowWebStore, browser_),
+              std::move(webstore_icon),
+              l10n_util::GetStringUTF16(
+                  IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_DISCOVER_MORE_TITLE),
+              /*subtitle=*/std::u16string(), std::move(open_icon)))
+          .CopyAddressTo(&discover_more_button_)
+          .Build();
 
   CreateTab(tabbed_pane_, 1, IDS_EXTENSIONS_MENU_EXTENSIONS_TAB_TITLE,
             std::move(installed_items), std::move(installed_tab_footer));
