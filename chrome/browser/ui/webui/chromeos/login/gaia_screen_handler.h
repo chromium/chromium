@@ -220,6 +220,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
                            const std::string& typed_email,
                            const std::string& password,
                            bool using_saml);
+  void HandleLaunchSAMLPublicSession(const std::string& email);
 
   // Handles SAML/GAIA login flow metrics
   // is_third_party_idp == false means GAIA-based authentication

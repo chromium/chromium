@@ -645,6 +645,8 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("webviewLoadAborted",
               &GaiaScreenHandler::HandleWebviewLoadAborted);
   AddCallback("completeLogin", &GaiaScreenHandler::HandleCompleteLogin);
+  AddCallback("launchSAMLPublicSession",
+              &GaiaScreenHandler::HandleLaunchSAMLPublicSession);
   AddCallback("completeAuthentication",
               &GaiaScreenHandler::HandleCompleteAuthentication);
   AddCallback("usingSAMLAPI", &GaiaScreenHandler::HandleUsingSAMLAPI);
@@ -860,6 +862,19 @@ void GaiaScreenHandler::HandleCompleteLogin(const std::string& gaia_id,
                                             bool using_saml) {
   VLOG(1) << "HandleCompleteLogin";
   DoCompleteLogin(gaia_id, typed_email, password, using_saml);
+}
+
+void GaiaScreenHandler::HandleLaunchSAMLPublicSession(
+    const std::string& email) {
+  const AccountId account_id =
+      user_manager::KnownUser(g_browser_process->local_state())
+          .GetAccountId(email, std::string() /* id */, AccountType::UNKNOWN);
+
+  UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT, account_id);
+
+  // TODO(https://crbug.com/1298392): Refactor this.
+  LoginDisplayHost::default_host()->GetLoginDisplay()->delegate()->Login(
+      context, SigninSpecifics());
 }
 
 void GaiaScreenHandler::HandleUsingSAMLAPI(bool is_third_party_idp) {

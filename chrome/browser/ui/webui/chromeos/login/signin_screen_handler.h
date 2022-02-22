@@ -169,7 +169,6 @@ class SigninScreenHandler
 
   // WebUI message handlers.
   void HandleLaunchIncognito();
-  void HandleLaunchSAMLPublicSession(const std::string& email);
   void HandleOfflineLogin();
   void HandleToggleEnrollmentScreen();
   void HandleToggleResetScreen();
