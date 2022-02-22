@@ -921,11 +921,12 @@ void NavigationManagerImpl::Restore(
 
   DCHECK_LT(last_committed_item_index, static_cast<int>(items.size()));
   DCHECK(items.empty() || last_committed_item_index >= 0);
-  if (items.empty())
-    return;
 
   if (!web_view_cache_.IsAttachedToWebView())
     web_view_cache_.ResetToAttached();
+
+  if (items.empty())
+    return;
 
   DiscardNonCommittedItems();
   if (GetItemCount() > 0) {
