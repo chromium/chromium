@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/trace_event/base_tracing.h"
 
 namespace {
