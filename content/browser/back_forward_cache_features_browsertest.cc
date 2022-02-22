@@ -3825,7 +3825,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
 }
 
 // TODO(https://crbug.com/1286474): This test is flaking on some Android bots.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/1297406): Also flaky on Mac and Linux.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PresentationConnectionClosed DISABLED_PresentationConnectionClosed
 #else
 #define MAYBE_PresentationConnectionClosed PresentationConnectionClosed
