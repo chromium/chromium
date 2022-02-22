@@ -19,6 +19,7 @@ import './folder_shortcuts.js';
 import './format_dialog.js';
 import './gear_menu.js';
 import './grid_view.js';
+import './guest_os.js';
 import './holding_space.js';
 import './install_linux_package_dialog.js';
 import './keyboard_operations.js';

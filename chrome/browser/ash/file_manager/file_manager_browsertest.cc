@@ -140,6 +140,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableGuestOsFiles() {
+    options.enable_guest_os_files = true;
+    return *this;
+  }
+
   std::string GetFullName() const {
     std::string full_name = name;
 
@@ -1591,5 +1596,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openOfficeFromMyFiles").EnableWebDriveOffice().FilesSwa(),
         TestCase("openOfficeFromDrive").EnableWebDriveOffice(),
         TestCase("openOfficeFromDrive").EnableWebDriveOffice().FilesSwa()));
+
+WRAPPED_INSTANTIATE_TEST_SUITE_P(
+    GuestOs, /* guest_os.js */
+    FilesAppBrowserTest,
+    ::testing::Values(TestCase("fakesListed").EnableGuestOsFiles(),
+                      TestCase("notListedWithoutFlag")));
 
 }  // namespace file_manager

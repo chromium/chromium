@@ -118,6 +118,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run with the Web Drive Office feature.
     bool enable_web_drive_office = false;
+
+    // Whether test should run with the GuestOs <-> Files app integration.
+    bool enable_guest_os_files = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;

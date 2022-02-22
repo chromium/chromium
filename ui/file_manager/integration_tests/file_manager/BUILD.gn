@@ -25,6 +25,7 @@ js_type_check("closure_compile") {
     ":format_dialog",
     ":gear_menu",
     ":grid_view",
+    ":guest_os",
     ":holding_space",
     ":install_linux_package_dialog",
     ":keyboard_operations",
@@ -152,6 +153,11 @@ js_library("format_dialog") {
 }
 
 js_library("gear_menu") {
+  testonly = true
+  deps = [ "//ui/file_manager/integration_tests:testcase" ]
+}
+
+js_library("guest_os") {
   testonly = true
   deps = [ "//ui/file_manager/integration_tests:testcase" ]
 }

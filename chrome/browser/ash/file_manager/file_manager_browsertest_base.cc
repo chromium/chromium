@@ -67,6 +67,8 @@
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -803,6 +805,7 @@ std::ostream& operator<<(std::ostream& out,
   PRINT_IF_NOT_DEFAULT(photos_documents_provider)
   PRINT_IF_NOT_DEFAULT(single_partition_format)
   PRINT_IF_NOT_DEFAULT(tablet_mode)
+  PRINT_IF_NOT_DEFAULT(enable_guest_os_files)
 
 #undef PRINT_IF_NOT_DEFAULT
 
@@ -1646,6 +1649,16 @@ class SmbfsTestVolume : public LocalTestVolume {
   mojo::Remote<smbfs::mojom::SmbFsDelegate> delegate_;
 };
 
+class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
+ public:
+  explicit MockGuestOsMountProvider(std::string name) : name_(name) {}
+
+  std::string DisplayName() override { return name_; }
+
+ private:
+  std::string name_;
+};
+
 FileManagerBrowserTestBase::FileManagerBrowserTestBase() = default;
 
 FileManagerBrowserTestBase::~FileManagerBrowserTestBase() = default;
@@ -1811,6 +1824,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
         command_line->GetSwitchValuePath(switches::kDevtoolsCodeCoverage);
   }
 
+  if (options.enable_guest_os_files) {
+    enabled_features.push_back(chromeos::features::kGuestOsFiles);
+  } else {
+    disabled_features.push_back(chromeos::features::kGuestOsFiles);
+  }
+
   // This is destroyed in |TearDown()|. We cannot initialize this in the
   // constructor due to this feature values' above dependence on virtual
   // method calls, but by convention subclasses of this fixture may initialize
@@ -1902,6 +1921,15 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
         ->AddCustomMountPointCallback(
             base::BindRepeating(&FileManagerBrowserTestBase::MaybeMountCrostini,
                                 base::Unretained(this)));
+
+    if (options.enable_guest_os_files) {
+      // Create some mocks, that show up by default,
+      auto* registry = guest_os::GuestOsService::GetForProfile(
+                           profile()->GetOriginalProfile())
+                           ->MountProviderRegistry();
+      registry->Register(std::make_unique<MockGuestOsMountProvider>("Jemima"));
+      registry->Register(std::make_unique<MockGuestOsMountProvider>("Electra"));
+    }
 
     if (arc::IsArcAvailable()) {
       // When ARC is available, create and register a fake FileSystemInstance
