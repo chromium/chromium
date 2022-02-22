@@ -3735,10 +3735,12 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
   SetLastCommittedOrigin(new_frame_origin);
-  DCHECK(isolation_info_.top_frame_origin().has_value());
+
+  url::Origin top_frame_origin =
+      CalculateTopLevelOriginForStorageKey(new_frame_origin);
+
   SetStorageKey(blink::StorageKey::CreateWithOptionalNonce(
-      new_frame_origin,
-      net::SchemefulSite(isolation_info_.top_frame_origin().value()),
+      new_frame_origin, net::SchemefulSite(top_frame_origin),
       base::OptionalOrNullptr(isolation_info_.nonce()),
       ComputeSiteForCookies().IsNull()
           ? blink::mojom::AncestorChainBit::kCrossSite
@@ -10923,9 +10925,14 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // with `param.origin` anymore.
   const blink::StorageKey& provisional_storage_key =
       navigation_request->commit_params().storage_key;
+
+  url::Origin origin = GetLastCommittedOrigin();
+  net::SchemefulSite top_level_site =
+      net::SchemefulSite(CalculateTopLevelOriginForStorageKey(origin));
+
   blink::StorageKey storage_key_to_commit =
       blink::StorageKey::CreateWithOptionalNonce(
-          GetLastCommittedOrigin(), provisional_storage_key.top_level_site(),
+          origin, top_level_site,
           base::OptionalOrNullptr(provisional_storage_key.nonce()),
           ComputeSiteForCookies().IsNull()
               ? blink::mojom::AncestorChainBit::kCrossSite
@@ -10991,7 +10998,6 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   reporting_endpoints_.clear();
   DCHECK(navigation_request);
 
-  const url::Origin& origin = GetLastCommittedOrigin();
   // Reporting API: If a Reporting-Endpoints header was received with this
   // document over secure connection, send it to the network service to
   // configure the endpoints in the reporting cache.

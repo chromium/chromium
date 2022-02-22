@@ -38,6 +38,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.mojom.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -6594,6 +6595,132 @@ IN_PROC_BROWSER_TEST_F(
 
   // We shouldn't have seen any beforeunload dialogs.
   EXPECT_EQ(0, dialog_manager()->num_beforeunload_dialogs_seen());
+}
+
+class RenderFrameHostImplBrowserTestWithStoragePartitioning
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplBrowserTestWithStoragePartitioning() {
+    if (ThirdPartyStoragePartitioningEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+    }
+  }
+  bool ThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_CASE_P(
+    All,
+    RenderFrameHostImplBrowserTestWithStoragePartitioning,
+    /*third_party_storage_partitioning_enabled*/ testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(RenderFrameHostImplBrowserTestWithStoragePartitioning,
+                       RenderIframeWithHostPermissionsToChildFrame) {
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
+  GURL child_rfh_url(embedded_test_server()->GetURL(
+      "b.com", "/cross_site_iframe_factory.html?b(a())"));
+  GURL grandchild_rfh_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a()"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* root_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* child_rfh_1 =
+      root_rfh->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* grandchild_rfh_1 =
+      child_rfh_1->child_at(0)->current_frame_host();
+
+  // Check root document setup. The StorageKey at the root should be the same
+  // regardless of if `kThirdPartyStoragePartitioning` is enabled.
+  EXPECT_EQ(blink::StorageKey(url::Origin::Create(main_url)),
+            root_rfh->storage_key());
+
+  // child_rfh_1 should have a StorageKey of a.com + b.com when
+  // `kThirdPartyStoragePartitioning` is enabled and there are no host
+  // permissions set.
+  if (ThirdPartyStoragePartitioningEnabled()) {
+    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+                  url::Origin::Create(child_rfh_url),
+                  net::SchemefulSite(root_rfh->GetLastCommittedOrigin()),
+                  nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+              child_rfh_1->storage_key());
+
+    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+                  url::Origin::Create(grandchild_rfh_url),
+                  net::SchemefulSite(root_rfh->GetLastCommittedOrigin()),
+                  nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+              grandchild_rfh_1->storage_key());
+  } else {
+    // When `kThirdPartyStoragePartitioning` is disabled, the child and
+    // grandchild document's storage key should depend only on their own origin
+    // regardless of host permissions.
+    EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_rfh_url)),
+              child_rfh_1->storage_key());
+
+    EXPECT_EQ(blink::StorageKey(url::Origin::Create(grandchild_rfh_url)),
+              grandchild_rfh_1->storage_key());
+  }
+
+  // Give host permissions for b.com (child_rfh) to a.com (root_rfh).
+  {
+    std::vector<network::mojom::CorsOriginPatternPtr> patterns;
+    base::RunLoop run_loop;
+    patterns.push_back(network::mojom::CorsOriginPattern::New(
+        "http", "b.com", 0,
+        network::mojom::CorsDomainMatchMode::kAllowSubdomains,
+        network::mojom::CorsPortMatchMode::kAllowAnyPort,
+        network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
+    CorsOriginPatternSetter::Set(
+        root_rfh->GetBrowserContext(), root_rfh->GetLastCommittedOrigin(),
+        std::move(patterns), {}, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  // Navigate main host to re-calculate StorageKey calculation.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  root_rfh = web_contents()->GetMainFrame();
+  RenderFrameHostImpl* child_rfh_2 =
+      root_rfh->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* grandchild_rfh_2 =
+      child_rfh_2->child_at(0)->current_frame_host();
+
+  // root_rfh's storage key should not have changed.
+  EXPECT_EQ(blink::StorageKey(url::Origin::Create(main_url)),
+            root_rfh->storage_key());
+
+  if (ThirdPartyStoragePartitioningEnabled()) {
+    // When `kThirdPartyStoragePartitioning` is enabled, the child rfh should
+    // now have a top level StorageKey because it is the direct child of the
+    // root document and the root has host permissions to it.
+    EXPECT_EQ(blink::StorageKey(blink::StorageKey::CreateWithOptionalNonce(
+                  url::Origin::Create(child_rfh_url),
+                  net::SchemefulSite(url::Origin::Create(child_rfh_url)),
+                  nullptr, blink::mojom::AncestorChainBit::kCrossSite)),
+              child_rfh_2->storage_key());
+
+    // The grandchild document should create a StorageKey using the child
+    // document's origin as the top level site.
+    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+                  url::Origin::Create(grandchild_rfh_url),
+                  net::SchemefulSite(url::Origin::Create(child_rfh_url)),
+                  nullptr, blink::mojom::AncestorChainBit::kCrossSite),
+              grandchild_rfh_2->storage_key());
+  } else {
+    // When `kThirdPartyStoragePartitioning` is disabled, the child and
+    // grandchild document's storage key should depend only on their own origin
+    // regardless of host permissions.
+    EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_rfh_url)),
+              child_rfh_2->storage_key());
+
+    EXPECT_EQ(blink::StorageKey(url::Origin::Create(grandchild_rfh_url)),
+              grandchild_rfh_2->storage_key());
+  }
 }
 
 }  // namespace content
