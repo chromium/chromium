@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -15,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 
 #if defined(USE_SYSTEM_MINIZIP)
@@ -60,8 +62,7 @@ class WriterDelegate {
 //
 //   while (const ZipReader::entry* entry = reader.Next()) {
 //     auto writer = CreateFilePathWriterDelegate(extract_dir, entry->path);
-//     if (!reader.ExtractCurrentEntry(
-//         writer, std::numeric_limits<uint64_t>::max())) {
+//     if (!reader.ExtractCurrentEntry(writer)) {
 //           // Cannot extract
 //           return;
 //     }
@@ -192,7 +193,8 @@ class ZipReader {
   //
   // Precondition: Next() returned a non-null Entry.
   bool ExtractCurrentEntry(WriterDelegate* delegate,
-                           uint64_t num_bytes_to_extract) const;
+                           uint64_t num_bytes_to_extract =
+                               std::numeric_limits<uint64_t>::max()) const;
 
   // Asynchronously extracts the current entry to the given output file path. If
   // the current entry is a directory it just creates the directory
@@ -229,6 +231,11 @@ class ZipReader {
   // Precondition: Next() returned a non-null Entry.
   bool ExtractCurrentEntryToString(uint64_t max_read_bytes,
                                    std::string* output) const;
+
+  bool ExtractCurrentEntryToString(std::string* output) const {
+    return ExtractCurrentEntryToString(
+        base::checked_cast<uint64_t>(output->max_size()), output);
+  }
 
   // Returns the number of entries in the ZIP archive.
   //

@@ -4,7 +4,6 @@
 
 #include "third_party/zlib/google/zip.h"
 
-#include <limits>
 #include <string>
 #include <vector>
 
@@ -216,8 +215,7 @@ bool Unzip(const base::PlatformFile& src_file,
 
     // It's a file.
     std::unique_ptr<WriterDelegate> writer = writer_factory.Run(entry->path);
-    if (!writer || !reader.ExtractCurrentEntry(
-                       writer.get(), std::numeric_limits<uint64_t>::max())) {
+    if (!writer || !reader.ExtractCurrentEntry(writer.get())) {
       DLOG(WARNING) << "Cannot extract " << entry->path;
       return false;
     }

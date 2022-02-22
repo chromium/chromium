@@ -415,8 +415,8 @@ bool ZipReader::ExtractCurrentEntryToString(uint64_t max_read_bytes,
   // reallocations for the common case when the uncompressed size is correct.
   // However, we need to assume that the uncompressed size could be incorrect
   // therefore this function needs to read as much data as possible.
-  output->reserve(static_cast<size_t>(std::min(
-      base::checked_cast<int64_t>(max_read_bytes), entry_.original_size)));
+  output->reserve(base::checked_cast<size_t>(std::min<uint64_t>(
+      max_read_bytes, base::checked_cast<uint64_t>(entry_.original_size))));
 
   StringWriterDelegate writer(output);
   if (!ExtractCurrentEntry(&writer, max_read_bytes)) {
