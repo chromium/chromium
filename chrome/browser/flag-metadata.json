@@ -680,13 +680,13 @@
   },
   {
     "name": "cct-incognito",
-    "owners": [ "rhalavati", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 100
+    "owners": [ "chrome-incognito", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
+    "expiry_milestone": 110
   },
   {
     "name": "cct-incognito-available-to-third-party",
-    "owners": [ "rhalavati", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
-    "expiry_milestone": 100
+    "owners": [ "chrome-incognito", "//chrome/android/java/src/org/chromium/chrome/browser/customtabs/OWNERS" ],
+    "expiry_milestone": 110
   },
   {
     "name": "cct-resizable-90-maximum-height",
@@ -3664,22 +3664,18 @@
   },
   {
     "name": "incognito-brand-consistency-for-android",
-    "owners": [ "sideyilmaz", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
+    "expiry_milestone": 105
   },
-  {
-    "name": "incognito-brand-consistency-for-desktop",
-    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
-  },
+
   {
     "name": "incognito-brand-consistency-for-ios",
-    "owners": [ "sideyilmaz", "rhalavati", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
+    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
+    "expiry_milestone": 105
   },
   {
     "name": "incognito-clear-browsing-data-dialog-for-desktop",
-    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
+    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
     "expiry_milestone": 100
   },
   {
@@ -3690,22 +3686,17 @@
   {
     "name": "incognito-ntp-revamp",
     "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "incognito-reauthentication-for-android",
     "owners": [ "roagarwal", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "incognito-screenshot",
     "owners": [ "roagarwal", "sideyilmaz", "chrome-incognito@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "inherit-native-theme-from-parent-widget",
-    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
   },
   {
     "name": "initial-navigation-entry",
