@@ -32,26 +32,17 @@ class MockMediaRouterBase : public MockMediaRouter {
     return MediaRouterBase::AddPresentationConnectionStateChangedCallback(
         route_id, callback);
   }
-
-  std::vector<MediaRoute> GetCurrentRoutes() const override {
-    return MediaRouterBase::GetCurrentRoutes();
-  }
 };
 
 class MediaRouterBaseTest : public testing::Test {
  public:
-  void SetUp() override {
-    EXPECT_CALL(router_, RegisterMediaRoutesObserver(_))
-        .WillOnce(SaveArg<0>(&routes_observer_));
-    router_.Initialize();
-  }
+  void SetUp() override { router_.Initialize(); }
 
   void TearDown() override { router_.Shutdown(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   MockMediaRouterBase router_;
-  MediaRoutesObserver* routes_observer_;
 };
 
 TEST_F(MediaRouterBaseTest, CreatePresentationIds) {
@@ -111,24 +102,6 @@ TEST_F(MediaRouterBaseTest, NotifyCallbacks) {
   subscription2 = {};
   router_.NotifyPresentationConnectionStateChange(
       route_id2, PresentationConnectionState::TERMINATED);
-}
-
-TEST_F(MediaRouterBaseTest, GetCurrentRoutes) {
-  MediaSource source1("source_1");
-  MediaSource source2("source_1");
-  MediaRoute route1("route_1", source1, "sink_1", "", false);
-  MediaRoute route2("route_2", source2, "sink_2", "", true);
-  std::vector<MediaRoute> routes = {route1, route2};
-
-  EXPECT_TRUE(router_.GetCurrentRoutes().empty());
-  routes_observer_->OnRoutesUpdated(routes);
-  std::vector<MediaRoute> current_routes = router_.GetCurrentRoutes();
-  ASSERT_EQ(current_routes.size(), 2u);
-  EXPECT_EQ(current_routes[0], route1);
-  EXPECT_EQ(current_routes[1], route2);
-
-  routes_observer_->OnRoutesUpdated(std::vector<MediaRoute>());
-  EXPECT_TRUE(router_.GetCurrentRoutes().empty());
 }
 
 }  // namespace media_router

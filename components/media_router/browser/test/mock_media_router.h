@@ -21,6 +21,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/media_router/browser/issue_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace content {
 class BrowserContext;
 }
@@ -36,6 +40,8 @@ class MockMediaRouter : public MediaRouterBase {
 
   MockMediaRouter();
   ~MockMediaRouter() override;
+
+  void Initialize() override {}
 
   // TODO(crbug.com/729950): Use MOCK_METHOD directly once GMock gets the
   // move-only type support.
@@ -97,16 +103,24 @@ class MockMediaRouter : public MediaRouterBase {
         route_id, callback);
   }
   MOCK_CONST_METHOD0(GetCurrentRoutes, std::vector<MediaRoute>());
+  MOCK_METHOD1(GetFlingingController,
+               std::unique_ptr<media::FlingingController>(
+                   const MediaRoute::Id& route_id));
 
-  MOCK_METHOD0(OnIncognitoProfileShutdown, void());
 #if !BUILDFLAG(IS_ANDROID)
+  IssueManager* GetIssueManager() override { return &issue_manager_; }
   MOCK_METHOD3(GetMediaController,
                void(const MediaRoute::Id& route_id,
                     mojo::PendingReceiver<mojom::MediaController> controller,
                     mojo::PendingRemote<mojom::MediaStatusObserver> observer));
+  MOCK_CONST_METHOD2(
+      GetProviderState,
+      void(mojom::MediaRouteProviderId provider_id,
+           mojom::MediaRouteProvider::GetStateCallback callback));
+  MOCK_CONST_METHOD0(GetLogs, base::Value());
+  MOCK_CONST_METHOD0(GetState, base::Value());
   MOCK_METHOD0(GetLogger, LoggerImpl*());
 #endif  // !BUILDFLAG(IS_ANDROID)
-  MOCK_CONST_METHOD0(GetState, base::Value());
   MOCK_METHOD1(OnAddPresentationConnectionStateChangedCallbackInvoked,
                void(const content::PresentationConnectionStateChangedCallback&
                         callback));
@@ -122,6 +136,11 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_METHOD1(UnregisterRouteMessageObserver,
                void(RouteMessageObserver* observer));
   MOCK_METHOD0(GetMediaSinkServiceStatus, std::string());
+
+ private:
+#if !BUILDFLAG(IS_ANDROID)
+  IssueManager issue_manager_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace media_router

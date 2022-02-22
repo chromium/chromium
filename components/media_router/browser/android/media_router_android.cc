@@ -104,6 +104,8 @@ const MediaRoute* MediaRouterAndroid::FindRouteBySource(
   return nullptr;
 }
 
+void MediaRouterAndroid::Initialize() {}
+
 void MediaRouterAndroid::CreateRoute(const MediaSource::Id& source_id,
                                      const MediaSink::Id& sink_id,
                                      const url::Origin& origin,
@@ -156,6 +158,10 @@ void MediaRouterAndroid::SendRouteBinaryMessage(
 }
 
 void MediaRouterAndroid::OnUserGesture() {}
+
+std::vector<MediaRoute> MediaRouterAndroid::GetCurrentRoutes() const {
+  return active_routes_;
+}
 
 void MediaRouterAndroid::DetachRoute(MediaRoute::Id route_id) {
   bridge_->DetachRoute(route_id);

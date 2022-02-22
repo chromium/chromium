@@ -114,6 +114,23 @@ MediaRouterMojoImpl::MediaSinksQuery::MediaSinksQuery() = default;
 
 MediaRouterMojoImpl::MediaSinksQuery::~MediaSinksQuery() = default;
 
+MediaRouterMojoImpl::InternalMediaRoutesObserver::InternalMediaRoutesObserver(
+    media_router::MediaRouter* router)
+    : MediaRoutesObserver(router) {}
+
+MediaRouterMojoImpl::InternalMediaRoutesObserver::
+    ~InternalMediaRoutesObserver() = default;
+
+void MediaRouterMojoImpl::InternalMediaRoutesObserver::OnRoutesUpdated(
+    const std::vector<MediaRoute>& routes) {
+  current_routes_ = routes;
+}
+
+const std::vector<MediaRoute>&
+MediaRouterMojoImpl::InternalMediaRoutesObserver::current_routes() const {
+  return current_routes_;
+}
+
 MediaRouterMojoImpl::MediaRouterMojoImpl(content::BrowserContext* context)
     : context_(context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -121,6 +138,14 @@ MediaRouterMojoImpl::MediaRouterMojoImpl(content::BrowserContext* context)
 
 MediaRouterMojoImpl::~MediaRouterMojoImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
+
+void MediaRouterMojoImpl::Initialize() {
+  DCHECK(!internal_routes_observer_);
+  // The observer calls virtual methods on MediaRouter; it must be created
+  // outside of the ctor
+  internal_routes_observer_ =
+      std::make_unique<InternalMediaRoutesObserver>(this);
 }
 
 void MediaRouterMojoImpl::RegisterMediaRouteProvider(
@@ -357,7 +382,20 @@ void MediaRouterMojoImpl::SendRouteBinaryMessage(
   media_route_providers_[*provider_id]->SendRouteBinaryMessage(route_id, *data);
 }
 
+IssueManager* MediaRouterMojoImpl::GetIssueManager() {
+  return &issue_manager_;
+}
+
 void MediaRouterMojoImpl::OnUserGesture() {}
+
+std::vector<MediaRoute> MediaRouterMojoImpl::GetCurrentRoutes() const {
+  return internal_routes_observer_->current_routes();
+}
+
+std::unique_ptr<media::FlingingController>
+MediaRouterMojoImpl::GetFlingingController(const MediaRoute::Id& route_id) {
+  return nullptr;
+}
 
 void MediaRouterMojoImpl::GetMediaController(
     const MediaRoute::Id& route_id,
@@ -884,6 +922,26 @@ void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
   }
   base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink",
                                 value);
+}
+
+bool MediaRouterMojoImpl::HasJoinableRoute() const {
+  return !(internal_routes_observer_->current_routes().empty());
+}
+
+const MediaRoute* MediaRouterMojoImpl::GetRoute(
+    const MediaRoute::Id& route_id) const {
+  const auto& routes = internal_routes_observer_->current_routes();
+  auto it = std::find_if(routes.begin(), routes.end(),
+                         [&route_id](const MediaRoute& route) {
+                           return route.media_route_id() == route_id;
+                         });
+  return it == routes.end() ? nullptr : &*it;
+}
+
+void MediaRouterMojoImpl::Shutdown() {
+  // The observer calls virtual methods on MediaRouter; it must be destroyed
+  // outside of the dtor
+  internal_routes_observer_.reset();
 }
 
 void MediaRouterMojoImpl::CreateRouteWithSelectedDesktop(

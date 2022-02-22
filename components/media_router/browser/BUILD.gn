@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(crbug.com/1299869): IssueManager and IssuesObserver are not used on
+# Android; exclude them from Android builds.
 source_set("browser") {
   sources = [
     "issue_manager.cc",

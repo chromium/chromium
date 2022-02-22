@@ -25,15 +25,12 @@ namespace media_router {
 class MediaRouterAndroid : public MediaRouterBase {
  public:
   MediaRouterAndroid();
-
-  MediaRouterAndroid(const MediaRouterAndroid&) = delete;
-  MediaRouterAndroid& operator=(const MediaRouterAndroid&) = delete;
-
   ~MediaRouterAndroid() override;
 
   const MediaRoute* FindRouteBySource(const MediaSource::Id& source_id) const;
 
   // MediaRouter implementation.
+  void Initialize() override;
   void CreateRoute(const MediaSource::Id& source_id,
                    const MediaSink::Id& sink_id,
                    const url::Origin& origin,
@@ -56,6 +53,8 @@ class MediaRouterAndroid : public MediaRouterBase {
       const MediaRoute::Id& route_id,
       std::unique_ptr<std::vector<uint8_t>> data) override;
   void OnUserGesture() override;
+  std::vector<MediaRoute> GetCurrentRoutes() const override;
+
   std::unique_ptr<media::FlingingController> GetFlingingController(
       const MediaRoute::Id& route_id) override;
 

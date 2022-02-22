@@ -40,6 +40,10 @@ namespace content {
 class BrowserContext;
 }
 
+namespace media {
+class FlingingController;
+}
+
 namespace media_router {
 
 enum class MediaRouteProviderWakeReason;
@@ -73,7 +77,11 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                         const std::string& message) final;
   void SendRouteBinaryMessage(const MediaRoute::Id& route_id,
                               std::unique_ptr<std::vector<uint8_t>> data) final;
+  IssueManager* GetIssueManager() final;
   void OnUserGesture() override;
+  std::vector<MediaRoute> GetCurrentRoutes() const override;
+  std::unique_ptr<media::FlingingController> GetFlingingController(
+      const MediaRoute::Id& route_id) override;
   void GetMediaController(
       const MediaRoute::Id& route_id,
       mojo::PendingReceiver<mojom::MediaController> controller,
@@ -92,6 +100,8 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   // Standard constructor, used by
   // MediaRouterMojoImplFactory::GetApiForBrowserContext.
   explicit MediaRouterMojoImpl(content::BrowserContext* context);
+
+  void Initialize() override;
 
   // Requests MRPs to update media sinks.
   void UpdateMediaSinks(const MediaSource::Id& source_id);
@@ -154,6 +164,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
                            PresentationConnectionStateChangedCallbackRemoved);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
                            TestRecordPresentationRequestUrlBySink);
+  FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest, TestGetCurrentRoutes);
 
   // Represents a query to the MediaRouteProviders for media sinks and caches
   // media sinks returned by MRPs. Holds observers for the query.
@@ -264,6 +275,27 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
     url::Origin origin;
   };
 
+  // A MediaRoutesObserver that maintains state about the current set of media
+  // routes.
+  class InternalMediaRoutesObserver : public MediaRoutesObserver {
+   public:
+    explicit InternalMediaRoutesObserver(media_router::MediaRouter* router);
+
+    InternalMediaRoutesObserver(const InternalMediaRoutesObserver&) = delete;
+    InternalMediaRoutesObserver& operator=(const InternalMediaRoutesObserver&) =
+        delete;
+
+    ~InternalMediaRoutesObserver() override;
+
+    // MediaRoutesObserver
+    void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
+
+    const std::vector<MediaRoute>& current_routes() const;
+
+   private:
+    std::vector<MediaRoute> current_routes_;
+  };
+
   // MediaRouter implementation.
   bool RegisterMediaSinksObserver(MediaSinksObserver* observer) override;
   void UnregisterMediaSinksObserver(MediaSinksObserver* observer) override;
@@ -370,6 +402,21 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   static void RecordPresentationRequestUrlBySink(
       const MediaSource& source,
       mojom::MediaRouteProviderId provider_id);
+
+  // Returns true when there is at least one MediaRoute that can be returned by
+  // JoinRoute().
+  bool HasJoinableRoute() const;
+
+  // Returns a pointer to the MediaRoute whose ID is |route_id|, or nullptr
+  // if not found.
+  const MediaRoute* GetRoute(const MediaRoute::Id& route_id) const;
+
+  // KeyedService:
+  void Shutdown() override;
+
+  IssueManager issue_manager_;
+
+  std::unique_ptr<InternalMediaRoutesObserver> internal_routes_observer_;
 
   base::flat_map<MediaSource::Id, std::unique_ptr<MediaSinksQuery>>
       sinks_queries_;

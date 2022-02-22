@@ -135,7 +135,7 @@ void MediaRouterDesktop::GetMediaSinkServiceStatus(
 }
 
 void MediaRouterDesktop::Initialize() {
-  MediaRouterBase::Initialize();
+  MediaRouterMojoImpl::Initialize();
   if (media_sink_service_) {
     media_sink_service_->BindLogger(GetLogger());
     InitializeMediaRouteProviders();

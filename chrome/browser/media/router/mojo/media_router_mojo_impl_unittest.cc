@@ -140,6 +140,26 @@ std::vector<MediaSinkInternal> ToInternalSinks(
   }
   return internal_sinks;
 }
+
+class StubMediaRouterMojoImpl : public MediaRouterMojoImpl {
+ public:
+  explicit StubMediaRouterMojoImpl(content::BrowserContext* context)
+      : MediaRouterMojoImpl(context) {}
+  ~StubMediaRouterMojoImpl() override = default;
+
+  // media_router::MediaRouter:
+  base::Value GetState() const override {
+    NOTIMPLEMENTED();
+    return base::Value();
+  }
+
+  void GetProviderState(
+      mojom::MediaRouteProviderId provider_id,
+      mojom::MediaRouteProvider::GetStateCallback callback) const override {
+    NOTIMPLEMENTED();
+  }
+};
+
 }  // namespace
 
 class MediaRouterMojoImplTest : public MediaRouterMojoTest {
@@ -164,7 +184,7 @@ class MediaRouterMojoImplTest : public MediaRouterMojoTest {
 
   std::unique_ptr<MediaRouterMojoImpl> CreateMediaRouter() override {
     return std::unique_ptr<MediaRouterMojoImpl>(
-        new MediaRouterMojoImpl(profile()));
+        new StubMediaRouterMojoImpl(profile()));
   }
 
   void ReceiveSinks(mojom::MediaRouteProviderId provider_id,
@@ -1048,6 +1068,25 @@ TEST_F(MediaRouterMojoImplTest, TestRecordPresentationRequestUrlBySink) {
           Bucket(static_cast<int>(PresentationUrlBySink::kCastUrlToChromecast),
                  5),
           Bucket(static_cast<int>(PresentationUrlBySink::kDialUrlToDial), 4)));
+}
+
+TEST_F(MediaRouterMojoImplTest, TestGetCurrentRoutes) {
+  MediaSource source1("source_1");
+  MediaSource source2("source_1");
+  MediaRoute route1("route_1", source1, "sink_1", "", false);
+  MediaRoute route2("route_2", source2, "sink_2", "", true);
+  std::vector<MediaRoute> routes = {route1, route2};
+
+  EXPECT_TRUE(router()->GetCurrentRoutes().empty());
+  router()->internal_routes_observer_->OnRoutesUpdated(routes);
+  std::vector<MediaRoute> current_routes = router()->GetCurrentRoutes();
+  ASSERT_EQ(current_routes.size(), 2u);
+  EXPECT_EQ(current_routes[0], route1);
+  EXPECT_EQ(current_routes[1], route2);
+
+  router()->internal_routes_observer_->OnRoutesUpdated(
+      std::vector<MediaRoute>());
+  EXPECT_TRUE(router()->GetCurrentRoutes().empty());
 }
 
 }  // namespace media_router

@@ -72,6 +72,9 @@ class MediaRouter : public KeyedService {
  public:
   ~MediaRouter() override = default;
 
+  // Must be called before invoking any other method.
+  virtual void Initialize() = 0;
+
   // Creates a media route from |source_id| to |sink_id|.
   // |origin| is the origin of requestor's page.
   // |web_contents| is the WebContents of the tab in which the request was made.
@@ -129,10 +132,6 @@ class MediaRouter : public KeyedService {
       const MediaRoute::Id& route_id,
       std::unique_ptr<std::vector<uint8_t>> data) = 0;
 
-  // Returns the IssueManager owned by the MediaRouter. Guaranteed to be
-  // non-null.
-  virtual IssueManager* GetIssueManager() = 0;
-
   // Notifies the Media Router that the user has taken an action involving the
   // Media Router. This can be used to perform any initialization that is not
   // approriate to be done at construction.
@@ -158,6 +157,10 @@ class MediaRouter : public KeyedService {
       const MediaRoute::Id& route_id) = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Returns the IssueManager owned by the MediaRouter. Guaranteed to be
+  // non-null.
+  virtual IssueManager* GetIssueManager() = 0;
+
   // Binds |controller| for sending media commands to a route. The controller
   // will notify |observer| whenever there is a change to the status of the
   // media. It may invalidate bindings from previous calls to this method.
@@ -166,12 +169,9 @@ class MediaRouter : public KeyedService {
       mojo::PendingReceiver<mojom::MediaController> controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer) = 0;
 
-  // Returns a pointer to LoggerImpl that can be used to add logging messages.
-  virtual LoggerImpl* GetLogger() = 0;
-
   // Returns logs collected from Media Router components.
+  // Used by chrome://media-router-internals.
   virtual base::Value GetLogs() const = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Returns media router state as a JSON string represented by base::Value.
   // Includes known sinks and sink compatibility with media sources.
@@ -184,6 +184,10 @@ class MediaRouter : public KeyedService {
   virtual void GetProviderState(
       mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const = 0;
+
+  // Returns a pointer to LoggerImpl that can be used to add logging messages.
+  virtual LoggerImpl* GetLogger() = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class IssuesObserver;
