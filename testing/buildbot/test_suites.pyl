@@ -3886,6 +3886,10 @@
       'ui_base_unittests': {},
     },
 
+    'ios_swift_interop_xcuitests': {
+      'ios_swift_interop_xcuitests_module': {},
+    },
+
     # END tests which run on the GPU bots
 
     'js_code_coverage_browser_tests' : {
@@ -6859,6 +6863,13 @@
           'SIM_IPHONE_6S_15_2',
           'SIM_IPHONE_SE_1ST_GEN_15_2',
           'SIM_IPAD_AIR_2_15_2',
+        ],
+      },
+      'ios_swift_interop_xcuitests': {
+        'mixins': ['xcode_parallelization'],
+        'variants': [
+          'SIM_IPHONE_X_15_2',
+          'SIM_IPHONE_X_14_5',
         ],
       },
     },

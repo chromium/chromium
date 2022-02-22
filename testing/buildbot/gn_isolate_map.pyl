@@ -1084,6 +1084,10 @@
     "label": "//ios/showcase:ios_showcase_eg2tests_module",
     "type": "generated_script",
   },
+  "ios_swift_interop_xcuitests_module": {
+    "label": "//ios/chrome/test/swift_interop:ios_swift_interop_xcuitests_module",
+    "type": "generated_script",
+  },
   "ios_testing_unittests": {
     "label": "//ios/testing:ios_testing_unittests",
     "type": "generated_script",
