@@ -442,7 +442,8 @@ bool Histogram::InspectConstructionArguments(StringPiece name,
 
   // Defensive code for backward compatibility.
   if (*minimum < 1) {
-    DLOG(ERROR) << "Histogram: " << name << " has bad minimum: " << *minimum;
+    // TODO(crbug.com/1288842): Temporarily disabled during cleanup.
+    // DLOG(ERROR) << "Histogram: " << name << " has bad minimum: " << *minimum;
     *minimum = 1;
     if (*maximum < 1)
       *maximum = 1;
