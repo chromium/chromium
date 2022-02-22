@@ -74,6 +74,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace blink {

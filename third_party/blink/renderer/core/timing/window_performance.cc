@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"

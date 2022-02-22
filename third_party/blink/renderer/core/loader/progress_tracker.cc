@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 
 #include "third_party/blink/public/common/loader/loader_constants.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"

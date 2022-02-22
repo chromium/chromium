@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
