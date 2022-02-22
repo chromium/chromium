@@ -2224,9 +2224,6 @@ extern const char kOmniboxExperimentalKeywordModeDescription[];
 extern const char kOmniboxPedalsBatch2NonEnglishName[];
 extern const char kOmniboxPedalsBatch2NonEnglishDescription[];
 
-extern const char kOmniboxPedalsBatch3Name[];
-extern const char kOmniboxPedalsBatch3Description[];
-
 extern const char kOmniboxPedalsTranslationConsoleName[];
 extern const char kOmniboxPedalsTranslationConsoleDescription[];
 

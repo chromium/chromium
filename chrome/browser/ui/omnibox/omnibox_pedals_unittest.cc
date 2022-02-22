@@ -26,7 +26,6 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
   base::test::ScopedFeatureList feature_list;
   std::vector<base::Feature> features = {
       omnibox::kOmniboxPedalsBatch2NonEnglish,
-      omnibox::kOmniboxPedalsBatch3,
       omnibox::kOmniboxPedalsBatch3NonEnglish,
   };
   if (with_translation_console) {

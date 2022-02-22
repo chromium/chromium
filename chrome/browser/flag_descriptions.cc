@@ -1856,8 +1856,7 @@ const char kOmniboxPedalsBatch3NonEnglishName[] =
     "Omnibox Pedals batch 3 for non-English locales";
 const char kOmniboxPedalsBatch3NonEnglishDescription[] =
     "Enable the third batch of Omnibox Pedals (Find your phone, etc.) for "
-    "locales other than 'en' and 'en-GB'. This flag has no effect unless "
-    "\"Omnibox Pedals batch 3\" is also enabled.";
+    "locales other than 'en' and 'en-GB'.";
 
 const char kOmniboxSpareRendererName[] =
     "Start spare renderer on omnibox focus";
@@ -3864,12 +3863,7 @@ const char kOmniboxPedalsBatch2NonEnglishName[] =
     "Omnibox Pedals batch 2 for non-English locales";
 const char kOmniboxPedalsBatch2NonEnglishDescription[] =
     "Enable the second batch of Omnibox Pedals (Safety Check, etc.) for "
-    "locales other than 'en' and 'en-GB'. This flag has no effect unless "
-    "\"Omnibox Pedals batch 2\" is also enabled.";
-
-const char kOmniboxPedalsBatch3Name[] = "Omnibox Pedals batch 3";
-const char kOmniboxPedalsBatch3Description[] =
-    "Enable the third batch of Omnibox Pedals.";
+    "locales other than 'en' and 'en-GB'.";
 
 const char kOmniboxPedalsTranslationConsoleName[] =
     "Omnibox Pedals Translation Console";

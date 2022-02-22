@@ -26,11 +26,10 @@ class OmniboxPedalImplementationsTest : public testing::Test {
             std::make_unique<TestOmniboxEditController>()) {}
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {omnibox::kOmniboxPedalsBatch2NonEnglish, omnibox::kOmniboxPedalsBatch3,
-         omnibox::kOmniboxPedalsBatch3NonEnglish,
-         omnibox::kOmniboxPedalsTranslationConsole},
-        {});
+    feature_list_.InitWithFeatures({omnibox::kOmniboxPedalsBatch2NonEnglish,
+                                    omnibox::kOmniboxPedalsBatch3NonEnglish,
+                                    omnibox::kOmniboxPedalsTranslationConsole},
+                                   {});
     InitPedals();
   }
 
@@ -18471,7 +18470,6 @@ class OmniboxPedalImplementationsWithoutTranslationConsoleTest
     feature_list_.InitWithFeatures(
         {
             omnibox::kOmniboxPedalsBatch2NonEnglish,
-            omnibox::kOmniboxPedalsBatch3,
             omnibox::kOmniboxPedalsBatch3NonEnglish,
         },
         {});

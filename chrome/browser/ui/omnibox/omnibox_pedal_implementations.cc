@@ -1674,29 +1674,27 @@ GetPedalImplementations(bool incognito, bool testing) {
     add(new OmniboxPedalChangeGooglePassword());
   }
 
-  if (testing || OmniboxFieldTrial::IsPedalsBatch3Enabled()) {
-    if (incognito) {
-      add(new OmniboxPedalCloseIncognitoWindows());
-    }
-    add(new OmniboxPedalPlayChromeDinoGame());
-    add(new OmniboxPedalFindMyPhone());
-    add(new OmniboxPedalManageGooglePrivacy());
-    add(new OmniboxPedalManageChromeSettings());
-    add(new OmniboxPedalManageChromeDownloads());
-    add(new OmniboxPedalViewChromeHistory());
-#if !BUILDFLAG(IS_CHROMEOS)
-    // The sharing hub pedal is intentionally excluded
-    // on ChromeOS because the sharing hub experience on that
-    // platform is different from other desktop platforms.
-    add(new OmniboxPedalShareThisPage());
-    add(new OmniboxPedalManageChromeAccessibility());
-#else   // !BUILDFLAG(IS_CHROMEOS)
-    add(new OmniboxPedalManageChromeOSAccessibility());
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-    add(new OmniboxPedalCustomizeChromeFonts());
-    add(new OmniboxPedalManageChromeThemes());
-    add(new OmniboxPedalCustomizeSearchEngines());
+  if (incognito) {
+    add(new OmniboxPedalCloseIncognitoWindows());
   }
+  add(new OmniboxPedalPlayChromeDinoGame());
+  add(new OmniboxPedalFindMyPhone());
+  add(new OmniboxPedalManageGooglePrivacy());
+  add(new OmniboxPedalManageChromeSettings());
+  add(new OmniboxPedalManageChromeDownloads());
+  add(new OmniboxPedalViewChromeHistory());
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The sharing hub pedal is intentionally excluded
+  // on ChromeOS because the sharing hub experience on that
+  // platform is different from other desktop platforms.
+  add(new OmniboxPedalShareThisPage());
+  add(new OmniboxPedalManageChromeAccessibility());
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  add(new OmniboxPedalManageChromeOSAccessibility());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  add(new OmniboxPedalCustomizeChromeFonts());
+  add(new OmniboxPedalManageChromeThemes());
+  add(new OmniboxPedalCustomizeSearchEngines());
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return pedals;
