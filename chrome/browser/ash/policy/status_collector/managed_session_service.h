@@ -109,7 +109,7 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
 
   bool is_session_locked_;
 
-  bool is_logged_in_ = false;
+  bool is_logged_in_observed_ = false;
 
   base::Clock* clock_;
 

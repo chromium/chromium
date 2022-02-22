@@ -48,7 +48,7 @@ ManagedSessionService::~ManagedSessionService() {
 void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
-  if (is_logged_in_) {
+  if (is_logged_in_observed_) {
     if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
       observer->OnGuestLogin();
     } else {
@@ -87,7 +87,7 @@ void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   bool is_primary_profile =
       ash::ProfileHelper::Get()->IsPrimaryProfile(profile);
-  if (is_logged_in_ && is_primary_profile) {
+  if (is_logged_in_observed_ && is_primary_profile) {
     return;
   } else if (!is_primary_profile) {
     profile_observations_.AddObservation(profile);
@@ -158,24 +158,30 @@ void ManagedSessionService::OnAuthFailure(const ash::AuthFailure& error) {
 }
 
 void ManagedSessionService::SetLoginStatus() {
-  if (is_logged_in_) {
+  if (is_logged_in_observed_ || !user_manager::UserManager::Get() ||
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return;
   }
 
-  if (user_manager::UserManager::Get() &&
-      user_manager::UserManager::Get()->IsUserLoggedIn() &&
-      user_manager::UserManager::Get()->GetPrimaryUser()) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* const primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user || !primary_user->is_profile_created()) {
+    return;
+  }
 
-    is_logged_in_ = true;
-    if (!user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
-      auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser());
-      profile_observations_.AddObservation(profile);
-    }
-    if (ash::SessionTerminationManager::Get()) {
-      ash::SessionTerminationManager::Get()->AddObserver(this);
-    }
+  auto* const profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  if (!profile) {
+    // Profile is not fully initialized yet.
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_logged_in_observed_ = true;
+  if (!user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+    profile_observations_.AddObservation(profile);
+  }
+  if (ash::SessionTerminationManager::Get()) {
+    ash::SessionTerminationManager::Get()->AddObserver(this);
   }
 }
 }  // namespace policy
