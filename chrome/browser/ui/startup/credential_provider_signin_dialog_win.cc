@@ -473,6 +473,49 @@ bool StartGCPWSignin(const base::CommandLine& command_line,
   return true;
 }
 
+// Overrides some of the functions from its indirect ancestor
+// WebContentsDelegate. GCPW web dialog should control content creation outside
+// of its main window.
+class CredentialProviderWebDialogView : public views::WebDialogView {
+ public:
+  CredentialProviderWebDialogView(content::BrowserContext* context,
+                                  ui::WebDialogDelegate* delegate,
+                                  std::unique_ptr<WebContentsHandler> handler)
+      : views::WebDialogView(context, delegate, std::move(handler)) {}
+
+  CredentialProviderWebDialogView(const CredentialProviderWebDialogView&) =
+      delete;
+  CredentialProviderWebDialogView& operator=(
+      const CredentialProviderWebDialogView&) = delete;
+
+  ~CredentialProviderWebDialogView() override {}
+
+  // Indicates intent to interfere with window creations.
+  bool IsWebContentsCreationOverridden(
+      content::SiteInstance* source_site_instance,
+      content::mojom::WindowContainerType window_container_type,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url) override {
+    return true;
+  }
+
+  // Suppresses all window creation.
+  content::WebContents* CreateCustomWebContents(
+      content::RenderFrameHost* opener,
+      content::SiteInstance* source_site_instance,
+      bool is_new_browsing_instance,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url,
+      const content::StoragePartitionId& partition_id,
+      content::SessionStorageNamespace* session_storage_namespace) override {
+    VLOG(0) << "Suppressed window creation for  " << target_url.host()
+            << target_url.path();
+    return nullptr;
+  }
+};
+
 views::WebDialogView* ShowCredentialProviderSigninDialog(
     const base::CommandLine& command_line,
     content::BrowserContext* context,
@@ -504,7 +547,7 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
   // The web dialog view that will contain the web ui for the login screen.
   // This view will be automatically deleted by the widget that owns it when it
   // is closed.
-  auto view = std::make_unique<views::WebDialogView>(
+  auto view = std::make_unique<CredentialProviderWebDialogView>(
       context, delegate.release(),
       std::make_unique<ChromeWebContentsHandler>());
   views::Widget::InitParams init_params(
