@@ -5,17 +5,19 @@
 #ifndef PRINTING_COMMON_METAFILE_UTILS_H_
 #define PRINTING_COMMON_METAFILE_UTILS_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/unguessable_token.h"
-#include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkDocument.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
-#include "third_party/skia/include/core/SkStream.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+
+class SkWStream;
 
 namespace printing {
 
