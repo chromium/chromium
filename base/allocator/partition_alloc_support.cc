@@ -218,15 +218,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
     bool is_enterprise) {
   std::map<std::string, std::string> trials;
 
-  // Records whether or not PartitionAlloc is used as the default allocator.
-  trials.emplace("PartitionAllocEverywhere",
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                 "Enabled"
-#else
-                 "Disabled"
-#endif
-  );
-
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // BackupRefPtr_Effective and PCScan_Effective record whether or not
   // BackupRefPtr and/or PCScan are enabled. The experiments aren't independent,
@@ -342,56 +333,6 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
 #endif  // defined(PA_ALLOW_PCSCAN)
   trials.emplace("PCScan_Effective", pcscan_group_name);
   trials.emplace("PCScan_Effective_Fallback", pcscan_group_name_fallback);
-
-  // This synthetic Finch setting reflects the new USE_BACKUP_REF_PTR behavior,
-  // which simply compiles in the BackupRefPtr support, but keeps it disabled at
-  // run-time (which can be further enabled via Finch).
-  trials.emplace("BackupRefPtrSupport",
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-                 "CompiledIn"
-#else
-                 "Disabled"
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-  );
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-  // This synthetic field trial for the BackupRefPtr binary A/B experiment is
-  // set up such that:
-  // 1) Enterprises are excluded from experiment, to make sure we honor
-  //    ChromeVariations policy.
-  // 2) The experiment binary (USE_BACKUP_REF_PTR) is delivered via Google
-  //    Update to fraction X of the non-enterprise population.
-  // 3) The control group is established in fraction X of non-enterprise
-  //    popluation via Finch (PartitionAllocBackupRefPtrControl). Since this
-  //    Finch is applicable only to 1-X of the non-enterprise population, we
-  //    need to set it to Y=X/(1-X). E.g. if X=.333, Y=.5; if X=.01, Y=.0101.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-  constexpr bool kIsBrpOn = true;  // experiment binary only
-#else
-  constexpr bool kIsBrpOn = false;  // non-experiment binary
-#endif
-  const bool is_brp_control =
-      FeatureList::IsEnabled(features::kPartitionAllocBackupRefPtrControl);
-  const char* group_name;
-  if (is_enterprise) {
-    if (kIsBrpOn) {  // is_enterprise && kIsBrpOn
-      group_name = "Excluded_Enterprise_BrpOn";
-    } else {  // is_enterprise && !kIsBrpOn
-      group_name = "Excluded_Enterprise_BrpOff";
-    }
-  } else {
-    if (kIsBrpOn) {  // !is_enterprise && kIsBrpOn
-      group_name = "Enabled";
-    } else {  // !is_enterprise && !kIsBrpOn
-      if (is_brp_control) {
-        group_name = "Control";
-      } else {
-        group_name = "Excluded_NonEnterprise";
-      }
-    }
-  }
-  trials.emplace("BackupRefPtrNoEnterprise", group_name);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   trials.emplace("FakeBinaryExperiment",
