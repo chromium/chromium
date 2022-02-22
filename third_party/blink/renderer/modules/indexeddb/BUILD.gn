@@ -42,7 +42,6 @@ blink_modules_sources("indexeddb") {
     "idb_request_loader.h",
     "idb_request_queue_item.cc",
     "idb_request_queue_item.h",
-    "idb_tracing.h",
     "idb_transaction.cc",
     "idb_transaction.h",
     "idb_value.cc",

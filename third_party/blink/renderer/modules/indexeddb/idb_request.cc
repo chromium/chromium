@@ -46,12 +46,12 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
@@ -432,7 +432,7 @@ void IDBRequest::HandleResponse(
 }
 
 void IDBRequest::EnqueueResponse(DOMException* error) {
-  IDB_TRACE("IDBRequest::EnqueueResponse(DOMException)");
+  TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse(DOMException)");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -448,8 +448,8 @@ void IDBRequest::EnqueueResponse(std::unique_ptr<WebIDBCursor> backend,
                                  std::unique_ptr<IDBKey> key,
                                  std::unique_ptr<IDBKey> primary_key,
                                  std::unique_ptr<IDBValue> value) {
-  IDB_TRACE1("IDBRequest::EnqueueResponse(IDBCursor)", "size",
-             value ? value->DataSize() : 0);
+  TRACE_EVENT1("IndexedDB", "IDBRequest::EnqueueResponse(IDBCursor)", "size",
+               value ? value->DataSize() : 0);
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -493,7 +493,7 @@ void IDBRequest::EnqueueResponse(std::unique_ptr<WebIDBCursor> backend,
 }
 
 void IDBRequest::EnqueueResponse(std::unique_ptr<IDBKey> idb_key) {
-  IDB_TRACE("IDBRequest::EnqueueResponse(IDBKey)");
+  TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse(IDBKey)");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -515,8 +515,8 @@ size_t SizeOfValues(const Vector<std::unique_ptr<IDBValue>>& values) {
 }  // namespace
 
 void IDBRequest::EnqueueResponse(Vector<std::unique_ptr<IDBValue>> values) {
-  IDB_TRACE1("IDBRequest::EnqueueResponse([IDBValue])", "size",
-             SizeOfValues(values));
+  TRACE_EVENT1("IndexedDB", "IDBRequest::EnqueueResponse([IDBValue])", "size",
+               SizeOfValues(values));
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -543,8 +543,8 @@ static IDBObjectStore* EffectiveObjectStore(const IDBRequest::Source* source) {
 #endif  // DCHECK_IS_ON()
 
 void IDBRequest::EnqueueResponse(std::unique_ptr<IDBValue> value) {
-  IDB_TRACE1("IDBRequest::EnqueueResponse(IDBValue)", "size",
-             value ? value->DataSize() : 0);
+  TRACE_EVENT1("IndexedDB", "IDBRequest::EnqueueResponse(IDBValue)", "size",
+               value ? value->DataSize() : 0);
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -567,7 +567,7 @@ void IDBRequest::EnqueueResponse(std::unique_ptr<IDBValue> value) {
 }
 
 void IDBRequest::EnqueueResponse(int64_t value) {
-  IDB_TRACE("IDBRequest::EnqueueResponse(int64_t)");
+  TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse(int64_t)");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -576,7 +576,7 @@ void IDBRequest::EnqueueResponse(int64_t value) {
 }
 
 void IDBRequest::EnqueueResponse() {
-  IDB_TRACE("IDBRequest::EnqueueResponse()");
+  TRACE_EVENT0("IndexedDB", "IDBRequest::EnqueueResponse()");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -600,7 +600,9 @@ void IDBRequest::SetResult(IDBAny* result) {
 void IDBRequest::EnqueueResponse(std::unique_ptr<IDBKey> key,
                                  std::unique_ptr<IDBKey> primary_key,
                                  std::unique_ptr<IDBValue> value) {
-  IDB_TRACE("IDBRequest::EnqueueResponse(IDBKey, IDBKey primaryKey, IDBValue)");
+  TRACE_EVENT0(
+      "IndexedDB",
+      "IDBRequest::EnqueueResponse(IDBKey, IDBKey primaryKey, IDBValue)");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -649,7 +651,7 @@ ExecutionContext* IDBRequest::GetExecutionContext() const {
 }
 
 DispatchEventResult IDBRequest::DispatchEventInternal(Event& event) {
-  IDB_TRACE("IDBRequest::dispatchEvent");
+  TRACE_EVENT0("IndexedDB", "IDBRequest::dispatchEvent");
 
   event.SetTarget(this);
 

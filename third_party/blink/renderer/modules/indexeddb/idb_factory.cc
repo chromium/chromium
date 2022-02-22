@@ -53,13 +53,13 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks_impl.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -323,7 +323,7 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
                                            const String& name,
                                            int64_t version,
                                            ExceptionState& exception_state) {
-  IDB_TRACE1("IDBFactory::open", "name", name.Utf8());
+  TRACE_EVENT1("IndexedDB", "IDBFactory::open", "name", name.Utf8());
   IDBRequest::AsyncTraceState metrics("IDBFactory::open");
   DCHECK(version >= 1 || version == IDBDatabaseMetadata::kNoVersion);
   if (!IsContextValid(ExecutionContext::From(script_state)))
@@ -401,7 +401,7 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
     const String& name,
     ExceptionState& exception_state,
     bool force_close) {
-  IDB_TRACE1("IDBFactory::deleteDatabase", "name", name.Utf8());
+  TRACE_EVENT1("IndexedDB", "IDBFactory::deleteDatabase", "name", name.Utf8());
   IDBRequest::AsyncTraceState metrics("IDBFactory::deleteDatabase");
   if (!IsContextValid(ExecutionContext::From(script_state)))
     return nullptr;

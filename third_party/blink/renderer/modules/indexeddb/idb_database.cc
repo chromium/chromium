@@ -45,12 +45,12 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -177,7 +177,7 @@ void IDBDatabase::ForcedClose() {
 }
 
 void IDBDatabase::VersionChange(int64_t old_version, int64_t new_version) {
-  IDB_TRACE("IDBDatabase::onVersionChange");
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::onVersionChange");
   if (!GetExecutionContext())
     return;
 
@@ -230,7 +230,7 @@ IDBObjectStore* IDBDatabase::createObjectStore(
     const IDBKeyPath& key_path,
     bool auto_increment,
     ExceptionState& exception_state) {
-  IDB_TRACE("IDBDatabase::createObjectStore");
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::createObjectStore");
 
   if (!version_change_transaction_) {
     exception_state.ThrowDOMException(
@@ -295,7 +295,7 @@ IDBObjectStore* IDBDatabase::createObjectStore(
 
 void IDBDatabase::deleteObjectStore(const String& name,
                                     ExceptionState& exception_state) {
-  IDB_TRACE("IDBDatabase::deleteObjectStore");
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::deleteObjectStore");
   if (!version_change_transaction_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
@@ -335,7 +335,7 @@ IDBTransaction* IDBDatabase::transaction(
     const String& mode_string,
     const IDBTransactionOptions* options,
     ExceptionState& exception_state) {
-  IDB_TRACE("IDBDatabase::transaction");
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::transaction");
 
   HashSet<String> scope;
   DCHECK(store_names);
@@ -421,7 +421,7 @@ IDBTransaction* IDBDatabase::transaction(
 }
 
 void IDBDatabase::close() {
-  IDB_TRACE("IDBDatabase::close");
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::close");
   if (close_pending_)
     return;
 
@@ -462,7 +462,7 @@ void IDBDatabase::EnqueueEvent(Event* event) {
 }
 
 DispatchEventResult IDBDatabase::DispatchEventInternal(Event& event) {
-  IDB_TRACE("IDBDatabase::dispatchEvent");
+  TRACE_EVENT0("IndexedDB", "IDBDatabase::dispatchEvent");
 
   event.SetTarget(this);
 

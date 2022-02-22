@@ -33,9 +33,9 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 
@@ -76,7 +76,7 @@ const AtomicString& IDBOpenDBRequest::InterfaceName() const {
 }
 
 void IDBOpenDBRequest::EnqueueBlocked(int64_t old_version) {
-  IDB_TRACE("IDBOpenDBRequest::onBlocked()");
+  TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onBlocked()");
   if (!ShouldEnqueueEvent())
     return;
   absl::optional<uint64_t> new_version_nullable;
@@ -93,7 +93,7 @@ void IDBOpenDBRequest::EnqueueUpgradeNeeded(
     const IDBDatabaseMetadata& metadata,
     mojom::IDBDataLoss data_loss,
     String data_loss_message) {
-  IDB_TRACE("IDBOpenDBRequest::onUpgradeNeeded()");
+  TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onUpgradeNeeded()");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -128,7 +128,7 @@ void IDBOpenDBRequest::EnqueueUpgradeNeeded(
 
 void IDBOpenDBRequest::EnqueueResponse(std::unique_ptr<WebIDBDatabase> backend,
                                        const IDBDatabaseMetadata& metadata) {
-  IDB_TRACE("IDBOpenDBRequest::onSuccess()");
+  TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onSuccess()");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;
@@ -154,7 +154,7 @@ void IDBOpenDBRequest::EnqueueResponse(std::unique_ptr<WebIDBDatabase> backend,
 }
 
 void IDBOpenDBRequest::EnqueueResponse(int64_t old_version) {
-  IDB_TRACE("IDBOpenDBRequest::onSuccess()");
+  TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onSuccess()");
   if (!ShouldEnqueueEvent()) {
     metrics_.RecordAndReset();
     return;

@@ -52,8 +52,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -647,7 +647,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
                             v8::Local<v8::Value> key,
                             v8::Local<v8::Value> value,
                             const IDBKeyPath& key_path) {
-  IDB_TRACE("injectIDBV8KeyIntoV8Value");
+  TRACE_EVENT0("IndexedDB", "injectIDBV8KeyIntoV8Value");
   DCHECK(isolate->InContext());
 
   DCHECK_EQ(key_path.GetType(), mojom::IDBKeyPathType::String);
@@ -739,7 +739,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
 bool CanInjectIDBKeyIntoScriptValue(v8::Isolate* isolate,
                                     const ScriptValue& script_value,
                                     const IDBKeyPath& key_path) {
-  IDB_TRACE("canInjectIDBKeyIntoScriptValue");
+  TRACE_EVENT0("IndexedDB", "canInjectIDBKeyIntoScriptValue");
   DCHECK_EQ(key_path.GetType(), mojom::IDBKeyPathType::String);
   Vector<String> key_path_elements = ParseKeyPath(key_path.GetString());
 
@@ -814,7 +814,7 @@ std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
     v8::Local<v8::Value> value,
     ExceptionState& exception_state,
     const IDBKeyPath& key_path) {
-  IDB_TRACE("createIDBKeyFromValueAndKeyPath");
+  TRACE_EVENT0("IndexedDB", "createIDBKeyFromValueAndKeyPath");
   return CreateIDBKeyFromValueAndKeyPath(isolate, value, key_path,
                                          exception_state);
 }
@@ -825,7 +825,7 @@ std::unique_ptr<IDBKey> NativeValueTraits<std::unique_ptr<IDBKey>>::NativeValue(
     ExceptionState& exception_state,
     const IDBKeyPath& store_key_path,
     const IDBKeyPath& index_key_path) {
-  IDB_TRACE("createIDBKeyFromValueAndKeyPaths");
+  TRACE_EVENT0("IndexedDB", "createIDBKeyFromValueAndKeyPaths");
   return CreateIDBKeyFromValueAndKeyPaths(isolate, value, store_key_path,
                                           index_key_path, exception_state);
 }
