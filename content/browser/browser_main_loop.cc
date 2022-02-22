@@ -69,6 +69,7 @@
 #include "content/browser/compositor/viz_process_transport_factory.h"
 #include "content/browser/download/save_file_manager.h"
 #include "content/browser/field_trial_synchronizer.h"
+#include "content/browser/first_party_sets/first_party_sets_util.h"
 #include "content/browser/gpu/browser_gpu_channel_host_factory.h"
 #include "content/browser/gpu/browser_gpu_client_delegate.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -138,6 +139,7 @@
 #include "services/audio/service.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
 #include "skia/ext/event_tracer_impl.h"
 #include "skia/ext/skia_memory_dump_provider.h"
@@ -982,6 +984,21 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
 
   if (parts_)
     result_code_ = parts_->PreMainMessageLoopRun();
+
+  // ShellBrowserMainParts initializes a ShellBrowserContext with user data
+  // directory only in PreMainMessageLoopRun(). FirstPartySetsUtil needs to
+  // access this directory, hence triggering after this stage has run.
+  if (GetContentClient()->browser()->IsFirstPartySetsEnabled()) {
+    FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
+        GetContentClient()->browser()->GetFirstPartySetsDirectory(),
+        /*send_sets=*/
+        base::BindOnce([](base::OnceCallback<void(const std::string&)> callback,
+                          const std::string& sets) {
+          content::GetNetworkService()
+              ->SetPersistedFirstPartySetsAndGetCurrentSets(
+                  sets, std::move(callback));
+        }));
+  }
 
   variations::MaybeScheduleFakeCrash();
 

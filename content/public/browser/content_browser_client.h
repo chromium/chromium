@@ -1014,6 +1014,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the path to the net log default directory.
   virtual base::FilePath GetNetLogDefaultDirectory();
 
+  // Returns the path to the First-Party Sets directory.
+  virtual base::FilePath GetFirstPartySetsDirectory();
+
   // Notification that a pepper plugin has just been spawned. This allows the
   // embedder to add filters onto the host to implement interfaces.
   // This is called on the IO thread.

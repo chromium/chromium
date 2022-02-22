@@ -495,6 +495,10 @@ ShellContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
   return browser_context()->GetPath();
 }
 
+base::FilePath ShellContentBrowserClient::GetFirstPartySetsDirectory() {
+  return browser_context()->GetPath();
+}
+
 std::string ShellContentBrowserClient::GetUserAgent() {
   return GetShellUserAgent();
 }

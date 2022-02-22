@@ -904,6 +904,8 @@ source_set("browser") {
     "find_request_manager.h",
     "first_party_sets/addition_overlaps_union_find.cc",
     "first_party_sets/addition_overlaps_union_find.h",
+    "first_party_sets/first_party_sets_util.cc",
+    "first_party_sets/first_party_sets_util.h",
     "font_access/font_access_manager_impl.cc",
     "font_access/font_access_manager_impl.h",
     "font_access/font_enumeration_cache.cc",

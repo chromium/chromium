@@ -370,6 +370,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetShaderDiskCacheDirectory() override;
   base::FilePath GetGrShaderDiskCacheDirectory() override;
   base::FilePath GetNetLogDefaultDirectory() override;
+  base::FilePath GetFirstPartySetsDirectory() override;
   void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host) override;
   content::BrowserPpapiHost* GetExternalBrowserPpapiHost(
       int plugin_process_id) override;

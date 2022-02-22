@@ -98,6 +98,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       LoginAuthRequiredCallback auth_required_callback) override;
   base::DictionaryValue GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
+  base::FilePath GetFirstPartySetsDirectory() override;
   std::string GetUserAgent() override;
   std::string GetFullUserAgent() override;
   std::string GetReducedUserAgent() override;

@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/first_party_sets/first_party_sets_util.h"
+#include "content/browser/first_party_sets/first_party_sets_util.h"
 
 #include <string>
 
@@ -16,6 +16,8 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace content {
 
 class FirstPartySetsUtilTest : public ::testing::Test {
  public:
@@ -79,3 +81,5 @@ TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets) {
   ASSERT_TRUE(base::ReadFileToString(persisted_sets_path_, &got));
   EXPECT_EQ(got, expected_updated_sets);
 }
+
+}  // namespace content

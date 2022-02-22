@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/first_party_sets/first_party_sets_util.h"
+#include "content/browser/first_party_sets/first_party_sets_util.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -10,6 +10,8 @@
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+
+namespace content {
 
 namespace {
 
@@ -57,7 +59,11 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
     const base::FilePath& user_data_dir,
     base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
                             const std::string&)> send_sets) {
-  DCHECK(!user_data_dir.empty());
+  if (user_data_dir.empty()) {
+    VLOG(1) << "Empty path. Failed loading serialized First-Party Sets file.";
+    return;
+  }
+
   const base::FilePath persisted_sets_path =
       user_data_dir.Append(kPersistedFirstPartySetsFileName);
 
@@ -89,3 +95,5 @@ void FirstPartySetsUtil::SendPersistedSets(
                                           base::Unretained(this), path),
                            sets);
 }
+
+}  // namespace content
