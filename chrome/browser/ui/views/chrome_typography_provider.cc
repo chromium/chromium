@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
@@ -127,14 +127,13 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
       context == CONTEXT_DIALOG_BODY_TEXT_SMALL)
     context = views::style::CONTEXT_LABEL;
 
+  const auto* color_provider = view.GetColorProvider();
   if (context == CONTEXT_DOWNLOAD_SHELF ||
       (context == CONTEXT_DOWNLOAD_SHELF_STATUS &&
        style == views::style::STYLE_DISABLED)) {
-    const auto* theme_provider = view.GetThemeProvider();
-    if (!theme_provider)
+    if (!color_provider)
       return gfx::kPlaceholderColor;
-    const SkColor base_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT);
+    const SkColor base_color = color_provider->GetColor(kColorToolbarText);
     // TODO(pkasting): Should use some way of dimming text that's as analogous
     // as possible to e.g. enabled vs. disabled labels.
     const SkColor dimmed_color = SkColorSetA(base_color, 0xC7);
@@ -162,7 +161,7 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
     default:
       return TypographyProvider::GetColor(view, context, style);
   }
-  return view.GetColorProvider()->GetColor(color_id);
+  return color_provider->GetColor(color_id);
 }
 
 int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
