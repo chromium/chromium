@@ -364,9 +364,8 @@ void BrowserSwitchHandler::OnLaunchFinished(base::TimeTicks start,
     GotoNewTabPage(web_ui()->GetWebContents());
   } else {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&content::WebContents::ClosePage,
-                       base::Unretained(web_ui()->GetWebContents())));
+        FROM_HERE, base::BindOnce(&content::WebContents::ClosePage,
+                                  web_ui()->GetWebContents()->GetWeakPtr()));
   }
 }
 
