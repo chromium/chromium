@@ -308,4 +308,8 @@
         <item name="android:importantForAccessibility">no</item>
     </style>
 
+    <style name="ThemeOverlay.UI.SelectionHandle" parent="">
+        <item name="colorControlActivated">@color/default_control_color_active_baseline</item>
+    </style>
+
 </resources>
