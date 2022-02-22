@@ -704,6 +704,10 @@ def _RenderRootRJavaSource(package, all_resources_by_type, rjava_build_options,
     extends_string = 'extends {{ parent_path }}.R.{{ resource_type }} '
     dep_path = GetCustomPackagePath(grandparent_custom_package_name)
 
+  # Don't actually mark fields as "final" or else R8 complain when aapt2 uses
+  # --proguard-conditional-keep-rules. E.g.:
+  # Rule precondition matches static final fields javac has inlined.
+  # Such rules are unsound as the shrinker cannot infer the inlining precisely.
   template = Template("""/* AUTO-GENERATED FILE.  DO NOT MODIFY. */
 
 package {{ package }};
@@ -712,7 +716,7 @@ public final class R {
     {% for resource_type in resource_types %}
     public static class {{ resource_type }} """ + extends_string + """ {
         {% for e in final_resources[resource_type] %}
-        public static final {{ e.java_type }} {{ e.name }} = {{ e.value }};
+        public static {{ e.java_type }} {{ e.name }} = {{ e.value }};
         {% endfor %}
         {% for e in non_final_resources[resource_type] %}
             {% if e.value != '0' %}
