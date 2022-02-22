@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -41,9 +42,16 @@ constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
   const int dimension = GetAnswerCardIconDimension();
-  const auto icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-      dimension / 2, gfx::kGoogleBlue600,
-      gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE));
+  const bool dark_mode = ash::features::IsProductivityLauncherEnabled() ||
+                         (ash::features::IsDarkLightModeEnabled() &&
+                          ash::ColorProvider::Get()->IsDarkModeEnabled());
+  const auto icon =
+      dark_mode ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+                      dimension / 2, gfx::kGoogleBlue300,
+                      gfx::CreateVectorIcon(vector_icon, gfx::kGoogleGrey900))
+                : gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+                      dimension / 2, gfx::kGoogleBlue600,
+                      gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE));
   return ChromeSearchResult::IconInfo(icon, dimension);
 }
 
