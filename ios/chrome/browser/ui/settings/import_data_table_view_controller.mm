@@ -69,8 +69,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _fromEmail = [fromEmail copy];
     _toEmail = [toEmail copy];
     _shouldClearData = SHOULD_CLEAR_DATA_USER_CHOICE;
-    self.title =
-        l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+    self.title = l10n_util::GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE);
     [self setShouldHideDoneButton:YES];
   }
   return self;

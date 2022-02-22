@@ -1434,6 +1434,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_HEADER" desc="The header for the Import Data settings screen. [400em]">
         You have bookmarks, history, passwords, and other settings from <ph name="USER_EMAIL1">$1<ex>johndoe@gmail.com</ex></ph>.
       </message>
+      <message name="IDS_IOS_OPTIONS_IMPORT_DATA_TITLE" desc="The title of the Import Data settings screen. [30em]">
+        Manage Data
+      </message>
       <message name="IDS_IOS_OPTIONS_IMPORT_DATA_IMPORT_SUBTITLE" desc="The subtitle of the Import Data option on the Import Data settings screen. [400em]">
         Add existing data to <ph name="USER_EMAIL">$1<ex>john@doe.com</ex></ph>.
       </message>
