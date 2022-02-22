@@ -303,6 +303,7 @@ class PrivateNetworkAccessBrowserTest
             {
                 blink::features::kPlzDedicatedWorker,
                 features::kBlockInsecurePrivateNetworkRequests,
+                features::kPrivateNetworkAccessSendPreflights,
             },
             {}) {}
 };
@@ -2173,7 +2174,7 @@ IN_PROC_BROWSER_TEST_F(
 // network request policy used by RenderFrameHostImpl is to warn about requests
 // from non-secure contexts.
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
-                       PrivateNetworkPolicyIsPreflightWarnByDefault) {
+                       PrivateNetworkPolicyIsWarnByDefault) {
   EXPECT_TRUE(NavigateToURL(shell(), InsecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2182,15 +2183,14 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
 
   EXPECT_FALSE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kWarn);
 }
 
 // This test verifies that with the blocking feature disabled, the private
 // network request policy used by RenderFrameHostImpl is to send unenforced
 // preflight requests from secure contexts.
-IN_PROC_BROWSER_TEST_F(
-    PrivateNetworkAccessBrowserTestNoBlocking,
-    PrivateNetworkPolicyIsPreflightWarnByDefaultForSecureContexts) {
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessBrowserTestNoBlocking,
+                       PrivateNetworkPolicyIsWarnByDefaultForSecureContexts) {
   EXPECT_TRUE(NavigateToURL(shell(), SecurePublicURL(kDefaultPath)));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -2199,7 +2199,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(security_state->is_web_secure_context);
   EXPECT_EQ(security_state->private_network_request_policy,
-            network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn);
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 }
 
 // This test verifies that by default, the private network request policy used

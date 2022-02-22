@@ -414,14 +414,17 @@ TEST_F(SharedWorkerHostTestWithCOEPEnabled,
 class SharedWorkerHostTestWithPNAEnabled : public SharedWorkerHostTest {
  public:
   SharedWorkerHostTestWithPNAEnabled() {
-    feature_list.InitWithFeatures(
-        {/*enable_feature=*/features::kPrivateNetworkAccessForWorkers},
-        {/*disable_feature=*/blink::features::kCOEPForSharedWorker});
+    feature_list_.InitWithFeatures(
+        {
+            features::kPrivateNetworkAccessSendPreflights,
+            features::kPrivateNetworkAccessForWorkers,
+        },
+        {blink::features::kCOEPForSharedWorker});
   }
   ~SharedWorkerHostTestWithPNAEnabled() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SharedWorkerHostTestWithPNAEnabled,
