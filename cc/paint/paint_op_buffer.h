@@ -1131,7 +1131,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   size_t total_op_count() const { return op_count_ + subrecord_op_count_; }
 
   size_t next_op_offset() const { return used_; }
-  int numSlowPaths() const { return num_slow_paths_; }
+  int num_slow_paths() const { return num_slow_paths_; }
   bool HasNonAAPaint() const { return has_non_aa_paint_; }
   bool HasDiscardableImages() const { return has_discardable_images_; }
 

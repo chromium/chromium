@@ -149,7 +149,7 @@ class CC_PAINT_EXPORT DisplayItemList
   absl::optional<DirectlyCompositedImageResult>
   GetDirectlyCompositedImageResult() const;
 
-  int NumSlowPaths() const { return paint_op_buffer_.numSlowPaths(); }
+  int num_slow_paths() const { return paint_op_buffer_.num_slow_paths(); }
   bool HasNonAAPaint() const { return paint_op_buffer_.HasNonAAPaint(); }
 
   // This gives the total number of PaintOps.

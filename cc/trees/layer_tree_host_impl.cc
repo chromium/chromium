@@ -1977,7 +1977,7 @@ size_t LayerTreeHostImpl::GetFrameIndexForImage(const PaintImage& paint_image,
 int LayerTreeHostImpl::GetMSAASampleCountForRaster(
     const scoped_refptr<DisplayItemList>& display_list) {
   constexpr int kMinNumberOfSlowPathsForMSAA = 6;
-  if (display_list->NumSlowPaths() < kMinNumberOfSlowPathsForMSAA)
+  if (display_list->num_slow_paths() < kMinNumberOfSlowPathsForMSAA)
     return 0;
 
   if (!can_use_msaa_)

@@ -2624,7 +2624,7 @@ int DrawPathOp::CountSlowPaths() const {
 }
 
 int DrawRecordOp::CountSlowPaths() const {
-  return record->numSlowPaths();
+  return record->num_slow_paths();
 }
 
 bool DrawRecordOp::HasNonAAPaint() const {
