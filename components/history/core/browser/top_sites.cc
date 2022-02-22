@@ -4,6 +4,7 @@
 
 #include "components/history/core/browser/top_sites.h"
 
+#include "base/observer_list.h"
 #include "components/history/core/browser/top_sites_observer.h"
 
 namespace history {

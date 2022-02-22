@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "components/history/core/browser/history_service.h"

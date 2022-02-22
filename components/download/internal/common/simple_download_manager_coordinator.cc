@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "components/download/public/common/all_download_event_notifier.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"

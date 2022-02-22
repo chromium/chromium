@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"

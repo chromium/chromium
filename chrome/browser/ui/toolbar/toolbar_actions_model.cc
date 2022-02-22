@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"

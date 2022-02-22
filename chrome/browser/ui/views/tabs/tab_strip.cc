@@ -30,6 +30,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"

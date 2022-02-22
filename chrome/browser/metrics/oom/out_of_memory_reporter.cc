@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/observer_list.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_handle.h"

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/observer_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 

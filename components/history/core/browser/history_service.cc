@@ -27,6 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"

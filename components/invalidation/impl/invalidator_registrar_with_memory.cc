@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "components/invalidation/public/topic_invalidation_map.h"

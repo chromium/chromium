@@ -17,6 +17,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

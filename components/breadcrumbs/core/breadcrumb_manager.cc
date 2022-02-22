@@ -6,6 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/format_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"

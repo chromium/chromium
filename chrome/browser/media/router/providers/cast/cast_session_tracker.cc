@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/cast_channel/cast_socket_service.h"

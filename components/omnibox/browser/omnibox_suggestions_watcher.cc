@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "omnibox_suggestions_watcher.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_IOS)

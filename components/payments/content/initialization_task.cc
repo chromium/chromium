@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/payments/content/initialization_task.h"
+#include "base/observer_list.h"
 
 namespace payments {
 

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

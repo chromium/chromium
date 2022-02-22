@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/custom_handlers/pref_names.h"

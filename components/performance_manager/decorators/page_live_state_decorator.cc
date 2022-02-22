@@ -5,6 +5,7 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"

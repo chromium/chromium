@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/favicon/core/favicon_driver.h"
+#include "base/observer_list.h"
 
 namespace favicon {
 

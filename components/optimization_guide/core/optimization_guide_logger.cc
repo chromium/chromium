@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 
+#include "base/observer_list.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 
 namespace {

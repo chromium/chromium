@@ -5,6 +5,7 @@
 #include "components/invalidation/public/identity_provider.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace invalidation {

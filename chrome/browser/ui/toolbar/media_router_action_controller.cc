@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 
 #include "base/bind.h"
+#include "base/observer_list.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"

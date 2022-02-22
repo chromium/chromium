@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"

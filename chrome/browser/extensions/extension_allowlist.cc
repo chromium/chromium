@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"

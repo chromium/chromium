@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"

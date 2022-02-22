@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"

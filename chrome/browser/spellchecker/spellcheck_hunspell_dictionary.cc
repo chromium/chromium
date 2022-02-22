@@ -14,6 +14,7 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"

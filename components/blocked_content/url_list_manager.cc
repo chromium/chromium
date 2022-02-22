@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/blocked_content/url_list_manager.h"
+#include "base/observer_list.h"
 
 namespace blocked_content {
 

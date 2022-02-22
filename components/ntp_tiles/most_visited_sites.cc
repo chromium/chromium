@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

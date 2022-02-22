@@ -4,6 +4,7 @@
 
 #include "components/offline_items_collection/core/filtered_offline_item_observer.h"
 #include <utility>
+#include "base/observer_list.h"
 
 namespace offline_items_collection {
 

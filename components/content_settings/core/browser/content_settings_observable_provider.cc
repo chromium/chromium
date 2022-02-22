@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
+#include "base/observer_list.h"
 
 namespace content_settings {
 

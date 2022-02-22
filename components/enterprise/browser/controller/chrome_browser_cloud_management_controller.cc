@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

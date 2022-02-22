@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"

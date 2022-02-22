@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/observer_list.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"

@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"

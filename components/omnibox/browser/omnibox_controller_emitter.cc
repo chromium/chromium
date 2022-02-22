@@ -4,6 +4,7 @@
 
 #include "omnibox_controller_emitter.h"
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_IOS)

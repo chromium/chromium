@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

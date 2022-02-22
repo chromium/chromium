@@ -16,6 +16,7 @@
 #include "base/containers/small_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/media_router/browser/media_router.h"

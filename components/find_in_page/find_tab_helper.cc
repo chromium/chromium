@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/find_in_page/find_result_observer.h"

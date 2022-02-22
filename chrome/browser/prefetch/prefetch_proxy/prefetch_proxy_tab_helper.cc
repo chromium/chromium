@@ -15,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_content_browser_client.h"

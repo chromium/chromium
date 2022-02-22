@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"

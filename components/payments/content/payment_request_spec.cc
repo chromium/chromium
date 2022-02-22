@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 
+#include "base/observer_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"

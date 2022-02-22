@@ -5,6 +5,7 @@
 #include "components/keep_alive_registry/keep_alive_registry.h"
 
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"

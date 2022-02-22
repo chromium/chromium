@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
