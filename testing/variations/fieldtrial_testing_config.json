@@ -4417,6 +4417,25 @@
             ]
         }
     ],
+    "OnlySendStoragePolicyUpdatesForModifiedOrigins": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220222",
+                    "enable_features": [
+                        "OnlySendStoragePolicyUpdatesForModifiedOrigins"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeUpdateLoadInfo": [
         {
             "platforms": [
