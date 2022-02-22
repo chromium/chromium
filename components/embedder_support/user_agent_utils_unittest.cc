@@ -366,8 +366,7 @@ TEST_F(UserAgentUtilsTest, UserAgentStringOrdering) {
 #endif
 }
 
-// TODO(crbug.com/1298839): Fix failure and re-enable.
-TEST_F(UserAgentUtilsTest, DISABLED_UserAgentStringReduced) {
+TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
@@ -468,9 +467,10 @@ TEST_F(UserAgentUtilsTest, DISABLED_UserAgentStringReduced) {
       {});
   {
     std::string buffer = GetReducedUserAgent(kForceDisabled);
-    EXPECT_EQ(buffer,
-              base::StringPrintf(content::frozen_user_agent_strings::kDesktop,
-                                 content::GetUnifiedPlatform().c_str(), "100"));
+    EXPECT_EQ(buffer, base::StringPrintf(
+                          content::frozen_user_agent_strings::kDesktop,
+                          content::GetUnifiedPlatform().c_str(),
+                          version_info::GetMajorVersionNumber().c_str()));
   }
 #endif
 
