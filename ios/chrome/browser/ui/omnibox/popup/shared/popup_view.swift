@@ -13,7 +13,11 @@ struct PopupView: View {
           PopupMatchRowView(match: match)
             .deleteDisabled(!match.supportsDeletion)
         }
-        .onDelete { indexSet in model.matches.remove(atOffsets: indexSet) }
+        .onDelete { indexSet in
+          for matchIndex in indexSet {
+            model.matches[matchIndex].selectedForDeletion()
+          }
+        }
       }
     }
   }

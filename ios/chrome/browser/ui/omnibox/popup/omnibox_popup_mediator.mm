@@ -90,6 +90,9 @@ const CGFloat kOmniboxIconSize = 16;
     [wrappedMatches addObject:formatter];
 
     __weak __typeof(self) weakSelf = self;
+    BOOL trailingButtonHandlerIsNoop =
+        (!formatter.isAppendable) && (!formatter.isTabMatch);
+    BOOL deletionHandlerIsNoop = !formatter.supportsDeletion;
     PopupMatch* popupMatch =
         [[PopupMatch alloc] initWithTitle:formatter.text.string
                                  subtitle:formatter.detailText.string
@@ -98,10 +101,13 @@ const CGFloat kOmniboxIconSize = 16;
                                isTabMatch:formatter.isTabMatch
                          supportsDeletion:formatter.supportsDeletion
                                     pedal:nil
-                    trailingButtonHandler:^{
+                    trailingButtonHandler:trailingButtonHandlerIsNoop ? ^{} : ^{
                       [weakSelf autocompleteResultConsumer:nil
                                 didTapTrailingButtonForRow:i];
-                    }];
+        }
+                          deletionHandler:deletionHandlerIsNoop ? ^{} : ^{
+            [weakSelf autocompleteResultConsumer:nil didSelectRowForDeletion:i];
+        }];
     [popupMatches addObject:popupMatch];
   }
 
