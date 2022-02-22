@@ -25,6 +25,8 @@ VIZ_COMMON_EXPORT bool CompositorRenderPassListFromDict(
     const base::Value& dict,
     CompositorRenderPassList* render_pass_list);
 
+VIZ_COMMON_EXPORT const char* BlendModeToString(SkBlendMode blend_mode);
+
 // Represents the important information used for (de)serialization of
 // `CompositorFrame`s on a given surface.
 struct VIZ_COMMON_EXPORT FrameData {
