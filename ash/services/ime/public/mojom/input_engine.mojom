@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.ime.mojom;
+module ash.ime.mojom;
 
 // A message channel is a paired message sender and receiver. It provides the
 // communication channel between the IME extension process and the core IME

@@ -173,13 +173,13 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS);
 
   // IME service on Chrome OS.
-  source_map->RegisterSource("chromeos.ime.mojom.ime_service.mojom",
+  source_map->RegisterSource("ash.ime.mojom.ime_service.mojom",
                              IDR_IME_SERVICE_MOJOM_JS);
-  source_map->RegisterSource("chromeos.ime.mojom.input_engine.mojom",
+  source_map->RegisterSource("ash.ime.mojom.input_engine.mojom",
                              IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS);
-  source_map->RegisterSource("chromeos.ime.mojom.input_method.mojom",
+  source_map->RegisterSource("ash.ime.mojom.input_method.mojom",
                              IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS);
-  source_map->RegisterSource("chromeos.ime.mojom.input_method_host.mojom",
+  source_map->RegisterSource("ash.ime.mojom.input_method_host.mojom",
                              IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS);
   source_map->RegisterSource("chromeos.ime.service",
                              IDR_IME_SERVICE_BINDINGS_JS);

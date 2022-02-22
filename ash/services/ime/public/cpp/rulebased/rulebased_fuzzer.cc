@@ -13,7 +13,7 @@
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace rulebased = chromeos::ime::rulebased;
-namespace mojom = chromeos::ime::mojom;
+namespace mojom = ::ash::ime::mojom;
 
 namespace {
 

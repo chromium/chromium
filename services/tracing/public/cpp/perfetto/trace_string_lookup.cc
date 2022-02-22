@@ -81,7 +81,7 @@ constexpr ProcessType kProcessTypes[] = {
      ChromeProcessDescriptor::PROCESS_SERVICE_QRCODEGENERATOR},
     {"Service: chrome.mojom.ProfileImport",
      ChromeProcessDescriptor::PROCESS_SERVICE_PROFILEIMPORT},
-    {"Service: chromeos.ime.mojom.ImeService",
+    {"Service: ash.ime.mojom.ImeService",
      ChromeProcessDescriptor::PROCESS_SERVICE_IME},
     {"Service: recording.mojom.RecordingService",
      ChromeProcessDescriptor::PROCESS_SERVICE_RECORDING},

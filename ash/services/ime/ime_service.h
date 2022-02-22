@@ -48,12 +48,12 @@ class FieldTrialParamsRetrieverImpl : public FieldTrialParamsRetriever {
       const std::string& param_name) override;
 };
 
-class ImeService : public mojom::ImeService,
-                   public mojom::InputEngineManager,
+class ImeService : public ash::ime::mojom::ImeService,
+                   public ash::ime::mojom::InputEngineManager,
                    public ImeCrosPlatform {
  public:
   explicit ImeService(
-      mojo::PendingReceiver<mojom::ImeService> receiver,
+      mojo::PendingReceiver<ash::ime::mojom::ImeService> receiver,
       ImeDecoder* ime_decoder,
       std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever);
 
@@ -69,25 +69,28 @@ class ImeService : public mojom::ImeService,
  private:
   // mojom::ImeService overrides:
   void SetPlatformAccessProvider(
-      mojo::PendingRemote<mojom::PlatformAccessProvider> provider) override;
+      mojo::PendingRemote<ash::ime::mojom::PlatformAccessProvider> provider)
+      override;
   void BindInputEngineManager(
-      mojo::PendingReceiver<mojom::InputEngineManager> receiver) override;
+      mojo::PendingReceiver<ash::ime::mojom::InputEngineManager> receiver)
+      override;
 
   // mojom::InputEngineManager overrides:
   void ConnectToImeEngine(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputChannel> to_engine_request,
-      mojo::PendingRemote<mojom::InputChannel> from_engine,
+      mojo::PendingReceiver<ash::ime::mojom::InputChannel> to_engine_request,
+      mojo::PendingRemote<ash::ime::mojom::InputChannel> from_engine,
       const std::vector<uint8_t>& extra,
       ConnectToImeEngineCallback callback) override;
   void ConnectToInputMethod(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> input_method,
-      mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
+      mojo::PendingReceiver<ash::ime::mojom::InputMethod> input_method,
+      mojo::PendingRemote<ash::ime::mojom::InputMethodHost> input_method_host,
       ConnectToInputMethodCallback callback) override;
   void InitializeConnectionFactory(
-      mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
-      mojom::ConnectionTarget connection_target,
+      mojo::PendingReceiver<ash::ime::mojom::ConnectionFactory>
+          connection_factory,
+      ash::ime::mojom::ConnectionTarget connection_target,
       InitializeConnectionFactoryCallback callback) override;
 
   // ImeCrosPlatform overrides:
@@ -110,7 +113,7 @@ class ImeService : public mojom::ImeService,
                                 const base::FilePath& file);
   const MojoSystemThunks* GetMojoSystemThunks() override;
 
-  mojo::Receiver<mojom::ImeService> receiver_;
+  mojo::Receiver<ash::ime::mojom::ImeService> receiver_;
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
   // For the duration of this service lifetime, there should be only one
@@ -123,8 +126,8 @@ class ImeService : public mojom::ImeService,
   std::unique_ptr<ConnectionFactory> connection_factory_;
 
   // Platform delegate for access to privilege resources.
-  mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
-  mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
+  mojo::Remote<ash::ime::mojom::PlatformAccessProvider> platform_access_;
+  mojo::ReceiverSet<ash::ime::mojom::InputEngineManager> manager_receivers_;
 
   ImeDecoder* ime_decoder_ = nullptr;
 

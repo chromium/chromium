@@ -23,17 +23,19 @@ namespace ime {
 // Chromium implementation of ConnectionFactory (as opposed to the sharedlib
 // implementation). This impl is used to connect the RuleBasedEngine in the ime
 // service to the NativeIME when requested.
-class ConnectionFactory : public mojom::ConnectionFactory {
+class ConnectionFactory : public ash::ime::mojom::ConnectionFactory {
  public:
   explicit ConnectionFactory(
-      mojo::PendingReceiver<mojom::ConnectionFactory> pending_receiver);
+      mojo::PendingReceiver<ash::ime::mojom::ConnectionFactory>
+          pending_receiver);
   ~ConnectionFactory() override;
 
   // chromeos::ime::mojom::ConnectionFactory overrides.
   void ConnectToInputMethod(
       const std::string& ime_spec,
-      mojo::PendingAssociatedReceiver<mojom::InputMethod> pending_input_method,
-      mojo::PendingAssociatedRemote<mojom::InputMethodHost>
+      mojo::PendingAssociatedReceiver<ash::ime::mojom::InputMethod>
+          pending_input_method,
+      mojo::PendingAssociatedRemote<ash::ime::mojom::InputMethodHost>
           pending_input_method_host,
       ConnectToInputMethodCallback callback) override;
 
@@ -41,7 +43,7 @@ class ConnectionFactory : public mojom::ConnectionFactory {
   bool IsConnected();
 
  private:
-  mojo::Receiver<mojom::ConnectionFactory> receiver_;
+  mojo::Receiver<ash::ime::mojom::ConnectionFactory> receiver_;
 
   // This connection factory is only ever used to connect to a rule based
   // engine.

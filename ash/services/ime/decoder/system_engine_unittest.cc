@@ -20,6 +20,9 @@ constexpr char kImeSpec[] = "xkb:us::eng";
 
 class TestDecoderState;
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 // The fake decoder state has to be available globally because
 // ImeDecoder::EntryPoints is a list of stateless C functions, so the only way
 // to have a stateful fake is to have a global reference to it.
@@ -32,13 +35,13 @@ mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
 struct MockInputMethod : public mojom::InputMethod {
   MOCK_METHOD(void,
               OnFocusDeprecated,
-              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
-               chromeos::ime::mojom::InputMethodSettingsPtr settings),
+              (mojom::InputFieldInfoPtr input_field_info,
+               mojom::InputMethodSettingsPtr settings),
               (override));
   MOCK_METHOD(void,
               OnFocus,
-              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info,
-               chromeos::ime::mojom::InputMethodSettingsPtr settings,
+              (mojom::InputFieldInfoPtr input_field_info,
+               mojom::InputMethodSettingsPtr settings,
                OnFocusCallback),
               (override));
   MOCK_METHOD(void, OnBlur, (), (override));
@@ -46,12 +49,12 @@ struct MockInputMethod : public mojom::InputMethod {
               OnSurroundingTextChanged,
               (const std::string& text,
                uint32_t offset,
-               chromeos::ime::mojom::SelectionRangePtr selection_range),
+               mojom::SelectionRangePtr selection_range),
               (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
   MOCK_METHOD(void,
               ProcessKeyEvent,
-              (chromeos::ime::mojom::PhysicalKeyEventPtr event,
+              (mojom::PhysicalKeyEventPtr event,
                ProcessKeyEventCallback callback),
               (override));
   MOCK_METHOD(void,

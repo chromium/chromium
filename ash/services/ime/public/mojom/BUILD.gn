@@ -26,23 +26,23 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "chromeos.ime.mojom.CompletionCandidate"
-          cpp = "::chromeos::ime::TextCompletionCandidate"
+          mojom = "ash.ime.mojom.CompletionCandidate"
+          cpp = "::ash::ime::TextCompletionCandidate"
         },
         {
-          mojom = "chromeos.ime.mojom.SuggestionMode"
-          cpp = "::chromeos::ime::TextSuggestionMode"
+          mojom = "ash.ime.mojom.SuggestionMode"
+          cpp = "::ash::ime::TextSuggestionMode"
         },
         {
-          mojom = "chromeos.ime.mojom.SuggestionType"
-          cpp = "::chromeos::ime::TextSuggestionType"
+          mojom = "ash.ime.mojom.SuggestionType"
+          cpp = "::ash::ime::TextSuggestionType"
         },
         {
-          mojom = "chromeos.ime.mojom.SuggestionCandidate"
-          cpp = "::chromeos::ime::TextSuggestion"
+          mojom = "ash.ime.mojom.SuggestionCandidate"
+          cpp = "::ash::ime::TextSuggestion"
         },
         {
-          mojom = "chromeos.ime.mojom.TextRange"
+          mojom = "ash.ime.mojom.TextRange"
           cpp = "::gfx::Range"
         },
       ]

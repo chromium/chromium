@@ -45,7 +45,7 @@ namespace input_method {
 
 namespace {
 
-namespace mojom = ::chromeos::ime::mojom;
+namespace mojom = ::ash::ime::mojom;
 
 // These are persisted to logs. Entries should not be renumbered. Numeric values
 // should not be reused. Must stay in sync with IMENonAutocorrectDiacriticStatus
@@ -681,8 +681,7 @@ void NativeInputMethodEngine::ImeObserver::ConnectToImeService(
           &NativeInputMethodEngine::ImeObserver::OnConnectionFactoryBound,
           weak_ptr_factory_.GetWeakPtr()));
 
-  mojo::PendingAssociatedRemote<chromeos::ime::mojom::InputMethodHost>
-      input_method_host;
+  mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost> input_method_host;
   associated_host_receiver_.Bind(
       input_method_host.InitWithNewEndpointAndPassReceiver());
 
@@ -1183,7 +1182,7 @@ void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
 }
 
 void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
-    chromeos::ime::mojom::CandidatesWindowPtr window) {
+    mojom::CandidatesWindowPtr window) {
   if (!IsTextClientActive())
     return;
 

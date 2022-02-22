@@ -7,6 +7,9 @@
 namespace chromeos {
 namespace ime {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 MockInputChannel::MockInputChannel() : receiver_(this) {}
 
 MockInputChannel::~MockInputChannel() = default;

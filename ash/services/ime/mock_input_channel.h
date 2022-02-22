@@ -16,14 +16,14 @@ namespace chromeos {
 namespace ime {
 
 // A mock receiver InputChannel.
-class MockInputChannel : public mojom::InputChannel {
+class MockInputChannel : public ash::ime::mojom::InputChannel {
  public:
   MockInputChannel();
   ~MockInputChannel() override;
   MockInputChannel(const MockInputChannel&) = delete;
   MockInputChannel& operator=(const MockInputChannel&) = delete;
 
-  mojo::PendingRemote<mojom::InputChannel> CreatePendingRemote();
+  mojo::PendingRemote<ash::ime::mojom::InputChannel> CreatePendingRemote();
   bool IsBound() const;
   void FlushForTesting();
 
@@ -32,7 +32,7 @@ class MockInputChannel : public mojom::InputChannel {
                       ProcessMessageCallback callback) override;
 
  private:
-  mojo::Receiver<mojom::InputChannel> receiver_;
+  mojo::Receiver<ash::ime::mojom::InputChannel> receiver_;
 };
 
 }  // namespace ime

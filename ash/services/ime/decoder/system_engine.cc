@@ -13,6 +13,9 @@
 namespace chromeos {
 namespace ime {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 SystemEngine::SystemEngine(ImeCrosPlatform* platform,
                            absl::optional<ImeDecoder::EntryPoints> entry_points)
     : platform_(platform) {

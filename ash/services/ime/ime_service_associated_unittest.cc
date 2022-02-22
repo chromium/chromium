@@ -30,6 +30,9 @@ namespace ime {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 const char kInvalidImeSpec[] = "ime_spec_never_support";
 constexpr char kValidImeSpec[] = "valid_spec";
 const std::vector<uint8_t> extra{0x66, 0x77, 0x88};

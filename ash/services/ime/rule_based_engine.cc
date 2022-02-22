@@ -15,6 +15,9 @@ namespace ime {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
   // TODO(https://crbug.com/1185629): Add a new helper in
   // base/i18n/icu_string_conversions.h that does the conversion directly

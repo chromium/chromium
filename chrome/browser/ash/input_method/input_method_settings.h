@@ -17,7 +17,7 @@ struct InputFieldContext {
   bool multiword_allowed = false;
 };
 
-chromeos::ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
+ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
     const std::string& engine_id,
     const InputFieldContext& context);

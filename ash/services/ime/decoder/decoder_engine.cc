@@ -14,6 +14,9 @@ namespace ime {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace mojom = ::ash::ime::mojom;
+
 // A client delegate passed to the shared library in order for the
 // shared library to send replies back to the engine.
 class ClientDelegate : public ImeClientDelegate {

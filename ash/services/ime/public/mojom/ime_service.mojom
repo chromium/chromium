@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module chromeos.ime.mojom;
+module ash.ime.mojom;
 
 import "ash/services/ime/public/mojom/connection_factory.mojom";
 import "ash/services/ime/public/mojom/input_engine.mojom";

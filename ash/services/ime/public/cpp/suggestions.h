@@ -54,6 +54,7 @@ namespace ime {
 using ::chromeos::ime::TextCompletionCandidate;
 using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
+using ::chromeos::ime::TextSuggestionType;
 }  // namespace ime
 }  // namespace ash
 

@@ -310,8 +310,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
   // Connects a receiver to the InputEngineManager instance.
   virtual void ConnectInputEngineManager(
-      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager>
-          receiver) = 0;
+      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) = 0;
 
   virtual bool IsISOLevel5ShiftUsedByCurrentInputMethod() const = 0;
 

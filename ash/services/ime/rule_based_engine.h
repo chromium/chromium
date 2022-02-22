@@ -21,13 +21,14 @@ namespace ime {
 // Handles rule-based input methods such as Arabic and Vietnamese.
 // Rule-based input methods are based off deterministic rules and do not
 // provide features such as suggestions.
-class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
+class RuleBasedEngine : public InputEngine,
+                        public ash::ime::mojom::InputMethod {
  public:
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<RuleBasedEngine> Create(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> receiver,
-      mojo::PendingRemote<mojom::InputMethodHost> host);
+      mojo::PendingReceiver<ash::ime::mojom::InputMethod> receiver,
+      mojo::PendingRemote<ash::ime::mojom::InputMethodHost> host);
 
   RuleBasedEngine(const RuleBasedEngine& other) = delete;
   RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
@@ -39,18 +40,19 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   // mojom::InputMethod overrides:
   // Most of these methods are deliberately empty because rule-based input
   // methods do not need to listen to these events.
-  void OnFocusDeprecated(mojom::InputFieldInfoPtr input_field_info,
-                         mojom::InputMethodSettingsPtr settings) override {}
-  void OnFocus(mojom::InputFieldInfoPtr input_field_info,
-               mojom::InputMethodSettingsPtr settings,
+  void OnFocusDeprecated(
+      ash::ime::mojom::InputFieldInfoPtr input_field_info,
+      ash::ime::mojom::InputMethodSettingsPtr settings) override {}
+  void OnFocus(ash::ime::mojom::InputFieldInfoPtr input_field_info,
+               ash::ime::mojom::InputMethodSettingsPtr settings,
                OnFocusCallback callback) override;
   void OnBlur() override {}
   void OnSurroundingTextChanged(
       const std::string& text,
       uint32_t offset,
-      mojom::SelectionRangePtr selection_range) override {}
+      ash::ime::mojom::SelectionRangePtr selection_range) override {}
   void OnCompositionCanceledBySystem() override;
-  void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
+  void ProcessKeyEvent(ash::ime::mojom::PhysicalKeyEventPtr event,
                        ProcessKeyEventCallback callback) override;
   void OnCandidateSelected(uint32_t selected_candidate_index) override;
 
@@ -58,11 +60,11 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
 
  private:
   RuleBasedEngine(const std::string& ime_spec,
-                  mojo::PendingReceiver<mojom::InputMethod> receiver,
-                  mojo::PendingRemote<mojom::InputMethodHost> host);
+                  mojo::PendingReceiver<ash::ime::mojom::InputMethod> receiver,
+                  mojo::PendingRemote<ash::ime::mojom::InputMethodHost> host);
 
-  mojo::Receiver<mojom::InputMethod> receiver_;
-  mojo::Remote<mojom::InputMethodHost> host_;
+  mojo::Receiver<ash::ime::mojom::InputMethod> receiver_;
+  mojo::Remote<ash::ime::mojom::InputMethodHost> host_;
 
   rulebased::Engine engine_;
 

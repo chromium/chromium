@@ -213,8 +213,7 @@ class InputMethodManagerImpl : public InputMethodManager,
       InputMethodManager::ImeMenuObserver* observer) override;
   void ActivateInputMethodMenuItem(const std::string& key) override;
   void ConnectInputEngineManager(
-      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver)
-      override;
+      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) override;
   bool IsISOLevel5ShiftUsedByCurrentInputMethod() const override;
   bool IsAltGrUsedByCurrentInputMethod() const override;
   bool ArePositionalShortcutsUsedByCurrentInputMethod() const override;
