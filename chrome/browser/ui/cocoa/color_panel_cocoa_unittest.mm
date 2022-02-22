@@ -33,7 +33,8 @@ class ColorPanelCocoaTest : public CocoaTest {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
+// TODO(https://crbug.com/1296023): Re-enable once flakes are fixed.
+TEST_F(ColorPanelCocoaTest, DISABLED_ClearTargetOnEnd) {
   NSColorPanel* nscolor_panel = [NSColorPanel sharedColorPanel];
   @autoreleasepool {
     ASSERT_TRUE([nscolor_panel respondsToSelector:@selector(__target)]);
@@ -54,7 +55,8 @@ TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
   }
 }
 
-TEST_F(ColorPanelCocoaTest, SetColor) {
+// TODO(https://crbug.com/1296023): Re-enable once flakes are fixed.
+TEST_F(ColorPanelCocoaTest, DISABLED_SetColor) {
   // Set the NSColor panel up with an initial color.
   NSColor* blue_color = [NSColor blueColor];
   NSColorPanel* nscolor_panel = [NSColorPanel sharedColorPanel];
