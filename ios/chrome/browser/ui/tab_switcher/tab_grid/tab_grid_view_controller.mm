@@ -1945,7 +1945,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   if (IsTabsSearchEnabled() && self.tabGridMode == TabGridModeSearch &&
-      [self.regularTabsDelegate isItemWithIDSelected:itemID]) {
+      ![self.regularTabsDelegate isItemWithIDSelected:itemID]) {
     // That can happen when the search result that was selected is from
     // another window. In that case don't change the active page for this
     // window and don't close the tab grid.
