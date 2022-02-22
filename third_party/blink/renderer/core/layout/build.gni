@@ -867,7 +867,6 @@ blink_core_tests_layout = [
   "ng/ng_fragmentation_test.cc",
   "ng/ng_ink_overflow_test.cc",
   "ng/ng_inline_layout_test.cc",
-  "ng/ng_layout_overflow_calculator_test.cc",
   "ng/ng_layout_result_caching_test.cc",
   "ng/ng_layout_test.h",
   "ng/ng_length_utils_test.cc",

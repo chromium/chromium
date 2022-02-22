@@ -109,50 +109,8 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
                                  end_offset.top - start_offset.top)};
   inflow_overflow = AdjustOverflowForScrollOrigin(inflow_overflow);
 
-  PhysicalRect normal_overflow = layout_overflow_;
-  normal_overflow.UniteEvenIfEmpty(inflow_overflow);
-
-  if (node_.IsInlineFormattingContextRoot() || node_.IsFlexibleBox() ||
-      node_.IsGrid())
-    return normal_overflow;
-
-  WritingModeConverter converter(writing_direction_, size_);
-
-  LogicalRect block_end_padding_rect = {
-      LogicalOffset(converter.ToLogical(padding_rect_).offset.inline_offset,
-                    converter.ToLogical(*inflow_bounds).BlockEndOffset()),
-      LogicalSize(LayoutUnit(),
-                  padding_.ConvertToLogical(writing_direction_).block_end)};
-
-  PhysicalRect alternate_overflow = layout_overflow_;
-  alternate_overflow.UniteEvenIfEmpty(AdjustOverflowForScrollOrigin(
-      converter.ToPhysical(block_end_padding_rect)));
-
-  if (normal_overflow == alternate_overflow)
-    return normal_overflow;
-
-  // Use |normal_overflow| if we already had inline overflow.
-  if (converter.ToLogical(alternate_overflow.size).inline_size !=
-      converter.ToLogical(padding_rect_.size).inline_size)
-    return normal_overflow;
-
-  if (!inflow_bounds->IsEmpty())
-    return normal_overflow;
-
-  // We'd like everything to be |normal_overflow|, lets see what the impact
-  // would be.
-  if (node_.Style().OverflowInlineDirection() == EOverflow::kAuto ||
-      node_.Style().OverflowInlineDirection() == EOverflow::kScroll) {
-    UseCounter::Count(node_.GetDocument(),
-                      WebFeature::kNewLayoutOverflowDifferentBlock);
-    if (!inflow_bounds->IsEmpty()) {
-      UseCounter::Count(
-          node_.GetDocument(),
-          WebFeature::kNewLayoutOverflowDifferentBlockWithNonEmptyInflowBounds);
-    }
-  }
-
-  return alternate_overflow;
+  layout_overflow_.UniteEvenIfEmpty(inflow_overflow);
+  return layout_overflow_;
 }
 
 template <typename Items>
