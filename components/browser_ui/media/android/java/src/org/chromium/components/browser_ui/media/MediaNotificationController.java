@@ -476,8 +476,13 @@ public class MediaNotificationController {
         if (mService == null) {
             updateMediaSession();
             updateNotificationBuilder();
-            ForegroundServiceUtils.getInstance().startForegroundService(
-                    mDelegate.createServiceIntent());
+            // This is not allowed from the background, and there is no workaround on S+.  Just
+            // catch the exception, and `mService` will remain null for us to try again later.
+            try {
+                ForegroundServiceUtils.getInstance().startForegroundService(
+                        mDelegate.createServiceIntent());
+            } catch (RuntimeException e) {
+            }
         } else {
             updateNotification(false, false);
         }
