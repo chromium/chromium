@@ -9,7 +9,7 @@ import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import '../shared_style.js';
 import './activity_log_history_item.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -273,8 +273,9 @@ export class ActivityLogHistoryElement extends PolymerElement {
   }
 
   private onMoreActionsClick_() {
-    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
-        assert(this.shadowRoot!.querySelector('cr-icon-button')!));
+    const moreButton = this.shadowRoot!.querySelector('cr-icon-button');
+    assert(moreButton);
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(moreButton);
   }
 
   private expandItems_(expanded: boolean) {

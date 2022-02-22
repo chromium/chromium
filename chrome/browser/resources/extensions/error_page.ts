@@ -15,7 +15,7 @@ import './code_section.js';
 import './shared_style.js';
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -281,7 +281,7 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   }
 
   private updateSelected_(frame: chrome.developerPrivate.StackFrame) {
-    this.selectedStackFrame_ = assert(frame);
+    this.selectedStackFrame_ = frame;
 
     const selectedError = this.getSelectedError();
     this.delegate

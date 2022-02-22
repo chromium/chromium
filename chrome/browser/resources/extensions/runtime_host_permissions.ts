@@ -21,7 +21,7 @@ import './strings.m.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -251,7 +251,8 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private onHostDialogClose_() {
     this.hostDialogModel_ = null;
     this.showHostDialog_ = false;
-    focusWithoutInk(assert(this.hostDialogAnchorElement_!, 'Host Anchor'));
+    assert(this.hostDialogAnchorElement_);
+    focusWithoutInk(this.hostDialogAnchorElement_);
     this.hostDialogAnchorElement_ = null;
     this.oldHostAccess_ = null;
   }
@@ -292,7 +293,8 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
     // to the action menu's trigger (since the dialog will be shown next).
     // Instead, curry the element to the dialog, so once it closes, focus
     // will be returned.
-    const anchorElement = assert(this.actionMenuAnchorElement_!, 'Menu Anchor');
+    assert(this.actionMenuAnchorElement_, 'Menu Anchor');
+    const anchorElement = this.actionMenuAnchorElement_;
     this.actionMenuAnchorElement_ = null;
     this.closeActionMenu_();
     this.doShowHostDialog_(anchorElement, site);
@@ -301,8 +303,9 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   private onActionMenuRemoveClick_() {
     chrome.metricsPrivate.recordUserAction(
         'Extensions.Settings.Hosts.ActionMenuRemoveActivated');
+    assert(this.actionMenuModel_, 'Action Menu Model');
     this.delegate.removeRuntimeHostPermission(
-        this.itemId, assert(this.actionMenuModel_!, 'Action Menu Model'));
+        this.itemId, this.actionMenuModel_);
     this.closeActionMenu_();
   }
 

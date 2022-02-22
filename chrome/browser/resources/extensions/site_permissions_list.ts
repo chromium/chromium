@@ -14,7 +14,7 @@ import './site_permissions_edit_dialog.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -91,7 +91,8 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
       // Return focus to the three dots menu once a site has been edited.
       // TODO(crbug.com/1298326): If the edited site is the only site in the
       // list, focus is not on the three dots menu.
-      focusWithoutInk(assert(this.siteToEditAnchorElement_!, 'Site Anchor'));
+      assert(this.siteToEditAnchorElement_, 'Site Anchor');
+      focusWithoutInk(this.siteToEditAnchorElement_);
       this.siteToEditAnchorElement_ = null;
     }
     this.siteToEdit_ = null;
@@ -110,9 +111,8 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   }
 
   private onActionMenuRemoveClick_() {
-    this.delegate
-        .removeUserSpecifiedSite(
-            this.siteSet, assert(this.siteToEdit_!, 'Site To Edit'))
+    assert(this.siteToEdit_, 'Site To Edit');
+    this.delegate.removeUserSpecifiedSite(this.siteSet, this.siteToEdit_)
         .then(() => {
           this.closeActionMenu_();
           this.siteToEdit_ = null;

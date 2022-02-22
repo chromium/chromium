@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 export enum SourceType {
@@ -46,7 +46,6 @@ export function isEnabled(state: chrome.developerPrivate.ExtensionState):
       return false;
   }
   assertNotReached();
-  return false;
 }
 
 /**
@@ -115,7 +114,6 @@ export function getItemSourceString(source: SourceType): string {
       return '';
   }
   assertNotReached();
-  return '';
 }
 
 /**
