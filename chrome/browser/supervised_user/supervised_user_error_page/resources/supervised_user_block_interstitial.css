@@ -272,6 +272,12 @@ is enabled. */
   background: var(--primary-button-fill-color-active);
 }
 
+/* Remove focus-visible outline styles, because forced focus is used for
+screen reader and chrome vox provides its own focus style. */
+.frame-blocked:focus-visible,button:focus-visible {
+  outline: none;
+}
+
 @media (prefers-color-scheme: dark) {
   body.supervised-user-block {
     --avatar-stroke-color: var(--google-blue-100);
