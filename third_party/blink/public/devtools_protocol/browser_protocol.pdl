@@ -3723,6 +3723,12 @@ domain Emulation
       # To be sent in Sec-CH-UA-* headers and returned in navigator.userAgentData
       experimental optional UserAgentMetadata userAgentMetadata
 
+  # Allows overriding the automation flag.
+  experimental command setAutomationOverride
+    parameters
+      # Whether the override should be enabled.
+      boolean enabled
+
 # This domain provides experimental commands only supported in headless mode.
 experimental domain HeadlessExperimental
   depends on Page

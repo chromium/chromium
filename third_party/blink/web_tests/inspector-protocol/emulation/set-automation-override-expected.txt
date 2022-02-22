@@ -1,0 +1,13 @@
+Testing that automation emulation sets the webdriver flag
+Initial value: false
+Emulated value: true
+Original value: false
+Navigation:
+  Initial value: false
+  Emulated value: true
+  Original value: false
+IFrame:
+  Initial value: false
+  Emulated value: true
+  Original value: false
+

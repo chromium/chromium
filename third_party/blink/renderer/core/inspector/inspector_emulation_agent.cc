@@ -66,7 +66,8 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       auto_dark_mode_override_(&agent_state_, /*default_value=*/false),
       timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
       disabled_image_types_(&agent_state_, /*default_value=*/false),
-      cpu_throttling_rate_(&agent_state_, /*default_value=*/1) {}
+      cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
+      automation_override_(&agent_state_, /*default_value=*/false) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -168,6 +169,7 @@ Response InspectorEmulationAgent::disable() {
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
   setTouchEmulationEnabled(false, Maybe<int>());
+  setAutomationOverride(false);
   // Clear emulated media features. Note that the current approach
   // doesn't work well in cases where two clients have the same set of
   // features overridden to the same value by two different clients
@@ -808,6 +810,18 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
     return Response::InvalidParams("Invalid image type");
   }
   return Response::Success();
+}
+
+protocol::Response InspectorEmulationAgent::setAutomationOverride(
+    bool enabled) {
+  if (enabled)
+    InnerEnable();
+  automation_override_.Set(enabled);
+  return Response::Success();
+}
+
+void InspectorEmulationAgent::ApplyAutomationOverride(bool& enabled) const {
+  enabled |= automation_override_.Get();
 }
 
 }  // namespace blink

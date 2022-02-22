@@ -190,4 +190,5 @@ interface CoreProbes {
   void OnContentSecurityPolicyViolation(ExecutionContext* context, const blink::ContentSecurityPolicyViolationType violationType);
   void IsCacheDisabled(ExecutionContext*, bool* is_cache_disabled);
   void PerformanceEntryAdded([Keep] ExecutionContext*, PerformanceEntry*);
+  void ApplyAutomationOverride(ExecutionContext*, bool& enabled);
 }

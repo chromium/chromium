@@ -116,6 +116,7 @@
         "GetDisabledImageTypes",
         "WillCommitLoad",
         "WillCreateDocumentParser",
+        "ApplyAutomationOverride",
       ]
     },
     InspectorLayerTreeAgent: {
