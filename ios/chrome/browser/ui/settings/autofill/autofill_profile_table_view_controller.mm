@@ -260,7 +260,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)shouldHideToolbar {
   return !base::FeatureList::IsEnabled(
-      password_manager::features::kSupportForAddPasswordsInSettings);
+             password_manager::features::kSupportForAddPasswordsInSettings) ||
+         self.navigationController.visibleViewController != self;
 }
 
 - (BOOL)shouldShowEditDoneButton {
