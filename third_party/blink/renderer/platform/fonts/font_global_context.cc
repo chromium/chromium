@@ -25,7 +25,7 @@ ThreadSpecific<FontGlobalContext*>& GetThreadSpecificFontGlobalContextPool() {
 
 FontGlobalContext& FontGlobalContext::Get() {
   auto& thread_specific_pool = GetThreadSpecificFontGlobalContextPool();
-  if (!thread_specific_pool.IsSet())
+  if (!*thread_specific_pool)
     *thread_specific_pool = new FontGlobalContext();
   return **thread_specific_pool;
 }
