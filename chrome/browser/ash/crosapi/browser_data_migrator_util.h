@@ -180,7 +180,7 @@ constexpr int64_t kBytesInOneMB = 1024 * 1024;
 // The size of disk space that should be kept free after migration. This is
 // important since crypotohome conducts an aggressive disk cleanup if free disk
 // space becomes less than 768MB. The buffer is rounded up to 1GB.
-constexpr int64_t kBuffer = 1024LL * 1024 * 1024;
+constexpr uint64_t kBuffer = 1024LL * 1024 * 1024;
 
 // CancelFlag
 class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {

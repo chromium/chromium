@@ -450,7 +450,7 @@ FileManagerPrivateGetZipProgressFunction::ZipProgressValue(
 
     // Remove the matching ZipFileCreator from the list of active ones.
     const size_t n = zip_creators->erase(zip_id_);
-    DCHECK_LT(0, n);
+    DCHECK_GT(n, 0u);
   }
 
   return TwoArguments(base::Value(static_cast<int>(progress.result)),

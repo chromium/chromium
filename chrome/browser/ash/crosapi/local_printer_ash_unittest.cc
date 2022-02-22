@@ -782,7 +782,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_MaxSheetsAllowed) {
       [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
 
   EXPECT_TRUE(policies->max_sheets_allowed_has_value);
-  EXPECT_EQ(5, policies->max_sheets_allowed);
+  EXPECT_EQ(5u, policies->max_sheets_allowed);
 }
 
 // Zero sheets allowed is a valid policy.
@@ -796,7 +796,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_ZeroSheetsAllowed) {
 
   ASSERT_TRUE(policies);
   EXPECT_TRUE(policies->max_sheets_allowed_has_value);
-  EXPECT_EQ(0, policies->max_sheets_allowed);
+  EXPECT_EQ(0u, policies->max_sheets_allowed);
 }
 
 // Negative sheets allowed is not a valid policy.

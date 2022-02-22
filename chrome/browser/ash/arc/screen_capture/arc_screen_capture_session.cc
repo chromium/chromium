@@ -324,7 +324,7 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   // The returned texture will later be bound to GL_TEXTURE_2D target, verify it
   // here:
   DCHECK_EQ(result->GetTextureResult()->planes[0].texture_target,
-            GL_TEXTURE_2D);
+            static_cast<uint32_t>(GL_TEXTURE_2D));
 
   std::unique_ptr<DesktopTexture> desktop_texture =
       std::make_unique<DesktopTexture>(src_texture, result->size(),

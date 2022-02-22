@@ -242,7 +242,7 @@ void LockScreenReauthHandler::CallJavascript(const std::string& function,
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
     base::Value::ConstListView params) {
-  CHECK_EQ(params.size(), 6);
+  CHECK_EQ(params.size(), 6u);
   std::string gaia_id, email, password;
   bool using_saml;
   ::login::StringList services = ::login::StringList();

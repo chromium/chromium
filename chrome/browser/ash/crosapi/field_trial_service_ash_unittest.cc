@@ -77,7 +77,7 @@ TEST_F(FieldTrialServiceAshTest, SendInitialFieldTrialsAndUpdate) {
   base::RunLoop run_loop1;
   observer_.set_on_activate(base::BindLambdaForTesting(
       [&](const std::vector<mojom::FieldTrialGroupInfoPtr>& infos) {
-        EXPECT_EQ(2, infos.size());
+        ASSERT_EQ(2u, infos.size());
         VerifyFieldTrial(infos[0], kTrialName1, kGroupName);
         VerifyFieldTrial(infos[1], kTrialName2, kGroupName);
         run_loop1.Quit();

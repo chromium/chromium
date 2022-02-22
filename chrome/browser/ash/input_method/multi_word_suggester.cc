@@ -39,7 +39,7 @@ absl::optional<TextSuggestion> GetMultiWordSuggestion(
     return absl::nullopt;
   if (suggestions[0].type == TextSuggestionType::kMultiWord) {
     // There should only ever be one multi word suggestion given at a time.
-    DCHECK_EQ(suggestions.size(), 1);
+    DCHECK_EQ(suggestions.size(), 1u);
     return suggestions[0];
   }
   return absl::nullopt;

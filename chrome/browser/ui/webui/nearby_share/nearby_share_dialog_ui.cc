@@ -173,7 +173,7 @@ void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
 
   base::Value::ConstListView args_list = args->GetListDeprecated();
   CHECK_EQ(1u, args_list.size());
-  CHECK_GE(args_list[0].GetInt(), 0u);
+  CHECK_GE(args_list[0].GetInt(), 0);
   CHECK_LE(args_list[0].GetInt(), static_cast<int>(CloseReason::kMax));
   CloseReason reason = static_cast<CloseReason>(args_list[0].GetInt());
 

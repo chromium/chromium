@@ -127,7 +127,7 @@ class SharesheetHeaderView::SharesheetImagePreview : public views::View {
 
     // If we need to have more than 1 icon, add two rows so that we can
     // layout the icons in a grid.
-    DCHECK_GT(grid_icon_count, 1);
+    DCHECK_GT(grid_icon_count, 1u);
     AddRowToImageContainerView();
     AddRowToImageContainerView();
 
@@ -339,7 +339,7 @@ void SharesheetHeaderView::ShowTextPreview() {
       // If there is more than 1 file, show an enumeration of the number of
       // files.
       auto size = intent_->files.value().size();
-      DCHECK_NE(size, 0);
+      DCHECK_NE(size, 0u);
       file_text =
           l10n_util::GetPluralStringFUTF16(IDS_SHARESHEET_FILES_LABEL, size);
       filenames_tooltip_text = ConcatenateFileNames(file_names);

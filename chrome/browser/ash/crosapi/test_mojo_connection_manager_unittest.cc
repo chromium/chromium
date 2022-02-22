@@ -99,7 +99,7 @@ class TestBrowserServiceHostObserver : public BrowserServiceHostObserver {
   // |num_calls| times.
   TestBrowserServiceHostObserver(size_t num_calls, base::OnceClosure callback)
       : remaining_num_calls_(num_calls), callback_(std::move(callback)) {
-    DCHECK_GT(num_calls, 0);
+    DCHECK_GT(num_calls, 0u);
   }
 
   void OnBrowserServiceConnected(CrosapiId id,

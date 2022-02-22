@@ -496,7 +496,7 @@ void ScanService::OnPageReceived(
     // The output of multi-page PDF scans is a single file so only create and
     // append a single file path.
     if (scanned_file_paths_.empty()) {
-      DCHECK_EQ(1, page_number);
+      DCHECK_EQ(1u, page_number);
       scanned_file_paths_.push_back(scan_to_path.Append(CreateFilename(
           start_time_, /*not used*/ 0, mojo_ipc::FileType::kPdf)));
     }

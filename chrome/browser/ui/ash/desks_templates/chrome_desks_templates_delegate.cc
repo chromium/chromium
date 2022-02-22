@@ -136,7 +136,7 @@ void ShowUnavailableAppToast(const std::vector<std::string>& unavailable_apps) {
           base::ASCIIToUTF16(unavailable_apps[1]));
       break;
     default:
-      DCHECK_GT(unavailable_apps.size(), 2);
+      DCHECK_GT(unavailable_apps.size(), 2u);
       toast_string = l10n_util::GetStringFUTF16(
           IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_MORE,
           base::ASCIIToUTF16(unavailable_apps.front()),

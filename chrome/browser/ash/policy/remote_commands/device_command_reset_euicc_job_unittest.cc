@@ -46,7 +46,7 @@ em::RemoteCommand GenerateResetEuiccCommandProto(
   return command_proto;
 }
 
-void VerifyEuiccProfileCount(int expected_count) {
+void VerifyEuiccProfileCount(size_t expected_count) {
   chromeos::HermesEuiccClient::Properties* euicc_properties =
       chromeos::HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kTestEuiccPath));
@@ -57,7 +57,7 @@ void VerifyEuiccProfileCount(int expected_count) {
 void VerifyJobResult(base::RunLoop* run_loop,
                      RemoteCommandJob* job,
                      RemoteCommandJob::Status expected_status,
-                     int expected_profile_count) {
+                     size_t expected_profile_count) {
   EXPECT_EQ(expected_status, job->status());
   VerifyEuiccProfileCount(expected_profile_count);
   run_loop->Quit();
@@ -89,7 +89,7 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
     // Wait for all pending Hermes and Shill change notifications to be handled
     // so that new EUICC and profile states are reflected correctly.
     base::RunLoop().RunUntilIdle();
-    VerifyEuiccProfileCount(/*expected_count=*/2);
+    VerifyEuiccProfileCount(/*expected_count=*/2u);
   }
 
  protected:
@@ -131,7 +131,7 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
                base::BindOnce(&VerifyJobResult, base::Unretained(&run_loop),
                               base::Unretained(job.get()),
                               RemoteCommandJob::Status::SUCCEEDED,
-                              /*expected_profile_count=*/0)));
+                              /*expected_profile_count=*/0u)));
   task_environment()->FastForwardBy(kNetworkListWaitTimeout);
   run_loop.Run();
   // Verify that the notification should be displayed.
@@ -159,7 +159,7 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
                base::BindOnce(&VerifyJobResult, base::Unretained(&run_loop),
                               base::Unretained(job.get()),
                               RemoteCommandJob::Status::FAILED,
-                              /*expected_profile_count=*/2)));
+                              /*expected_profile_count=*/2u)));
   run_loop.Run();
   // Verify that the notification was not displayed.
   EXPECT_FALSE(tester.GetNotification(

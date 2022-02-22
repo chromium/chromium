@@ -471,7 +471,7 @@ bool CalculatePositionForSyncItemWrapper(
 std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
     ash::AppListSortOrder order,
     const AppListSyncableService::SyncItemMap& sync_item_map) {
-  DCHECK_GT(sync_item_map.size(), 1);
+  DCHECK_GT(sync_item_map.size(), 1u);
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {

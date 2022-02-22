@@ -153,7 +153,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
   // Find the STOP operation for the job.
   auto it = std::find(ops.begin(), ops.end(),
                       std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 2);
+  EXPECT_EQ(ops.size(), 2u);
   ASSERT_NE(ops.end(), it);
   ++it;
   ASSERT_NE(ops.end(), it);
@@ -179,7 +179,7 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
   // Find the STOP operation for the job.
   auto it = std::find(ops.begin(), ops.end(),
                       std::make_pair(std::string(kArcVmAdbdJobName), false));
-  EXPECT_EQ(ops.size(), 1);
+  EXPECT_EQ(ops.size(), 1u);
   // The next operation must be START for the job.
   EXPECT_EQ(it->first, kArcVmAdbdJobName);
 }

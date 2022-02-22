@@ -275,7 +275,8 @@ TEST(BrowserDataMigratorUtilTest, HasEnoughDiskSpace) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const int64_t free_disk_space =
       base::SysInfo::AmountOfFreeDiskSpace(temp_dir.GetPath());
-  ASSERT_GE(free_disk_space, kBuffer);
+  ASSERT_GE(free_disk_space, 0);
+  ASSERT_GE(static_cast<uint64_t>(free_disk_space), kBuffer);
 
   // If total copy size is the same as `free_disk_space` then the disk is
   // exactly `kBuffer` bytes short of free space.
@@ -287,13 +288,13 @@ TEST(BrowserDataMigratorUtilTest, HasEnoughDiskSpace) {
   // has just enough space for the migration.
   EXPECT_EQ(ExtraBytesRequiredToBeFreed(free_disk_space - kBuffer,
                                         temp_dir.GetPath()),
-            0);
+            0u);
   EXPECT_TRUE(
       HasEnoughDiskSpace(free_disk_space - kBuffer, temp_dir.GetPath()));
 
   // If there is nothing to be copied then as long as `free_disk_space >=
   // kBuffer`, there should be no extra space required to be freed.
-  EXPECT_EQ(ExtraBytesRequiredToBeFreed(0, temp_dir.GetPath()), 0);
+  EXPECT_EQ(ExtraBytesRequiredToBeFreed(0, temp_dir.GetPath()), 0u);
   EXPECT_TRUE(HasEnoughDiskSpace(0, temp_dir.GetPath()));
 }
 

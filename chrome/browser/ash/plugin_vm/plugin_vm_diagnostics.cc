@@ -37,7 +37,7 @@ using DiagnosticsCallback =
 std::string CapitalizedBoardName() {
   const std::string uppercase = base::SysInfo::HardwareModelName();
 
-  CHECK_GE(uppercase.size(), 1);
+  CHECK_GE(uppercase.size(), 1u);
   base::StringPiece uppercase_first_char(uppercase.c_str(), 1);
   base::StringPiece uppercase_remaining(uppercase.c_str() + 1,
                                         uppercase.length() - 1);

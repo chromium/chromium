@@ -109,7 +109,7 @@ TextVector KeyboardShortcutResult::CreateTextVectorFromTemplateString(
 
   auto pieces = base::SplitString(template_string, u"$", base::KEEP_WHITESPACE,
                                   base::SPLIT_WANT_NONEMPTY);
-  DCHECK_GT(pieces.size(), 0);
+  DCHECK_GT(pieces.size(), 0u);
   TextVector text_vector;
 
   const bool starts_with_placeholder = template_string[0] == '$';

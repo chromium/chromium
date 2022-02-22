@@ -60,7 +60,8 @@ std::vector<double> FtrlOptimizer::Score(
 
   const auto& weights = proto_->weights();
   DCHECK_EQ(expert_scores.size(), num_experts);
-  DCHECK_EQ(weights.size(), num_experts);
+  DCHECK_GE(weights.size(), 0);
+  DCHECK_EQ(static_cast<size_t>(weights.size()), num_experts);
   for (size_t i = 0; i < num_experts; ++i) {
     const auto& scores_i = expert_scores[i];
     DCHECK_EQ(scores_i.size(), num_items);
