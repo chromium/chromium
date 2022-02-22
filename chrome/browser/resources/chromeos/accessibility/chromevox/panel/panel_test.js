@@ -100,7 +100,8 @@ TEST_F('ChromeVoxPanelTest', 'ActivateMenu', function() {
   });
 });
 
-TEST_F('ChromeVoxPanelTest', 'LinkMenu', function() {
+// TODO(https://crbug.com/1299765): Re-enable once flaky timeouts are fixed.
+TEST_F('ChromeVoxPanelTest', 'DISABLED_LinkMenu', function() {
   this.runWithLoadedTree(this.linksDoc, async function(root) {
     CommandHandler.onCommand('showLinksList');
     await this.waitForMenu('role_link');
