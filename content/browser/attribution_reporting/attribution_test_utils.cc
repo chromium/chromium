@@ -498,9 +498,9 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
   return tie(a) == tie(b);
 }
 
-bool operator==(const HistogramContribution& a,
-                const HistogramContribution& b) {
-  const auto tie = [](const HistogramContribution& contribution) {
+bool operator==(const AggregatableHistogramContribution& a,
+                const AggregatableHistogramContribution& b) {
+  const auto tie = [](const AggregatableHistogramContribution& contribution) {
     return std::make_tuple(contribution.bucket(), contribution.value());
   };
   return tie(a) == tie(b);
@@ -719,8 +719,9 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   return out << "]}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const HistogramContribution& contribution) {
+std::ostream& operator<<(
+    std::ostream& out,
+    const AggregatableHistogramContribution& contribution) {
   return out << "{bucket=" << contribution.bucket()
              << ",value=" << contribution.value() << "}";
 }
@@ -734,7 +735,7 @@ std::ostream& operator<<(
       << ",contributions=[";
 
   const char* separator = "";
-  for (const HistogramContribution& contribution :
+  for (const AggregatableHistogramContribution& contribution :
        aggregatable_attribution.contributions) {
     out << separator << contribution;
     separator = ", ";

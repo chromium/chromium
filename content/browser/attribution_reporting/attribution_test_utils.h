@@ -39,7 +39,7 @@
 
 namespace content {
 
-class HistogramContribution;
+class AggregatableHistogramContribution;
 class AttributionTrigger;
 
 struct AggregatableAttribution;
@@ -475,7 +475,8 @@ bool operator==(const StorableSource& a, const StorableSource& b);
 
 bool operator==(const StoredSource& a, const StoredSource& b);
 
-bool operator==(const HistogramContribution& a, const HistogramContribution& b);
+bool operator==(const AggregatableHistogramContribution& a,
+                const AggregatableHistogramContribution& b);
 
 bool operator==(const AggregatableAttribution& a, AggregatableAttribution& b);
 
@@ -518,7 +519,7 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& source);
 std::ostream& operator<<(std::ostream& out, const StoredSource& source);
 
 std::ostream& operator<<(std::ostream& out,
-                         const HistogramContribution& contribution);
+                         const AggregatableHistogramContribution& contribution);
 
 std::ostream& operator<<(
     std::ostream& out,

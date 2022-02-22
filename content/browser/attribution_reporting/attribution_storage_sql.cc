@@ -2077,7 +2077,7 @@ bool AttributionStorageSql::AddAggregatableAttributionForTesting(
   sql::Statement insert_contributions_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertContributionsSql));
 
-  for (const HistogramContribution& contribution :
+  for (const AggregatableHistogramContribution& contribution :
        aggregatable_attribution.contributions) {
     insert_contributions_statement.Reset(/*clear_bound_vars=*/true);
     insert_contributions_statement.BindInt64(0, *aggregation_id);
@@ -2300,8 +2300,8 @@ AttributionStorageSql::GetAggregatableContributionReportsForTesting(
                         /*debug_key=*/absl::nullopt),
         report_time, std::move(external_report_id),
         AttributionReport::AggregatableContributionData(
-            HistogramContribution(std::move(bucket),
-                                  static_cast<uint32_t>(value)),
+            AggregatableHistogramContribution(std::move(bucket),
+                                              static_cast<uint32_t>(value)),
             report_id));
     report.set_failed_send_attempts(failed_send_attempts);
 

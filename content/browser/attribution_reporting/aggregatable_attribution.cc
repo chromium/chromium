@@ -13,7 +13,9 @@
 
 namespace content {
 
-HistogramContribution::HistogramContribution(std::string bucket, uint32_t value)
+AggregatableHistogramContribution::AggregatableHistogramContribution(
+    std::string bucket,
+    uint32_t value)
     : bucket_(std::move(bucket)), value_(value) {
   DCHECK(!bucket_.empty());
 }
@@ -22,7 +24,7 @@ AggregatableAttribution::AggregatableAttribution(
     StoredSource::Id source_id,
     base::Time trigger_time,
     base::Time report_time,
-    std::vector<HistogramContribution> contributions)
+    std::vector<AggregatableHistogramContribution> contributions)
     : source_id(source_id),
       trigger_time(trigger_time),
       report_time(report_time),
@@ -44,7 +46,7 @@ AggregatableAttribution::~AggregatableAttribution() = default;
 
 base::CheckedNumeric<int64_t> AggregatableAttribution::BudgetRequired() const {
   base::CheckedNumeric<int64_t> budget_required = 0;
-  for (const HistogramContribution& contribution : contributions) {
+  for (const AggregatableHistogramContribution& contribution : contributions) {
     budget_required += contribution.value();
   }
   return budget_required;

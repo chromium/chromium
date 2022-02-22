@@ -1826,15 +1826,15 @@ TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
       StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
       /*report_time=*/base::Time::Now() + base::Hours(2),
       /*contributions=*/
-      {HistogramContribution(/*bucket=*/"1", /*value=*/2),
-       HistogramContribution(/*bucket=*/"3", /*value=*/4)});
+      {AggregatableHistogramContribution(/*bucket=*/"1", /*value=*/2),
+       AggregatableHistogramContribution(/*bucket=*/"3", /*value=*/4)});
 
   EXPECT_TRUE(storage()->AddAggregatableAttributionForTesting(
       aggregatable_attribution));
 
-  const HistogramContribution& contribution_1 =
+  const AggregatableHistogramContribution& contribution_1 =
       aggregatable_attribution.contributions[0];
-  const HistogramContribution& contribution_2 =
+  const AggregatableHistogramContribution& contribution_2 =
       aggregatable_attribution.contributions[1];
 
   auto stored_source = SourceBuilder().BuildStored();
@@ -1849,8 +1849,8 @@ TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
                               /*debug_key=*/absl::nullopt),
               aggregatable_attribution.report_time, DefaultExternalReportID(),
               AttributionReport::AggregatableContributionData(
-                  HistogramContribution(contribution_1.bucket(),
-                                        contribution_1.value()),
+                  AggregatableHistogramContribution(contribution_1.bucket(),
+                                                    contribution_1.value()),
                   AttributionReport::AggregatableContributionData::Id(1))),
           AttributionReport(
               AttributionInfo(stored_source,
@@ -1858,8 +1858,8 @@ TEST_F(AttributionStorageTest, StoreAggregatableAttribution) {
                               /*debug_key*/ absl::nullopt),
               aggregatable_attribution.report_time, DefaultExternalReportID(),
               AttributionReport::AggregatableContributionData(
-                  HistogramContribution(contribution_2.bucket(),
-                                        contribution_2.value()),
+                  AggregatableHistogramContribution(contribution_2.bucket(),
+                                                    contribution_2.value()),
                   AttributionReport::AggregatableContributionData::Id(2)))));
 }
 
@@ -1876,36 +1876,36 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
           StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {HistogramContribution(/*bucket=*/"a", /*value=*/17)})));
+          {AggregatableHistogramContribution(/*bucket=*/"a", /*value=*/17)})));
 
   EXPECT_TRUE(
       storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
           StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {HistogramContribution(/*bucket=*/"a", /*value=*/2),
-           HistogramContribution(/*bucket=*/"b", /*value=*/5)})));
+          {AggregatableHistogramContribution(/*bucket=*/"a", /*value=*/2),
+           AggregatableHistogramContribution(/*bucket=*/"b", /*value=*/5)})));
 
   EXPECT_FALSE(
       storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
           StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {HistogramContribution(/*bucket=*/"a", /*value=*/10)})));
+          {AggregatableHistogramContribution(/*bucket=*/"a", /*value=*/10)})));
 
   EXPECT_TRUE(
       storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
           StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {HistogramContribution(/*bucket=*/"a", /*value=*/9)})));
+          {AggregatableHistogramContribution(/*bucket=*/"a", /*value=*/9)})));
 
   EXPECT_FALSE(
       storage()->AddAggregatableAttributionForTesting(AggregatableAttribution(
           StoredSource::Id(1), /*trigger_time=*/base::Time::Now(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {HistogramContribution(/*bucket=*/"a", /*value=*/1)})));
+          {AggregatableHistogramContribution(/*bucket=*/"a", /*value=*/1)})));
 
   // A different source should have capacity.
   EXPECT_TRUE(
@@ -1913,7 +1913,7 @@ TEST_F(AttributionStorageTest, MaxAggregatableBudgetPerSource) {
           StoredSource::Id(2), /*trigger_time=*/base::Time::Now(),
           /*report_time=*/base::Time::Now() + base::Hours(2),
           /*contributions=*/
-          {HistogramContribution(/*bucket=*/"a", /*value=*/9)})));
+          {AggregatableHistogramContribution(/*bucket=*/"a", /*value=*/9)})));
 }
 
 TEST_F(AttributionStorageTest,

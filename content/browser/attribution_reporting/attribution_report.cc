@@ -46,7 +46,7 @@ AttributionReport::EventLevelData& AttributionReport::EventLevelData::operator=(
 AttributionReport::EventLevelData::~EventLevelData() = default;
 
 AttributionReport::AggregatableContributionData::AggregatableContributionData(
-    HistogramContribution contribution,
+    AggregatableHistogramContribution contribution,
     absl::optional<Id> id)
     : contribution(std::move(contribution)), id(id) {}
 

@@ -66,7 +66,7 @@ class CONTENT_EXPORT AttributionReport {
   struct CONTENT_EXPORT AggregatableContributionData {
     using Id = base::StrongAlias<AggregatableContributionData, int64_t>;
 
-    AggregatableContributionData(HistogramContribution contribution,
+    AggregatableContributionData(AggregatableHistogramContribution contribution,
                                  absl::optional<Id> id);
     AggregatableContributionData(const AggregatableContributionData& other);
     AggregatableContributionData& operator=(
@@ -77,7 +77,7 @@ class CONTENT_EXPORT AttributionReport {
     ~AggregatableContributionData();
 
     // The historgram contribution.
-    HistogramContribution contribution;
+    AggregatableHistogramContribution contribution;
 
     // Id assigned by storage to uniquely identify an aggregatable contribution.
     // If null, an ID has not been assigned yet.

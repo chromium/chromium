@@ -18,15 +18,18 @@
 
 namespace content {
 
-class CONTENT_EXPORT HistogramContribution {
+class CONTENT_EXPORT AggregatableHistogramContribution {
  public:
-  HistogramContribution(std::string bucket, uint32_t value);
-  HistogramContribution(const HistogramContribution& other) = default;
-  HistogramContribution& operator=(const HistogramContribution& other) =
+  AggregatableHistogramContribution(std::string bucket, uint32_t value);
+  AggregatableHistogramContribution(
+      const AggregatableHistogramContribution& other) = default;
+  AggregatableHistogramContribution& operator=(
+      const AggregatableHistogramContribution& other) = default;
+  AggregatableHistogramContribution(AggregatableHistogramContribution&& other) =
       default;
-  HistogramContribution(HistogramContribution&& other) = default;
-  HistogramContribution& operator=(HistogramContribution&& other) = default;
-  ~HistogramContribution() = default;
+  AggregatableHistogramContribution& operator=(
+      AggregatableHistogramContribution&& other) = default;
+  ~AggregatableHistogramContribution() = default;
 
   const std::string& bucket() const { return bucket_; }
 
@@ -42,10 +45,11 @@ struct CONTENT_EXPORT AggregatableAttribution {
  public:
   using Id = base::StrongAlias<AggregatableAttribution, int64_t>;
 
-  AggregatableAttribution(StoredSource::Id source_id,
-                          base::Time trigger_time,
-                          base::Time report_time,
-                          std::vector<HistogramContribution> contributions);
+  AggregatableAttribution(
+      StoredSource::Id source_id,
+      base::Time trigger_time,
+      base::Time report_time,
+      std::vector<AggregatableHistogramContribution> contributions);
   AggregatableAttribution(const AggregatableAttribution& other);
   AggregatableAttribution& operator=(const AggregatableAttribution& other);
   AggregatableAttribution(AggregatableAttribution&& other);
@@ -59,7 +63,7 @@ struct CONTENT_EXPORT AggregatableAttribution {
   base::Time trigger_time;
   // Might be null if not set yet.
   base::Time report_time;
-  std::vector<HistogramContribution> contributions;
+  std::vector<AggregatableHistogramContribution> contributions;
 };
 
 }  // namespace content
