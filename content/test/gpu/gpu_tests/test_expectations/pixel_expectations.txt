@@ -295,14 +295,17 @@ crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
 
 # WebGPU pixel tests crash on multiple mac fyi  bots.
 crbug.com/1213170 [ mac asan intel-0x3e9b ] Pixel_WebGPUImport* [ Skip ]
+crbug.com/1213170 [ mac asan intel-0xd26 ] Pixel_WebGPUImport* [ Skip ]
 crbug.com/1213170 [ mac amd-0x679e ] Pixel_WebGPUImport* [ Skip ]
 crbug.com/1213170 [ mac nvidia-0xfe9 ] Pixel_WebGPUImport* [ Skip ]
 
 crbug.com/1213170 [ mac asan intel-0x3e9b ] Pixel_WebGPUCanvas* [ Skip ]
+crbug.com/1213170 [ mac asan intel-0xd26 ] Pixel_WebGPUCanvas2DDrawImage [ Skip ]
 crbug.com/1213170 [ mac nvidia-0xfe9 ] Pixel_WebGPUCanvas* [ Skip ]
 
 crbug.com/1213170 [ mac asan ] Pixel_WebGPUWebGL* [ Skip ]
 crbug.com/1213170 [ mac asan intel-0x3e9b ] Pixel_WebGPUCopyExternalImage* [ Skip ]
+crbug.com/1213170 [ mac asan intel-0xd26 ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 crbug.com/1213170 [ mac nvidia-0xfe9 ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 
 # WebGPU pixel tests fail on Linux+SkiaRenderer+Vulkan
