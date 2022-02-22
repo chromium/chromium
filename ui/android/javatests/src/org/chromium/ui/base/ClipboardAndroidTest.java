@@ -120,7 +120,7 @@ public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
         ClipData clipData =
                 ClipData.newPlainText("text", spanString.subSequence(0, spanString.length() - 1));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Clipboard.getInstance().setPrimaryClipNoException(clipData);
+            ((ClipboardImpl) Clipboard.getInstance()).setPrimaryClipNoException(clipData);
             Assert.assertTrue(Clipboard.getInstance().hasHTMLOrStyledText());
         });
     }

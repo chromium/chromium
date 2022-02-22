@@ -50,6 +50,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardAndroidTestSupport;
+import org.chromium.ui.base.ClipboardImpl;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -134,8 +135,8 @@ public final class EditUrlSuggestionUnitTest {
             mUserDataHost = new UserDataHost();
             mUserDataHost.setUserData(SadTab.class, mSadTab);
 
-            mOldClipboardManager =
-                    Clipboard.getInstance().overrideClipboardManagerForTesting(mClipboardManager);
+            mOldClipboardManager = ((ClipboardImpl) Clipboard.getInstance())
+                                           .overrideClipboardManagerForTesting(mClipboardManager);
 
             mModel = new PropertyModel.Builder(SuggestionViewProperties.ALL_KEYS).build();
 
@@ -166,7 +167,8 @@ public final class EditUrlSuggestionUnitTest {
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Clipboard.getInstance().overrideClipboardManagerForTesting(mOldClipboardManager);
+            ((ClipboardImpl) Clipboard.getInstance())
+                    .overrideClipboardManagerForTesting(mOldClipboardManager);
         });
         ClipboardAndroidTestSupport.cleanup();
     }
