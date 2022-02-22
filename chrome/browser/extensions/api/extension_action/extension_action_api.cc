@@ -120,19 +120,20 @@ bool OpenPopupInBrowser(Browser& browser,
                         const Extension& extension,
                         std::string* error,
                         ShowPopupCallback callback) {
-  if (!browser.window()->IsToolbarVisible()) {
+  if (!browser.SupportsWindowFeature(Browser::FEATURE_TOOLBAR) ||
+      !browser.window()->IsToolbarVisible()) {
     *error = "Browser window has no toolbar.";
     return false;
   }
 
-  if (!ExtensionActionAPI::Get(browser.profile())
-           ->ShowExtensionActionPopupForAPICall(&extension, &browser,
-                                                std::move(callback))) {
-    // NOTE(devlin): We could have the callback pass more information here about
-    // why the popup didn't open (e.g., another active popup vs popup closing
-    // before display, as may happen if the window closes), but it's not clear
-    // whether that would be significantly helpful to developers and it may
-    // leak other information about the user's browser.
+  ExtensionsContainer* extensions_container =
+      browser.window()->GetExtensionsContainer();
+  // The ExtensionsContainer could be null if, e.g., this is a popup window with
+  // no toolbar.
+  // TODO(devlin): Is that still possible, given the checks above?
+  if (!extensions_container ||
+      !extensions_container->ShowToolbarActionPopupForAPICall(
+          extension.id(), std::move(callback))) {
     *error = kFailedToOpenPopupGenericError;
     return false;
   }
@@ -188,29 +189,6 @@ void ExtensionActionAPI::AddObserver(Observer* observer) {
 
 void ExtensionActionAPI::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-bool ExtensionActionAPI::ShowExtensionActionPopupForAPICall(
-    const Extension* extension,
-    Browser* browser,
-    ShowPopupCallback callback) {
-  ExtensionAction* extension_action =
-      ExtensionActionManager::Get(browser_context_)->GetExtensionAction(
-          *extension);
-  if (!extension_action)
-    return false;
-
-  // Don't support showing action popups in a popup window.
-  if (!browser->SupportsWindowFeature(Browser::FEATURE_TOOLBAR))
-    return false;
-
-  ExtensionsContainer* extensions_container =
-      browser->window()->GetExtensionsContainer();
-  // The ExtensionsContainer could be null if, e.g., this is a popup window with
-  // no toolbar.
-  return extensions_container &&
-         extensions_container->ShowToolbarActionPopupForAPICall(
-             extension->id(), std::move(callback));
 }
 
 void ExtensionActionAPI::NotifyChange(ExtensionAction* extension_action,
@@ -714,6 +692,11 @@ void ActionOpenPopupFunction::OnShowPopupComplete(ExtensionHost* popup_host) {
     DCHECK(popup_host->document_element_available());
     response_value = NoArguments();
   } else {
+    // NOTE(devlin): We could have the callback pass more information here about
+    // why the popup didn't open (e.g., another active popup vs popup closing
+    // before display, as may happen if the window closes), but it's not clear
+    // whether that would be significantly helpful to developers and it may
+    // leak other information about the user's browser.
     response_value = Error(kFailedToOpenPopupGenericError);
   }
 

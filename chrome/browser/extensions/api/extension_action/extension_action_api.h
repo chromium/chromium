@@ -27,8 +27,6 @@ class BrowserContext;
 class WebContents;
 }
 
-class Browser;
-
 namespace extensions {
 class ExtensionHost;
 class ExtensionPrefs;
@@ -72,12 +70,6 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
   // Add or remove observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // Opens the popup for the given |extension| in the given |browser|'s window,
-  // invoking |callback| when complete.
-  bool ShowExtensionActionPopupForAPICall(const Extension* extension,
-                                          Browser* browser,
-                                          ShowPopupCallback callback);
 
   // Notifies that there has been a change in the given |extension_action|.
   void NotifyChange(ExtensionAction* extension_action,

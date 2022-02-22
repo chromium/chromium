@@ -6,6 +6,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/result_catcher.h"
@@ -27,9 +28,7 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveTest, ShowPageActionPopup) {
   ASSERT_TRUE(browser()->window()->IsActive());
 
   ResultCatcher catcher;
-  ASSERT_TRUE(ExtensionActionAPI::Get(browser()->profile())
-                  ->ShowExtensionActionPopupForAPICall(extension, browser(),
-                                                       ShowPopupCallback()));
+  ExtensionActionTestHelper::Create(browser())->Press(extension->id());
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
