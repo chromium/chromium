@@ -3674,11 +3674,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "incognito-clear-browsing-data-dialog-for-desktop",
-    "owners": [ "roagarwal", "chrome-incognito@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "incognito-downloads-warning",
     "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
     "expiry_milestone": 105

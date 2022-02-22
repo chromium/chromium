@@ -451,12 +451,7 @@ void ChromeAutocompleteProviderClient::OpenIncognitoClearBrowsingDataDialog() {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (browser) {
-    if (!base::FeatureList::IsEnabled(
-            features::kIncognitoClearBrowsingDataDialogForDesktop)) {
-      chrome::ShowClearBrowsingDataDialog(browser);
-    } else {
-      chrome::ShowIncognitoClearBrowsingDataDialog(browser);
-    }
+    chrome::ShowIncognitoClearBrowsingDataDialog(browser);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

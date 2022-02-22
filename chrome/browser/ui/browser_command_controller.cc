@@ -763,9 +763,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowPasswordManager(browser_);
       break;
     case IDC_CLEAR_BROWSING_DATA: {
-      if (profile()->IsIncognitoProfile() &&
-          base::FeatureList::IsEnabled(
-              features::kIncognitoClearBrowsingDataDialogForDesktop)) {
+      if (profile()->IsIncognitoProfile()) {
         ShowIncognitoClearBrowsingDataDialog(browser_);
       } else {
         ShowClearBrowsingDataDialog(browser_);
@@ -1088,10 +1086,7 @@ void BrowserCommandController::InitCommandState() {
        !profile()->IsIncognitoProfile()));
 
   if (profile()->IsIncognitoProfile()) {
-    command_updater_.UpdateCommandEnabled(
-        IDC_CLEAR_BROWSING_DATA,
-        base::FeatureList::IsEnabled(
-            features::kIncognitoClearBrowsingDataDialogForDesktop));
+    command_updater_.UpdateCommandEnabled(IDC_CLEAR_BROWSING_DATA, true);
   } else {
     command_updater_.UpdateCommandEnabled(
         IDC_CLEAR_BROWSING_DATA,

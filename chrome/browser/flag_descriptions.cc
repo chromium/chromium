@@ -1555,12 +1555,6 @@ const char kIncognitoReauthenticationForAndroidDescription[] =
     "When enabled, a setting appears in Settings > Privacy and Security, to "
     "enable reauthentication for accessing your existing Incognito tabs.";
 
-const char kIncognitoClearBrowsingDataDialogForDesktopName[] =
-    "Enable clear browsing data dialog in Incognito.";
-const char kIncognitoClearBrowsingDataDialogForDesktopDescription[] =
-    "When enabled, clear browsing data option would be enabled in Incognito "
-    "which upon clicking would show a dialog to close all Incognito windows.";
-
 const char kUpdateHistoryEntryPointsInIncognitoName[] =
     "Update history entry points in Incognito.";
 const char kUpdateHistoryEntryPointsInIncognitoDescription[] =

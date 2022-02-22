@@ -1840,9 +1840,7 @@ bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
 
   bool show_clear_browsing_data_dialog =
       url == GURL(chrome::kChromeUISettingsURL)
-                 .Resolve(chrome::kClearBrowserDataSubPage) &&
-      base::FeatureList::IsEnabled(
-          features::kIncognitoClearBrowsingDataDialogForDesktop);
+                 .Resolve(chrome::kClearBrowserDataSubPage);
 
   bool show_history_disclaimer_dialog =
       url == GURL(chrome::kChromeUIHistoryURL) &&
@@ -1856,8 +1854,6 @@ void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
                                                       const GURL& url) {
   if (url == GURL(chrome::kChromeUISettingsURL)
                  .Resolve(chrome::kClearBrowserDataSubPage)) {
-    DCHECK(base::FeatureList::IsEnabled(
-        features::kIncognitoClearBrowsingDataDialogForDesktop));
     ShowIncognitoClearBrowsingDataDialog(browser);
   } else if (url == GURL(chrome::kChromeUIHistoryURL)) {
     DCHECK(base::FeatureList::IsEnabled(

@@ -545,31 +545,7 @@ TEST_F(BrowserCommandControllerTest,
   EXPECT_FALSE(command_updater->IsCommandEnabled(IDC_SAVE_PAGE));
 }
 
-class IncognitoClearBrowsingDataCommandTest
-    : public BrowserWithTestWindowTest,
-      public testing::WithParamInterface<bool> {
- public:
-  IncognitoClearBrowsingDataCommandTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kIncognitoClearBrowsingDataDialogForDesktop);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kIncognitoClearBrowsingDataDialogForDesktop);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    IncognitoClearBrowsingDataCommandTestWithFeatureFlag,
-    IncognitoClearBrowsingDataCommandTest,
-    /*should_show_cbd_option_in_incognito=*/testing::Bool());
-
-TEST_P(IncognitoClearBrowsingDataCommandTest,
-       testClearBrowsingDataOptionStateInIncognito) {
+TEST_F(BrowserWithTestWindowTest, ClearBrowsingDataIsEnabledInIncognito) {
   // Set up a profile with an off the record profile.
   std::unique_ptr<TestingProfile> profile1 = TestingProfile::Builder().Build();
   Profile* incognito_profile =
@@ -582,7 +558,5 @@ TEST_P(IncognitoClearBrowsingDataCommandTest,
       CreateBrowserWithTestWindowForParams(profile_params);
 
   chrome::BrowserCommandController command_controller(incognito_browser.get());
-  bool should_show_cbd_option_in_incognito = GetParam();
-  EXPECT_EQ(should_show_cbd_option_in_incognito,
-            command_controller.IsCommandEnabled(IDC_CLEAR_BROWSING_DATA));
+  EXPECT_EQ(true, command_controller.IsCommandEnabled(IDC_CLEAR_BROWSING_DATA));
 }
