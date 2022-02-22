@@ -20,6 +20,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+class MockPrivacySandboxDelegate : public PrivacySandboxSettings::Delegate {
+ public:
+  void SetupDefaultResponse() {
+    ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([]() {
+      return false;
+    });
+  }
+  MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
+};
+
 class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
  public:
   PrivacySandboxSettingsTest()
@@ -40,12 +50,16 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
   }
 
   void SetUp() override {
+    auto mock_delegate = std::make_unique<MockPrivacySandboxDelegate>();
+    mock_delegate_ = mock_delegate.get();
+
     InitializePrefsBeforeStart();
     InitializeFeaturesBeforeStart();
+    InitializeDelegateBeforeStart();
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        host_content_settings_map(), cookie_settings_, prefs(),
-        IsIncognitoProfile());
+        std::move(mock_delegate), host_content_settings_map(), cookie_settings_,
+        prefs(), IsIncognitoProfile());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -60,8 +74,13 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
     }
   }
 
+  virtual void InitializeDelegateBeforeStart() {
+    mock_delegate()->SetupDefaultResponse();
+  }
+
   virtual bool IsIncognitoProfile() { return false; }
 
+  MockPrivacySandboxDelegate* mock_delegate() { return mock_delegate_; }
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   HostContentSettingsMap* host_content_settings_map() {
     return host_content_settings_map_.get();
@@ -69,11 +88,9 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
   content_settings::CookieSettings* cookie_settings() {
     return cookie_settings_.get();
   }
-
   PrivacySandboxSettings* privacy_sandbox_settings() {
     return privacy_sandbox_settings_.get();
   }
-
   content::BrowserTaskEnvironment* task_environment() {
     return &browser_task_environment_;
   }
@@ -81,6 +98,7 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<MockPrivacySandboxDelegate> mock_delegate_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
@@ -780,4 +798,38 @@ TEST_P(PrivacySandboxSettingsIncognitoTest, DisabledInIncognito) {
 
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsIncognitoTestInstance,
                          PrivacySandboxSettingsIncognitoTest,
+                         testing::Bool());
+
+class PrivacySandboxSettingsMockDelegateTest
+    : public PrivacySandboxSettingsTest {
+ public:
+  void InitializeDelegateBeforeStart() override {
+    // Do not set default handlers so each call must be mocked.
+  }
+};
+
+TEST_P(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
+  // When the sandbox is otherwise enabled, the delegate returning true for
+  // IsPrivacySandboxRestricted() should disable the sandbox.
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
+  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(true));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // The delegate should not override a disabled sandbox.
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(false);
+  EXPECT_CALL(*mock_delegate(), IsPrivacySandboxRestricted())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsMockDelegateTestInstance,
+                         PrivacySandboxSettingsMockDelegateTest,
                          testing::Bool());

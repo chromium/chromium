@@ -41,7 +41,19 @@ class PrivacySandboxSettings : public KeyedService {
     virtual void OnTrustTokenBlockingChanged(bool blocked) {}
   };
 
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Allows the delegate to restirct access to the Privacy Sandbox. When
+    // the Privacy Sandbox is restricted, all API access is disabled. This is
+    // consulted on every access check, and it is acceptable for this to change
+    // return value over the life of the service.
+    virtual bool IsPrivacySandboxRestricted() = 0;
+  };
+
   PrivacySandboxSettings(
+      std::unique_ptr<Delegate> delegate,
       HostContentSettingsMap* host_content_settings_map,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service,
@@ -159,6 +171,7 @@ class PrivacySandboxSettings : public KeyedService {
  private:
   base::ObserverList<Observer>::Unchecked observers_;
 
+  std::unique_ptr<Delegate> delegate_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;

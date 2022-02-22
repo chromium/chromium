@@ -76,11 +76,13 @@ std::vector<ContentSettingsPattern> FledgeBlockToContentSettingsPatterns(
 }  // namespace
 
 PrivacySandboxSettings::PrivacySandboxSettings(
+    std::unique_ptr<Delegate> delegate,
     HostContentSettingsMap* host_content_settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
     bool incognito_profile)
-    : host_content_settings_map_(host_content_settings_map),
+    : delegate_(std::move(delegate)),
+      host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
       incognito_profile_(incognito_profile) {
@@ -290,6 +292,10 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
 }
 
 bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
+  // If the delegate is restricting access, the Privacy Sandbox is disabled.
+  if (delegate_->IsPrivacySandboxRestricted())
+    return false;
+
   // Which preference is consulted is dependent on whether release 3 of the
   // settings is available.
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
@@ -297,6 +303,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
     if (incognito_profile_)
       return false;
 
+    // For Privacy Sadnbox Settings 3, APIs may be restricted via the delegate.
     // The V2 pref was introduced with the 3rd Privacy Sandbox release.
     return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
   }
