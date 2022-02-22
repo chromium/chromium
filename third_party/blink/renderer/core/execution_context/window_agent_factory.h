@@ -52,7 +52,8 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   WindowAgent* GetAgentForOrigin(bool has_potential_universal_access_privilege,
                                  v8::Isolate* isolate,
                                  const SecurityOrigin* origin,
-                                 bool is_origin_agent_cluster);
+                                 bool is_origin_agent_cluster,
+                                 bool origin_agent_cluster_left_as_default);
 
   void Trace(Visitor*) const;
 

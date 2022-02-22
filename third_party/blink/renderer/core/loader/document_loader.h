@@ -634,6 +634,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   bool navigation_scroll_allowed_ = true;
 
   bool origin_agent_cluster_ = false;
+  bool origin_agent_cluster_left_as_default_ = true;
 
   // Whether this load request is from a cross-site navigation that swaps
   // BrowsingContextGroup.

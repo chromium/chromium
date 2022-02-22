@@ -1091,5 +1091,13 @@
     "bases": [],
     "args": ["--enable-features=PictureInPictureV2",
              "--enable-blink-features=PictureInPictureV2"]
+  },
+  {
+    "prefix": "origin-agent-cluster-default",
+    "bases": [ "wpt_internal/origin-agent-cluster-default" ],
+    "args": [
+      "--enable-features=OriginAgentClusterDefaultWarning",
+      "--disable-auto-wpt-origin-isolation"
+    ]
   }
 ]

@@ -82,26 +82,40 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
   // For example, a page with no Origin-Agent-Cluster header, that uses a data:
   // URL to create an iframe, would have an origin-keyed data: URL Agent,
   // plus a site-keyed outer page Agent, both in the same process.
-  bool IsOriginKeyed();
+  bool IsOriginKeyed() const;
 
   // TODO(domenic,wjmaclean): once logical cross-origin isolation is implemented
   // and unified with origin-keyed agent clusters, then this should no longer be
   // necessary; we can just check IsOriginKeyed().
-  bool IsExplicitlyOriginKeyed() const { return is_explicitly_origin_keyed_; }
+  //
+  // IsOriginKeyedForInheritance() returns true if either this agent represents
+  // an origin-keyed agent cluster, as determined by the navigation request,
+  // or if ForceOriginKeyedBecauseOfInheritance has been called by the loader.
+  bool IsOriginKeyedForInheritance() const;
 
-  // This sets whether the agent cluster is explicitly requested to be
-  // origin-keyed via the Origin-Agent-Cluster header. It can also be
-  // implicitly origin-keyed if it is in a cross-origin isolated agent cluster.
-  void SetIsExplicitlyOriginKeyed(bool value);
+  // If no Origin-Agent-Cluster http header was set, the decision for site- or
+  // origin-keyed agent clusters is based on the default behaviour, which is
+  // scheduled to change in the M106 release. If this clustering is based on
+  // the default handling, IsOriginOrSiteKeyedBasedOnDefault is true.
+  bool IsOriginOrSiteKeyedBasedOnDefault() const;
+
+  // Force usage of origin-keyed agent cluster. For use by the document loader,
+  // for cases where the origin-keyed should be inherited from parent documents.
+  void ForceOriginKeyedBecauseOfInheritance();
+
+ protected:
+  Agent(v8::Isolate* isolate,
+        const base::UnguessableToken& cluster_id,
+        std::unique_ptr<v8::MicrotaskQueue> microtask_queue,
+        bool is_origin_agent_cluster,
+        bool origin_agent_cluster_left_as_default);
 
  private:
   scoped_refptr<scheduler::EventLoop> event_loop_;
   const base::UnguessableToken cluster_id_;
-  bool is_explicitly_origin_keyed_ = false;
-
-#if DCHECK_IS_ON()
-  bool is_explicitly_origin_keyed_set_ = false;
-#endif
+  bool origin_keyed_because_of_inheritance_;
+  const bool is_origin_agent_cluster_;
+  const bool origin_agent_cluster_left_as_default_;
 };
 
 }  // namespace blink

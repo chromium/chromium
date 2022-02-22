@@ -2033,3 +2033,10 @@ external/wpt/app-history/per-entry-events/dispose-after-bfcache.html [ Skip ]
 virtual/bfcache-same-site/external/wpt/app-history/app-history-entry/entries-after-bfcache.html [ Pass ]
 virtual/bfcache-same-site/external/wpt/app-history/app-history-entry/entries-after-bfcache-in-iframe.html [ Pass ]
 virtual/bfcache-same-site/external/wpt/app-history/per-entry-events/dispose-after-bfcache.html [ Pass ]
+
+# Tests in the virtual/origin-agent-cluster-default suite. These tests
+# require isolation behaviour as in the actual browser and are therefore
+# incompatible with auto-wpt-origin-isolation. Thus they are only run in their
+# virtual test suite.
+wpt_internal/origin-agent-cluster-default/* [ Skip ]
+virtual/origin-agent-cluster-default/wpt_internal/origin-agent-cluster-default/* [ Pass ]

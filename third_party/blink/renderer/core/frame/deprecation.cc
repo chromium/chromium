@@ -722,6 +722,16 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
               MilestoneString(kM106).Ascii().c_str(),
               "https://developer.chrome.com/blog/immutable-document-domain/"));
 
+    case WebFeature::kCrossOriginAccessBasedOnDocumentDomain:
+      return DeprecationInfo::WithDetails(
+          "WebFeature::kCrossOriginAccessBasedOnDocumentDomain", kM106,
+          String::Format(
+              "Relaxing the same-origin policy by setting \"document.domain\" "
+              "is deprecated, and will be disabled by default in %s. This "
+              "deprecation warning is for a cross-origin access that was "
+              "enabled by setting document.domain.",
+              MilestoneString(kM106).Ascii().c_str()));
+
     // Features that aren't deprecated don't have a deprecation message.
     default:
       return DeprecationInfo::WithDetails("NotDeprecated", kUnknown, String());

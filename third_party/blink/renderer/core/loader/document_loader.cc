@@ -310,6 +310,7 @@ struct SameSizeAsDocumentLoader
   const Vector<String> force_enabled_origin_trials;
   bool navigation_scroll_allowed;
   bool origin_agent_cluster;
+  bool origin_agent_cluster_left_as_default;
   bool is_cross_site_cross_browsing_context_group;
   WebVector<WebHistoryItem> app_history_back_entries;
   WebVector<WebHistoryItem> app_history_forward_entries;
@@ -409,6 +410,8 @@ DocumentLoader::DocumentLoader(
       force_enabled_origin_trials_(
           CopyForceEnabledOriginTrials(params_->force_enabled_origin_trials)),
       origin_agent_cluster_(params_->origin_agent_cluster),
+      origin_agent_cluster_left_as_default_(
+          params_->origin_agent_cluster_left_as_default),
       is_cross_site_cross_browsing_context_group_(
           params_->is_cross_site_cross_browsing_context_group),
       app_history_back_entries_(params_->app_history_back_entries),
@@ -517,6 +520,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->storage_key = window->GetStorageKey();
   params->sandbox_flags = sandbox_flags_;
   params->origin_agent_cluster = origin_agent_cluster_;
+  params->origin_agent_cluster_left_as_default =
+      origin_agent_cluster_left_as_default_;
   params->grant_load_local_resources = grant_load_local_resources_;
   // Various attributes that relates to the last "real" navigation that is known
   // by the browser must be carried over.
@@ -2037,14 +2042,17 @@ bool HasPotentialUniversalAccessPrivilege(LocalFrame* frame) {
 
 }  // namespace
 
-WindowAgent* GetWindowAgentForOrigin(LocalFrame* frame,
-                                     SecurityOrigin* origin,
-                                     bool is_origin_agent_cluster) {
+WindowAgent* GetWindowAgentForOrigin(
+    LocalFrame* frame,
+    SecurityOrigin* origin,
+    bool is_origin_agent_cluster,
+    bool origin_agent_cluster_left_as_default) {
   // TODO(keishi): Also check if AllowUniversalAccessFromFileURLs might
   // dynamically change.
   return frame->window_agent_factory().GetAgentForOrigin(
       HasPotentialUniversalAccessPrivilege(frame),
-      V8PerIsolateData::MainThreadIsolate(), origin, is_origin_agent_cluster);
+      V8PerIsolateData::MainThreadIsolate(), origin, is_origin_agent_cluster,
+      origin_agent_cluster_left_as_default);
 }
 
 // Inheriting cases use their agent's "is origin-keyed" value, which is set
@@ -2124,7 +2132,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // and COOP/COEP, a single inheritance pathway would make sense; this work
     // is being tracked in https://crbug.com/1183935.
     origin_agent_cluster =
-        owner_document->domWindow()->GetAgent()->IsExplicitlyOriginKeyed();
+        owner_document->domWindow()->GetAgent()->IsOriginKeyedForInheritance();
   }
 
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
@@ -2137,8 +2145,9 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
                             anonymous_)) {
-    auto* agent = GetWindowAgentForOrigin(frame_.Get(), security_origin.get(),
-                                          origin_agent_cluster);
+    auto* agent = GetWindowAgentForOrigin(
+        frame_.Get(), security_origin.get(), origin_agent_cluster,
+        origin_agent_cluster_left_as_default_);
     frame_->SetDOMWindow(
         MakeGarbageCollected<LocalDOMWindow>(*frame_, agent, anonymous_));
 
@@ -2154,11 +2163,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
     // TODO(https://crbug.com/1111897): This call is likely to happen happen
     // multiple times per agent, since navigations can happen multiple times per
-    // agent. This is subpar. Currently a DCHECK guards against it happening
-    // multiple times *with different values*, but ideally we would use a better
-    // architecture.
-    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_)) {
-      agent->SetIsExplicitlyOriginKeyed(origin_agent_cluster);
+    // agent. This is subpar.
+    if (!ShouldInheritExplicitOriginKeying(Url(), commit_reason_) &&
+        origin_agent_cluster) {
+      agent->ForceOriginKeyedBecauseOfInheritance();
     }
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
@@ -2168,7 +2176,8 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
       // Agent, which was a universal access Agent.
       // This happens only in android webview.
       frame_->DomWindow()->ResetWindowAgent(GetWindowAgentForOrigin(
-          frame_.Get(), security_origin.get(), origin_agent_cluster));
+          frame_.Get(), security_origin.get(), origin_agent_cluster,
+          origin_agent_cluster_left_as_default_));
     }
     frame_->DomWindow()->ClearForReuse();
 

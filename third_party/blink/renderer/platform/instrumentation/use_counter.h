@@ -42,6 +42,12 @@ class UseCounter : public GarbageCollectedMixin {
   static void Count(UseCounter& use_counter, mojom::WebFeature feature) {
     use_counter.CountUse(feature);
   }
+  static void CountDeprecation(UseCounter* use_counter,
+                               mojom::WebFeature feature) {
+    if (use_counter) {
+      use_counter->CountDeprecation(feature);
+    }
+  }
 
   UseCounter() = default;
   UseCounter(const UseCounter&) = delete;

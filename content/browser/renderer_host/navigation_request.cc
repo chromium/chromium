@@ -1124,6 +1124,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           frame_tree_node->pending_frame_policy(),
           /*force_enabled_origin_trials=*/std::vector<std::string>(),
           /*origin_agent_cluster=*/false,
+          /*origin_agent_cluster_left_as_default=*/true,
           /*enabled_client_hints=*/
           std::vector<network::mojom::WebClientHintsType>(),
           /*is_cross_browsing_instance=*/false,
@@ -1247,6 +1248,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           frame_tree_node->pending_frame_policy(),
           std::vector<std::string>() /* force_enabled_origin_trials */,
           false /* origin_agent_cluster */,
+          true /* origin_agent_cluster_left_as_default */,
           std::vector<
               network::mojom::WebClientHintsType>() /* enabled_client_hints */,
           false /* is_cross_browsing_instance */, nullptr /* old_page_info */,
@@ -2795,6 +2797,14 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
           OriginAgentClusterEndResult::kRequestedAndOriginKeyed ||
       origin_agent_cluster_end_result_ ==
           OriginAgentClusterEndResult::kNotRequestedButOriginKeyed;
+
+  // The origin_agent_cluster_left_as_default navigation commit parameter
+  // communicates to the renderer whether the origin_agent_cluster decision
+  // (recorded just above) has been made based on an absent Origin-Agent-Cluster
+  // http header.
+  commit_params_->origin_agent_cluster_left_as_default =
+      response_head_->parsed_headers->origin_agent_cluster ==
+      network::mojom::OriginAgentClusterValue::kAbsent;
 }
 
 void NavigationRequest::ProcessOriginAgentClusterEndResult() {

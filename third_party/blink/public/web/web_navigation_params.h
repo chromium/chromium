@@ -413,6 +413,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // https://html.spec.whatwg.org/C/#is-origin-keyed
   bool origin_agent_cluster = false;
 
+  // Whether the decision to use origin-keyed or site-keyed agent clustering
+  // (which itself is recorded in origin_agent_cluster, above) has been
+  // made based on absent Origin-Agent-Cluster http header.
+  bool origin_agent_cluster_left_as_default = true;
+
   // List of client hints enabled for top-level frame. These still need to be
   // checked against permissions policy before use.
   WebVector<network::mojom::WebClientHintsType> enabled_client_hints;

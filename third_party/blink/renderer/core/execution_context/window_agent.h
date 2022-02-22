@@ -31,6 +31,16 @@ class WindowAgent final : public Agent {
   //     (this should only happen in tests).
   explicit WindowAgent(v8::Isolate* isolate);
 
+  // Normally you don't want to call this constructor; instead, use
+  // WindowAgentFactory::GetAgentForOrigin() so you can get the agent shared
+  // on the same-site frames. (Same as the constructor above.)
+  //
+  // This constructor calls WindowAgent::WindowAgent(isolate), but also stores
+  // the state of origin agent clustering.
+  WindowAgent(v8::Isolate* isolate,
+              bool is_origin_agent_cluster,
+              bool origin_agent_cluster_left_as_default);
+
   ~WindowAgent() override;
 
   void Trace(Visitor*) const override;

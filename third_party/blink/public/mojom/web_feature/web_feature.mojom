@@ -3489,6 +3489,7 @@ enum WebFeature {
   kWrongBaselineOfMultiLineButtonWithNonSpace = 4168,
   kBlobStoreAccessAcrossTopLevelSite = 4169,
   kBlobStoreAccessUnknownTopLevelSite = 4170,
+  kCrossOriginAccessBasedOnDocumentDomain = 4171,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

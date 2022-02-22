@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
@@ -145,6 +146,18 @@ bool CanAccessWindowInternal(
         accessing_window->document(),
         can_access ? WebFeature::kDocumentDomainEnabledCrossOriginAccess
                    : WebFeature::kDocumentDomainBlockedCrossOriginAccess);
+    // Handle deprecation warnings for OriginAgentCluster default:
+    // If the new default is not (yet) enabled, but warnings are, and
+    // access gets allowed for domain-setting reasons (reasons checked in
+    // the if clause above).
+    if (accessing_window->GetAgent()->IsOriginOrSiteKeyedBasedOnDefault() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kOriginAgentClusterDefaultWarning) &&
+        can_access) {
+      UseCounter::CountDeprecation(
+          accessing_window->document(),
+          WebFeature::kCrossOriginAccessBasedOnDocumentDomain);
+    }
   }
   if (!can_access) {
     // Ensure that if we got a cluster mismatch that it was due to a permissions
@@ -156,8 +169,8 @@ bool CanAccessWindowInternal(
       // being explicitly origin keyed.
       SECURITY_CHECK(
           !IsSameWindowAgentFactory(accessing_window, local_target_window) ||
-          (accessing_window->GetAgent()->IsExplicitlyOriginKeyed() !=
-           local_target_window->GetAgent()->IsExplicitlyOriginKeyed()) ||
+          (accessing_window->GetAgent()->IsOriginKeyedForInheritance() !=
+           local_target_window->GetAgent()->IsOriginKeyedForInheritance()) ||
           (WebTestSupport::IsRunningWebTest() &&
            local_target_window->GetFrame()->PagePopupOwner()));
 

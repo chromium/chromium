@@ -1061,6 +1061,8 @@ void FillMiscNavigationParams(
   }
 
   navigation_params->origin_agent_cluster = commit_params.origin_agent_cluster;
+  navigation_params->origin_agent_cluster_left_as_default =
+      commit_params.origin_agent_cluster_left_as_default;
 
   navigation_params->anonymous = commit_params.anonymous;
   navigation_params->enabled_client_hints.reserve(

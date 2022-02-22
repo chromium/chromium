@@ -37297,6 +37297,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4168" label="WrongBaselineOfMultiLineButtonWithNonSpace"/>
   <int value="4169" label="BlobStoreAccessAcrossTopLevelSite"/>
   <int value="4170" label="BlobStoreAccessUnknownTopLevelSite"/>
+  <int value="4171" label="CrossOriginAccessBasedOnDocumentDomain"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

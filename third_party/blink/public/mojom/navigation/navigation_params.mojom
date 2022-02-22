@@ -437,6 +437,11 @@ struct CommitNavigationParams {
   // https://html.spec.whatwg.org/C/#origin-keyed-agent-clusters
   bool origin_agent_cluster = false;
 
+  // Whether the decision to use origin-keyed or site-keyed agent clustering
+  // (which itself is recorded in origin_agent_cluster, above) has been
+  // made based on absent Origin-Agent-Cluster http header.
+  bool origin_agent_cluster_left_as_default = true;
+
   // Client-hints enabled; this is based on the top-level frame and should be
   // further narrowed down by permissions policy.
   array<network.mojom.WebClientHintsType> enabled_client_hints;
