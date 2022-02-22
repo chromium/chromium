@@ -55,7 +55,6 @@ import android.webkit.WebViewRenderProcessClient;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -968,7 +967,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.M)
     public void insertVisualStateCallback(
             final long requestId, final VisualStateCallback callback) {
         recordWebViewApiCall(ApiCall.INSERT_VISUAL_STATE_CALLBACK);
@@ -1624,7 +1622,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     }
 
     @Override
-    @RequiresApi(Build.VERSION_CODES.M)
     public void postMessageToMainFrame(final WebMessage message, final Uri targetOrigin) {
         recordWebViewApiCall(ApiCall.POST_MESSAGE_TO_MAIN_FRAME);
         mSharedWebViewChromium.postMessageToMainFrame(message.getData(), targetOrigin.toString(),
@@ -1881,7 +1878,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         return mAwContents.getAccessibilityNodeProvider();
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @Override
     public void onProvideVirtualStructure(final ViewStructure structure) {
         mFactory.startYourEngines(false);

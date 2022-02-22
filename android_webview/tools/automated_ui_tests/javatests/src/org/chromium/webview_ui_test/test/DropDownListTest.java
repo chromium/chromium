@@ -18,7 +18,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 
 import android.graphics.Point;
-import android.os.Build;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.webkit.WebView;
@@ -32,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.webview_ui_test.R;
 import org.chromium.webview_ui_test.WebViewUiTestActivity;
 import org.chromium.webview_ui_test.test.util.Actions;
@@ -44,7 +43,7 @@ import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
  * Tests for WebView ActionMode.
  */
 // TODO(aluo): Re-enable once crbug.com/947352 is fixed.
-@DisableIf.Build(message = "crbug.com/947352", sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP)
+@DisabledTest(message = "https://crbug.com/947352")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class DropDownListTest {
     @Rule
