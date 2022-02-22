@@ -150,6 +150,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   const raw_ptr<HintSessionFactory> hint_session_factory_;
   base::flat_set<base::PlatformThreadId> current_thread_ids_;
   std::unique_ptr<HintSession> hint_session_;
+  bool create_session_for_current_thread_ids_failed_ = false;
 
   // If set, we are dynamically adjusting our frame deadline, by the percentile
   // of historic draw times to base the adjustment on.
