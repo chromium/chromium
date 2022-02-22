@@ -491,6 +491,24 @@ TEST_F(TaskModuleServiceTest, NoCachingParam) {
   EXPECT_EQ("", async_param);
 }
 
+// Verifies experiment group param is added if requested.
+TEST_F(TaskModuleServiceTest, ExperimentGroupParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpShoppingTasksModule,
+        {{ntp_features::kNtpShoppingTasksModuleExperimentGroupParam, "foo"}}}},
+      {});
+
+  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kShopping,
+                           TaskModuleService::TaskModuleCallback());
+  base::RunLoop().RunUntilIdle();
+
+  GURL url = test_url_loader_factory_.pending_requests()->at(0).request.url;
+  std::string async_param;
+  net::GetValueForKeyInQuery(url, "async", &async_param);
+  EXPECT_EQ("experiment_group:foo", async_param);
+}
+
 // Verifies that no data request is logged if load comes from cache.
 TEST_F(TaskModuleServiceTest, NoLogIfCached) {
   network::URLLoaderCompletionStatus status;

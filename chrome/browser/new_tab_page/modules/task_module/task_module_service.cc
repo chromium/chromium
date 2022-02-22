@@ -71,6 +71,16 @@ const char* GetCacheMaxAgeSParam(
   }
 }
 
+const char* GetExperimentGroupParam(
+    task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return ntp_features::kNtpRecipeTasksModuleExperimentGroupParam;
+    case task_module::mojom::TaskModuleType::kShopping:
+      return ntp_features::kNtpShoppingTasksModuleExperimentGroupParam;
+  }
+}
+
 GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
                const std::string& application_locale) {
   GURL google_base_url = google_util::CommandLineGoogleBaseURL();
@@ -90,6 +100,12 @@ GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
   if (cache_max_age_s > 0) {
     url = google_util::AppendToAsyncQueryParam(
         url, "cache_max_age_s", base::NumberToString(cache_max_age_s));
+  }
+  auto experiment_group = base::GetFieldTrialParamValueByFeature(
+      GetFeature(task_module_type), GetExperimentGroupParam(task_module_type));
+  if (!experiment_group.empty()) {
+    url = google_util::AppendToAsyncQueryParam(url, "experiment_group",
+                                               experiment_group);
   }
   return url;
 }
