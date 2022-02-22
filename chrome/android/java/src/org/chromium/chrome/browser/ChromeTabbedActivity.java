@@ -2087,24 +2087,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             getCurrentTabModel().closeTab(currentTab, true, false, true);
             RecordUserAction.record("MobileTabClosed");
         } else if (id == R.id.close_all_tabs_menu_id) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG)) {
-                CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
-                        () -> getTabModelSelector().closeAllTabs(), /*isIncognito=*/false);
-            } else {
-                // Close both incognito and normal tabs.
-                getTabModelSelector().closeAllTabs();
-            }
+            // Close both incognito and normal tabs.
+            CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
+                    () -> getTabModelSelector().closeAllTabs(), /*isIncognito=*/false);
             RecordUserAction.record("MobileMenuCloseAllTabs");
         } else if (id == R.id.close_all_incognito_tabs_menu_id) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG)) {
-                CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
-                        ()
-                                -> getTabModelSelector().getModel(true).closeAllTabs(),
-                        /*isIncognito=*/true);
-            } else {
-                // Close only incognito tabs
-                getTabModelSelector().getModel(true).closeAllTabs();
-            }
+            // Close only incognito tabs
+            CloseAllTabsDialog.show(this, getModalDialogManagerSupplier(),
+                    ()
+                            -> getTabModelSelector().getModel(true).closeAllTabs(),
+                    /*isIncognito=*/true);
             RecordUserAction.record("MobileMenuCloseAllIncognitoTabs");
         } else if (id == R.id.focus_url_bar) {
             boolean isUrlBarVisible = !mOverviewModeController.overviewVisible()

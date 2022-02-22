@@ -25,9 +25,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -132,6 +134,7 @@ public class CloseAllTabsDialogUnitTest {
     @Test
     @SmallTest
     public void testDialog() {
+        enableFeature(true);
         final boolean isIncognito = false;
         CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
                 () -> { mRunnableCalled = true; }, isIncognito);
@@ -145,6 +148,7 @@ public class CloseAllTabsDialogUnitTest {
     @Test
     @SmallTest
     public void testDismissButton() {
+        enableFeature(true);
         final boolean isIncognito = true;
         CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
                 () -> { mRunnableCalled = true; }, isIncognito);
@@ -158,6 +162,7 @@ public class CloseAllTabsDialogUnitTest {
     @Test
     @SmallTest
     public void testDismissNoButton() {
+        enableFeature(true);
         final boolean isIncognito = false;
         CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
                 () -> { mRunnableCalled = true; }, isIncognito);
@@ -167,5 +172,23 @@ public class CloseAllTabsDialogUnitTest {
                 DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
         assertFalse(mRunnableCalled);
         verifyDismissed(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testDialogInactive() {
+        enableFeature(false);
+        final boolean isIncognito = false;
+        CloseAllTabsDialog.show(mContext, this::getModalDialogManager,
+                () -> { mRunnableCalled = true; }, isIncognito);
+
+        assertNull(mMockModalDialogManager.getDialogModel());
+        assertTrue(mRunnableCalled);
+    }
+
+    private void enableFeature(boolean enable) {
+        FeatureList.TestValues values = new FeatureList.TestValues();
+        values.addFeatureFlagOverride(ChromeFeatureList.CLOSE_ALL_TABS_MODAL_DIALOG, enable);
+        FeatureList.setTestValues(values);
     }
 }
