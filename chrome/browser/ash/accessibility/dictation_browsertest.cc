@@ -479,6 +479,15 @@ IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictation) {
   EXPECT_EQ(kFinalSpeechResult16, input_context_handler_->last_commit_text());
 }
 
+// TODO(https://crbug.com/1299805): Re-enable in debug mode once flaky timeouts
+// are fixed.
+#if defined(NDEBUG)
+#define MAYBE_UserEndsDictationWhenChromeVoxEnabled \
+  UserEndsDictationWhenChromeVoxEnabled
+#else
+#define MAYBE_UserEndsDictationWhenChromeVoxEnabled \
+  DISABLED_UserEndsDictationWhenChromeVoxEnabled
+#endif
 IN_PROC_BROWSER_TEST_P(DictationTest, UserEndsDictationWhenChromeVoxEnabled) {
   AccessibilityManager* manager = GetManager();
 
