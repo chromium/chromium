@@ -114,11 +114,20 @@ struct CodepointSpan {
   uint32 end_offset@1;
 };
 
+// Represent a language detection result.
+[Stable]
+struct TextLanguage {
+  // The BCP-47 language code like "en", "fr", "zh" etc.
+  string locale;
+  // The confidence score of the language detected (range: 0~1).
+  float confidence;
+};
+
 // Contains the input and parameters used to suggest selection.
 // This is a combination of the inputs of the `SuggestSelection` function
 // of tclib. (See "tclib/annotator/annotate.h").
-[Stable]
-struct TextSuggestSelectionRequest {
+[Stable, RenamedFrom="chromeos.machine_learning.mojom.TextSuggestSelectionRequest"]
+struct REMOVED_TextSuggestSelectionRequest {
   // The candidate text.
   string text@0;
   // Where the user selects.
@@ -131,15 +140,6 @@ struct TextSuggestSelectionRequest {
   AnnotationUsecase annotation_usecase@4 = ANNOTATION_USECASE_SMART;
 };
 
-// Represent a language detection result.
-[Stable]
-struct TextLanguage {
-  // The BCP-47 language code like "en", "fr", "zh" etc.
-  string locale;
-  // The confidence score of the language detected (range: 0~1).
-  float confidence;
-};
-
 // Used to annotate entities within text strings.
 // Next ordinal: 3
 [Stable]
@@ -148,17 +148,13 @@ interface TextClassifier {
   // entities.
   Annotate@0(TextAnnotationRequest request) =>
       (array<TextAnnotation> outputs);
-  // Suggest a selection based on user's selection.
-  // If the inputs are invalid (e.g., user selection's start point is behind
-  // the end point), the input user selection will be returned.
-  // NOTE: The selection indices are passed in and returned in terms of
-  // UTF8 codepoints (not bytes).
-  SuggestSelection@1(TextSuggestSelectionRequest request) =>
-      (CodepointSpan outputs);
   // Identify the languages the text is possibly written in.
   // The returned results are sorted according to the confidence score, from the
   // highest to the lowest.
   // The maximum number of results returned is determined internally.
   // Will return an empty array if the language can not be determined.
   FindLanguages@2(string text) => (array<TextLanguage> outputs);
+  // Deprecated `SuggestSelection`
+  REMOVED_1@1(REMOVED_TextSuggestSelectionRequest request) =>
+      (CodepointSpan outputs);
 };

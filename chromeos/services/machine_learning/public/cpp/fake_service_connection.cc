@@ -305,13 +305,6 @@ void FakeServiceConnectionImpl::HandleAnnotateCall(
   std::move(callback).Run(std::move(annotations));
 }
 
-void FakeServiceConnectionImpl::HandleSuggestSelectionCall(
-    mojom::TextSuggestSelectionRequestPtr request,
-    mojom::TextClassifier::SuggestSelectionCallback callback) {
-  auto selection = suggest_selection_result_.Clone();
-  std::move(callback).Run(std::move(selection));
-}
-
 void FakeServiceConnectionImpl::HandleFindLanguagesCall(
     std::string request,
     mojom::TextClassifier::FindLanguagesCallback callback) {
@@ -328,11 +321,6 @@ void FakeServiceConnectionImpl::SetOutputAnnotation(
   for (auto const& annotate : annotations) {
     annotate_result_.emplace_back(annotate.Clone());
   }
-}
-
-void FakeServiceConnectionImpl::SetOutputSelection(
-    const mojom::CodepointSpanPtr& selection) {
-  suggest_selection_result_ = selection.Clone();
 }
 
 void FakeServiceConnectionImpl::SetOutputLanguages(
@@ -385,20 +373,18 @@ void FakeServiceConnectionImpl::Annotate(
                               std::move(callback)));
 }
 
-void FakeServiceConnectionImpl::SuggestSelection(
-    mojom::TextSuggestSelectionRequestPtr request,
-    mojom::TextClassifier::SuggestSelectionCallback callback) {
-  ScheduleCall(base::BindOnce(
-      &FakeServiceConnectionImpl::HandleSuggestSelectionCall,
-      base::Unretained(this), std::move(request), std::move(callback)));
-}
-
 void FakeServiceConnectionImpl::FindLanguages(
     const std::string& text,
     mojom::TextClassifier::FindLanguagesCallback callback) {
   ScheduleCall(
       base::BindOnce(&FakeServiceConnectionImpl::HandleFindLanguagesCall,
                      base::Unretained(this), text, std::move(callback)));
+}
+
+void FakeServiceConnectionImpl::REMOVED_1(
+    mojom::REMOVED_TextSuggestSelectionRequestPtr request,
+    mojom::TextClassifier::REMOVED_1Callback callback) {
+  NOTIMPLEMENTED();
 }
 
 void FakeServiceConnectionImpl::Recognize(
