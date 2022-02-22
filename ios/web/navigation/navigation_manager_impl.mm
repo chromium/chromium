@@ -427,36 +427,6 @@ void NavigationManagerImpl::SetPendingItemIndex(int index) {
   pending_item_index_ = index;
 }
 
-void NavigationManagerImpl::ApplyWKWebViewForwardHistoryClobberWorkaround() {
-  DCHECK(web_view_cache_.IsAttachedToWebView());
-
-  int current_item_index = web_view_cache_.GetCurrentItemIndex();
-  DCHECK_GE(current_item_index, 0);
-
-  int item_count = GetItemCount();
-  DCHECK_LT(current_item_index, item_count);
-
-  std::vector<std::unique_ptr<NavigationItem>> forward_items(
-      item_count - current_item_index);
-
-  for (size_t i = 0; i < forward_items.size(); i++) {
-    const NavigationItemImpl* item =
-        GetNavigationItemImplAtIndex(i + current_item_index);
-    forward_items[i] = std::make_unique<NavigationItemImpl>(*item);
-  }
-
-  DiscardNonCommittedItems();
-
-  // Replace forward history in WKWebView with |forward_items|.
-  // |last_committed_item_index| is set to 0 so that when this partial session
-  // restoration finishes, the current item is the first item in
-  // |forward_itmes|, which is also the current item before the session
-  // restoration, but because of crbug.com/887497 is expected to be clobbered
-  // with the wrong web content. The partial restore effectively forces a fresh
-  // load of this item while maintaining forward history.
-  UnsafeRestore(/*last_committed_item_index_=*/0, std::move(forward_items));
-}
-
 void NavigationManagerImpl::SetWKWebViewNextPendingUrlNotSerializable(
     const GURL& url) {
   next_pending_url_should_skip_serialization_ = url;

@@ -202,43 +202,6 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 
   GURL requestURL = net::GURLWithNSURL(action.request.URL);
 
-  // Workaround for a WKWebView bug where the web content loaded using
-  // |-loadHTMLString:baseURL| clobbers the next WKBackForwardListItem. It works
-  // by detecting back/forward navigation to a clobbered item and replacing the
-  // clobberred item and its forward history using a partial session restore in
-  // the current web view. There is an unfortunate caveat: if the workaround is
-  // triggered in a back navigation to a clobbered item, the restored forward
-  // session is inserted after the current item before the back navigation, so
-  // it doesn't fully replaces the "bad" history, even though user will be
-  // navigated to the expected URL and may not notice the issue until they
-  // review the back history by long pressing on "Back" button.
-  //
-  // TODO(crbug.com/887497): remove this workaround once iOS ships the fix.
-  if (action.targetFrame.mainFrame) {
-    GURL webViewURL = net::GURLWithNSURL(webView.URL);
-    GURL currentWKItemURL =
-        net::GURLWithNSURL(webView.backForwardList.currentItem.URL);
-    GURL backItemURL = net::GURLWithNSURL(webView.backForwardList.backItem.URL);
-    web::NavigationContextImpl* context =
-        [self contextForPendingMainFrameNavigationWithURL:webViewURL];
-    bool willClobberHistory =
-        action.navigationType == WKNavigationTypeBackForward &&
-        requestURL == backItemURL && webView.backForwardList.currentItem &&
-        requestURL != currentWKItemURL && currentWKItemURL == webViewURL &&
-        context &&
-        (context->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK);
-
-    UMA_HISTOGRAM_BOOLEAN("IOS.WKWebViewClobberedHistory", willClobberHistory);
-
-    if (willClobberHistory && base::FeatureList::IsEnabled(
-                                  web::features::kHistoryClobberWorkaround)) {
-      decisionHandler(WKNavigationActionPolicyCancel);
-      self.navigationManagerImpl
-          ->ApplyWKWebViewForwardHistoryClobberWorkaround();
-      return;
-    }
-  }
-
   // The page will not be changed until this navigation is committed, so the
   // retrieved state will be pending until |didCommitNavigation| callback.
   [self createPendingNavigationInfoFromNavigationAction:action];

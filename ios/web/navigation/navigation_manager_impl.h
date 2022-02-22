@@ -185,9 +185,6 @@ class NavigationManagerImpl : public NavigationManager {
   // new navigation.
   void SetPendingItemIndex(int index);
 
-  // Applies the workaround for crbug.com/887497.
-  void ApplyWKWebViewForwardHistoryClobberWorkaround();
-
   // Set ShouldSkipSerialization to true for the next pending item, provided it
   // matches |url|.  Applies the workaround for crbug.com/997182
   void SetWKWebViewNextPendingUrlNotSerializable(const GURL& url);
