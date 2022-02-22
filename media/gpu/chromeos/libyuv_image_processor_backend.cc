@@ -6,7 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/video_frame_mapper.h"
@@ -346,7 +348,14 @@ void LibYUVImageProcessorBackend::Process(
       return;
     }
   }
-  int res = DoConversion(input_frame.get(), mapped_frame.get());
+
+  int res;
+  {
+    TRACE_EVENT0("media", "LibYUVImageProcessorBackend::Process");
+    SCOPED_UMA_HISTOGRAM_TIMER("LibYUVImageProcessorBackend::Process");
+    res = DoConversion(input_frame.get(), mapped_frame.get());
+  }
+
   if (res != 0) {
     VLOGF(1) << "libyuv returns non-zero code: " << res;
     error_cb_.Run();
