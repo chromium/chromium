@@ -2751,4 +2751,35 @@ TEST_F(DesksTemplatesTest, ClickOrTapToExitGridView) {
   }
 }
 
+// Tests that if there is an existing visible on all desks window, after
+// launching a new desk the window is part of the new desk and is in an overview
+// item.
+TEST_F(DesksTemplatesTest, VisibleOnAllDesksWindowShownProperly) {
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(1, controller->GetNumberOfDesks());
+
+  AddEntry(base::GUID::GenerateRandomV4(), "template_1", base::Time::Now());
+
+  // Create a window which is shown on all desks.
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window.get());
+  widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(window.get()));
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Click on the template item to launch the new template.
+  DesksTemplatesItemView* template_item =
+      GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
+  DCHECK(template_item);
+  ClickOnView(template_item);
+  WaitForDesksTemplatesUI();
+  ASSERT_EQ(2, controller->GetNumberOfDesks());
+
+  // The visible on all desks window belongs to the active desk, and has an
+  // associated overview item.
+  EXPECT_TRUE(controller->BelongsToActiveDesk(window.get()));
+  EXPECT_TRUE(GetOverviewItemForWindow(window.get()));
+}
+
 }  // namespace ash

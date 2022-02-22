@@ -660,7 +660,9 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (!base::Contains(active_desk_->windows(), window))
     return false;
 
-  if (desks_util::IsWindowVisibleOnAllWorkspaces(window)) {
+  const bool visible_on_all_desks =
+      desks_util::IsWindowVisibleOnAllWorkspaces(window);
+  if (visible_on_all_desks) {
     if (source == DesksMoveWindowFromActiveDeskSource::kDragAndDrop) {
       // Since a visible on all desks window is on all desks, prevent users from
       // moving them manually in overview.
@@ -686,12 +688,17 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   if (in_overview) {
     auto* overview_session = overview_controller->overview_session();
     auto* item = overview_session->GetOverviewItemForWindow(window);
-    // |item| can be null when we are switching users and we're moving visible
-    // on all desks windows, so skip if |item| is null.
+    // `item` can be null when we are switching users.
     if (item) {
       item->OnMovingWindowToAnotherDesk();
       // The item no longer needs to be in the overview grid.
       overview_session->RemoveItem(item);
+    } else if (visible_on_all_desks) {
+      // Create an item for a visible on all desks window if it doesn't have one
+      // already. This can happen when launching a template. When we are in the
+      // templates grid, there are no items.
+      overview_session->AppendItem(window,
+                                   /*reposition=*/true, /*animate=*/true);
     }
   }
 
@@ -1211,6 +1218,15 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
   DCHECK(old_active);
   old_active->Deactivate(update_window_activation);
   active_desk_->Activate(update_window_activation);
+
+  // Content is normally updated in
+  // `MoveVisibleOnAllDesksWindowsFromActiveDeskTo`. However, the layers for a
+  // visible on all desk window aren't mirrored for the active desk. When
+  // `MoveVisibleOnAllDesksWindowFromActiveDeskTo` is called, `desk` is not
+  // considered the active desk, so we force an update here to apply the changes
+  // for a visible on all desk window.
+  if (!visible_on_all_desks_windows_.empty())
+    old_active->NotifyContentChanged();
 
   MaybeUpdateShelfItems(old_active->windows(), active_desk_->windows());
 
