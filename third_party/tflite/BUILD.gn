@@ -400,7 +400,7 @@ static_library("tflite") {
     "src/tensorflow/lite/allocation.cc",
     "src/tensorflow/lite/arena_planner.cc",
     "src/tensorflow/lite/builtin_ops.h",
-    "src/tensorflow/lite/c/common.c",
+    "src/tensorflow/lite/c/common.cc",
     "src/tensorflow/lite/c/common.h",
     "src/tensorflow/lite/core/api/error_reporter.cc",
     "src/tensorflow/lite/core/api/error_reporter.h",
