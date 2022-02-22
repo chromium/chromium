@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_content_browser_client.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
@@ -1389,11 +1390,10 @@ TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsageNoObserver) {
 class MetricsWebContentsObserverBackForwardCacheTest
     : public MetricsWebContentsObserverTest,
       public content::WebContentsDelegate {
-  class CreatedPageLoadTrackerObserver
-      : public MetricsWebContentsObserver::TestingObserver {
+  class CreatedPageLoadTrackerObserver : public MetricsLifecycleObserver {
    public:
     explicit CreatedPageLoadTrackerObserver(content::WebContents* web_contents)
-        : MetricsWebContentsObserver::TestingObserver(web_contents) {}
+        : MetricsLifecycleObserver(web_contents) {}
 
     int tracker_committed_count() const { return tracker_committed_count_; }
 
@@ -1424,7 +1424,7 @@ class MetricsWebContentsObserverBackForwardCacheTest
     MetricsWebContentsObserverTest::SetUp();
     created_page_load_tracker_observer_ =
         std::make_unique<CreatedPageLoadTrackerObserver>(web_contents());
-    observer()->AddTestingObserver(created_page_load_tracker_observer_.get());
+    observer()->AddLifecycleObserver(created_page_load_tracker_observer_.get());
     web_contents()->SetDelegate(this);
   }
 

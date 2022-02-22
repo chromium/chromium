@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
@@ -19,7 +19,7 @@
 namespace page_load_metrics {
 
 class PageLoadMetricsTestWaiter
-    : public page_load_metrics::MetricsWebContentsObserver::TestingObserver {
+    : public page_load_metrics::MetricsLifecycleObserver {
  public:
   // A bitvector to express which timing fields to match on.
   enum class TimingField : int {

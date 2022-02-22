@@ -27,7 +27,7 @@ bool IsSubset(const Set& set1, const Set& set2) {
 
 PageLoadMetricsTestWaiter::PageLoadMetricsTestWaiter(
     content::WebContents* web_contents)
-    : TestingObserver(web_contents) {}
+    : MetricsLifecycleObserver(web_contents) {}
 
 PageLoadMetricsTestWaiter::~PageLoadMetricsTestWaiter() {
   CHECK(did_add_observer_);

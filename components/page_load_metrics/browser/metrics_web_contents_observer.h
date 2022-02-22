@@ -42,6 +42,7 @@ struct MemoryUpdate;
 class PageLoadMetricsEmbedderInterface;
 class PageLoadMetricsMemoryTracker;
 class PageLoadTracker;
+class MetricsLifecycleObserver;
 
 // MetricsWebContentsObserver tracks page loads and loading metrics
 // related data based on IPC messages received from a
@@ -53,43 +54,6 @@ class MetricsWebContentsObserver
       public base::SupportsWeakPtr<MetricsWebContentsObserver>,
       public mojom::PageLoadMetrics {
  public:
-  // TestingObserver allows tests to observe MetricsWebContentsObserver state
-  // changes. Tests may use TestingObserver to wait until certain state changes,
-  // such as the arrivial of PageLoadTiming messages from the render process,
-  // have been observed.
-  class TestingObserver {
-   public:
-    explicit TestingObserver(content::WebContents* web_contents);
-
-    TestingObserver(const TestingObserver&) = delete;
-    TestingObserver& operator=(const TestingObserver&) = delete;
-
-    virtual ~TestingObserver();
-
-    void OnGoingAway();
-
-    // Some PageLoadTiming messages will race with the navigation
-    // commit. OnTrackerCreated() allows tests to manipulate the tracker very
-    // early (eg, to add observers) to handle those cases.
-    virtual void OnTrackerCreated(PageLoadTracker* tracker) {}
-
-    // In cases where LoadTimingInfo is not needed, waiting until commit is
-    // fine.
-    virtual void OnCommit(PageLoadTracker* tracker) {}
-
-    // This is called both for prerender activation and restoration from
-    // the back/forward cache.
-    virtual void OnActivate(PageLoadTracker* tracker) {}
-
-    // Returns the observer delegate for the committed load associated with
-    // the MetricsWebContentsObserver, or null if the observer has gone away
-    // (via MetricsWebContentsObserver::WebContentsDestroyed).
-    const PageLoadMetricsObserverDelegate* GetDelegateForCommittedLoad();
-
-   private:
-    raw_ptr<page_load_metrics::MetricsWebContentsObserver> observer_;
-  };
-
   // Record a set of WebFeatures directly from the browser process. This
   // should only be used for features that were detected browser-side; features
   // sources from the renderer should go via MetricsRenderFrameObserver.
@@ -172,12 +136,13 @@ class MetricsWebContentsObserver
   // notification.
   void FlushMetricsOnAppEnterBackground();
 
-  // Returns the delegate for the current committed load, required for testing.
+  // Returns the delegate for the current committed load, required for
+  // |MetricsLifecycleObserver|s.
   const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad();
 
-  // Register / unregister TestingObservers. Should only be called from tests.
-  void AddTestingObserver(TestingObserver* observer);
-  void RemoveTestingObserver(TestingObserver* observer);
+  // Register / unregister |MetricsLifecycleObserver|s.
+  void AddLifecycleObserver(MetricsLifecycleObserver* observer);
+  void RemoveLifecycleObserver(MetricsLifecycleObserver* observer);
 
   // public only for testing
   void OnTimingUpdated(
@@ -210,6 +175,7 @@ class MetricsWebContentsObserver
 
  private:
   friend class content::WebContentsUserData<MetricsWebContentsObserver>;
+  friend class MetricsLifeCycleObserver;
 
   // Gets the PageLoadTracker associated with |rfh| if it exists, or nullptr
   // otherwise.
@@ -358,7 +324,7 @@ class MetricsWebContentsObserver
   // Has the MWCO observed at least one navigation?
   bool has_navigated_;
 
-  base::ObserverList<TestingObserver>::Unchecked testing_observers_;
+  base::ObserverList<MetricsLifecycleObserver> lifecycle_observers_;
   content::RenderFrameHostReceiverSet<mojom::PageLoadMetrics>
       page_load_metrics_receivers_;
 
