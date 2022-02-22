@@ -53,8 +53,11 @@ constexpr size_t kMinFilesForContinueSectionClamshellMode = 3;
 constexpr size_t kMinFilesForContinueSectionTabletMode = 2;
 
 // Privacy toast icon size.
-constexpr size_t kPrivacyIconSizeClamshell = 64;
+constexpr size_t kPrivacyIconSizeClamshell = 60;
 constexpr size_t kPrivacyIconSizeTablet = 48;
+
+// Privacy toast interior margin
+constexpr gfx::Insets kPrivacyToastInteriorMargin(12, 12, 12, 16);
 
 // Delay before marking the privacy notice as swhon.
 const base::TimeDelta kPrivacyNoticeShownDelay = base::Seconds(6);
@@ -263,6 +266,7 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
                          &ContinueSectionView::MarkPrivacyNoticeAccepted,
                          base::Unretained(this)))
           .SetStyleForTabletMode(tablet_mode_)
+          .SetThemingIcons(&kContinueFilesDarkIcon, &kContinueFilesLightIcon)
           .SetIconSize(tablet_mode_ ? kPrivacyIconSizeTablet
                                     : kPrivacyIconSizeClamshell)
           .Build());
@@ -270,6 +274,7 @@ void ContinueSectionView::MaybeCreatePrivacyNotice() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum));
+  privacy_toast_->UpdateInteriorMargins(kPrivacyToastInteriorMargin);
 }
 
 bool ContinueSectionView::FirePrivacyNoticeShownTimerForTest() {
