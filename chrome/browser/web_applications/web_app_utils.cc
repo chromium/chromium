@@ -442,11 +442,6 @@ bool CanUserUninstallWebApp(WebAppSources sources) {
   return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
 }
 
-void RegisterFileHandlersWithOs(WebAppProvider* provider,
-                                const AppId& app_id,
-                                absl::optional<ApiApprovalState> approval_state,
-                                base::OnceClosure finished_closure) {}
-
 AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
   // App Settings page is served under chrome://app-settings/<app-id>.
   // url.path() returns "/<app-id>" with a leading slash.
