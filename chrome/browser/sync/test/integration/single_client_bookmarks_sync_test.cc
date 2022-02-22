@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/guid.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

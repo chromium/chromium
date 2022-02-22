@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
 #include "base/test/mock_callback.h"
 #include "chrome/common/webui_url_constants.h"

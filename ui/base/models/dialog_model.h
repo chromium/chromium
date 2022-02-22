@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
 #include "ui/base/models/image_model.h"

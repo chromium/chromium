@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"

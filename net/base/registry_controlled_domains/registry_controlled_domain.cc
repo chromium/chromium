@@ -45,6 +45,8 @@
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"

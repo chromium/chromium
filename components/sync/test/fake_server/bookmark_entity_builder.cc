@@ -8,6 +8,7 @@
 
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_node.h"

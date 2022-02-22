@@ -5,6 +5,7 @@
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 
 #include "build/build_config.h"
+#include "base/check_op.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/android/jni_headers/PrimaryAccountChangeEvent_jni.h"

@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace ash {

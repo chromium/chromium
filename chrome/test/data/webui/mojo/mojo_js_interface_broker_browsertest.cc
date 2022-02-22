@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"

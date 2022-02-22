@@ -4,6 +4,7 @@
 
 #include "components/dbus/properties/types.h"
 
+#include "base/memory/ref_counted_memory.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 

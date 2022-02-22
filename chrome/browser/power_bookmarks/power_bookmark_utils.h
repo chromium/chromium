@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

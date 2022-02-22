@@ -19,6 +19,7 @@
 #include "base/i18n/file_util_icu.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"

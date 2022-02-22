@@ -15,6 +15,7 @@
 #include "components/system_media_controls/system_media_controls.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DbusProperties;
 

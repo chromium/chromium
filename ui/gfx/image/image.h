@@ -24,8 +24,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_policy.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
@@ -35,6 +35,10 @@ typedef struct CGColorSpace* CGColorSpaceRef;
 #endif
 
 class SkBitmap;
+
+namespace base {
+class RefCountedMemory;
+}
 
 namespace gfx {
 struct ImagePNGRep;
