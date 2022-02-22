@@ -1429,9 +1429,7 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
 
   TabStripModel* attached_model = attached_context_->GetTabStripModel();
 
-  std::vector<TabRendererData> tab_data;
   for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
-    tab_data.push_back(static_cast<Tab*>(drag_data_[i].attached_view)->data());
     int index = attached_model->GetIndexOfWebContents(drag_data_[i].contents);
     DCHECK_NE(-1, index);
 
