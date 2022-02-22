@@ -1,6 +1,6 @@
 rootWebArea focusable htmlTag='#document'
-++genericContainer focusable ignored htmlTag='html' name='Lorem ipsum sit dolor amet consectetur adipiscing tempor sed do eiusmod tempor '
-++++genericContainer focusable ignored htmlTag='body' name='Lorem ipsum sit dolor amet consectetur adipiscing tempor sed do eiusmod tempor '
+++genericContainer focusable ignored htmlTag='html'
+++++genericContainer focusable ignored htmlTag='body'
 ++++++genericContainer ignored invisible htmlTag='div' notUserSelectableStyle=true
 ++++++++staticText ignored invisible name='Lorem ' notUserSelectableStyle=true
 ++++++++genericContainer ignored invisible htmlTag='span' notUserSelectableStyle=true

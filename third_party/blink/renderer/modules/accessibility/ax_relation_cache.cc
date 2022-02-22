@@ -543,7 +543,11 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
   // TODO(crbug.com/1109265): It's very likely this loop should only walk the
   // unignored AXObject chain, but doing so breaks a number of tests related to
   // name or description computation / invalidation.
-  for (Node* current_node = node; current_node;
+  int count = 0;
+  constexpr int kMaxAncestorsForNameChangeCheck = 8;
+  for (Node* current_node = node;
+       ++count < kMaxAncestorsForNameChangeCheck && current_node &&
+       !IsA<HTMLBodyElement>(current_node);
        current_node = current_node->parentNode()) {
     // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
     HeapVector<Member<AXObject>> related_sources;
@@ -560,12 +564,15 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
       if (obj && obj->AccessibilityIsIncludedInTree() &&
           obj->SupportsNameFromContents(/*recursive=*/false)) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
+        break;  // Unlikely/unusual to need multiple name/description changes.
       }
     }
 
     // Forward relation via <label for="[id]">.
-    if (IsA<HTMLLabelElement>(*current_node))
+    if (IsA<HTMLLabelElement>(*current_node)) {
       LabelChanged(current_node);
+      break;  // Unlikely/unusual to need multiple name/description changes.
+    }
   }
 }
 
