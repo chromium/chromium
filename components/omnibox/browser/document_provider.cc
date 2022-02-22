@@ -221,11 +221,15 @@ int CalculateScore(const std::u16string& input, const base::Value* result) {
       SplitByColon(String16VectorFromString16(input, false, nullptr));
 
   for (const auto& word : input_words) {
-    // FieldMatches::Includes() updates state, so it is OK to ignore the result
-    // of `find_if`.
-    std::ignore = std::find_if(
-        field_matches_vec.begin(), field_matches_vec.end(),
-        [word](auto& field_matches) { return field_matches.Includes(word); });
+    for (auto& field_matches : field_matches_vec) {
+      // This is calculating the proportion of the user input words that are
+      // included in the suggestion, so break after the first match. Otherwise,
+      // an input like 'wi' would be scored too highly for the suggestion "will
+      // william wilson win the winter windsurfing competition".
+      if (field_matches.Includes(word)) {
+        break;
+      }
+    }
   }
 
   // |score| is computed by subtracting the product of each field's inverse
