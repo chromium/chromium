@@ -45,6 +45,19 @@ Polymer({
       readOnly: true,
     },
 
+    /**
+     * Whether Accessibility OS Settings visibility improvements are enabled.
+     * @private{boolean}
+     */
+    isAccessibilityOSSettingsVisibilityEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.getBoolean(
+            'isAccessibilityOSSettingsVisibilityEnabled');
+      }
+    },
+
     showCrostini: Boolean,
 
     showStartup: Boolean,

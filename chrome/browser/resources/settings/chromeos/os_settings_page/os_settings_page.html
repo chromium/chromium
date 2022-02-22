@@ -191,6 +191,13 @@
           show-startup="[[showStartup]]">
       </os-settings-apps-page>
     </settings-section>
+    <template is="dom-if" if="[[isAccessibilityOSSettingsVisibilityEnabled_]]">
+      <settings-section page-title="$i18n{a11yPageTitle}"
+          section="osAccessibility">
+        <os-settings-a11y-page prefs="{{prefs}}">
+        </os-settings-a11y-page>
+      </settings-section>
+    </template>
   </div>
 </template>
 
@@ -242,11 +249,13 @@
           </settings-crostini-page>
         </settings-section>
       </template>
-      <settings-section page-title="$i18n{a11yPageTitle}"
-          section="osAccessibility">
-        <os-settings-a11y-page prefs="{{prefs}}">
-        </os-settings-a11y-page>
-      </settings-section>
+      <template is="dom-if" if="[[!isAccessibilityOSSettingsVisibilityEnabled_]]">
+        <settings-section page-title="$i18n{a11yPageTitle}"
+            section="osAccessibility">
+          <os-settings-a11y-page prefs="{{prefs}}">
+          </os-settings-a11y-page>
+        </settings-section>
+      </template>
       <template is="dom-if" if="[[showReset]]">
         <settings-section page-title="$i18n{resetPageTitle}"
             section="osReset">

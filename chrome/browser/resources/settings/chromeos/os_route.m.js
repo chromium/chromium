@@ -196,6 +196,24 @@ function createOSSettingsRoutes() {
         Subpage.kPluginVmUsbPreferences);
   }
 
+  // Accessibility section, listed in Basic, if feature enabled.
+  if (loadTimeData.valueExists('isAccessibilityOSSettingsVisibilityEnabled') &&
+      loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled')) {
+    r.OS_ACCESSIBILITY = createSection(
+        r.BASIC, mojom.ACCESSIBILITY_SECTION_PATH, Section.kAccessibility);
+    r.MANAGE_ACCESSIBILITY = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
+        Subpage.kManageAccessibility);
+    r.MANAGE_TTS_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
+        Subpage.kTextToSpeech);
+    r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
+        Subpage.kSwitchAccessOptions);
+    r.MANAGE_CAPTION_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.CAPTIONS_SUBPAGE_PATH, Subpage.kCaptions);
+  }
+
   // Crostini section.
   if (loadTimeData.valueExists('showCrostini') &&
       loadTimeData.getBoolean('showCrostini')) {
@@ -286,20 +304,23 @@ function createOSSettingsRoutes() {
       r.OS_PRINTING, mojom.PRINTING_DETAILS_SUBPAGE_PATH,
       Subpage.kPrintingDetails);
 
-  // Accessibility section.
-  r.OS_ACCESSIBILITY = createSection(
-      r.ADVANCED, mojom.ACCESSIBILITY_SECTION_PATH, Section.kAccessibility);
-  r.MANAGE_ACCESSIBILITY = createSubpage(
-      r.OS_ACCESSIBILITY, mojom.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
-      Subpage.kManageAccessibility);
-  r.MANAGE_TTS_SETTINGS = createSubpage(
-      r.MANAGE_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
-      Subpage.kTextToSpeech);
-  r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
-      r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
-      Subpage.kSwitchAccessOptions);
-  r.MANAGE_CAPTION_SETTINGS = createSubpage(
-      r.MANAGE_ACCESSIBILITY, mojom.CAPTIONS_SUBPAGE_PATH, Subpage.kCaptions);
+  // Accessibility section, listed in Advanced, if feature disabled.
+  if (!loadTimeData.valueExists('isAccessibilityOSSettingsVisibilityEnabled') ||
+      !loadTimeData.getBoolean('isAccessibilityOSSettingsVisibilityEnabled')) {
+    r.OS_ACCESSIBILITY = createSection(
+        r.ADVANCED, mojom.ACCESSIBILITY_SECTION_PATH, Section.kAccessibility);
+    r.MANAGE_ACCESSIBILITY = createSubpage(
+        r.OS_ACCESSIBILITY, mojom.MANAGE_ACCESSIBILITY_SUBPAGE_PATH,
+        Subpage.kManageAccessibility);
+    r.MANAGE_TTS_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.TEXT_TO_SPEECH_SUBPAGE_PATH,
+        Subpage.kTextToSpeech);
+    r.MANAGE_SWITCH_ACCESS_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.SWITCH_ACCESS_OPTIONS_SUBPAGE_PATH,
+        Subpage.kSwitchAccessOptions);
+    r.MANAGE_CAPTION_SETTINGS = createSubpage(
+        r.MANAGE_ACCESSIBILITY, mojom.CAPTIONS_SUBPAGE_PATH, Subpage.kCaptions);
+  }
 
   // Reset section.
   if (loadTimeData.valueExists('allowPowerwash') &&

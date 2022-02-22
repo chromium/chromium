@@ -31,6 +31,7 @@
 #include "components/app_restore/features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -379,6 +380,10 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "showArcvmManageUsb",
       arc::IsArcVmEnabled() &&
           base::FeatureList::IsEnabled(arc::kUsbDeviceDefaultAttachToArcVm));
+
+  html_source->AddBoolean(
+      "isAccessibilityOSSettingsVisibilityEnabled",
+      ::features::IsAccessibilityOSSettingsVisibilityEnabled());
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);

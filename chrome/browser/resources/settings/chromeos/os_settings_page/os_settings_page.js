@@ -90,6 +90,19 @@ Polymer({
     },
 
     /**
+     * Whether Accessibility OS Settings visibility improvements are enabled.
+     * @private{boolean}
+     */
+    isAccessibilityOSSettingsVisibilityEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.getBoolean(
+            'isAccessibilityOSSettingsVisibilityEnabled');
+      }
+    },
+
+    /**
      * Dictionary defining page visibility.
      * @type {!OSPageVisibility}
      */
