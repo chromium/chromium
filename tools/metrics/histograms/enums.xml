@@ -21756,6 +21756,14 @@ Called by update_debug_scenarios.py.-->
   <int value="4" label="Cellular"/>
 </enum>
 
+<enum name="DeviceThermalState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Nominal"/>
+  <int value="2" label="Fair"/>
+  <int value="3" label="Serious"/>
+  <int value="4" label="Critical"/>
+</enum>
+
 <enum name="DeviceTrustKeyRotationStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Unable to generate a new signing key"/>

@@ -16,6 +16,7 @@ import android.net.TransportInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.FileUtils;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
@@ -106,5 +107,10 @@ public final class ApiHelperForQ {
     /** See {@link NetworkCapabilities#getTransportInfo() } */
     public static TransportInfo getTransportInfo(NetworkCapabilities networkCapabilities) {
         return networkCapabilities.getTransportInfo();
+    }
+
+    /** See {@link PowerManager#getCurrentThermalStatus() }. */
+    public static int getCurrentThermalStatus(PowerManager powerManager) {
+        return powerManager.getCurrentThermalStatus();
     }
 }

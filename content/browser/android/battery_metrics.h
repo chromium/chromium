@@ -19,6 +19,7 @@ namespace content {
 // thread-safe.
 class AndroidBatteryMetrics
     : public base::PowerStateObserver,
+      public base::PowerThermalObserver,
       public ProcessVisibilityTracker::ProcessVisibilityObserver {
  public:
   static AndroidBatteryMetrics* GetInstance();
@@ -36,6 +37,10 @@ class AndroidBatteryMetrics
 
   // base::PowerStateObserver implementation:
   void OnPowerStateChange(bool on_battery_power) override;
+
+  // base::PowerThermalObserver implementation:
+  void OnThermalStateChange(DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int speed_limit) override;
 
   void UpdateMetricsEnabled();
   void CaptureAndReportMetrics(bool disabling);

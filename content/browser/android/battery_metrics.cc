@@ -9,10 +9,12 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "net/android/network_library.h"
 #include "net/android/traffic_stats.h"
@@ -199,11 +201,13 @@ AndroidBatteryMetrics::AndroidBatteryMetrics()
     : app_visible_(false),
       on_battery_power_(base::PowerMonitor::IsOnBatteryPower()) {
   base::PowerMonitor::AddPowerStateObserver(this);
+  base::PowerMonitor::AddPowerThermalObserver(this);
   content::ProcessVisibilityTracker::GetInstance()->AddObserver(this);
   UpdateMetricsEnabled();
 }
 
 AndroidBatteryMetrics::~AndroidBatteryMetrics() {
+  base::PowerMonitor::RemovePowerThermalObserver(this);
   base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
@@ -218,6 +222,19 @@ void AndroidBatteryMetrics::OnPowerStateChange(bool on_battery_power) {
   on_battery_power_ = on_battery_power;
   UpdateMetricsEnabled();
 }
+
+void AndroidBatteryMetrics::OnThermalStateChange(DeviceThermalState new_state) {
+  TRACE_EVENT_INSTANT("power", "OnThermalStateChange",
+                      perfetto::Track::Global(0), "new_state", new_state,
+                      "app_visible", app_visible_);
+  if (!app_visible_)
+    return;
+
+  base::UmaHistogramEnumeration(
+      "Power.ForegroundThermalState.ChangeEvent.Android", new_state);
+}
+
+void AndroidBatteryMetrics::OnSpeedLimitChange(int speed_limit) {}
 
 void AndroidBatteryMetrics::UpdateMetricsEnabled() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

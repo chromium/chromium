@@ -106,6 +106,7 @@ class BASE_EXPORT PowerMonitorDeviceSource : public PowerMonitorSource {
   bool IsOnBatteryPower() override;
 
 #if BUILDFLAG(IS_ANDROID)
+  PowerThermalObserver::DeviceThermalState GetCurrentThermalState() override;
   int GetRemainingBatteryCapacity() override;
 #endif  // BUILDFLAG(IS_ANDROID)
 

@@ -62,6 +62,8 @@ class BASE_EXPORT PowerMonitorSource {
 
   // Friend function that is allowed to access the protected ProcessPowerEvent.
   friend void ProcessPowerEventHelper(PowerEvent);
+  friend void ProcessThermalEventHelper(
+      PowerThermalObserver::DeviceThermalState);
 
   // Process*Event should only be called from a single thread, most likely
   // the UI thread or, in child processes, the IO thread.
