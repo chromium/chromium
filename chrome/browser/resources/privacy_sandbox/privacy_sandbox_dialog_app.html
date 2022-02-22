@@ -1,4 +1,37 @@
 <style include="cr-shared-style">
+  /* Custom scrollbar for the content area */
+  /* The default scrollbar on Windows doesn't fit with the dialog style. Also
+   * it is wide and causes visual problems when the height of the content is
+   * changed.
+   */
+  :host {
+    --scrollbar-width: 7px;
+    --scrollbar-background: var(--google-grey-200);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --scrollbar-background: var(--google-grey-700);
+    }
+  }
+
+  #contentArea::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+  }
+
+  #contentArea::-webkit-scrollbar-track {
+    border-radius: var(--scrollbar-width);
+  }
+
+  #contentArea::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-background);
+    border-radius: var(--scrollbar-width);
+  }
+
+  #contentArea.hide-scrollbar::-webkit-scrollbar-thumb {
+    visibility: hidden;
+  }
+
   .header {
     padding-bottom: 10px;
     text-align: center;
@@ -73,7 +106,7 @@
     border-color: transparent;
     border-style: solid;
     border-width: 1px 0;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding: 0 var(--cr-section-padding);
   }
 

@@ -50,6 +50,7 @@ export class PrivacySandboxDialogAppElement extends
   private isConsent_: boolean;
   private canScrollClass_: String;
   private fitIntoDialogClass_: String;
+  private didStartWithScrollbar_: boolean;
 
   connectedCallback() {
     super.connectedCallback();
@@ -64,6 +65,14 @@ export class PrivacySandboxDialogAppElement extends
       // After the content was rendered at size it requires, toggle a class
       // to fit the content into dialog bounds.
       this.fitIntoDialogClass_ = 'fit-into-size';
+
+      // After the layout is adjusted to fit into the dialog...
+      afterNextRender(this, () => {
+        // ...save if the dialog is scrollable and add a divider if needed.
+        this.didStartWithScrollbar_ =
+            this.$.contentArea.offsetHeight < this.$.contentArea.scrollHeight;
+        this.canScrollClass_ = this.didStartWithScrollbar_ ? 'can-scroll' : '';
+      });
     });
   }
 
@@ -92,9 +101,13 @@ export class PrivacySandboxDialogAppElement extends
       this.dialogActionOccurred(
           PrivacySandboxDialogAction.CONSENT_MORE_INFO_CLOSED);
     }
-    // TODO(crbug.com/1286276): Add showing the divider if the dialog starts
-    // scrollable.
-    this.canScrollClass_ = newVal ? 'can-scroll' : '';
+    // Show divider if the dialog was scrollable from the beginning or became
+    // scrollable because the section is expanded. Otherwise, hide the
+    // scrollbar to avoid animating it out. Without it, when the section is
+    // collapsing, the scrollbar thumb would grow until it fills the track and
+    // disappears.
+    this.canScrollClass_ =
+        this.didStartWithScrollbar_ || newVal ? 'can-scroll' : 'hide-scrollbar';
 
     // Wait for collapse section transition to complete 70%.
     const collapseElement = this.$.expandSection.querySelector('iron-collapse');
