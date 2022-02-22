@@ -171,15 +171,17 @@ void DesksTemplatesGridView::PopulateGridUI(
                                                         desk_templates.end()),
                        /*initializing_grid_view=*/true);
 
-  feedback_button_ = AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
-      PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
-  feedback_button_->SetBackgroundColor(
-      AshColorProvider::Get()->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80));
+  if (!feedback_button_) {
+    feedback_button_ = AddChildView(std::make_unique<PillButton>(
+        base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
+                            base::Unretained(this)),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_PERSISTENT_DESKS_BAR_CONTEXT_MENU_FEEDBACK),
+        PillButton::Type::kIcon, &kPersistentDesksBarFeedbackIcon));
+    feedback_button_->SetBackgroundColor(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80));
+  }
 
   GetWidget()->SetBounds(grid_bounds);
 }

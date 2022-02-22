@@ -1589,6 +1589,39 @@ TEST_F(DesksTemplatesTest, LaunchTemplateAfterClosingActiveDesk) {
   EXPECT_TRUE(InOverviewSession());
 }
 
+// Tests that multiple feedback buttons aren't created when we transition
+// between hiding and showing the templates grid without leaving overview.
+// Regression test for https://crbug.com/1299114.
+TEST_F(DesksTemplatesTest, HideAndShowTemplatesGridWithoutLeavingOverview) {
+  // One window is needed to save a template.
+  auto window = CreateAppWindow();
+
+  // Open overview and save a template. This will also take us to the desks
+  // templates grid view.
+  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1ul, GetAllEntries().size());
+
+  OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
+  views::Widget* grid_widget = overview_grid->desks_templates_grid_widget();
+  const auto* templates_grid_view =
+      static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView());
+
+  // The grid has one template item and one feedback button.
+  ASSERT_EQ(2ul, templates_grid_view->children().size());
+
+  // Click on the grid item to launch the template.
+  ClickOnView(GetItemViewFromTemplatesGrid(/*grid_item_index=*/0));
+  WaitForDesksTemplatesUI();
+  EXPECT_TRUE(InOverviewSession());
+
+  // Go back to the templates grid and verify a new feedback button wasn't
+  // created. There should still be only one template item and one feedback
+  // button.
+  ShowDesksTemplatesGrids();
+  WaitForDesksTemplatesUI();
+  ASSERT_EQ(2ul, templates_grid_view->children().size());
+}
+
 // Tests that if we open the desks templates grid a second time during an
 // overview session, we can still see the template items. Opening a second time
 // can be done after deleting all the templates from the first open. Regression
