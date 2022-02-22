@@ -346,7 +346,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     // ... AND the certificate embeds SCTs from AT LEAST the number of logs
     //   once or currently qualified shown in Table 1 of the CT Policy.
     base::TimeDelta lifetime = cert.valid_expiry() - cert.valid_start();
-    if (lifetime >= base::Days(180)) {
+    if (lifetime > base::Days(180)) {
       num_required_embedded_scts = 3;
     } else {
       num_required_embedded_scts = 2;
