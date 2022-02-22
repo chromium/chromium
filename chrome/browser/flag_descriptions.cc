@@ -5150,6 +5150,11 @@ const char kNearbySharingWifiLanName[] = "Nearby Sharing WifiLan";
 const char kNearbySharingWifiLanDescription[] =
     "Enables WifiLan as a Nearby Share transfer medium.";
 
+const char kOobeHidDetectionRevampName[] = "OOBE HID Detection Revamp";
+const char kOobeHidDetectionRevampDescription[] =
+    "Enables the Chrome OS HID Detection Revamp, which updates OOBE HID "
+    "detection screen UI and related infrastructure.";
+
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable Pcie peripheral billboard notification.";

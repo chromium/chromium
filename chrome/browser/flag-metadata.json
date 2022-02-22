@@ -4578,6 +4578,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "oobe-hid-detection-revamp",
+    "owners": [ "gordonseto", "cros-connectivity@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "optimization-guide-debug-logs",
     "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 110
