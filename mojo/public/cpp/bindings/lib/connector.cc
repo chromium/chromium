@@ -19,6 +19,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -156,7 +157,11 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       force_immediate_dispatch_(!EnableTaskPerMessage()),
       outgoing_serialization_mode_(g_default_outgoing_serialization_mode),
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
-      interface_name_(interface_name) {
+      interface_name_(interface_name),
+      header_validator_(
+          base::JoinString({interface_name ? interface_name : "Generic",
+                            "MessageHeaderValidator"},
+                           "")) {
   if (config == MULTI_THREADED_SEND)
     lock_.emplace();
 
@@ -496,6 +501,7 @@ MojoResult Connector::ReadMessage(Message* message) {
     return result;
 
   *message = Message::CreateFromMessageHandle(&handle);
+
   if (message->IsNull()) {
     // Even if the read was successful, the Message may still be null if there
     // was a problem extracting handles from it. We treat this essentially as
@@ -508,6 +514,10 @@ MojoResult Connector::ReadMessage(Message* message) {
         handle.get(),
         base::StrCat({interface_name_,
                       " One or more handle attachments were invalid."}));
+    return MOJO_RESULT_ABORTED;
+  }
+
+  if (!header_validator_.Accept(message)) {
     return MOJO_RESULT_ABORTED;
   }
 
