@@ -117,6 +117,10 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   }
 
   if (features::BatchAnnotationsValidationEnabled()) {
+    // Normally the caller would do this, but we are our own caller.
+    RequestAndNotifyWhenModelAvailable(AnnotationType::kContentVisibility,
+                                       base::DoNothing());
+
     validation_timer_ = std::make_unique<base::OneShotTimer>(
         base::DefaultTickClock::GetInstance());
     validation_timer_->Start(
