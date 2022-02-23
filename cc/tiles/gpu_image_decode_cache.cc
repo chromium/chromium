@@ -2131,12 +2131,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
     color_space = nullptr;
   }
 
-  absl::optional<TargetColorParams> target_color_params;
-  if (color_space) {
-    target_color_params = draw_image.target_color_params();
-    target_color_params->color_space = gfx::ColorSpace(*color_space);
-  }
-
   // Will be nullptr for non-HDR images or when we're using the default level.
   const bool needs_adjusted_color_space =
       NeedsColorSpaceAdjustedForUpload(draw_image);
@@ -2150,11 +2144,11 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
           draw_image, image_data, color_space);
     } else if (image_data->yuva_pixmap_info.has_value()) {
       UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
-          draw_image, image_data, decoded_target_colorspace, absl::nullopt);
+          draw_image, image_data, decoded_target_colorspace);
     } else {
       UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
           draw_image, image_data, needs_adjusted_color_space,
-          decoded_target_colorspace, target_color_params);
+          decoded_target_colorspace, color_space);
     }
   } else {
     // Grab a reference to our decoded image. For the kCpu path, we will use
@@ -2223,8 +2217,7 @@ void GpuImageDecodeCache::
     UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
         const DrawImage& draw_image,
         ImageData* image_data,
-        sk_sp<SkColorSpace> decoded_target_colorspace,
-        absl::optional<TargetColorParams> target_color_params) {
+        sk_sp<SkColorSpace> decoded_target_colorspace) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
@@ -2241,7 +2234,7 @@ void GpuImageDecodeCache::
       image_data->yuva_pixmap_info->yuvaInfo().subsampling(),
       decoded_target_colorspace.get(),
       image_data->yuva_pixmap_info->yuvaInfo().yuvColorSpace(),
-      target_color_params, image_data->needs_mips);
+      image_data->needs_mips);
   if (!image_entry.IsValid())
     return;
   InsertTransferCacheEntry(image_entry, image_data);
@@ -2253,7 +2246,7 @@ void GpuImageDecodeCache::
         ImageData* image_data,
         bool needs_adjusted_color_space,
         sk_sp<SkColorSpace> decoded_target_colorspace,
-        absl::optional<TargetColorParams> target_color_params) {
+        sk_sp<SkColorSpace> color_space) {
   DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
@@ -2265,7 +2258,7 @@ void GpuImageDecodeCache::
   if (needs_adjusted_color_space)
     pixmap.setColorSpace(decoded_target_colorspace);
 
-  ClientImageTransferCacheEntry image_entry(&pixmap, target_color_params,
+  ClientImageTransferCacheEntry image_entry(&pixmap, color_space.get(),
                                             image_data->needs_mips);
   if (!image_entry.IsValid())
     return;

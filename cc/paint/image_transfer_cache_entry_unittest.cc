@@ -228,8 +228,7 @@ TEST_P(ImageTransferCacheEntryTest, Deserialize) {
   auto client_entry(std::make_unique<ClientImageTransferCacheEntry>(
       yuva_pixmaps.planes().data(), yuva_info.planeConfig(),
       yuva_info.subsampling(), nullptr /* decoded color space*/,
-      yuva_info.yuvColorSpace(), absl::nullopt /* target_color_params */,
-      true /* needs_mips */));
+      yuva_info.yuvColorSpace(), true /* needs_mips */));
   uint32_t size = client_entry->SerializedSize();
   std::vector<uint8_t> data(size);
   ASSERT_TRUE(client_entry->Serialize(
@@ -379,8 +378,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
-  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), absl::nullopt,
-                                             true);
+  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), nullptr, true);
   std::vector<uint8_t> storage(client_entry.SerializedSize());
   client_entry.Serialize(base::make_span(storage.data(), storage.size()));
 
@@ -406,8 +404,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
   SkBitmap bitmap;
   bitmap.allocPixels(
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
-  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), absl::nullopt,
-                                             false);
+  ClientImageTransferCacheEntry client_entry(&bitmap.pixmap(), nullptr, false);
   std::vector<uint8_t> storage(client_entry.SerializedSize());
   client_entry.Serialize(base::make_span(storage.data(), storage.size()));
 

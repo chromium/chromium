@@ -100,9 +100,9 @@ ImageProvider::ScopedResult TestOptionsProvider::GetRasterContent(
       SkBitmap::kZeroPixels_AllocFlag);
 
   // Create a transfer cache entry for this image.
-  TargetColorParams target_color_params;
-  ClientImageTransferCacheEntry cache_entry(
-      &bitmap.pixmap(), target_color_params, false /* needs_mips */);
+  auto color_space = SkColorSpace::MakeSRGB();
+  ClientImageTransferCacheEntry cache_entry(&bitmap.pixmap(), color_space.get(),
+                                            false /* needs_mips */);
   std::vector<uint8_t> data;
   data.resize(cache_entry.SerializedSize());
   if (!cache_entry.Serialize(base::span<uint8_t>(data.data(), data.size()))) {
