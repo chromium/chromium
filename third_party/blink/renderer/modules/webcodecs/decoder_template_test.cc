@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -149,14 +148,8 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
   }
 }
 
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-// https://crbug.com/1247967
-#define MAYBE_NoPressureByDefault DISABLED_NoPressureByDefault
-#else
-#define MAYBE_NoPressureByDefault NoPressureByDefault
-#endif
 // Ensures codecs do not apply reclamation pressure by default.
-TYPED_TEST(DecoderTemplateTest, MAYBE_NoPressureByDefault) {
+TYPED_TEST(DecoderTemplateTest, NoPressureByDefault) {
   V8TestingScope v8_scope;
 
   // Create a decoder.
