@@ -49,7 +49,7 @@ namespace {
 // is odd in |ReleaseFromAllocator()|, and if not we have a double-free.
 class BASE_EXPORT PartitionRefCount {
  public:
-  // This class hold an atomic bit field: `count_`. It holds up to 4 values:
+  // This class holds an atomic bit field: `count_`. It holds up to 4 values:
   //
   // bits   name                   description
   // -----  ---------------------  ----------------------------------------
@@ -75,25 +75,27 @@ class BASE_EXPORT PartitionRefCount {
   // - |unprotected_ptr_count|
   // are zero.
   //
-  // During ReleaseFromAllocator(), if |ptr_count| is not null,
+  // During ReleaseFromAllocator(), if |ptr_count| is not zero,
   // |dangling_detected| is set and the error is reported via
   // DanglingRawPtrDetected(id). The matching DanglingRawPtrReleased(id) will be
   // called when the last raw_ptr<> is released.
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  static constexpr uint64_t kMemoryHeldByAllocatorBit = 0x0000'0000'0000'0001;
-  static constexpr uint64_t kPtrCountMask = 0x0000'0000'FFFF'FFFE;
-  static constexpr uint64_t kUnprotectedPtrCount = 0xFFFF'FFFE'0000'0000;
-  static constexpr uint64_t kDanglingRawPtrDetectedBit = 0x0000'0001'0000'0000;
+  using CountType = uint64_t;
+  static constexpr CountType kMemoryHeldByAllocatorBit = 0x0000'0000'0000'0001;
+  static constexpr CountType kPtrCountMask = 0x0000'0000'FFFF'FFFE;
+  static constexpr CountType kUnprotectedPtrCountMask = 0xFFFF'FFFE'0000'0000;
+  static constexpr CountType kDanglingRawPtrDetectedBit = 0x0000'0001'0000'0000;
 
-  static constexpr uint64_t kPtrInc = 0x0000'0000'0000'0002;
-  static constexpr uint64_t kUnProtectedPtrInc = 0x0000'0002'0000'0000;
+  static constexpr CountType kPtrInc = 0x0000'0000'0000'0002;
+  static constexpr CountType kUnprotectedPtrInc = 0x0000'0002'0000'0000;
 #else
-  static constexpr uint32_t kMemoryHeldByAllocatorBit = 0x0000'0001;
-  static constexpr uint32_t kPtrCountMask = 0xFFFF'FFFE;
-  static constexpr uint32_t kUnprotectedPtrCount = 0x0000'0000;
-  static constexpr uint32_t kDanglingRawPtrDetectedBit = 0x0000'0000;
+  using CountType = uint32_t;
+  static constexpr CountType kMemoryHeldByAllocatorBit = 0x0000'0001;
+  static constexpr CountType kPtrCountMask = 0xFFFF'FFFE;
+  static constexpr CountType kUnprotectedPtrCountMask = 0x0000'0000;
+  static constexpr CountType kDanglingRawPtrDetectedBit = 0x0000'0000;
 
-  static constexpr uint32_t kPtrInc = 0x0000'0002;
+  static constexpr CountType kPtrInc = 0x0000'0002;
 #endif
 
   PartitionRefCount();
@@ -111,7 +113,7 @@ class BASE_EXPORT PartitionRefCount {
   // https://docs.google.com/document/d/1cSTVDVEE-8l2dXLPcfyN75r6ihMbeiSp1ncL9ae3RZE
   ALWAYS_INLINE void Acquire() {
     CheckCookieIfSupported();
-    auto old_count = count_.fetch_add(kPtrInc, std::memory_order_relaxed);
+    CountType old_count = count_.fetch_add(kPtrInc, std::memory_order_relaxed);
     // Check overflow.
     PA_CHECK((old_count & kPtrCountMask) != kPtrCountMask);
   }
@@ -121,10 +123,11 @@ class BASE_EXPORT PartitionRefCount {
   ALWAYS_INLINE void AcquireFromUnprotectedPtr() {
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     CheckCookieIfSupported();
-    auto old_count =
-        count_.fetch_add(kUnProtectedPtrInc, std::memory_order_relaxed);
+    CountType old_count =
+        count_.fetch_add(kUnprotectedPtrInc, std::memory_order_relaxed);
     // Check overflow.
-    PA_CHECK((old_count & kUnprotectedPtrCount) != kUnprotectedPtrCount);
+    PA_CHECK((old_count & kUnprotectedPtrCountMask) !=
+             kUnprotectedPtrCountMask);
 #else
     Acquire();
 #endif
@@ -133,7 +136,8 @@ class BASE_EXPORT PartitionRefCount {
   // Returns true if the allocation should be reclaimed.
   ALWAYS_INLINE bool Release() {
     CheckCookieIfSupported();
-    auto old_count = count_.fetch_sub(kPtrInc, std::memory_order_release);
+
+    CountType old_count = count_.fetch_sub(kPtrInc, std::memory_order_release);
     // Check underflow.
     PA_DCHECK(old_count & kPtrCountMask);
 
@@ -146,25 +150,7 @@ class BASE_EXPORT PartitionRefCount {
     }
 #endif
 
-    // Do not release memory, if it is still held by any of:
-    // - The allocator.
-    // - A raw_ptr<T>
-    // - A raw_ptr<T, DisableDanglingPtrDetection>
-    if (LIKELY((old_count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
-                             kUnprotectedPtrCount)) != kPtrInc)) {
-      return false;  // Do not release the memory.
-    }
-
-    // In most thread-safe reference count implementations, an acquire
-    // barrier is required so that all changes made to an object from other
-    // threads are visible to its destructor. In our case, the destructor
-    // finishes before the final `Release` call, so it shouldn't be a problem.
-    // However, we will keep it as a precautionary measure.
-    std::atomic_thread_fence(std::memory_order_acquire);
-
-    // The allocation is about to get freed, so clear the cookie.
-    ClearCookieIfSupported();
-    return true;
+    return ReleaseCommon(old_count - kPtrInc);
   }
 
   // Similar to |Release()|, but for raw_ptr<T, DisableDanglingPtrDetection>
@@ -173,30 +159,12 @@ class BASE_EXPORT PartitionRefCount {
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
     CheckCookieIfSupported();
 
-    auto old_count =
-        count_.fetch_sub(kUnProtectedPtrInc, std::memory_order_release);
-
+    CountType old_count =
+        count_.fetch_sub(kUnprotectedPtrInc, std::memory_order_release);
     // Check underflow.
-    PA_DCHECK(old_count & kUnprotectedPtrCount);
+    PA_DCHECK(old_count & kUnprotectedPtrCountMask);
 
-    // Do not release, if it is still held by:
-    // - The allocator.
-    // - A raw_ptr<T>
-    // - A raw_ptr<T, DisableDanglingPtrDetection>
-    if (LIKELY((old_count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
-                             kUnprotectedPtrCount)) != kUnProtectedPtrInc)) {
-      return false;  // Do not release the memory.
-    }
-
-    // In most thread-safe reference count implementations, an acquire
-    // barrier is required so that all changes made to an object from other
-    // threads are visible to its destructor. In our case, the destructor
-    // finishes before the final `Release` call, so it shouldn't be a problem.
-    // However, we will keep it as a precautionary measure.
-    std::atomic_thread_fence(std::memory_order_acquire);
-    // The allocation is about to get freed, so clear the cookie.
-    ClearCookieIfSupported();
-    return true;
+    return ReleaseCommon(old_count - kUnprotectedPtrInc);
 #else
     return Release();
 #endif
@@ -209,7 +177,7 @@ class BASE_EXPORT PartitionRefCount {
 
     // TODO(bartekn): Make the double-free check more effective. Once freed, the
     // ref-count is overwritten by an encoded freelist-next pointer.
-    auto old_count =
+    CountType old_count =
         count_.fetch_and(~kMemoryHeldByAllocatorBit, std::memory_order_release);
 
     if (UNLIKELY(!(old_count & kMemoryHeldByAllocatorBit)))
@@ -223,7 +191,7 @@ class BASE_EXPORT PartitionRefCount {
     }
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-    // Check if any raw_ptr<> still exist. They are now dangling.
+    // Check if any raw_ptr<> still exists. It is now dangling.
     if (UNLIKELY(old_count & kPtrCountMask)) {
       count_.fetch_or(kDanglingRawPtrDetectedBit, std::memory_order_relaxed);
       partition_alloc::internal::DanglingRawPtrDetected(
@@ -253,6 +221,34 @@ class BASE_EXPORT PartitionRefCount {
   }
 
  private:
+  // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
+  // Called after updating the ref counts, |count| is the new value of |count_|
+  // set by fetch_sub. Returns true if memory can be reclaimed.
+  ALWAYS_INLINE bool ReleaseCommon(CountType count) {
+    // Do not release memory, if it is still held by any of:
+    // - The allocator
+    // - A raw_ptr<T>
+    // - A raw_ptr<T, DisableDanglingPtrDetection>
+    //
+    // Assuming this raw_ptr is not dangling, the memory must still be held at
+    // least by the allocator, so this is LIKELY true.
+    if (LIKELY((count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
+                         kUnprotectedPtrCountMask)))) {
+      return false;  // Do not release the memory.
+    }
+
+    // In most thread-safe reference count implementations, an acquire
+    // barrier is required so that all changes made to an object from other
+    // threads are visible to its destructor. In our case, the destructor
+    // finishes before the final `Release` call, so it shouldn't be a problem.
+    // However, we will keep it as a precautionary measure.
+    std::atomic_thread_fence(std::memory_order_acquire);
+
+    // The allocation is about to get freed, so clear the cookie.
+    ClearCookieIfSupported();
+    return true;
+  }
+
   // The cookie helps us ensure that:
   // 1) The reference count pointer calculation is correct.
   // 2) The returned allocation slot is not freed.
