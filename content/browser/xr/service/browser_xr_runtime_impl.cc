@@ -8,7 +8,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/logging.h"
 #include "build/build_config.h"
+#include "content/public/browser/browser_xr_runtime.h"
+#include "device/vr/public/mojom/vr_service.mojom-shared.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
@@ -156,11 +159,20 @@ BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
 
   if (integration_client) {
     install_helper_ = integration_client->GetInstallHelper(id_);
+    runtime_observer_ = integration_client->CreateRuntimeObserver();
+
+    if (runtime_observer_) {
+      AddObserver(runtime_observer_.get());
+    }
   }
 }
 
 BrowserXRRuntimeImpl::~BrowserXRRuntimeImpl() {
   DVLOG(2) << __func__ << ": id=" << id_;
+
+  if (runtime_observer_) {
+    RemoveObserver(runtime_observer_.get());
+  }
 
   if (install_finished_callback_) {
     std::move(install_finished_callback_).Run(false);
@@ -244,13 +256,21 @@ void BrowserXRRuntimeImpl::OnDisplayInfoChanged(
 
   // Notify observers of the new display info.
   for (Observer& observer : observers_) {
-    observer.SetVRDisplayInfo(display_info_.Clone());
+    observer.VRDisplayInfoChanged(display_info_.Clone());
   }
 }
 
 void BrowserXRRuntimeImpl::StopImmersiveSession(
     VRServiceImpl::ExitPresentCallback on_exited) {
   DVLOG(2) << __func__;
+
+  if (immersive_session_has_camera_access_) {
+    for (Observer& observer : observers_) {
+      observer.WebXRCameraInUseChanged(nullptr, false);
+    }
+    immersive_session_has_camera_access_ = false;
+  }
+
   if (immersive_session_controller_) {
     immersive_session_controller_.reset();
     if (presenting_service_) {
@@ -259,7 +279,7 @@ void BrowserXRRuntimeImpl::StopImmersiveSession(
     }
 
     for (Observer& observer : observers_) {
-      observer.SetWebXRWebContents(nullptr);
+      observer.WebXRWebContentsChanged(nullptr);
     }
   }
   std::move(on_exited).Run();
@@ -318,7 +338,7 @@ void BrowserXRRuntimeImpl::SetFramesThrottled(const VRServiceImpl* service,
                                               bool throttled) {
   if (service == presenting_service_) {
     for (Observer& observer : observers_) {
-      observer.SetFramesThrottled(throttled);
+      observer.WebXRFramesThrottledChanged(throttled);
     }
   }
 }
@@ -360,7 +380,16 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
       // Notify observers that we have started presentation.
       content::WebContents* web_contents = service->GetWebContents();
       for (Observer& observer : observers_) {
-        observer.SetWebXRWebContents(web_contents);
+        observer.WebXRWebContentsChanged(web_contents);
+      }
+
+      immersive_session_has_camera_access_ =
+          base::Contains(session_result->session->enabled_features,
+                         device::mojom::XRSessionFeature::CAMERA_ACCESS);
+      if (immersive_session_has_camera_access_) {
+        for (Observer& observer : observers_) {
+          observer.WebXRCameraInUseChanged(web_contents, true);
+        }
       }
     }
 
@@ -421,7 +450,7 @@ void BrowserXRRuntimeImpl::OnImmersiveSessionError() {
 
 void BrowserXRRuntimeImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  observer->SetVRDisplayInfo(display_info_.Clone());
+  observer->VRDisplayInfoChanged(display_info_.Clone());
 }
 
 void BrowserXRRuntimeImpl::RemoveObserver(Observer* observer) {

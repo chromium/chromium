@@ -71,9 +71,10 @@ class VRUiHostImpl : public content::VrUiHost,
   };
 
   // content::BrowserXRRuntime::Observer implementation.
-  void SetWebXRWebContents(content::WebContents* contents) override;
-  void SetVRDisplayInfo(device::mojom::VRDisplayInfoPtr display_info) override;
-  void SetFramesThrottled(bool throttled) override;
+  void WebXRWebContentsChanged(content::WebContents* contents) override;
+  void VRDisplayInfoChanged(
+      device::mojom::VRDisplayInfoPtr display_info) override;
+  void WebXRFramesThrottledChanged(bool throttled) override;
 
   // Internal methods used to start/stop the UI rendering thread that is used
   // for drawing browser UI (such as permission prompts) for display in VR.

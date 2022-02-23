@@ -16,6 +16,11 @@ std::unique_ptr<XrInstallHelper> XrIntegrationClient::GetInstallHelper(
   return nullptr;
 }
 
+std::unique_ptr<BrowserXRRuntime::Observer>
+XrIntegrationClient::CreateRuntimeObserver() {
+  return nullptr;
+}
+
 XRProviderList XrIntegrationClient::GetAdditionalProviders() {
   return {};
 }

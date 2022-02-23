@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_xr_runtime.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -58,6 +59,11 @@ class CONTENT_EXPORT XrIntegrationClient {
   // Returns a vector of device providers that should be used in addition to
   // any default providers built-in to //content.
   virtual XRProviderList GetAdditionalProviders();
+
+  // Creates a runtime observer that will respond to browser XR runtime state
+  // changes. May return null if the integraton client does not need to observe
+  // state changes.
+  virtual std::unique_ptr<BrowserXRRuntime::Observer> CreateRuntimeObserver();
 
 #if !BUILDFLAG(IS_ANDROID)
   // Creates a VrUiHost object for the specified device_id, and takes ownership

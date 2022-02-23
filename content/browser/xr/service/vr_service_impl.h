@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -147,6 +148,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   void OnPermissionResults(
       SessionRequestData request,
+      const std::vector<content::PermissionType>& permissions,
       const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
 
   void EnsureRuntimeInstalled(SessionRequestData request,

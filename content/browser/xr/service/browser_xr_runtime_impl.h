@@ -121,6 +121,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   mojo::Remote<device::mojom::XRRuntime> runtime_;
   mojo::Remote<device::mojom::XRSessionController>
       immersive_session_controller_;
+  bool immersive_session_has_camera_access_;
 
   std::set<VRServiceImpl*> services_;
   device::mojom::VRDisplayInfoPtr display_info_;
@@ -132,6 +133,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
 
   base::ObserverList<Observer> observers_;
   std::unique_ptr<content::XrInstallHelper> install_helper_;
+  std::unique_ptr<content::BrowserXRRuntime::Observer> runtime_observer_;
   base::OnceCallback<void(bool)> install_finished_callback_;
 
   base::WeakPtrFactory<BrowserXRRuntimeImpl> weak_ptr_factory_{this};

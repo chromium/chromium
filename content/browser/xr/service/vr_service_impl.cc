@@ -9,8 +9,10 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -30,6 +32,7 @@
 #include "device/base/features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
+#include "device/vr/public/mojom/vr_service.mojom-shared.h"
 
 namespace {
 
@@ -500,19 +503,29 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
   const std::vector<PermissionType> permissions =
       GetRequiredPermissions(request.options->mode, request.required_features,
                              request.optional_features);
+
   permission_controller->RequestPermissions(
       permissions, render_frame_host_,
       render_frame_host_->GetLastCommittedURL(), true,
       base::BindOnce(&VRServiceImpl::OnPermissionResults,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                     permissions));
 }
 
 void VRServiceImpl::OnPermissionResults(
     SessionRequestData request,
+    const std::vector<content::PermissionType>& permissions,
     const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
   DVLOG(2) << __func__;
+  DCHECK_EQ(permissions.size(), permission_statuses.size());
+
   bool is_consent_granted = true;
-  for (auto& permission_status : permission_statuses) {
+  for (size_t i = 0; i < permission_statuses.size(); ++i) {
+    const blink::mojom::PermissionStatus& permission_status =
+        permission_statuses[i];
+    DVLOG(3) << __func__ << ": index=" << i
+             << ", permission=" << base::to_underlying(permissions[i])
+             << ", status=" << permission_status;
     if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
       is_consent_granted = false;
       break;
