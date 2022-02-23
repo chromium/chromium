@@ -229,7 +229,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 22
+  // Next tag: 23
   message Hardware {
     // OS CPU architecture. Taken from uname -m and modified in Chromium logic.
     // Common options are: x86, x86_64, armv7l, armv8l, aarch64.
@@ -288,6 +288,19 @@ message SystemProfileProto {
     // Max DPI for any attached screen. (Windows only)
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
+
+    // The form factor of the device. Added in M101.
+    // Android devices can be phone, tablet, or TV. iOS devices can be phone or
+    // tablet. For Windows, Mac, ChromeOS, Lacros, and Linux, the desktop form
+    // factor is always used.
+    enum FormFactor {
+      FORM_FACTOR_UNKNOWN = 0;
+      FORM_FACTOR_DESKTOP = 1;
+      FORM_FACTOR_PHONE = 2;
+      FORM_FACTOR_TABLET = 3;
+      FORM_FACTOR_TV = 4;
+    }
+    optional FormFactor form_factor = 22;
 
     // Information on the CPU obtained by CPUID.
     message CPU {
