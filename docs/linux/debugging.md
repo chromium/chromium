@@ -595,3 +595,10 @@ If you need to test something with hardware accelerated compositing
 ## Mozilla Tips
 
 https://developer.mozilla.org/en/Debugging_Mozilla_on_Linux_FAQ
+
+## Google Chrome Symbol Files
+
+Symbols for Google Chrome's official builds are available from
+`https://edgedl.me.gvt1.com/chrome/linux/symbols/google-chrome-debug-info-linux64-${VERSION}.zip`
+where ${VERSION} is any version of Google Chrome that has recently been served
+to Stable, Beta, or Unstable (Dev) channels on Linux.
