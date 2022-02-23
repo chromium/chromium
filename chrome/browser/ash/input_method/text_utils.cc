@@ -29,7 +29,7 @@ bool EndsInSpecialPeriodWord(const std::u16string& text, uint32_t pos) {
   while (idx <= pos && pos - idx <= kSpecialWordMaxLength &&
          text[idx] != u' ' && text[idx] != u'(')
     idx--;
-  if (pos - idx > kSpecialWordMaxLength)
+  if (idx > pos || pos - idx > kSpecialWordMaxLength)
     return false;
   std::u16string last_word = text.substr(idx + 1, pos - idx);
   return (last_word == u"c.f." || last_word == u"cf." || last_word == u"e.g." ||
@@ -131,6 +131,8 @@ uint32_t FindNextSentenceEnd(const std::u16string& text, uint32_t pos) {
 }
 
 Sentence FindLastSentence(const std::u16string& text, uint32_t pos) {
+  if (pos > text.size())
+    return Sentence();
   if (pos > 0 &&
       (pos == text.size() || text[pos] == '\n' || text[pos] == '\r')) {
     pos--;
@@ -153,6 +155,8 @@ Sentence FindLastSentence(const std::u16string& text, uint32_t pos) {
 }
 
 Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos) {
+  if (pos > text.size())
+    return Sentence();
   if (pos > 0 &&
       (pos == text.size() || text[pos] == '\n' || text[pos] == '\r')) {
     pos--;
