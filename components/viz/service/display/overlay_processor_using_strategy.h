@@ -118,6 +118,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   OverlayPrioritizationConfig prioritization_config_;
   OverlayCandidateTemporalTracker::Config tracker_config_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ protected:
+  // TODO(b/181974042):  Remove when color space is plumbed.
+  gfx::ColorSpace primary_plane_color_space_;
+#endif
+
  private:
   // Keeps track of overlay information needed to update damage correctly.
   struct OverlayStatus;
