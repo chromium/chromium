@@ -1150,6 +1150,19 @@
         },
         'use_swarming': True,
       },
+      'android-12-x64-dbg-tests': {
+        'mixins': [
+          '12-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_12_dbg_emulator_gtests',
+        }
+      },
       'android-12-x64-fyi-rel': {
         'mixins': [
           '12-x64-emulator',
@@ -1235,6 +1248,19 @@
         },
         'use_swarming': True,
         'os_type': 'android',
+      },
+      'android-webview-12-x64-dbg-tests': {
+        'mixins': [
+          '12-x64-emulator',
+          'emulator-8-cores',
+          'has_native_resultdb_integration',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'webview_bot_all_gtests',
+        }
       },
       'android-webview-pie-x86-wpt-fyi-rel': {
         'mixins': [

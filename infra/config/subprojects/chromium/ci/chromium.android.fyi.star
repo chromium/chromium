@@ -175,3 +175,23 @@ ci.builder(
         short_name = "x86",
     ),
 )
+
+# TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
+ci.builder(
+    name = "android-webview-12-x64-dbg-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|webview",
+        short_name = "12",
+    ),
+    triggered_by = ["Android x64 Builder (dbg)"],
+)
+
+# TODO(crbug.com/1299910): Move to non-FYI once the tester works fine.
+ci.builder(
+    name = "android-12-x64-dbg-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|phone",
+        short_name = "12",
+    ),
+    triggered_by = ["Android x64 Builder (dbg)"],
+)

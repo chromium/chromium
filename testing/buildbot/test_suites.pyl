@@ -5478,6 +5478,10 @@
       'webview_ui_instrumentation_tests',
     ],
 
+    'android_12_dbg_emulator_gtests': [
+      'android_trichrome_smoke_tests',
+    ],
+
     'android_12_emulator_gtests': [
       'android_emulator_specific_chrome_public_tests',
       'android_monochrome_smoke_tests',
