@@ -184,6 +184,11 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
+bool TestMetricsWebContentsObserverEmbedder::IsSidePanel(
+    content::WebContents* web_contents) {
+  return false;
+}
+
 PageLoadMetricsMemoryTracker*
 TestMetricsWebContentsObserverEmbedder::GetMemoryTrackerForBrowserContext(
     content::BrowserContext* browser_context) {

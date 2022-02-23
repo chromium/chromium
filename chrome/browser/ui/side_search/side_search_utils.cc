@@ -151,6 +151,10 @@ void SetSideSearchTabStateFromRestoreData(
   }
 }
 
+bool IsSidePanelWebContents(content::WebContents* web_contents) {
+  return !!SideSearchSideContentsHelper::FromWebContents(web_contents);
+}
+
 }  // namespace side_search
 
 bool IsSideSearchEnabled(const Profile* profile) {
