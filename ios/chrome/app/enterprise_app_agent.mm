@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_observer_bridge.h"
 #import "ios/chrome/browser/policy/cloud_policy_client_observer_bridge.h"
+#import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -191,7 +192,7 @@ constexpr CGFloat kTimeout = 30;
       machineLevelUserCloudPolicyManager =
           self.policyConnector->machine_level_user_cloud_policy_manager();
 
-  return !tests_hook::DisableFirstRun() &&
+  return ShouldPresentFirstRunExperience() &&
          self.policyConnector->chrome_browser_cloud_management_controller()
              ->IsEnabled() &&
          machineLevelUserCloudPolicyManager &&

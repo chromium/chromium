@@ -202,6 +202,7 @@ source_set("enterprise_app_agent") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser",
     "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
   ]
 }
