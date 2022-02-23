@@ -123,8 +123,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // Stops any ongoing aecdump.
   void OnStopDump();
 
-  // Returns statistics from the WebRTC audio processing module. Requires that
-  // WebRTC audio processing is enabled.
+  // Returns any available statistics from the WebRTC audio processing module.
   // May be called on any thread.
   webrtc::AudioProcessingStats GetStats();
 

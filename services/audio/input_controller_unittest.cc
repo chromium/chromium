@@ -24,11 +24,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::WaitableEvent;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Exactly;
 using ::testing::InvokeWithoutArgs;
+using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::StrictMock;
 
@@ -39,8 +39,6 @@ namespace {
 const int kSampleRate = media::AudioParameters::kAudioCDSampleRate;
 const media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
 const int kSamplesPerPacket = kSampleRate / 100;
-
-const double kMaxVolume = 1.0;
 
 // InputController will poll once every second, so wait at most a bit
 // more than that for the callbacks.
@@ -94,26 +92,6 @@ class MockInputStreamActivityMonitor : public InputStreamActivityMonitor {
   MOCK_METHOD0(OnInputStreamInactive, void());
 };
 
-class MockAudioInputStream : public media::AudioInputStream {
- public:
-  MockAudioInputStream() {}
-  ~MockAudioInputStream() override {}
-
-  void Start(AudioInputCallback*) override {}
-  void Stop() override {}
-  void Close() override {}
-  double GetMaxVolume() override { return kMaxVolume; }
-  double GetVolume() override { return 0; }
-  bool SetAutomaticGainControl(bool) override { return false; }
-  bool GetAutomaticGainControl() override { return false; }
-  bool IsMuted() override { return false; }
-  void SetOutputDeviceForAec(const std::string&) override {}
-
-  MOCK_METHOD0(Open, media::AudioInputStream::OpenOutcome());
-  MOCK_METHOD1(SetVolume, void(double));
-};
-
-// Parameter: use audio processing.
 template <base::test::TaskEnvironment::TimeSource TimeSource =
               base::test::TaskEnvironment::TimeSource::MOCK_TIME>
 class TimeSourceInputControllerTest : public ::testing::Test {
@@ -157,8 +135,6 @@ class TimeSourceInputControllerTest : public ::testing::Test {
   MockUserInputMonitor user_input_monitor_;
   StrictMock<MockInputStreamActivityMonitor> mock_stream_activity_monitor_;
   media::AudioParameters params_;
-  MockAudioInputStream stream_;
-  base::test::ScopedFeatureList audio_processing_feature_;
 };
 
 using SystemTimeInputControllerTest = TimeSourceInputControllerTest<
@@ -245,9 +221,6 @@ TEST_F(InputControllerTest, CloseTwice) {
 
 // Test that InputController sends OnMute callbacks properly.
 TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyUnmuted) {
-  WaitableEvent callback_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                               WaitableEvent::InitialState::NOT_SIGNALED);
-
   EXPECT_CALL(event_handler_, OnCreated(false));
   EXPECT_CALL(sync_writer_, Close());
 
@@ -270,9 +243,6 @@ TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyUnmuted) {
 }
 
 TEST_F(InputControllerTest, TestOnmutedCallbackInitiallyMuted) {
-  WaitableEvent callback_event(WaitableEvent::ResetPolicy::AUTOMATIC,
-                               WaitableEvent::InitialState::NOT_SIGNALED);
-
   EXPECT_CALL(event_handler_, OnCreated(true));
   EXPECT_CALL(sync_writer_, Close());
 
@@ -301,44 +271,69 @@ class MockDeviceOutputListener : public DeviceOutputListener {
   MOCK_METHOD1(StopListening, void(ReferenceOutput::Listener*));
 };
 
-class InputControllerTestWithDeviceListener : public InputControllerTest {
+template <base::test::TaskEnvironment::TimeSource TimeSource =
+              base::test::TaskEnvironment::TimeSource::MOCK_TIME>
+class TimeSourceInputControllerTestWithDeviceListener
+    : public TimeSourceInputControllerTest<TimeSource> {
  protected:
   void CreateAudioController() final {
-    controller_ = InputController::Create(
-        audio_manager_.get(), &event_handler_, &sync_writer_,
-        &user_input_monitor_, &mock_stream_activity_monitor_,
-        &device_output_listener_, std::move(processing_config_), params_,
-        media::AudioDeviceDescription::kDefaultDeviceId, false);
+    // Must use |this| to access template base class members:
+    // https://stackoverflow.com/q/4643074
+    this->controller_ = InputController::Create(
+        this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
+        &this->user_input_monitor_, &this->mock_stream_activity_monitor_,
+        &this->device_output_listener_, std::move(processing_config_),
+        this->params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
   }
 
-  void SetupProcessingConfig(bool force_need_audio_modification) {
-    media::AudioProcessingSettings settings;
-    if (force_need_audio_modification) {
-      settings.echo_cancellation = true;
-    } else {
-      settings.echo_cancellation = false;
-      settings.noise_suppression = false;
-      settings.transient_noise_suppression = false;
-      settings.automatic_gain_control = false;
-      settings.experimental_automatic_gain_control = false;
-      settings.high_pass_filter = false;
-      settings.multi_channel_capture_processing = false;
-      settings.stereo_mirroring = false;
-      settings.force_apm_creation = false;
-    }
+  enum class AudioProcessingType {
+    // No effects, audio does not need to be modified.
+    kNone,
+    // Effects that modify audio but do not require a playout reference signal.
+    kWithoutPlayoutReference,
+    // Effects that require a playout reference signal.
+    kWithPlayoutReference
+  };
 
+  void SetupProcessingConfig(AudioProcessingType audio_processing_type) {
+    media::AudioProcessingSettings settings;
+    settings.echo_cancellation = false;
+    settings.noise_suppression = false;
+    settings.transient_noise_suppression = false;
+    settings.automatic_gain_control = false;
+    settings.experimental_automatic_gain_control = false;
+    settings.high_pass_filter = false;
+    settings.multi_channel_capture_processing = false;
+    settings.stereo_mirroring = false;
+    settings.force_apm_creation = false;
+    switch (audio_processing_type) {
+      case AudioProcessingType::kNone:
+        break;
+      case AudioProcessingType::kWithoutPlayoutReference:
+        settings.noise_suppression = true;
+        break;
+      case AudioProcessingType::kWithPlayoutReference:
+        settings.echo_cancellation = true;
+        break;
+    }
     processing_config_ = media::mojom::AudioProcessingConfig::New(
         remote_controls_.BindNewPipeAndPassReceiver(), settings);
   }
 
-  MockDeviceOutputListener device_output_listener_;
+  NiceMock<MockDeviceOutputListener> device_output_listener_;
   media::mojom::AudioProcessingConfigPtr processing_config_;
   mojo::Remote<media::mojom::AudioProcessorControls> remote_controls_;
 };
 
+using SystemTimeInputControllerTestWithDeviceListener =
+    TimeSourceInputControllerTestWithDeviceListener<
+        base::test::TaskEnvironment::TimeSource::SYSTEM_TIME>;
+using InputControllerTestWithDeviceListener =
+    TimeSourceInputControllerTestWithDeviceListener<>;
+
 TEST_F(InputControllerTestWithDeviceListener,
-       CreateWithAudioProcessingConfig_EchoCancellation) {
-  SetupProcessingConfig(/*force_need_audio_modification=*/true);
+       CreateWithAudioProcessingConfig_WithSomeEffectsEnabled) {
+  SetupProcessingConfig(AudioProcessingType::kWithoutPlayoutReference);
 
   CreateAudioController();
 
@@ -358,8 +353,8 @@ TEST_F(InputControllerTestWithDeviceListener,
 }
 
 TEST_F(InputControllerTestWithDeviceListener,
-       CreateWithAudioProcessingConfig_WithoutEchoCancellation) {
-  SetupProcessingConfig(/*force_need_audio_modification=*/false);
+       CreateWithAudioProcessingConfig_WithoutEnablingEffects) {
+  SetupProcessingConfig(AudioProcessingType::kNone);
 
   CreateAudioController();
 
@@ -375,6 +370,26 @@ TEST_F(InputControllerTestWithDeviceListener,
   EXPECT_FALSE(remote_controls_.is_connected());
 
   // Test cleanup.
+  controller_->Close();
+}
+
+TEST_F(
+    InputControllerTestWithDeviceListener,
+    CreateWithAudioProcessingConfig_DoesNotListenForPlayoutReferenceIfNotRequired) {
+  const std::string kOutputDeviceId = "0x123";
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
+
+  EXPECT_CALL(device_output_listener_, StartListening(_, _)).Times(0);
+  EXPECT_CALL(device_output_listener_, StopListening(_)).Times(0);
+
+  SetupProcessingConfig(AudioProcessingType::kWithoutPlayoutReference);
+  CreateAudioController();
+
+  ASSERT_TRUE(controller_.get());
+
+  controller_->Record();
+  controller_->SetOutputDeviceForAec(kOutputDeviceId);
   controller_->Close();
 }
 
@@ -439,6 +454,44 @@ TEST_F(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
   controller_->SetOutputDeviceForAec(kOtherOutputDeviceId);
   controller_->Close();
 }
+
+// Test a normal call sequence of create, record and close when audio processing
+// is enabled.
+// Note: Must use system time as MOCK_TIME does not support the threads created
+// by the FakeAudioInputStream. The callbacks to sync_writer_.Write() are on
+// that thread, and thus we must use SYSTEM_TIME.
+TEST_F(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
+  EXPECT_CALL(event_handler_, OnCreated(_));
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
+  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  CreateAudioController();
+  ASSERT_TRUE(controller_.get());
+
+  base::RunLoop loop;
+
+  {
+    // Wait for Write() to be called ten times.
+    testing::InSequence s;
+    EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
+        .Times(AtLeast(1))
+        .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+  }
+  controller_->Record();
+  loop.Run();
+
+  testing::Mock::VerifyAndClearExpectations(&user_input_monitor_);
+  testing::Mock::VerifyAndClearExpectations(&sync_writer_);
+
+  EXPECT_CALL(sync_writer_, Close());
+  EXPECT_CALL(user_input_monitor_, DisableKeyPressMonitoring());
+  controller_->Close();
+
+  task_environment_.RunUntilIdle();
+}
+
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 }  // namespace audio

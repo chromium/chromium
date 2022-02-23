@@ -380,7 +380,8 @@ void AudioProcessor::OnPlayoutData(const media::AudioBus& audio_bus,
 }
 
 webrtc::AudioProcessingStats AudioProcessor::GetStats() {
-  DCHECK(webrtc_audio_processing_);
+  if (!webrtc_audio_processing_)
+    return {};
   return webrtc_audio_processing_->GetStatistics();
 }
 

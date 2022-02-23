@@ -264,7 +264,13 @@ class InputController final : public StreamMonitor {
   // processing components.
   void MaybeSetUpAudioProcessing(
       media::mojom::AudioProcessingConfigPtr processing_config,
+      const media::AudioParameters& params,
       DeviceOutputListener* device_output_listener);
+
+  // Used as a callback for |audio_processor_handler_|.
+  void DeliverProcessedAudio(const media::AudioBus& audio_bus,
+                             base::TimeTicks audio_capture_time,
+                             absl::optional<double> new_volume);
 #endif
 
   static StreamType ParamsToStreamType(const media::AudioParameters& params);

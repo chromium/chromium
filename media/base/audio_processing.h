@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -87,6 +88,13 @@ struct MEDIA_EXPORT AudioProcessingSettings {
 
   // Stringifies the settings for human-readable logging.
   std::string ToString() const;
+};
+
+// This struct contains audio processing metrics that are reported by the audio
+// service.
+struct MEDIA_EXPORT AudioProcessingStats {
+  absl::optional<double> echo_return_loss;
+  absl::optional<double> echo_return_loss_enhancement;
 };
 
 }  // namespace media

@@ -167,6 +167,10 @@ mojom("mojom") {
           mojom = "media.mojom.AudioProcessingSettings"
           cpp = "::media::AudioProcessingSettings"
         },
+        {
+          mojom = "media.mojom.AudioProcessingStats"
+          cpp = "::media::AudioProcessingStats"
+        },
       ]
       traits_headers = [ "audio_processing_mojom_traits.h" ]
       traits_sources = [ "audio_processing_mojom_traits.cc" ]

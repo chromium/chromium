@@ -160,6 +160,8 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
                    media::VideoFrameMetadata* output);
 };
 
+#undef GENERATE_OPT_SERIALIZATION
+
 }  // namespace mojo
 
 #endif  // MEDIA_MOJO_MOJOM_VIDEO_FRAME_METADATA_MOJOM_TRAITS_H_
