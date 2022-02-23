@@ -3217,7 +3217,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4680961954980851756">Aktifkan IsiOtomatis</translation>
 <translation id="4685721728282448265">Perjanjian kunci pasca-kuantum CECPQ2 diaktifkan untuk TLS</translation>
 <translation id="4693779768620889402">Tujuan berbasis ekstensi</translation>
-<translation id="4699172675775169585">Gambar dan file yang disimpan dalam cache</translation>
+<translation id="4699172675775169585">Gambar dan file dalam cache</translation>
 <translation id="4699592681017489215">Kebijakan ini mengonfigurasi tombol lokal yang dapat digunakan untuk menonaktifkan pemeriksaan intersepsi DNS. Pemeriksaan ini berupaya mencari tahu apakah browser berada di balik proxy yang mengalihkan nama host tidak dikenal.
 
       Deteksi ini mungkin tidak diperlukan dalam lingkungan perusahaan yang konfigurasi jaringannya dikenal, karena kebijakan ini menyebabkan adanya sejumlah traffic DNS dan HTTP pada saat proses memulai dan setiap perubahan konfigurasi DNS.
