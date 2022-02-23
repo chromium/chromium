@@ -7304,7 +7304,7 @@ crbug.com/1274917 external/wpt/content-security-policy/inheritance/history.sub.h
 crbug.com/1274917 external/wpt/content-security-policy/inheritance/history-iframe.sub.html [ Failure Pass Timeout ]
 
 # Test is very flaky (score of 223).
-crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Pass Timeout ]
+crbug.com/1274919 http/tests/inspector-protocol/page/consecutive-navigate.js [ Pass Timeout Failure ]
 
 # Sheriff 2021-11-23
 crbug.com/1046784 http/tests/devtools/tracing/timeline-receive-response-event.js [ Failure Pass ]
