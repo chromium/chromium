@@ -9,10 +9,13 @@
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace feedback {
 
+using os_feedback_ui::mojom::HelpContent;
+using os_feedback_ui::mojom::HelpContentType;
 using os_feedback_ui::mojom::SearchResponse;
 using os_feedback_ui::mojom::SearchResponsePtr;
 
@@ -24,6 +27,10 @@ void HelpContentSearchService::Search(
     os_feedback_ui::mojom::SearchResponsePtr& response) {
   // TODO(xiagndongkong): implement the search and populate response.
   response->total_results = 0;
+  // TODO(xiangdongkong): Remove the following dummy item.
+  response->results.emplace_back(HelpContent::New(u"how to fix wifi issue",
+                                                  GURL("https://fakehelp.com"),
+                                                  HelpContentType::kArticle));
 }
 
 HelpContentProvider::HelpContentProvider()

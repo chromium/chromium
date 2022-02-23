@@ -2427,6 +2427,8 @@ static_library("browser") {
       "//ash/webui/media_app_ui",
       "//ash/webui/media_app_ui:mojo_bindings",
       "//ash/webui/multidevice_debug",
+      "//ash/webui/os_feedback_ui",
+      "//ash/webui/os_feedback_ui/mojom",
       "//ash/webui/personalization_app",
       "//ash/webui/personalization_app/mojom",
       "//ash/webui/print_management",

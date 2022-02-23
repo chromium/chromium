@@ -210,6 +210,8 @@
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui.mojom.h"
 #include "ash/webui/multidevice_debug/proximity_auth_ui.h"
+#include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
+#include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
@@ -989,6 +991,12 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::common::mojom::AccessibilityFeatures, ash::ScanningUI>(map);
+
+  if (base::FeatureList::IsEnabled(ash::features::kOsFeedback)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::os_feedback_ui::mojom::HelpContentProvider, ash::OSFeedbackUI>(
+        map);
+  }
 
   // TODO(crbug.com/1218492): When boot RMA state is available disable this when
   // not in RMA.

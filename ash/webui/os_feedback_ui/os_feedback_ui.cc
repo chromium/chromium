@@ -85,4 +85,5 @@ void OSFeedbackUI::BindInterface(
   helpContentProvider_->BindInterface(std::move(receiver));
 }
 
+WEB_UI_CONTROLLER_TYPE_IMPL(OSFeedbackUI)
 }  // namespace ash

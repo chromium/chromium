@@ -24,11 +24,14 @@ class OSFeedbackUI : public ui::MojoWebUIController {
   OSFeedbackUI& operator=(const OSFeedbackUI&) = delete;
   ~OSFeedbackUI() override;
 
- private:
   void BindInterface(
       mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
           receiver);
+
+ private:
   std::unique_ptr<feedback::HelpContentProvider> helpContentProvider_;
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace ash

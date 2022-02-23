@@ -73,3 +73,9 @@ export const SearchResponse = ash.osFeedbackUi.mojom.SearchResponse;
  */
 export const HelpContentProviderInterface =
     ash.osFeedbackUi.mojom.HelpContentProviderInterface;
+
+/**
+ * Type alias for the HelpContentProvider.
+ * @typedef {ash.osFeedbackUi.mojom.HelpContentProvider}
+ */
+export const HelpContentProvider = ash.osFeedbackUi.mojom.HelpContentProvider;
