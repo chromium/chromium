@@ -4585,7 +4585,7 @@
   {
     "name": "omnibox-zero-suggest-prefetching",
     "owners": [ "mahmadi", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 105
   },
   {
     "name": "oobe-hid-detection-revamp",
