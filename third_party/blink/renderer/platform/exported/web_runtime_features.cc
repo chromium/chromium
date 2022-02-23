@@ -635,10 +635,6 @@ void WebRuntimeFeatures::EnableRestrictGamepadAccess(bool enable) {
   RuntimeEnabledFeatures::SetRestrictGamepadAccessEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableParseUrlProtocolHandler(bool enable) {
-  RuntimeEnabledFeatures::SetParseUrlProtocolHandlerEnabled(enable);
-}
-
 void WebRuntimeFeatures::EnableWebAppManifestId(bool enable) {
   RuntimeEnabledFeatures::SetWebAppManifestIdEnabled(enable);
 }

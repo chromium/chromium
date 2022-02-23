@@ -245,8 +245,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableNeverSlowMode, features::kNeverSlowMode},
     {wf::EnableNotificationContentImage, features::kNotificationContentImage,
      kSetOnlyIfOverridden},
-    {wf::EnableParseUrlProtocolHandler,
-     blink::features::kWebAppEnableProtocolHandlers},
     {wf::EnableWebAppManifestId, blink::features::kWebAppEnableManifestId},
     {wf::EnablePaymentApp, features::kServiceWorkerPaymentApps},
     {wf::EnablePaymentRequest, features::kWebPayments},

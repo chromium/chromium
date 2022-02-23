@@ -1151,11 +1151,8 @@ bool ManifestParser::ParseFileHandlerAcceptExtension(const JSONValue* extension,
 Vector<mojom::blink::ManifestProtocolHandlerPtr>
 ManifestParser::ParseProtocolHandlers(const JSONObject* from) {
   Vector<mojom::blink::ManifestProtocolHandlerPtr> protocols;
-  const bool feature_enabled =
-      base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableProtocolHandlers) ||
-      RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled(feature_context_);
-  if (!feature_enabled || !from->Get("protocol_handlers"))
+
+  if (!from->Get("protocol_handlers"))
     return protocols;
 
   JSONArray* protocol_list = from->GetArray("protocol_handlers");
@@ -1184,10 +1181,6 @@ ManifestParser::ParseProtocolHandlers(const JSONObject* from) {
 
 absl::optional<mojom::blink::ManifestProtocolHandlerPtr>
 ManifestParser::ParseProtocolHandler(const JSONObject* object) {
-  DCHECK(
-      base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableProtocolHandlers) ||
-      RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled(feature_context_));
   if (!object->Get("protocol")) {
     AddErrorInfo(
         "protocol_handlers entry ignored, required property 'protocol' is "

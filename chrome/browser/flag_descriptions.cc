@@ -888,11 +888,6 @@ const char kDesktopPWAsSubAppsDescription[] =
     "Prototype implementation of: "
     "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
 
-const char kDesktopPWAsProtocolHandlingName[] = "Desktop PWA Protocol handling";
-const char kDesktopPWAsProtocolHandlingDescription[] =
-    "Enable web app manifests to declare protocol handling behavior."
-    "See: https://crbug.com/1019239.";
-
 const char kDesktopPWAsUrlHandlingName[] = "Desktop PWA URL handling";
 const char kDesktopPWAsUrlHandlingDescription[] =
     "Enable web app manifests to declare URL handling behavior. Prototype "

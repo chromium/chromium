@@ -514,9 +514,6 @@ extern const char kDesktopPWAsTabStripSettingsDescription[];
 extern const char kDesktopPWAsSubAppsName[];
 extern const char kDesktopPWAsSubAppsDescription[];
 
-extern const char kDesktopPWAsProtocolHandlingName[];
-extern const char kDesktopPWAsProtocolHandlingDescription[];
-
 extern const char kDesktopPWAsUrlHandlingName[];
 extern const char kDesktopPWAsUrlHandlingDescription[];
 

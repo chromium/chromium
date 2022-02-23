@@ -3270,13 +3270,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
 }
 #endif
 
-class ManifestUpdateManagerBrowserTestWithProtocolHandling
-    : public ManifestUpdateManagerBrowserTest {
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableProtocolHandlers};
-};
-
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsAddedProtocolHandler) {
   constexpr char kManifestTemplate[] = R"(
     {
@@ -3321,7 +3315,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
             protocol_handler.url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckIgnoresUnchangedProtocolHandler) {
   constexpr char kProtocolHandlerManifestTemplate[] = R"(
     {
@@ -3352,7 +3346,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   EXPECT_FALSE(web_app->protocol_handlers().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsChangedProtocolHandler) {
   constexpr char kProtocolHandlerManifestTemplate[] = R"(
     {
@@ -3394,7 +3388,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
             new_protocol_handler.url.spec());
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsDeletedProtocolHandler) {
   constexpr char kProtocolHandlerManifestTemplate[] = R"(
     {

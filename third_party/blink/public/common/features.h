@@ -384,8 +384,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableTranslations;
 
 BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableUrlHandlers;
 
-BLINK_COMMON_EXPORT extern const base::Feature kWebAppEnableProtocolHandlers;
-
 BLINK_COMMON_EXPORT extern const base::Feature kLoadingTasksUnfreezable;
 
 BLINK_COMMON_EXPORT extern const base::Feature

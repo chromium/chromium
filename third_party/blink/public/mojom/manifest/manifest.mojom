@@ -52,8 +52,6 @@ struct Manifest {
   // As such, this field should not be exposed by default.
   array<ManifestFileHandler> file_handlers;
 
-  // TODO(crbug.com/1019239): This is going into the mainline manifest spec,
-  // remove the TODO once that PR goes in.
   // The URLProtocolHandler explainer can be found here:
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/URLProtocolHandler/explainer.md
   array<ManifestProtocolHandler> protocol_handlers;

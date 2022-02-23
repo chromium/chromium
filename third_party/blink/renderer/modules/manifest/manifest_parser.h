@@ -349,8 +349,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed list of ProtocolHandlers. The returned ProtocolHandlers
   // are empty if the field didn't exist, parsing failed, or the input list was
   // empty.
-  // This feature is experimental and would only be enabled behind the blink
-  // feature flag: RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled()
   Vector<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandlers(
       const JSONObject* object);
 
@@ -358,8 +356,6 @@ class MODULES_EXPORT ManifestParser {
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/master/URLProtocolHandler/explainer.md
   // Returns |absl::nullopt| if the ProtocolHandler was invalid, or a
   // ProtocolHandler if parsing succeeded.
-  // This feature is experimental and should only be used behind the blink
-  // feature flag: RuntimeEnabledFeatures::ParseUrlProtocolHandlerEnabled()
   absl::optional<mojom::blink::ManifestProtocolHandlerPtr> ParseProtocolHandler(
       const JSONObject* protocol_dictionary);
 

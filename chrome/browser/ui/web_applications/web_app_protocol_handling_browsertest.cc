@@ -19,7 +19,6 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 namespace {
@@ -35,11 +34,7 @@ namespace web_app {
 
 class WebAppProtocolHandlingBrowserTest : public WebAppNavigationBrowserTest {
  public:
-  WebAppProtocolHandlingBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableProtocolHandlers);
-  }
-
+  WebAppProtocolHandlingBrowserTest() = default;
   ~WebAppProtocolHandlingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -76,7 +71,6 @@ class WebAppProtocolHandlingBrowserTest : public WebAppNavigationBrowserTest {
 
  private:
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppProtocolHandlingBrowserTest,

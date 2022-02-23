@@ -2809,10 +2809,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWebAppUrlHandlingTest, UrlNotCaptured) {
 
 class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
  protected:
-  StartupBrowserWebAppProtocolHandlingTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableProtocolHandlers);
-  }
+  StartupBrowserWebAppProtocolHandlingTest() = default;
 
   bool AreProtocolHandlersSupported() {
 #if BUILDFLAG(IS_WIN)
