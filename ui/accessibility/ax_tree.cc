@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -1064,9 +1065,7 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // so that we only notify the initial node data against the final node data,
   // unless the node is a new root.
   std::set<AXNodeID> notified_node_attributes_will_change;
-  for (auto iter = update_state.updated_nodes.rbegin();
-       iter != update_state.updated_nodes.rend(); ++iter) {
-    const AXNodeData& new_data = *iter;
+  for (const auto& new_data : base::Reversed(update_state.updated_nodes)) {
     const bool is_new_root =
         update_state.root_will_be_created && new_data.id == update.root_id;
     if (is_new_root)

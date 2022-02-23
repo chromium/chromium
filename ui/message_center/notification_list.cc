@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/containers/adapters.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -204,11 +205,8 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
   size_t default_priority_popup_count = 0;
 
   // Collect notifications that should be shown as popups. Start from oldest.
-  for (auto iter = notifications_.rbegin(); iter != notifications_.rend();
-       iter++) {
-    NotificationState* state = &iter->second;
-    Notification* notification = iter->first.get();
-    if (state->shown_as_popup)
+  for (auto& [notification, state] : base::Reversed(notifications_)) {
+    if (state.shown_as_popup)
       continue;
 
     // No popups for LOW/MIN priority.
@@ -221,8 +219,8 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
 
     if (!ShouldShowNotificationAsPopup(*notification, blockers,
                                        /*except=*/nullptr)) {
-      if (state->is_read)
-        state->shown_as_popup = true;
+      if (state.is_read)
+        state.shown_as_popup = true;
       if (blocked)
         blocked->push_back(notification->id());
       continue;
@@ -236,7 +234,7 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
       continue;
     }
 
-    result.insert(notification);
+    result.insert(notification.get());
   }
   return result;
 }

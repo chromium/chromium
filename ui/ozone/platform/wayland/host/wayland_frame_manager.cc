@@ -7,6 +7,7 @@
 #include <presentation-time-client-protocol.h>
 #include <sync/sync.h>
 
+#include "base/containers/adapters.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -181,12 +182,10 @@ void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
   // Configure subsurfaces. Traverse the deque backwards s.t. we can set
   // frame_callback and presentation_feedback on the top-most possible surface.
   WaylandSurface* reference_above = nullptr;
-  for (auto r_iter = frame->subsurfaces_to_overlays.rbegin();
-       r_iter != frame->subsurfaces_to_overlays.rend(); ++r_iter) {
-    auto* subsurface = r_iter->first;
+  for (auto& [subsurface, config] :
+       base::Reversed(frame->subsurfaces_to_overlays)) {
     DCHECK(subsurface);
     auto* surface = subsurface->wayland_surface();
-    auto& config = r_iter->second;
     if (empty_frame || config.is_null() ||
         wl_fixed_from_double(config->opacity) == 0) {
       subsurface->Hide();

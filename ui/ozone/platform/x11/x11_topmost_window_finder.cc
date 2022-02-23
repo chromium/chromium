@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/xproto_util.h"
@@ -40,13 +41,13 @@ bool EnumerateChildren(ShouldStopIteratingCallback should_stop_iterating,
 
   // XQueryTree returns the children of |window| in bottom-to-top order, so
   // reverse-iterate the list to check the windows from top-to-bottom.
-  std::vector<x11::Window>::reverse_iterator iter;
-  for (iter = windows.rbegin(); iter != windows.rend(); iter++) {
+  for (const auto& window : base::Reversed(windows)) {
     if (depth < max_depth) {
-      if (EnumerateChildren(should_stop_iterating, *iter, max_depth, depth + 1))
+      if (EnumerateChildren(should_stop_iterating, window, max_depth,
+                            depth + 1))
         return true;
     }
-    if (IsWindowNamed(*iter) && should_stop_iterating.Run(*iter))
+    if (IsWindowNamed(window) && should_stop_iterating.Run(window))
       return true;
   }
 

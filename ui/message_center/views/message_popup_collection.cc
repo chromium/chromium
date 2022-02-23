@@ -5,6 +5,7 @@
 #include "ui/message_center/views/message_popup_collection.h"
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
@@ -503,9 +504,9 @@ bool MessagePopupCollection::AddPopup() {
   auto notifications = GetPopupNotifications();
   Notification* new_notification = nullptr;
   // Reverse iterating because notifications are in reverse chronological order.
-  for (auto it = notifications.rbegin(); it != notifications.rend(); ++it) {
-    if (!existing_ids.count((*it)->id())) {
-      new_notification = *it;
+  for (Notification* notification : base::Reversed(notifications)) {
+    if (!existing_ids.count(notification->id())) {
+      new_notification = notification;
       break;
     }
   }
