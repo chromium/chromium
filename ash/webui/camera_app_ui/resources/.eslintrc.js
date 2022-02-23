@@ -496,6 +496,9 @@ module.exports = {
         objectLiteralTypeAssertions: 'never',
       },
     ],
+
+    // go/tsstyle#interfaces-vs-type-aliases
+    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
   }),
   'overrides': [{
     files: ['**/*.ts'],

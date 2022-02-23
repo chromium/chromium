@@ -104,16 +104,16 @@ interface ErrorConstructor {
 
 // Chrome private API for crash report.
 declare namespace chrome.crashReportPrivate {
-  export type ErrorInfo = {
-    message: string,
-    url: string,
-    columnNumber?: number,
-    debugId?: string,
-    lineNumber?: number,
-    product?: string,
-    stackTrace?: string,
-    version?: string,
-  };
+  export interface ErrorInfo {
+    message: string;
+    url: string;
+    columnNumber?: number;
+    debugId?: string;
+    lineNumber?: number;
+    product?: string;
+    stackTrace?: string;
+    version?: string;
+  }
   export const reportError: (info: ErrorInfo, callback: () => void) => void;
 }
 
