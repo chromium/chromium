@@ -102,7 +102,8 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
     }
   }
 
-  std::string form_name = GetDOMFormName(UTF16ToUTF8(form_data.name));
+  std::string form_name =
+      StripDigitsIfRequired(GetDOMFormName(UTF16ToUTF8(form_data.name)));
   std::string form_string = base::StrCat(
       {scheme, "://", host, "&", form_name, form_signature_field_names});
   return FormSignature(StrToHash64Bit(form_string));
