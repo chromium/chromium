@@ -292,7 +292,7 @@ Refer to README.md for content description and update process.
  <item id="ambient_photo_controller" added_in_milestone="98" content_hash_code="03284b8a" os_list="chromeos" file_path="ash/ambient/ambient_photo_controller.cc" />
  <item id="image_downloader" added_in_milestone="98" content_hash_code="05b52680" os_list="chromeos" file_path="ash/assistant/assistant_controller_impl.cc" />
  <item id="fast_pair_footprints_request" added_in_milestone="98" type="partial" second_id="oauth2_api_call_flow" content_hash_code="01d3d58d" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="-1,3,5" file_path="ash/quick_pair/repository/fast_pair/footprints_fetcher.cc" />
- <item id="fast_pair" added_in_milestone="99" content_hash_code="060b214f" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair_image_decoder_impl.cc" />
+ <item id="fast_pair" added_in_milestone="99" content_hash_code="060b214f" os_list="chromeos" file_path="ash/quick_pair/repository/fast_pair/fast_pair_image_decoder_impl.cc" />
  <item id="kiosk_app_icon" added_in_milestone="98" content_hash_code="04f02fef" os_list="chromeos" file_path="chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.cc" />
  <item id="arc_auth_code_fetcher" added_in_milestone="98" content_hash_code="057519ca" os_list="chromeos" file_path="chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.cc" />
  <item id="customization_wallpaper_downloader" added_in_milestone="98" content_hash_code="03ee8364" os_list="chromeos" file_path="chrome/browser/ash/customization/customization_wallpaper_downloader.cc" />
