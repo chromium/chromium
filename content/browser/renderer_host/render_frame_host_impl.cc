@@ -10004,9 +10004,7 @@ void RenderFrameHostImpl::CreatePermissionService(
 void RenderFrameHostImpl::GetWebAuthenticationService(
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kWebAuth)) {
-    AuthenticatorImpl::Create(this, std::move(receiver));
-  }
+  AuthenticatorImpl::Create(this, std::move(receiver));
 #else
   GetJavaInterfaces()->GetInterface(std::move(receiver));
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -10028,8 +10026,7 @@ void RenderFrameHostImpl::GetVirtualAuthenticatorManager(
     mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
         receiver) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kWebAuth) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableWebAuthDeprecatedMojoTestingApi)) {
     auto* environment_singleton = AuthenticatorEnvironmentImpl::GetInstance();
     environment_singleton->EnableVirtualAuthenticatorFor(frame_tree_node_);

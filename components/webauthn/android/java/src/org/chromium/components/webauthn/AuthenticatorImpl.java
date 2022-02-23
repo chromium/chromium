@@ -23,7 +23,6 @@ import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -167,11 +166,6 @@ public final class AuthenticatorImpl implements Authenticator {
         Context context = ContextUtils.getApplicationContext();
         // ChromeActivity could be null.
         if (context == null) {
-            decoratedCallback.call(false);
-            return;
-        }
-
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
             decoratedCallback.call(false);
             return;
         }

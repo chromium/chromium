@@ -65,8 +65,6 @@ public class ContentFeatureList {
 
     public static final String REQUEST_DESKTOP_SITE_GLOBAL = "RequestDesktopSiteGlobal";
 
-    public static final String WEB_AUTH = "WebAuthentication";
-
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =
             "WebBluetoothNewPermissionsBackend";
 

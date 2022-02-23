@@ -531,6 +531,9 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
         Java_AwSettings_getForceDarkBehaviorLocked(env, obj),
         Java_AwSettings_isAlgorithmicDarkeningAllowedLocked(env, obj));
   }
+
+  // WebView does not support WebAuthn yet.
+  web_prefs->disable_webauthn = true;
 }
 
 bool AwSettings::IsDarkMode(JNIEnv* env, const JavaParamRef<jobject>& obj) {

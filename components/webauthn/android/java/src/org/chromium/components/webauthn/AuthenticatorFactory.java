@@ -5,7 +5,6 @@
 package org.chromium.components.webauthn;
 
 import org.chromium.blink.mojom.Authenticator;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
@@ -24,8 +23,7 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
 
     @Override
     public Authenticator createImpl() {
-        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)
-                || mRenderFrameHost == null) {
+        if (mRenderFrameHost == null) {
             return null;
         }
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);

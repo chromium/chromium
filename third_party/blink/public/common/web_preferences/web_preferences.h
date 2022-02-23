@@ -255,6 +255,8 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Don't accelerate small canvases to avoid crashes TODO(crbug.com/1004304)
   bool disable_accelerated_small_canvases;
+  // Disable the Web Authentication API.
+  bool disable_webauthn = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Enable forcibly modifying content rendering to result in a light on dark
