@@ -128,21 +128,34 @@ void BrowserDownloadService::OnDownloadCreated(
                                 DownloadFileUI::Count);
 
   if (task->GetMimeType() == kPkPassMimeType) {
-    PassKitTabHelper::FromWebState(web_state)->Download(std::move(task));
+    PassKitTabHelper* tab_helper = PassKitTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->Download(std::move(task));
   } else if (IsUsdzFileFormat(task->GetMimeType(),
                               task->GetSuggestedFilename())) {
-    ARQuickLookTabHelper::FromWebState(web_state)->Download(std::move(task));
+    ARQuickLookTabHelper* tab_helper =
+        ARQuickLookTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->Download(std::move(task));
 
   } else if (task->GetMimeType() == kMobileConfigurationType &&
              task->GetOriginalUrl().SchemeIsHTTPOrHTTPS()) {
     // SFSafariViewController can only open http and https URLs.
-    MobileConfigTabHelper::FromWebState(web_state)->Download(std::move(task));
+    MobileConfigTabHelper* tab_helper =
+        MobileConfigTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->Download(std::move(task));
   } else if (task->GetMimeType() == kVcardMimeType &&
              base::FeatureList::IsEnabled(kDownloadVcard)) {
-    VcardTabHelper::FromWebState(web_state)->Download(std::move(task));
+    VcardTabHelper* tab_helper = VcardTabHelper::FromWebState(web_state);
+    if (tab_helper)
+      tab_helper->Download(std::move(task));
   } else {
-    DownloadManagerTabHelper::FromWebState(web_state)->Download(
-        std::move(task));
+    DownloadManagerTabHelper* tab_helper =
+        DownloadManagerTabHelper::FromWebState(web_state);
+    // TODO(crbug.com/1300151): Investigate why tab_helper is sometimes nil.
+    if (tab_helper)
+      tab_helper->Download(std::move(task));
   }
 }
 
