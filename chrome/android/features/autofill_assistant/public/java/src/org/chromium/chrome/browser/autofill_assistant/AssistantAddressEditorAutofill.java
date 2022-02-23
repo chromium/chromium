@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantAddressEditor;
@@ -46,9 +47,17 @@ public class AssistantAddressEditorAutofill implements AssistantAddressEditor {
         Callback<AutofillAddress> editorDoneCallback = editedAddress -> {
             assert (editedAddress != null && editedAddress.isComplete()
                     && editedAddress.getProfile() != null);
+            String fullDescription = PersonalDataManager.getInstance()
+                                             .getShippingAddressLabelWithCountryForPaymentRequest(
+                                                     editedAddress.getProfile());
+            String summaryDescription =
+                    PersonalDataManager.getInstance()
+                            .getShippingAddressLabelWithoutCountryForPaymentRequest(
+                                    editedAddress.getProfile());
             doneCallback.onResult(new AddressModel(
                     AssistantAutofillUtilChrome.autofillProfileToAssistantAutofillProfile(
-                            editedAddress.getProfile())));
+                            editedAddress.getProfile()),
+                    fullDescription, summaryDescription));
         };
 
         Callback<AutofillAddress> editorCancelCallback =

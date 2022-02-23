@@ -539,14 +539,13 @@ public class AutofillAssistantCollectUserDataUiTest {
                     new ContactModel(contact));
             AssistantAutofillProfile phone_number = createDummyContact(profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS,
-                    Collections.singletonList(new ContactModel(contact)));
+                    Collections.singletonList(new ContactModel(phone_number)));
             model.set(
                     AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER, new ContactModel(contact));
-            AssistantAutofillProfile address = createDummyAddress(profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
-                    Collections.singletonList(new AddressModel(address)));
+                    Collections.singletonList(createAddressModel(profile)));
             model.set(AssistantCollectUserDataModel.SELECTED_SHIPPING_ADDRESS,
-                    new AddressModel(address));
+                    createAddressModel(profile));
             AssistantPaymentInstrument paymentInstrument =
                     AssistantCollectUserDataModel.createAssistantPaymentInstrument(
                             createDummyCreditCard(creditCard), createDummyAddress(profile));
@@ -628,7 +627,7 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.AVAILABLE_CONTACTS,
                     Collections.singletonList(new ContactModel(contact)));
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
-                    Collections.singletonList(new AddressModel(createDummyAddress(profile))));
+                    Collections.singletonList(createAddressModel(profile)));
             AssistantPaymentInstrument paymentInstrument =
                     AssistantCollectUserDataModel.createAssistantPaymentInstrument(
                             createDummyCreditCard(creditCard), createDummyAddress(profile));
@@ -1138,5 +1137,15 @@ public class AutofillAssistantCollectUserDataUiTest {
                 creditCard.getIssuerIconDrawableId(), creditCard.getBillingAddressId(),
                 creditCard.getServerId(), creditCard.getInstrumentId(), creditCard.getNickname(),
                 creditCard.getCardArtUrl(), creditCard.getVirtualCardEnrollmentState());
+    }
+
+    private AddressModel createAddressModel(PersonalDataManager.AutofillProfile profile) {
+        String fullDescription =
+                PersonalDataManager.getInstance()
+                        .getShippingAddressLabelWithCountryForPaymentRequest(profile);
+        String summaryDescription =
+                PersonalDataManager.getInstance()
+                        .getShippingAddressLabelWithoutCountryForPaymentRequest(profile);
+        return new AddressModel(createDummyAddress(profile), fullDescription, summaryDescription);
     }
 }

@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.payments.AutofillAddress;
@@ -88,26 +87,6 @@ public class AssistantAutofillUtilChrome {
                 CompletenessCheckType.IGNORE_PHONE);
     }
 
-    /**
-     * Get the label for an {@link AssistantAutofillProfile} used as a shipping address.
-     *
-     * @param profile The {@link AssistantAutofillProfile}.
-     * @param withCountry Flag to add country.
-     * @return The label.
-     */
-    public static String getShippingAddressLabel(
-            AssistantAutofillProfile profile, boolean withCountry) {
-        if (withCountry) {
-            return PersonalDataManager.getInstance()
-                    .getShippingAddressLabelWithCountryForPaymentRequest(
-                            assistantAutofillProfileToAutofillProfile(profile));
-        } else {
-            return PersonalDataManager.getInstance()
-                    .getShippingAddressLabelWithoutCountryForPaymentRequest(
-                            assistantAutofillProfileToAutofillProfile(profile));
-        }
-    }
-
     private static CreditCard assistantAutofillCreditCardToAutofillCreditCard(
             AssistantAutofillCreditCard creditCard) {
         return new CreditCard(creditCard.getGUID(), creditCard.getOrigin(), creditCard.getIsLocal(),
@@ -164,16 +143,5 @@ public class AssistantAutofillUtilChrome {
                 autofillBillingProfile == null
                         ? null
                         : autofillProfileToAssistantAutofillProfile(autofillBillingProfile));
-    }
-
-    /**
-     * Get the label for an {@link AssistantAutofillProfile} used as a billing address.
-     *
-     * @param profile The {@link AssistantAutofillProfile}.
-     * @return The label.
-     */
-    public static String getBillingAddressLabel(AssistantAutofillProfile profile) {
-        return PersonalDataManager.getInstance().getBillingAddressLabelForPaymentRequest(
-                assistantAutofillProfileToAutofillProfile(profile));
     }
 }

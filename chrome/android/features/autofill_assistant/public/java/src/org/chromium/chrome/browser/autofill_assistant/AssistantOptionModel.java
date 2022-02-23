@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -52,12 +53,27 @@ public abstract class AssistantOptionModel<T> {
 
     /** Model wrapper for an {@link AssistantAutofillProfile}. */
     public static class AddressModel extends AssistantOptionModel<AssistantAutofillProfile> {
-        public AddressModel(AssistantAutofillProfile address, List<String> errors) {
+        private final String mFullDescription;
+        private final String mSummaryDescription;
+
+        public AddressModel(AssistantAutofillProfile address, String fullDescription,
+                String summaryDescription, List<String> errors) {
             super(address, errors);
+            mFullDescription = fullDescription;
+            mSummaryDescription = summaryDescription;
         }
 
-        public AddressModel(AssistantAutofillProfile address) {
-            super(address);
+        public AddressModel(AssistantAutofillProfile address, String fullDescription,
+                String summaryDescription) {
+            this(address, fullDescription, summaryDescription, Collections.emptyList());
+        }
+
+        public String getFullDescription() {
+            return mFullDescription;
+        }
+
+        public String getSummaryDescription() {
+            return mSummaryDescription;
         }
     }
 

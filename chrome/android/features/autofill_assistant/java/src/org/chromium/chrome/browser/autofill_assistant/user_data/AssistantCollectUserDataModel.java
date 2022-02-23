@@ -339,11 +339,12 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private void setSelectedShippingAddress(
-            @Nullable AssistantAutofillProfile shippingAddress, String[] errors) {
+    private void setSelectedShippingAddress(@Nullable AssistantAutofillProfile shippingAddress,
+            String fullDescription, String summaryDescription, String[] errors) {
         set(SELECTED_SHIPPING_ADDRESS,
                 shippingAddress == null ? null
-                                        : new AddressModel(shippingAddress, Arrays.asList(errors)));
+                                        : new AddressModel(shippingAddress, fullDescription,
+                                                summaryDescription, Arrays.asList(errors)));
     }
 
     @CalledByNative
@@ -484,9 +485,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
-    private static void addShippingAddress(
-            List<AddressModel> addresses, AssistantAutofillProfile address, String[] errors) {
-        addresses.add(new AddressModel(address, Arrays.asList(errors)));
+    private static void addShippingAddress(List<AddressModel> addresses,
+            AssistantAutofillProfile address, String fullDescription, String summaryDescription,
+            String[] errors) {
+        addresses.add(new AddressModel(
+                address, fullDescription, summaryDescription, Arrays.asList(errors)));
     }
 
     @CalledByNative

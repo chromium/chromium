@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.settings.AddressEditor;
 import org.chromium.chrome.browser.autofill.settings.CardEditor;
@@ -142,7 +143,8 @@ public class AssistantPaymentInstrumentEditorAutofill implements AssistantPaymen
                         address, mContext);
         if (autofillAddress.getProfile().getLabel() == null) {
             autofillAddress.getProfile().setLabel(
-                    AssistantAutofillUtilChrome.getBillingAddressLabel(address));
+                    PersonalDataManager.getInstance().getBillingAddressLabelForPaymentRequest(
+                            autofillAddress.getProfile()));
         }
         mEditor.updateBillingAddressIfComplete(autofillAddress);
     }

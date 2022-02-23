@@ -58,6 +58,7 @@ using ::autofill_assistant::ui_controller_android_utils::
     ConvertNativeOptionalStringToJava;
 using ::autofill_assistant::ui_controller_android_utils::CreateJavaInfoPopup;
 using ::base::android::AttachCurrentThread;
+using ::base::android::ConvertUTF16ToJavaString;
 using ::base::android::ConvertUTF8ToJavaString;
 using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
@@ -247,6 +248,43 @@ absl::optional<bool> GetPreviousFormSelectionResult(
     return absl::nullopt;
   }
   return input_result.selection().selected(selection_index);
+}
+
+// Analog to
+// PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest.
+base::android::ScopedJavaLocalRef<jstring> GetShippingAddressLabel(
+    JNIEnv* env,
+    const autofill::AutofillProfile* profile,
+    bool with_country) {
+  if (!profile) {
+    return ConvertUTF8ToJavaString(env, std::string());
+  }
+
+  // The full name is not included in the label for shipping address. It is
+  // added separately instead.
+  static constexpr autofill::ServerFieldType kLabelFields[] = {
+      autofill::ServerFieldType::COMPANY_NAME,
+      autofill::ServerFieldType::ADDRESS_HOME_LINE1,
+      autofill::ServerFieldType::ADDRESS_HOME_LINE2,
+      autofill::ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
+      autofill::ServerFieldType::ADDRESS_HOME_CITY,
+      autofill::ServerFieldType::ADDRESS_HOME_STATE,
+      autofill::ServerFieldType::ADDRESS_HOME_ZIP,
+      autofill::ServerFieldType::ADDRESS_HOME_SORTING_CODE,
+      autofill::ServerFieldType::ADDRESS_HOME_COUNTRY,
+  };
+  size_t fields_size = base::size(kLabelFields);
+
+  // For the case where country is omitted, do not use the last field.
+  if (!with_country) {
+    --fields_size;
+  }
+
+  return ConvertUTF16ToJavaString(
+      env, profile->ConstructInferredLabel(
+               kLabelFields, /* label_fields_size= */ fields_size,
+               /* num_fields_to_include= */ fields_size,
+               base::android::GetDefaultLocaleString()));
 }
 
 }  // namespace
@@ -1445,12 +1483,22 @@ void UiControllerAndroid::OnUserDataChanged(
           ui_controller_android_utils::CreateAssistantAutofillProfile(
               env, *user_data.available_addresses_[index]->profile,
               base::android::GetDefaultLocaleString()),
+          GetShippingAddressLabel(
+              env, user_data.available_addresses_[index]->profile.get(),
+              /* with_country= */ true),
+          GetShippingAddressLabel(
+              env, user_data.available_addresses_[index]->profile.get(),
+              /* with_country= */ false),
           base::android::ToJavaArrayOfStrings(env, errors));
     }
     Java_AssistantCollectUserDataModel_setAvailableShippingAddresses(
         env, jmodel, jshippinglist);
     Java_AssistantCollectUserDataModel_setSelectedShippingAddress(
         env, jmodel, jselected_shipping_address,
+        GetShippingAddressLabel(env, selected_shipping_address,
+                                /* with_country= */ true),
+        GetShippingAddressLabel(env, selected_shipping_address,
+                                /* with_country= */ false),
         base::android::ToJavaArrayOfStrings(env,
                                             selected_shipping_address_errors));
   }
@@ -1475,6 +1523,10 @@ void UiControllerAndroid::OnUserDataChanged(
     // off case does not set updated shipping addresses.
     Java_AssistantCollectUserDataModel_setSelectedShippingAddress(
         env, jmodel, jselected_shipping_address,
+        GetShippingAddressLabel(env, selected_shipping_address,
+                                /* with_country= */ true),
+        GetShippingAddressLabel(env, selected_shipping_address,
+                                /* with_country= */ false),
         base::android::ToJavaArrayOfStrings(env,
                                             selected_shipping_address_errors));
   }

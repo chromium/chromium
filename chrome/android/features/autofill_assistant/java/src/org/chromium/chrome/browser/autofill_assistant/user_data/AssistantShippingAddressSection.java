@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AssistantAutofillUtilChrome;
 import org.chromium.chrome.browser.autofill_assistant.AssistantEditor.AssistantAddressEditor;
 import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
 
@@ -70,9 +69,7 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
         hideIfEmpty(fullNameView);
 
         TextView fullAddressView = fullView.findViewById(R.id.full_address);
-        // TODO(b/211748133): Remove dependency to AutofillUtilChrome.
-        fullAddressView.setText(AssistantAutofillUtilChrome.getShippingAddressLabel(
-                model.mOption, /* withCountry= */ true));
+        fullAddressView.setText(model.getFullDescription());
         hideIfEmpty(fullAddressView);
 
         TextView errorView = fullView.findViewById(R.id.incomplete_error);
@@ -95,9 +92,7 @@ public class AssistantShippingAddressSection extends AssistantCollectUserDataSec
         hideIfEmpty(fullNameView);
 
         TextView shortAddressView = summaryView.findViewById(R.id.short_address);
-        // TODO(b/211748133): Remove dependency to AutofillUtilChrome.
-        shortAddressView.setText(AssistantAutofillUtilChrome.getShippingAddressLabel(
-                model.mOption, /* withCountry= */ false));
+        shortAddressView.setText(model.getSummaryDescription());
         hideIfEmpty(shortAddressView);
 
         TextView errorView = summaryView.findViewById(R.id.incomplete_error);
