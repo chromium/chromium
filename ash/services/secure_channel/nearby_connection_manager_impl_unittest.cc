@@ -19,11 +19,12 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const size_t kNumTestDevices = 3;
 
@@ -474,6 +475,4 @@ TEST_F(SecureChannelNearbyConnectionManagerImplTest,
   EXPECT_TRUE(WasChannelHandledByDisconnector(fake_secure_channel));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

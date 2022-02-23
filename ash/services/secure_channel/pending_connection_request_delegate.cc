@@ -4,12 +4,12 @@
 
 #include "ash/services/secure_channel/pending_connection_request_delegate.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
 using Reason = PendingConnectionRequestDelegate::FailedConnectionReason;
+
 }  // namespace
 
 PendingConnectionRequestDelegate::PendingConnectionRequestDelegate() = default;
@@ -29,6 +29,4 @@ std::ostream& operator<<(std::ostream& stream, const Reason& reason) {
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

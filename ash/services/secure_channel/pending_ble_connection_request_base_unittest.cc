@@ -10,16 +10,18 @@
 #include "ash/services/secure_channel/fake_connection_delegate.h"
 #include "ash/services/secure_channel/fake_pending_connection_request_delegate.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const char kTestReadableRequestTypeForLogging[] = "Test Request Type";
 const char kTestFeature[] = "testFeature";
@@ -147,6 +149,4 @@ TEST_F(SecureChannelPendingBleConnectionRequestBaseTest,
             *GetConnectionAttemptFailureReason());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

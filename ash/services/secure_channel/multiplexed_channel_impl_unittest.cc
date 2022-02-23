@@ -26,11 +26,12 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const char kTestDeviceId[] = "testDeviceId";
 const char kTestFeature[] = "testFeature";
@@ -477,6 +478,4 @@ TEST_F(SecureChannelMultiplexedChannelImplTest,
                                  true /* expected_to_be_last_client */);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

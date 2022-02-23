@@ -7,8 +7,6 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/device_id_pair.h"
 #include "ash/services/secure_channel/nearby_initiator_failure_type.h"
 #include "ash/services/secure_channel/public/mojom/nearby_connector.mojom.h"
@@ -18,9 +16,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
+class AuthenticatedChannel;
 
 // Attempts connects to remote devices via the Nearby Connections library.
 class NearbyConnectionManager {
@@ -31,7 +29,8 @@ class NearbyConnectionManager {
 
   // Note: NearbyConnector must be set before connections can be requested.
   void SetNearbyConnector(
-      mojo::PendingRemote<mojom::NearbyConnector> nearby_connector);
+      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyConnector>
+          nearby_connector);
   bool IsNearbyConnectorSet() const;
 
   using ConnectionSuccessCallback =
@@ -59,7 +58,7 @@ class NearbyConnectionManager {
   virtual void PerformCancelNearbyInitiatorConnectionAttempt(
       const DeviceIdPair& device_id_pair) = 0;
 
-  mojom::NearbyConnector* GetNearbyConnector();
+  chromeos::secure_channel::mojom::NearbyConnector* GetNearbyConnector();
 
   const base::flat_set<DeviceIdPair>& GetDeviceIdPairsForRemoteDevice(
       const std::string& remote_device_id) const;
@@ -86,7 +85,8 @@ class NearbyConnectionManager {
       const DeviceIdPair& device_id_pair);
   void RemoveRequestMetadata(const DeviceIdPair& device_id_pair);
 
-  mojo::Remote<mojom::NearbyConnector> nearby_connector_;
+  mojo::Remote<chromeos::secure_channel::mojom::NearbyConnector>
+      nearby_connector_;
   base::flat_map<std::string, base::flat_set<DeviceIdPair>>
       remote_device_id_to_id_pair_map_;
   base::flat_map<DeviceIdPair,
@@ -94,13 +94,11 @@ class NearbyConnectionManager {
       id_pair_to_initiator_metadata_map_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::NearbyConnectionManager;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::NearbyConnectionManager;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_MANAGER_H_

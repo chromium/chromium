@@ -19,9 +19,7 @@
 #include "ash/services/secure_channel/single_client_proxy.h"
 #include "base/callback.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Concrete MultiplexedChannel, which uses an AuthenticatedChannel for its
 // underlying communication channel. Each client added to the channel is tracked
@@ -85,11 +83,13 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
                               base::OnceClosure on_sent_callback) override;
   void RegisterPayloadFile(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
   void GetConnectionMetadata(
-      base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
+      base::OnceCallback<void(
+          chromeos::secure_channel::mojom::ConnectionMetadataPtr)> callback)
+      override;
   void OnClientDisconnected(const base::UnguessableToken& proxy_id) override;
 
   std::unique_ptr<AuthenticatedChannel> authenticated_channel_;
@@ -103,13 +103,6 @@ class MultiplexedChannelImpl : public MultiplexedChannel,
       id_to_proxy_map_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::MultiplexedChannelImpl;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_MULTIPLEXED_CHANNEL_IMPL_H_

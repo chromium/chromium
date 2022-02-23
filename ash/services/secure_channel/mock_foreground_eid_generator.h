@@ -13,11 +13,9 @@
 
 namespace cryptauth {
 class BeaconSeed;
-}  // namespace cryptauth
+}
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Mock class for ForegroundEidGenerator. Note that GoogleMock cannot be used to
 // mock this class because GoogleMock's mock functions cannot return a
@@ -75,13 +73,6 @@ class MockForegroundEidGenerator : public ForegroundEidGenerator {
   int num_identify_calls_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::MockForegroundEidGenerator;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_MOCK_FOREGROUND_EID_GENERATOR_H_

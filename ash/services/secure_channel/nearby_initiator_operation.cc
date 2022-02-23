@@ -12,9 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
 
@@ -131,6 +129,4 @@ void NearbyInitiatorOperation::OnConnectionFailure(
   OnFailedConnectionAttempt(failure_type);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

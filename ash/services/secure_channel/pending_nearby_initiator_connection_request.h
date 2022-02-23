@@ -13,9 +13,7 @@
 #include "ash/services/secure_channel/pending_connection_request_base.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Pending request to create a connection via Nearby Connections in the
 // initiator role.
@@ -76,8 +74,6 @@ class PendingNearbyInitiatorConnectionRequest
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PENDING_NEARBY_INITIATOR_CONNECTION_REQUEST_H_

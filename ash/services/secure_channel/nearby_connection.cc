@@ -19,12 +19,15 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
+
 const char kBluetoothAddressSeparator[] = ":";
+
 }  // namespace
 
 // static
@@ -237,6 +240,4 @@ void NearbyConnection::ProcessQueuedMessagesToSend() {
                      base::Unretained(this)));
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

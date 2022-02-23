@@ -7,8 +7,6 @@
 
 #include <memory>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/authenticated_channel.h"
 #include "ash/services/secure_channel/connect_to_device_operation.h"
 #include "ash/services/secure_channel/connect_to_device_operation_base.h"
 #include "ash/services/secure_channel/nearby_initiator_failure_type.h"
@@ -16,10 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
-
+class AuthenticatedChannel;
 class NearbyConnectionManager;
 
 // Attempts to connect to a remote device over Nearby Connections via the
@@ -88,8 +85,6 @@ class NearbyInitiatorOperation
   base::WeakPtrFactory<NearbyInitiatorOperation> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_OPERATION_H_

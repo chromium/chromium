@@ -139,4 +139,9 @@ class FakeNearbyConnector : public NearbyConnector {
 }  // namespace secure_channel
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace ash::secure_channel {
+using ::chromeos::secure_channel::FakeNearbyConnector;
+}
+
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_FAKE_NEARBY_CONNECTOR_H_

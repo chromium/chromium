@@ -14,11 +14,12 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const char kTestReadableRequestTypeForLogging[] = "Test Request Type";
 const char kTestFeature[] = "testFeature";
@@ -167,6 +168,4 @@ TEST_F(SecureChannelPendingConnectionRequestBaseTest,
   EXPECT_EQ(fake_client_connection_parameters(), extracted_client_data.get());
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

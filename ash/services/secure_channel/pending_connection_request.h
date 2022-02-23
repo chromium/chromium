@@ -12,9 +12,7 @@
 #include "ash/services/secure_channel/pending_connection_request_delegate.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Encapsulates metadata for a pending request for a connection to a remote
 // device. PendingConnectionRequest is templatized so that each derived class
@@ -70,13 +68,6 @@ class PendingConnectionRequest {
   ConnectionPriority connection_priority_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::PendingConnectionRequest;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_H_

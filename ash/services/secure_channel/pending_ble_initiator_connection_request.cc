@@ -6,14 +6,16 @@
 
 #include <utility>
 
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace mojom = ::chromeos::secure_channel::mojom;
 
 const char kBleInitiatorReadableRequestTypeForLogging[] = "BLE Initiator";
 
@@ -118,6 +120,4 @@ void PendingBleInitiatorConnectionRequest::HandleConnectionFailure(
   }
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

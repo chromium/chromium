@@ -4,9 +4,7 @@
 
 #include "ash/services/secure_channel/nearby_initiator_failure_type.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 std::ostream& operator<<(std::ostream& stream,
                          const NearbyInitiatorFailureType& failure_type) {
@@ -21,6 +19,4 @@ std::ostream& operator<<(std::ostream& stream,
   return stream;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

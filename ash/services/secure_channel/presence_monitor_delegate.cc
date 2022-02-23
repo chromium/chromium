@@ -13,8 +13,7 @@
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
 
 PresenceMonitorDelegate::PresenceMonitorDelegate(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
@@ -70,5 +69,4 @@ void PresenceMonitorDelegate::OnReceivedAdvertisement(
   device_seen_callback_.Run();
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

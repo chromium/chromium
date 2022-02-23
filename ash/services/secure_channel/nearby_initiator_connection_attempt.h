@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/connection_attempt_base.h"
 #include "ash/services/secure_channel/nearby_initiator_failure_type.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class NearbyConnectionManager;
 
@@ -65,8 +63,11 @@ class NearbyInitiatorConnectionAttempt
   NearbyConnectionManager* nearby_connection_manager_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::NearbyInitiatorConnectionAttempt;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_CONNECTION_ATTEMPT_H_

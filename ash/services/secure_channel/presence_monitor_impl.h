@@ -7,22 +7,14 @@
 
 #include "ash/services/secure_channel/presence_monitor_delegate.h"
 #include "ash/services/secure_channel/public/cpp/shared/presence_monitor.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chromeos/components/multidevice/remote_device.h"
 
 namespace device {
-
 class BluetoothAdapter;
+}
 
-}  // namespace device
-
-namespace chromeos {
-
-namespace multidevice {
-
-struct RemoteDevice;
-
-}  // namespace multidevice
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Monitors device proximity while a secure channel is active.
 class PresenceMonitorImpl : public PresenceMonitor {
@@ -52,14 +44,6 @@ class PresenceMonitorImpl : public PresenceMonitor {
   base::WeakPtrFactory<PresenceMonitorImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-namespace secure_channel {
-using ::chromeos::secure_channel::PresenceMonitorImpl;
-}
-}  // namespace ash
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PRESENCE_MONITOR_IMPL_H_

@@ -10,11 +10,10 @@
 #include <utility>
 
 #include "ash/services/secure_channel/pending_connection_request_base.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel.mojom-shared.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 template <typename BleFailureDetailType>
 class PendingBleConnectionRequestBase
@@ -57,7 +56,8 @@ class PendingBleConnectionRequestBase
       return;
 
     this->StopRequestDueToConnectionFailures(
-        mojom::ConnectionAttemptFailureReason::ADAPTER_DISABLED);
+        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+            ADAPTER_DISABLED);
   }
 
   void AdapterPresentChanged(device::BluetoothAdapter* adapter,
@@ -67,14 +67,13 @@ class PendingBleConnectionRequestBase
       return;
 
     this->StopRequestDueToConnectionFailures(
-        mojom::ConnectionAttemptFailureReason::ADAPTER_NOT_PRESENT);
+        chromeos::secure_channel::mojom::ConnectionAttemptFailureReason::
+            ADAPTER_NOT_PRESENT);
   }
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PENDING_BLE_CONNECTION_REQUEST_BASE_H_

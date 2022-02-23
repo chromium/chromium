@@ -6,9 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 MockForegroundEidGenerator::MockForegroundEidGenerator()
     : num_identify_calls_(0) {}
@@ -74,6 +72,4 @@ std::string MockForegroundEidGenerator::IdentifyRemoteDeviceByAdvertisement(
   return identified_device_id_;
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

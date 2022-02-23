@@ -7,9 +7,7 @@
 
 #include <ostream>
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 enum class NearbyInitiatorFailureType {
   // Bluetooth or WebRTC connection failed.
@@ -23,8 +21,11 @@ enum class NearbyInitiatorFailureType {
 std::ostream& operator<<(std::ostream& stream,
                          const NearbyInitiatorFailureType& failure_type);
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::NearbyInitiatorFailureType;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_FAILURE_TYPE_H_

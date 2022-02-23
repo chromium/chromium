@@ -10,9 +10,7 @@
 #include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_details.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Full-duplex communication channel which is shared between one or more
 // clients. Messages received on the channel are passed to each client for
@@ -58,13 +56,6 @@ class MultiplexedChannel {
   const ConnectionDetails connection_details_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::MultiplexedChannel;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_MULTIPLEXED_CHANNEL_H_

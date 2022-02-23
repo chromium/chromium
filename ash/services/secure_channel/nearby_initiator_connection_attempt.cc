@@ -7,9 +7,7 @@
 #include "ash/services/secure_channel/nearby_initiator_operation.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 NearbyInitiatorConnectionAttempt::Factory*
@@ -62,6 +60,4 @@ NearbyInitiatorConnectionAttempt::CreateConnectToDeviceOperation(
       device_id_pair, connection_priority);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

@@ -7,9 +7,7 @@
 #include "base/check.h"
 #include "base/guid.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 MultiplexedChannel::MultiplexedChannel(Delegate* delegate,
                                        ConnectionDetails connection_details)
@@ -32,6 +30,4 @@ void MultiplexedChannel::NotifyDisconnected() {
   delegate_->OnDisconnected(connection_details_);
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel

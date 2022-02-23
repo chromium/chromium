@@ -8,8 +8,6 @@
 #include <memory>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/ble_connection_manager.h"
 #include "ash/services/secure_channel/ble_initiator_failure_type.h"
 #include "ash/services/secure_channel/ble_listener_failure_type.h"
 #include "ash/services/secure_channel/client_connection_parameters.h"
@@ -25,10 +23,9 @@
 #include "base/containers/flat_set.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
-
+class BleConnectionManager;
 class NearbyConnectionManager;
 
 // Concrete PendingConnectionManager implementation. This class creates one
@@ -150,8 +147,11 @@ class PendingConnectionManagerImpl : public PendingConnectionManager,
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 };
 
-}  // namespace secure_channel
+}  // namespace ash::secure_channel
 
-}  // namespace chromeos
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::PendingConnectionManagerImpl;
+}
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_MANAGER_IMPL_H_

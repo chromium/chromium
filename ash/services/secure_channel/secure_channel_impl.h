@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "ash/services/secure_channel/active_connection_manager.h"
+// TODO(https://crbug.com/1164001): remove.
+#include "ash/services/secure_channel/authenticated_channel.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/ble_connection_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -20,6 +22,8 @@
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/bluetooth_helper.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/nearby_connection_manager.h"
 #include "ash/services/secure_channel/pending_connection_manager.h"
 #include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "ash/services/secure_channel/public/mojom/secure_channel.mojom.h"
@@ -35,7 +39,6 @@ namespace chromeos {
 
 namespace secure_channel {
 
-class NearbyConnectionManager;
 class SecureChannelDisconnector;
 class TimerFactory;
 

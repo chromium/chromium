@@ -14,8 +14,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
 
 const char kTestRemoteDeviceId[] = "testRemoteDeviceId";
 const char kTestLocalDeviceId[] = "testLocalDeviceId";
@@ -108,5 +107,4 @@ TEST_F(SecureChannelNearbyConnectionMetricsRecorderTest, Test) {
       /*count=*/2);
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

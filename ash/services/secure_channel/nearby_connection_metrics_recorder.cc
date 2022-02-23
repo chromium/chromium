@@ -8,8 +8,8 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 
-namespace chromeos {
-namespace secure_channel {
+namespace ash::secure_channel {
+
 namespace {
 
 static constexpr base::TimeDelta kEffectiveSuccessRateTimeout =
@@ -73,5 +73,4 @@ void NearbyConnectionMetricsRecorder::OnTimeout(
   RecordEffectiveConnectionResult(/*success=*/false);
 }
 
-}  // namespace secure_channel
-}  // namespace chromeos
+}  // namespace ash::secure_channel

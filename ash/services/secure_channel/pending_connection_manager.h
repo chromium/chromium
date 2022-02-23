@@ -8,20 +8,17 @@
 #include <memory>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/authenticated_channel.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/services/secure_channel/client_connection_parameters.h"
 #include "ash/services/secure_channel/connection_attempt_details.h"
 #include "ash/services/secure_channel/connection_details.h"
 #include "ash/services/secure_channel/connection_role.h"
 #include "ash/services/secure_channel/device_id_pair.h"
+// TODO(https://crbug.com/11640010): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/shared/connection_priority.h"
 
-namespace chromeos {
+namespace ash::secure_channel {
 
-namespace secure_channel {
-
-enum class ConnectionPriority;
+class AuthenticatedChannel;
+class ClientConnectionParameters;
 
 // Attempts to create connections to remote devices. If a connection request
 // fails or is canceled, the client will be notified. If a connection is
@@ -63,13 +60,11 @@ class PendingConnectionManager {
   Delegate* delegate_;
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::PendingConnectionManager;
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::PendingConnectionManager;
 }
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_MANAGER_H_

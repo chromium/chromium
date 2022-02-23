@@ -9,9 +9,7 @@
 
 #include "base/unguessable_token.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 class PendingConnectionRequestDelegate {
  public:
@@ -46,13 +44,6 @@ std::ostream& operator<<(
     std::ostream& stream,
     const PendingConnectionRequestDelegate::FailedConnectionReason& reason);
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash::secure_channel {
-using ::chromeos::secure_channel::PendingConnectionRequestDelegate;
-}
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_PENDING_CONNECTION_REQUEST_DELEGATE_H_

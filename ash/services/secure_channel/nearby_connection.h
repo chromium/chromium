@@ -17,9 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // Connection implementation which creates a connection to a remote device via
 // mojom::NearbyConnector. Implements mojom::NearbyMessageReceiver to receive
@@ -34,16 +32,17 @@ namespace secure_channel {
 //
 // Also implements mojom::FilePayloadListener to listen to transfer
 // updates for file payloads registered via RegisterPayloadFile.
-class NearbyConnection : public Connection,
-                         public mojom::NearbyMessageReceiver,
-                         public mojom::FilePayloadListener {
+class NearbyConnection
+    : public Connection,
+      public chromeos::secure_channel::mojom::NearbyMessageReceiver,
+      public chromeos::secure_channel::mojom::FilePayloadListener {
  public:
   class Factory {
    public:
     static std::unique_ptr<Connection> Create(
         multidevice::RemoteDeviceRef remote_device,
         const std::vector<uint8_t>& eid,
-        mojom::NearbyConnector* nearby_connector);
+        chromeos::secure_channel::mojom::NearbyConnector* nearby_connector);
     static void SetFactoryForTesting(Factory* factory);
     virtual ~Factory() = default;
 
@@ -51,7 +50,7 @@ class NearbyConnection : public Connection,
     virtual std::unique_ptr<Connection> CreateInstance(
         multidevice::RemoteDeviceRef remote_device,
         const std::vector<uint8_t>& eid,
-        mojom::NearbyConnector* nearby_connector) = 0;
+        chromeos::secure_channel::mojom::NearbyConnector* nearby_connector) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -60,9 +59,10 @@ class NearbyConnection : public Connection,
   ~NearbyConnection() override;
 
  private:
-  NearbyConnection(multidevice::RemoteDeviceRef remote_device,
-                   const std::vector<uint8_t>& eid,
-                   mojom::NearbyConnector* nearby_connector);
+  NearbyConnection(
+      multidevice::RemoteDeviceRef remote_device,
+      const std::vector<uint8_t>& eid,
+      chromeos::secure_channel::mojom::NearbyConnector* nearby_connector);
 
   // Connection:
   void Connect() override;
@@ -71,7 +71,7 @@ class NearbyConnection : public Connection,
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
   void RegisterPayloadFileImpl(
       int64_t payload_id,
-      mojom::PayloadFilesPtr payload_files,
+      chromeos::secure_channel::mojom::PayloadFilesPtr payload_files,
       FileTransferUpdateCallback file_transfer_update_callback,
       base::OnceCallback<void(bool)> registration_result_callback) override;
 
@@ -79,15 +79,18 @@ class NearbyConnection : public Connection,
   void OnMessageReceived(const std::string& message) override;
 
   // mojom::FilePayloadListener:
-  void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override;
+  void OnFileTransferUpdate(
+      chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
 
   // Returns the the remote device's address as a byte array; note that
   // GetDeviceAddress() returns a colon-separated hex string.
   std::vector<uint8_t> GetRemoteDeviceBluetoothAddressAsVector();
 
   void OnConnectResult(
-      mojo::PendingRemote<mojom::NearbyMessageSender> message_sender,
-      mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
+      mojo::PendingRemote<chromeos::secure_channel::mojom::NearbyMessageSender>
+          message_sender,
+      mojo::PendingRemote<
+          chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
           file_payload_handler);
   void OnSendMessageResult(bool success);
   void ProcessQueuedMessagesToSend();
@@ -99,17 +102,21 @@ class NearbyConnection : public Connection,
   // Called when a FilePayloadListener remote endpoint is disconnected.
   void OnFilePayloadListenerRemoteDisconnected();
 
-  mojom::NearbyConnector* nearby_connector_;
-  mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
-  mojo::Remote<mojom::NearbyMessageSender> message_sender_;
-  mojo::Remote<mojom::NearbyFilePayloadHandler> file_payload_handler_;
+  chromeos::secure_channel::mojom::NearbyConnector* nearby_connector_;
+  mojo::Receiver<chromeos::secure_channel::mojom::NearbyMessageReceiver>
+      message_receiver_{this};
+  mojo::Remote<chromeos::secure_channel::mojom::NearbyMessageSender>
+      message_sender_;
+  mojo::Remote<chromeos::secure_channel::mojom::NearbyFilePayloadHandler>
+      file_payload_handler_;
   // Set of receivers created to listen to file payload transfer updates, one
   // for each payload registered via RegisterPayloadFile(). These receivers will
   // be automatically removed from the set when their corresponding Remote
   // endpoints are destroyed upon transfer completion. current_context() will
   // return the corresponding payload ID when a receiver is called or
   // disconnected.
-  mojo::ReceiverSet<mojom::FilePayloadListener, int64_t>
+  mojo::ReceiverSet<chromeos::secure_channel::mojom::FilePayloadListener,
+                    int64_t>
       file_payload_listener_receivers_;
 
   std::vector<uint8_t> eid_;
@@ -128,8 +135,6 @@ class NearbyConnection : public Connection,
   base::WeakPtrFactory<NearbyConnection> weak_ptr_factory_{this};
 };
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
 
 #endif  // ASH_SERVICES_SECURE_CHANNEL_NEARBY_CONNECTION_H_

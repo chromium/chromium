@@ -15,9 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 
-namespace chromeos {
-
-namespace secure_channel {
+namespace ash::secure_channel {
 
 // static
 PendingConnectionManagerImpl::Factory*
@@ -401,6 +399,4 @@ void PendingConnectionManagerImpl::
   }
 }
 
-}  // namespace secure_channel
-
-}  // namespace chromeos
+}  // namespace ash::secure_channel
