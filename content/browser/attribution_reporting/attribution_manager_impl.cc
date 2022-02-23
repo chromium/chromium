@@ -19,10 +19,10 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
-#include "content/browser/attribution_reporting/attribution_network_sender.h"
-#include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report_network_sender.h"
+#include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
@@ -175,11 +175,11 @@ AttributionManagerImpl::CreateForTesting(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
-    std::unique_ptr<AttributionNetworkSender> network_sender) {
+    std::unique_ptr<AttributionReportSender> report_sender) {
   return absl::WrapUnique(new AttributionManagerImpl(
       std::move(is_report_allowed_callback), user_data_directory,
       std::move(special_storage_policy), std::move(storage_delegate),
-      std::move(cookie_checker), std::move(network_sender),
+      std::move(cookie_checker), std::move(report_sender),
       /*data_host_manager=*/nullptr));
 }
 
@@ -193,7 +193,7 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::move(special_storage_policy),
           MakeStorageDelegate(),
           std::make_unique<AttributionCookieCheckerImpl>(storage_partition),
-          std::make_unique<AttributionNetworkSenderImpl>(storage_partition),
+          std::make_unique<AttributionReportNetworkSender>(storage_partition),
           std::make_unique<AttributionDataHostManagerImpl>(
               storage_partition->browser_context(),
               this)) {}
@@ -204,7 +204,7 @@ AttributionManagerImpl::AttributionManagerImpl(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<AttributionStorageDelegate> storage_delegate,
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
-    std::unique_ptr<AttributionNetworkSender> network_sender,
+    std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionDataHostManager> data_host_manager)
     : is_report_allowed_callback_(std::move(is_report_allowed_callback)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
@@ -217,11 +217,11 @@ AttributionManagerImpl::AttributionManagerImpl(
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
-      network_sender_(std::move(network_sender)),
+      report_sender_(std::move(report_sender)),
       weak_factory_(this) {
   DCHECK(is_report_allowed_callback_);
   DCHECK(cookie_checker_);
-  DCHECK(network_sender_);
+  DCHECK(report_sender_);
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
@@ -546,7 +546,7 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
     if (log_metrics)
       LogMetricsOnReportSend(report, now);
 
-    network_sender_->SendReport(
+    report_sender_->SendReport(
         std::move(report), base::BindOnce(&AttributionManagerImpl::OnReportSent,
                                           weak_factory_.GetWeakPtr(), done));
   }

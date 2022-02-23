@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
+#include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 
 #include <string>
 #include <utility>
@@ -43,13 +43,13 @@ enum class Status {
 
 }  // namespace
 
-AttributionNetworkSenderImpl::AttributionNetworkSenderImpl(
+AttributionReportNetworkSender::AttributionReportNetworkSender(
     StoragePartition* storage_partition)
     : storage_partition_(storage_partition) {}
 
-AttributionNetworkSenderImpl::~AttributionNetworkSenderImpl() = default;
+AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
-void AttributionNetworkSenderImpl::SendReport(
+void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
     ReportSentCallback sent_callback) {
   // The browser process URLLoaderFactory is not created by default, so don't
@@ -120,17 +120,17 @@ void AttributionNetworkSenderImpl::SendReport(
   // deleted before |this|.
   simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory_.get(),
-      base::BindOnce(&AttributionNetworkSenderImpl::OnReportSent,
+      base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                      base::Unretained(this), std::move(it), std::move(report),
                      std::move(sent_callback)));
 }
 
-void AttributionNetworkSenderImpl::SetURLLoaderFactoryForTesting(
+void AttributionReportNetworkSender::SetURLLoaderFactoryForTesting(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = url_loader_factory;
 }
 
-void AttributionNetworkSenderImpl::OnReportSent(
+void AttributionReportNetworkSender::OnReportSent(
     UrlLoaderList::iterator it,
     AttributionReport report,
     ReportSentCallback sent_callback,

@@ -28,8 +28,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
-#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -106,9 +106,9 @@ constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 // Give impressions a sufficiently long expiry.
 constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 
-class MockNetworkSender : public AttributionNetworkSender {
+class MockReportSender : public AttributionReportSender {
  public:
-  // AttributionManagerImpl::NetworkSender:
+  // AttributionReportSender:
   void SendReport(AttributionReport report,
                   ReportSentCallback callback) override {
     calls_.push_back(report);
@@ -193,7 +193,7 @@ class AttributionManagerImplTest : public testing::Test {
         mock_storage_policy_(
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
         cookie_checker_(new MockCookieChecker()),
-        network_sender_(new MockNetworkSender()) {
+        report_sender_(new MockReportSender()) {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
 
     content::SetNetworkConnectionTrackerForTesting(
@@ -220,7 +220,7 @@ class AttributionManagerImplTest : public testing::Test {
             browser_context_.get()),
         dir_.GetPath(), mock_storage_policy_, std::move(storage_delegate),
         absl::WrapUnique(cookie_checker_.get()),
-        absl::WrapUnique(network_sender_.get()));
+        absl::WrapUnique(report_sender_.get()));
   }
 
   void ShutdownManager() {
@@ -228,7 +228,7 @@ class AttributionManagerImplTest : public testing::Test {
     // invocations by ensuring that the manager doesn't destroy it.
     if (attribution_manager_) {
       attribution_manager_->cookie_checker_.release();
-      attribution_manager_->network_sender_.release();
+      attribution_manager_->report_sender_.release();
       attribution_manager_.reset();
     }
   }
@@ -274,7 +274,7 @@ class AttributionManagerImplTest : public testing::Test {
   std::unique_ptr<TestBrowserContext> browser_context_;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
   const raw_ptr<MockCookieChecker> cookie_checker_;
-  const raw_ptr<MockNetworkSender> network_sender_;
+  const raw_ptr<MockReportSender> report_sender_;
   raw_ptr<ConfigurableStorageDelegate> storage_delegate_;
 
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
@@ -334,10 +334,10 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
   // Make sure the report is not sent earlier than its report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -379,13 +379,13 @@ TEST_F(AttributionManagerImplTest,
   // Make sure the reports are not sent earlier than their report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Microseconds(1));
 
   // The 3 reports can be sent in any order due to the `base::RandomShuffle()`
   // in `AttributionManagerImpl::OnGetReportsToSend()`.
-  EXPECT_THAT(network_sender_->calls(),
+  EXPECT_THAT(report_sender_->calls(),
               UnorderedElementsAre(ReportURLIs(url_a), ReportURLIs(url_b),
                                    ReportURLIs(url_c)));
 }
@@ -421,14 +421,14 @@ TEST_F(AttributionManagerImplTest,
   // Make sure the reports are not sent earlier than their report time.
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Microseconds(2));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
-  network_sender_->Reset();
+  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
+  report_sender_->Reset();
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_b)));
+  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_b)));
 }
 
 TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
@@ -436,13 +436,13 @@ TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->Reset();
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->Reset();
 
   ForceGetReportsToSend();
   // The sender hasn't invoked the callback, so the manager shouldn't try to
   // send the report again.
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -454,21 +454,18 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // First report delay.
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // Second report delay.
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
@@ -501,15 +498,14 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
   EXPECT_THAT(StoredReports(), SizeIs(2));
 
   task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(10));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
+  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
   // Because this report will be retried at its original report time + 5
   // minutes, the get-reports timer, which was originally scheduled to run at
   // the second report's report time, should be overridden to run earlier.
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
+  EXPECT_THAT(report_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -531,8 +527,8 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_CALL(observer, OnReportsChanged);
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset({SendResult::Status::kFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kFailure});
 
   EXPECT_THAT(StoredReports(), IsEmpty());
 
@@ -549,25 +545,22 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
                                   base::Milliseconds(1));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // The report is sent at its expected report time.
   task_environment_.FastForwardBy(base::Milliseconds(1));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // The report is sent at the first retry time of +5 minutes.
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // The report is sent at the second retry time of +15 minutes.
   task_environment_.FastForwardBy(base::Minutes(15));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset(
-      {SendResult::Status::kTransientFailure});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // At this point, the report has reached the maximum number of attempts and it
   // should no longer be present in the DB.
@@ -587,7 +580,7 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   // Fast-forward past the reporting window and past report expiry.
   task_environment_.FastForwardBy(kFirstReportingWindow);
   task_environment_.FastForwardBy(base::Days(100));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // Simulate startup and ensure the report is sent before being expired.
   // Advance by the max offline report delay, per
@@ -595,7 +588,7 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   CreateManager();
   task_environment_.FastForwardBy(
       storage_delegate_->GetOfflineReportDelayConfig()->max);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
@@ -604,11 +597,11 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
 
   EXPECT_THAT(StoredReports(), IsEmpty());
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kSent = 0.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 0, 1);
@@ -648,8 +641,8 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
-  EXPECT_THAT(network_sender_->calls(), SizeIs(4));
-  network_sender_->RunCallbacksAndReset(
+  EXPECT_THAT(report_sender_->calls(), SizeIs(4));
+  report_sender_->RunCallbacksAndReset(
       {SendResult::Status::kSent, SendResult::Status::kDropped,
        SendResult::Status::kSent, SendResult::Status::kTransientFailure});
 
@@ -780,14 +773,14 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   std::vector<AttributionReport> reports = StoredReports();
   EXPECT_THAT(reports, SizeIs(1));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(
       {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
              .id)},
       base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -800,7 +793,7 @@ TEST_F(AttributionManagerImplTest,
   attribution_manager_->HandleTrigger(DefaultTrigger());
   std::vector<AttributionReport> reports = StoredReports();
   EXPECT_THAT(reports, SizeIs(2));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(
       {*(absl::get<AttributionReport::EventLevelData>(reports.front().data())
@@ -809,14 +802,14 @@ TEST_F(AttributionManagerImplTest,
              .id)},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_THAT(network_sender_->calls(), SizeIs(2));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(2));
   EXPECT_EQ(callback_calls, 0u);
 
-  network_sender_->RunCallback(0, SendResult::Status::kSent);
+  report_sender_->RunCallback(0, SendResult::Status::kSent);
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(callback_calls, 0u);
 
-  network_sender_->RunCallback(1, SendResult::Status::kTransientFailure);
+  report_sender_->RunCallback(1, SendResult::Status::kTransientFailure);
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_EQ(callback_calls, 1u);
 }
@@ -843,7 +836,7 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
               ElementsAre(ReportTimeIs(AllOf(Ge(min_new_time + delay->min),
                                              Le(min_new_time + delay->max)))));
 
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -867,7 +860,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredReports(),
               ElementsAre(ReportTimeIs(start_time + kFirstReportingWindow)));
 
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
@@ -941,15 +934,15 @@ TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
   EXPECT_THAT(StoredReports(), SizeIs(3));
 
   task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(3));
-  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
-                                         SendResult::Status::kSent,
-                                         SendResult::Status::kSent});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(3));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
+                                        SendResult::Status::kSent,
+                                        SendResult::Status::kSent});
 
   task_environment_.FastForwardBy(base::Minutes(5));
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(2).Build());
   task_environment_.FastForwardBy(base::Hours(1));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
@@ -977,8 +970,8 @@ TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {
   EXPECT_CALL(observer, OnReportsChanged);
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
-  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent});
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
@@ -1081,10 +1074,10 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
 
   // Simulate the reports being sent and removed from storage.
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(3));
-  network_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
-                                         SendResult::Status::kSent,
-                                         SendResult::Status::kSent});
+  EXPECT_THAT(report_sender_->calls(), SizeIs(3));
+  report_sender_->RunCallbacksAndReset({SendResult::Status::kSent,
+                                        SendResult::Status::kSent,
+                                        SendResult::Status::kSent});
   EXPECT_THAT(StoredReports(), IsEmpty());
   checkpoint.Call(3);
 
@@ -1142,7 +1135,7 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
   EXPECT_THAT(StoredReports(), IsEmpty());
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kDropped = 2.
   histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 2, 1);
@@ -1156,10 +1149,10 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
 
   SetOfflineAndWaitForObserversToBeNotified(true);
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   SetOfflineAndWaitForObserversToBeNotified(false);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
@@ -1170,7 +1163,7 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectUniqueSample("Conversions.TimeFromConversionToReportSend",
                                 kFirstReportingWindow.InHours(), 1);
@@ -1186,13 +1179,13 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   // Prevent the report from being sent until after its original report time.
   SetOfflineAndWaitForObserversToBeNotified(true);
   task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   SetOfflineAndWaitForObserversToBeNotified(false);
 
   auto delay = storage_delegate_->GetOfflineReportDelayConfig();
   task_environment_.FastForwardBy(delay->max);
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectUniqueTimeSample("Conversions.ExtraReportDelay2",
                                     base::Days(3) + delay->min, 1);
@@ -1208,7 +1201,7 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
   attribution_manager_->SendReportsForWebUI(
       {AttributionReport::EventLevelData::Id(1)}, base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 
   histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);
   histograms.ExpectTotalCount("Conversions.TimeFromConversionToReportSend", 0);
@@ -1227,10 +1220,10 @@ TEST_F(AttributionManagerImplTest, FakeReport_UpdatesSendReportTimer) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
 
-  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+  EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
 // Test that multiple source and trigger registrations, with and without debug

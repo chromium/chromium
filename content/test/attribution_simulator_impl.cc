@@ -24,9 +24,9 @@
 #include "content/browser/attribution_reporting/attribution_insecure_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -78,7 +78,7 @@ class AlwaysSetCookieChecker : public AttributionCookieChecker {
   }
 };
 
-class SentReportAccumulator : public AttributionNetworkSender {
+class SentReportAccumulator : public AttributionReportSender {
  public:
   SentReportAccumulator(base::Value::ListStorage& reports,
                         bool remove_report_ids,

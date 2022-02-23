@@ -38,7 +38,7 @@ class Origin;
 namespace content {
 
 class AttributionCookieChecker;
-class AttributionNetworkSender;
+class AttributionReportSender;
 class AttributionStorageDelegate;
 class BrowserContext;
 class StoragePartitionImpl;
@@ -84,7 +84,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
-      std::unique_ptr<AttributionNetworkSender> network_sender);
+      std::unique_ptr<AttributionReportSender> report_sender);
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -129,7 +129,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
-      std::unique_ptr<AttributionNetworkSender> network_sender,
+      std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionDataHostManager> data_host_manager);
 
   void MaybeEnqueueEvent(SourceOrTrigger event);
@@ -196,7 +196,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   std::unique_ptr<AttributionCookieChecker> cookie_checker_;
 
-  std::unique_ptr<AttributionNetworkSender> network_sender_;
+  std::unique_ptr<AttributionReportSender> report_sender_;
 
   // Set of all conversion IDs that are currently being sent, deleted, or
   // updated. The number of concurrent conversion reports being sent at any time

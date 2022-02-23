@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_NETWORK_SENDER_IMPL_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_NETWORK_SENDER_IMPL_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_NETWORK_SENDER_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_NETWORK_SENDER_H_
 
 #include <list>
 #include <memory>
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "content/browser/attribution_reporting/attribution_network_sender.h"
+#include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -27,20 +27,21 @@ namespace content {
 class AttributionReport;
 class StoragePartition;
 
-// Implemented a NetworkSender capable of issuing POST requests for complete
-// conversions. Maintains a set of all ongoing UrlLoaders used for posting
-// conversion reports. Created and owned by AttributionReporterImpl.
-class CONTENT_EXPORT AttributionNetworkSenderImpl
-    : public AttributionNetworkSender {
+// Issues POST requests containing attribution reoprts. Maintains a set of all
+// ongoing UrlLoaders used for posting reports. Created and owned by
+// `AttributionManagerImpl`.
+class CONTENT_EXPORT AttributionReportNetworkSender
+    : public AttributionReportSender {
  public:
-  explicit AttributionNetworkSenderImpl(StoragePartition* storage_partition);
-  AttributionNetworkSenderImpl(const AttributionNetworkSenderImpl&) = delete;
-  AttributionNetworkSenderImpl& operator=(const AttributionNetworkSenderImpl&) =
+  explicit AttributionReportNetworkSender(StoragePartition* storage_partition);
+  AttributionReportNetworkSender(const AttributionReportNetworkSender&) =
       delete;
-  AttributionNetworkSenderImpl(AttributionNetworkSenderImpl&&) = delete;
-  AttributionNetworkSenderImpl& operator=(AttributionNetworkSenderImpl&&) =
+  AttributionReportNetworkSender& operator=(
+      const AttributionReportNetworkSender&) = delete;
+  AttributionReportNetworkSender(AttributionReportNetworkSender&&) = delete;
+  AttributionReportNetworkSender& operator=(AttributionReportNetworkSender&&) =
       delete;
-  ~AttributionNetworkSenderImpl() override;
+  ~AttributionReportNetworkSender() override;
 
   // Generates a resource request for |report| and creates a new UrlLoader to
   // send it. A report is only attempted to be sent once, with a timeout of 30
@@ -76,4 +77,4 @@ class CONTENT_EXPORT AttributionNetworkSenderImpl
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_NETWORK_SENDER_IMPL_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_NETWORK_SENDER_H_
