@@ -6428,10 +6428,6 @@ test("unit_tests") {
         "../browser/ui/webui/help/version_updater_chromeos_unittest.cc",
       ]
     }
-    if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-      sources +=
-          [ "../browser/ui/webui/settings/url_handlers_handler_unittest.cc" ]
-    }
     if (use_gtk) {
       deps += [ "//ui/gtk" ]
     }
