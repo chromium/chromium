@@ -28,9 +28,11 @@
 #include <algorithm>
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
+#include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -579,6 +581,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kSupports:
       case StyleRule::kKeyframes:
       case StyleRule::kContainer:
+      case StyleRule::kLayerBlock:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -603,6 +606,9 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
 
   if (auto* container_rule = DynamicTo<CSSContainerRule>(rule))
     return container_rule->cssRules();
+
+  if (auto* layer_rule = DynamicTo<CSSLayerBlockRule>(rule))
+    return layer_rule->cssRules();
 
   return nullptr;
 }
@@ -631,6 +637,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kSupportsRule:
       case CSSRule::kKeyframesRule:
       case CSSRule::kContainerRule:
+      case CSSRule::kLayerBlockRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;

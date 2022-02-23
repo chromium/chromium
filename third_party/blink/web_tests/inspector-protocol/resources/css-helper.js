@@ -104,6 +104,13 @@
       baseIndent += 4;
     }
 
+    const layers = rule.layers|| [];
+    const layersLine = layers.map(s => s.text).join('.');
+    if (layersLine.length) {
+      this._indentLog(baseIndent, '@layer ' + layersLine);
+      baseIndent += 4;
+    }
+
     var selectorLine = '';
     var selectors = rule.selectorList.selectors;
     for (var i = 0; i < selectors.length; ++i) {

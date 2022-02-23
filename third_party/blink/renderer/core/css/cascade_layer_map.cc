@@ -56,6 +56,7 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
   ComputeLayerOrder(*canonical_root_layer, next);
 
   canonical_root_layer->SetOrder(kImplicitOuterLayerOrder);
+  canonical_root_layer_ = canonical_root_layer;
 
   for (const auto& iter : canonical_layer_map) {
     const CascadeLayer* layer_from_sheet = iter.key;
@@ -65,7 +66,7 @@ CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
 
 #if DCHECK_IS_ON()
     // The implicit outer layer is placed above all explicit layers.
-    if (canonical_layer != canonical_root_layer)
+    if (canonical_layer != canonical_root_layer_)
       DCHECK_LT(layer_order, kImplicitOuterLayerOrder);
 #endif
   }
@@ -78,8 +79,13 @@ int CascadeLayerMap::CompareLayerOrder(const CascadeLayer* lhs,
   return lhs_order < rhs_order ? -1 : (lhs_order > rhs_order ? 1 : 0);
 }
 
+const CascadeLayer* CascadeLayerMap::GetRootLayer() const {
+  return canonical_root_layer_;
+}
+
 void CascadeLayerMap::Trace(blink::Visitor* visitor) const {
   visitor->Trace(layer_order_map_);
+  visitor->Trace(canonical_root_layer_);
 }
 
 }  // namespace blink

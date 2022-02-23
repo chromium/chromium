@@ -23,6 +23,11 @@ Dumping inline style:
     margin-top: 33px !important; @[undefined-undefined]
 }
 Dumping matched rules: 
+@layer base
+    *#inspected* {    regular
+        background-color: blue; @[38:8-38:31]
+        background-color: blue; @[undefined-undefined]
+    }
 *#inspected* {    regular
     margin-left: 10px !important; @[1:4-1:33]
     margin-left: 10px !important; @[undefined-undefined]
@@ -64,4 +69,9 @@ Dumping inherited rules:
     width: 100px; @[undefined-undefined]
     container-type: size; @[undefined-undefined]
 }
+@layer base.nested
+    *body* {    regular
+        background-color: green; @[42:12-42:36]
+        background-color: green; @[undefined-undefined]
+    }
 

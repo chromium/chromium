@@ -31,7 +31,10 @@ class CORE_EXPORT CascadeLayerMap : public GarbageCollected<CascadeLayerMap> {
 
   void Trace(blink::Visitor*) const;
 
+  const CascadeLayer* GetRootLayer() const;
+
  private:
+  Member<const CascadeLayer> canonical_root_layer_;
   HeapHashMap<Member<const CascadeLayer>, unsigned> layer_order_map_;
 };
 

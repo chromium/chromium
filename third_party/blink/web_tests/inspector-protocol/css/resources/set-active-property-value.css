@@ -33,3 +33,14 @@
         display: grid;
     }
 }
+
+@layer base {
+    #inspected {
+        background-color: blue;
+    }
+    @layer nested {
+        body {
+            background-color: green;
+        }
+    }
+}

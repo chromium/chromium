@@ -28,6 +28,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_import_rule.h"
+#include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -212,6 +214,9 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::Array<String>> forced_pseudo_classes) override;
   protocol::Response getMediaQueries(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSMedia>>*) override;
+  protocol::Response getLayersForNode(
+      int node_id,
+      std::unique_ptr<protocol::CSS::CSSLayerData>* root_layer) override;
   protocol::Response setEffectivePropertyValueForNode(
       int node_id,
       const String& property_name,
@@ -354,6 +359,20 @@ class CORE_EXPORT InspectorCSSAgent final
                                protocol::Array<protocol::CSS::CSSSupports>*);
   std::unique_ptr<protocol::Array<protocol::CSS::CSSSupports>>
   BuildSupportsList(CSSRule*);
+
+  std::unique_ptr<protocol::CSS::CSSLayerData> BuildLayerDataObject(
+      const CascadeLayer* layer,
+      unsigned& max_order);
+
+  // Layers at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSLayer> BuildLayerObject(
+      CSSLayerBlockRule* rule);
+  std::unique_ptr<protocol::CSS::CSSLayer> BuildLayerObjectFromImport(
+      CSSImportRule* rule);
+  void CollectLayersFromRule(CSSRule*,
+                             protocol::Array<protocol::CSS::CSSLayer>*);
+  std::unique_ptr<protocol::Array<protocol::CSS::CSSLayer>> BuildLayersList(
+      CSSRule*);
 
   // InspectorDOMAgent::DOMListener implementation
   void DidAddDocument(Document*) override;
