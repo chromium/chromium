@@ -21,6 +21,9 @@ class DownloadDisplay {
   virtual void Disable() = 0;
   // Updates the download icon according to |state|.
   virtual void UpdateDownloadIcon(download::DownloadIconState state) = 0;
+  // Shows detailed information on the download display. It can be a popup or
+  // dialog other than the main view.
+  virtual void ShowDetails() = 0;
 
  protected:
   virtual ~DownloadDisplay();

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -114,6 +115,7 @@ void DownloadStatusUpdater::OnDownloadCreated(content::DownloadManager* manager,
 
 void DownloadStatusUpdater::OnDownloadUpdated(content::DownloadManager* manager,
                                               download::DownloadItem* item) {
+  UpdatePrefsOnDownloadUpdated(manager, item);
   if (item->GetState() == download::DownloadItem::IN_PROGRESS) {
     // If the item was interrupted/cancelled and then resumed/restarted, then
     // set WasInProgress so that UpdateAppIconDownloadProgress() will be called
@@ -183,3 +185,17 @@ void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
   // TODO(avi): Implement for Android?
 }
 #endif
+
+void DownloadStatusUpdater::UpdatePrefsOnDownloadUpdated(
+    content::DownloadManager* manager,
+    download::DownloadItem* download) {
+  if (!manager) {
+    // Can be null in tests.
+    return;
+  }
+
+  if (download->GetState() == download::DownloadItem::COMPLETE) {
+    DownloadPrefs::FromDownloadManager(manager)->SetLastCompleteTime(
+        base::Time::Now());
+  }
+}

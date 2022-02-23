@@ -9,9 +9,13 @@
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_prefs.h"
 
 namespace {
-constexpr int kToolbarIconVisbilityHours = 24;
+
+// The amount of time for the toolbar icon to be visible after a download is
+// completed.
+constexpr base::TimeDelta kToolbarIconVisibilityTimeInterval = base::Hours(24);
 }
 
 DownloadDisplayController::DownloadDisplayController(
@@ -19,7 +23,9 @@ DownloadDisplayController::DownloadDisplayController(
     content::DownloadManager* download_manager)
     : display_(display),
       download_manager_(download_manager),
-      download_notifier_(download_manager, this) {}
+      download_notifier_(download_manager, this) {
+  MaybeShowButtonWhenCreated();
+}
 
 DownloadDisplayController::~DownloadDisplayController() = default;
 
@@ -35,7 +41,7 @@ void DownloadDisplayController::OnDownloadUpdated(
   DownloadItemModel item_model(item);
 
   if (item_model.IsDone()) {
-    ScheduleToolbarDisappearance(base::Hours(kToolbarIconVisbilityHours));
+    ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval);
   }
   UpdateToolbarButtonState();
 }
@@ -47,10 +53,13 @@ void DownloadDisplayController::OnManagerGoingDown(
   }
 }
 
-void DownloadDisplayController::ShowToolbarButton() {
+void DownloadDisplayController::ShowToolbarButton(bool show_details) {
   if (!display_->IsShowing()) {
     display_->Enable();
     display_->Show();
+    if (show_details) {
+      display_->ShowDetails();
+    }
   }
 }
 
@@ -64,7 +73,7 @@ void DownloadDisplayController::UpdateToolbarButtonState() {
   download::DownloadIconState icon_state;
 
   if (download_manager_->InProgressCount() > 0) {
-    ShowToolbarButton();
+    ShowToolbarButton(/*show_details=*/true);
     icon_state = download::DownloadIconState::kProgress;
   } else {
     icon_state = download::DownloadIconState::kComplete;
@@ -78,6 +87,25 @@ void DownloadDisplayController::ScheduleToolbarDisappearance(
   icon_disappearance_timer_.Stop();
   icon_disappearance_timer_.Start(
       FROM_HERE, interval, this, &DownloadDisplayController::HideToolbarButton);
+}
+
+void DownloadDisplayController::MaybeShowButtonWhenCreated() {
+  base::Time last_complete_time =
+      DownloadPrefs::FromDownloadManager(download_manager_)
+          ->GetLastCompleteTime();
+  base::Time current_time = base::Time::Now();
+  base::TimeDelta time_since_last_completion =
+      current_time - last_complete_time;
+  // If the last download complete time is less than
+  // `kToolbarIconVisibilityTimeInterval` ago, show the button immediately. Also
+  // check that the current time is not smaller than the last complete time,
+  // this can happen if the system clock has moved backward.
+  if (time_since_last_completion < kToolbarIconVisibilityTimeInterval &&
+      current_time >= last_complete_time) {
+    ShowToolbarButton(/*show_details=*/false);
+    ScheduleToolbarDisappearance(kToolbarIconVisibilityTimeInterval -
+                                 time_since_last_completion);
+  }
 }
 
 DownloadDisplayController::ProgressInfo

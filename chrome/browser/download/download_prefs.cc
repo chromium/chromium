@@ -286,6 +286,8 @@ void DownloadPrefs::RegisterProfilePrefs(
                                  default_download_path);
   registry->RegisterFilePathPref(prefs::kSaveFileDefaultDirectory,
                                  default_download_path);
+  registry->RegisterTimePref(prefs::kDownloadLastCompleteTime,
+                             /*default_value=*/base::Time());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(prefs::kOpenPdfDownloadInSystemReader, false);
@@ -368,6 +370,15 @@ void DownloadPrefs::SetSaveFilePath(const base::FilePath& path) {
 
 void DownloadPrefs::SetSaveFileType(int type) {
   save_file_type_.SetValue(type);
+}
+
+base::Time DownloadPrefs::GetLastCompleteTime() {
+  return profile_->GetPrefs()->GetTime(prefs::kDownloadLastCompleteTime);
+}
+
+void DownloadPrefs::SetLastCompleteTime(const base::Time& last_complete_time) {
+  profile_->GetPrefs()->SetTime(prefs::kDownloadLastCompleteTime,
+                                last_complete_time);
 }
 
 bool DownloadPrefs::PromptForDownload() const {

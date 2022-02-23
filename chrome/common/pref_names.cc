@@ -1779,6 +1779,9 @@ const char kDownloadDefaultDirectory[] = "download.default_directory";
 // upgrade a unsafe location to a safe location.
 const char kDownloadDirUpgraded[] = "download.directory_upgrade";
 
+// base::Time value indicating the last timestamp when a download is completed.
+const char kDownloadLastCompleteTime[] = "download.last_complete_time";
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
 const char kOpenPdfDownloadInSystemReader[] =

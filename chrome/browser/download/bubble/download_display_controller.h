@@ -42,15 +42,29 @@ class DownloadDisplayController
   // This implementation will match the one in download_status_updater.cc
   ProgressInfo GetProgress();
 
-  void ShowToolbarButton();
+  // Asks `display_` to show the toolbar button. Does nothing if the toolbar
+  // button is already showing. If `show_details` is true, `display_` will
+  // show a dialog alongside with the button.
+  void ShowToolbarButton(bool show_details);
+  // Asks `display_` to hide the toolbar button. Does nothing if the toolbar
+  // button is already hidden.
   void HideToolbarButton();
 
+  download::AllDownloadItemNotifier& get_download_notifier_for_testing() {
+    return download_notifier_;
+  }
+
  private:
+  // Stops and restarts `icon_disappearance_timer_`. The toolbar button will
+  // be hidden after the `interval`.
   void ScheduleToolbarDisappearance(base::TimeDelta interval);
 
+  // Based on the information from `download_manager_`, updates the icon state
+  // of the `display_`.
   void UpdateToolbarButtonState();
 
-  void UpdateDownloadIconDisplayState();
+  // Decides whether the toolbar button should be shown when it is created.
+  void MaybeShowButtonWhenCreated();
 
   // AllDownloadItemNotifier::Observer
   void OnDownloadCreated(content::DownloadManager* manager,

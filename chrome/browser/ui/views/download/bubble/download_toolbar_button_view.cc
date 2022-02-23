@@ -63,12 +63,12 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
   Profile* profile = browser_->profile();
   content::DownloadManager* manager = profile->GetDownloadManager();
-  // The display starts hidden and isn't shown until a download is initiated.
-  // TODO(crbug.com/1282240): Use pref service to determine what the initial
-  // state should be.
   SetVisible(false);
-  controller_ = std::make_unique<DownloadDisplayController>(this, manager);
+
   bubble_controller_ = std::make_unique<DownloadBubbleUIController>(manager);
+  // Wait until we're done with everything else before creating `controller_`
+  // since it can call `Show()` synchronously.
+  controller_ = std::make_unique<DownloadDisplayController>(this, manager);
 }
 
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {
@@ -102,7 +102,6 @@ void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
 
 void DownloadToolbarButtonView::Show() {
   SetVisible(true);
-  ButtonPressed();
   PreferredSizeChanged();
 }
 
@@ -127,6 +126,10 @@ void DownloadToolbarButtonView::UpdateDownloadIcon(
     download::DownloadIconState state) {
   icon_state_ = state;
   UpdateIcon();
+}
+
+void DownloadToolbarButtonView::ShowDetails() {
+  ButtonPressed();
 }
 
 void DownloadToolbarButtonView::UpdateIcon() {

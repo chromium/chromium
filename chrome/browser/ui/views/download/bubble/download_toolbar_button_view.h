@@ -36,6 +36,7 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
   void Enable() override;
   void Disable() override;
   void UpdateDownloadIcon(download::DownloadIconState state) override;
+  void ShowDetails() override;
 
   // ToolbarButton:
   void UpdateIcon() override;
