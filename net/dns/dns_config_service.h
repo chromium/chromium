@@ -156,7 +156,7 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
     // SerialWorker:
     std::unique_ptr<SerialWorker::WorkItem> CreateWorkItem() override;
-    bool OnWorkFinished(
+    void OnWorkFinished(
         std::unique_ptr<SerialWorker::WorkItem> work_item) final;
 
    private:
