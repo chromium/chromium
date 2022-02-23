@@ -1,3 +1,6 @@
 set noparent
 thakis@chromium.org
 thomasanderson@chromium.org
+
+# For the libc++ autoroller.
+per-file deps_revisions.gni=*
