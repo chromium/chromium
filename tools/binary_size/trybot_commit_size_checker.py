@@ -262,6 +262,8 @@ def _FormatNumber(number):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--author', required=True, help='CL author')
+  parser.add_argument('--review-subject', help='Review subject')
+  parser.add_argument('--review-url', help='Review URL')
   parser.add_argument('--size-config-json-name',
                       required=True,
                       help='Filename of JSON with configs for '
