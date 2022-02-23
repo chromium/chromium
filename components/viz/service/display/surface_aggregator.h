@@ -256,10 +256,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   void AddColorConversionPass();
   void AddRootReadbackPass();
   void AddDisplayTransformPass();
-  void AddRenderPassHelper(const gfx::Rect& output_rect,
-                           AggregatedRenderPassId render_pass_id,
+  void AddRenderPassHelper(AggregatedRenderPassId render_pass_id,
                            const gfx::Rect& render_pass_output_rect,
-                           const gfx::Rect& pass_damage_rect,
+                           const gfx::Rect& render_pass_damage_rect,
                            gfx::ContentColorUsage pass_color_usage,
                            bool pass_has_transparent_background,
                            bool pass_is_color_conversion_pass,
