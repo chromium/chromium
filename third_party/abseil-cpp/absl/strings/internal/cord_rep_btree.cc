@@ -22,6 +22,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_consume.h"
 #include "absl/strings/internal/cord_rep_flat.h"
@@ -69,7 +70,7 @@ void DumpAll(const CordRep* rep, bool include_contents, std::ostream& stream,
       // indentation and prefix / labels keeps us within roughly 80-100 wide.
       constexpr size_t kMaxDataLength = 60;
       stream << ", data = \""
-             << CordRepBtree::EdgeData(r).substr(0, kMaxDataLength)
+             << EdgeData(r).substr(0, kMaxDataLength)
              << (r->length > kMaxDataLength ? "\"..." : "\"");
     }
     stream << '\n';
@@ -150,7 +151,7 @@ inline CordRep* MakeSubstring(CordRep* rep, size_t offset) {
 CordRep* ResizeEdge(CordRep* edge, size_t length, bool is_mutable) {
   assert(length > 0);
   assert(length <= edge->length);
-  assert(CordRepBtree::IsDataEdge(edge));
+  assert(IsDataEdge(edge));
   if (length >= edge->length) return edge;
 
   if (is_mutable && (edge->tag >= FLAT || edge->tag == SUBSTRING)) {
@@ -207,7 +208,7 @@ void DeleteSubstring(CordRepSubstring* substring) {
 
 // Deletes a leaf node data edge. Requires `IsDataEdge(rep)`.
 void DeleteLeafEdge(CordRep* rep) {
-  assert(CordRepBtree::IsDataEdge(rep));
+  assert(IsDataEdge(rep));
   if (rep->tag >= FLAT) {
     CordRepFlat::Delete(rep->flat());
   } else if (rep->tag == EXTERNAL) {

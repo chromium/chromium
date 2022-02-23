@@ -1866,6 +1866,78 @@ TEST_P(CordTest, CordChunkIteratorOperations) {
   VerifyChunkIterator(subcords, 128);
 }
 
+
+TEST_P(CordTest, AdvanceAndReadOnDataEdge) {
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
+  const std::string data = RandomLowercaseString(&rng, 2000);
+  for (bool as_flat : {true, false}) {
+    SCOPED_TRACE(as_flat ? "Flat" : "External");
+
+    absl::Cord cord =
+        as_flat ? absl::Cord(data)
+                : absl::MakeCordFromExternal(data, [](absl::string_view) {});
+    auto it = cord.Chars().begin();
+#if !defined(NDEBUG) || ABSL_OPTION_HARDENED
+    EXPECT_DEATH_IF_SUPPORTED(cord.AdvanceAndRead(&it, 2001), ".*");
+#endif
+
+    it = cord.Chars().begin();
+    absl::Cord frag = cord.AdvanceAndRead(&it, 2000);
+    EXPECT_EQ(frag, data);
+    EXPECT_TRUE(it == cord.Chars().end());
+
+    it = cord.Chars().begin();
+    frag = cord.AdvanceAndRead(&it, 200);
+    EXPECT_EQ(frag, data.substr(0, 200));
+    EXPECT_FALSE(it == cord.Chars().end());
+
+    frag = cord.AdvanceAndRead(&it, 1500);
+    EXPECT_EQ(frag, data.substr(200, 1500));
+    EXPECT_FALSE(it == cord.Chars().end());
+
+    frag = cord.AdvanceAndRead(&it, 300);
+    EXPECT_EQ(frag, data.substr(1700, 300));
+    EXPECT_TRUE(it == cord.Chars().end());
+  }
+}
+
+TEST_P(CordTest, AdvanceAndReadOnSubstringDataEdge) {
+  RandomEngine rng(GTEST_FLAG_GET(random_seed));
+  const std::string data = RandomLowercaseString(&rng, 2500);
+  for (bool as_flat : {true, false}) {
+    SCOPED_TRACE(as_flat ? "Flat" : "External");
+
+    absl::Cord cord =
+        as_flat ? absl::Cord(data)
+                : absl::MakeCordFromExternal(data, [](absl::string_view) {});
+    cord = cord.Subcord(200, 2000);
+    const std::string substr = data.substr(200, 2000);
+
+    auto it = cord.Chars().begin();
+#if !defined(NDEBUG) || ABSL_OPTION_HARDENED
+    EXPECT_DEATH_IF_SUPPORTED(cord.AdvanceAndRead(&it, 2001), ".*");
+#endif
+
+    it = cord.Chars().begin();
+    absl::Cord frag = cord.AdvanceAndRead(&it, 2000);
+    EXPECT_EQ(frag, substr);
+    EXPECT_TRUE(it == cord.Chars().end());
+
+    it = cord.Chars().begin();
+    frag = cord.AdvanceAndRead(&it, 200);
+    EXPECT_EQ(frag, substr.substr(0, 200));
+    EXPECT_FALSE(it == cord.Chars().end());
+
+    frag = cord.AdvanceAndRead(&it, 1500);
+    EXPECT_EQ(frag, substr.substr(200, 1500));
+    EXPECT_FALSE(it == cord.Chars().end());
+
+    frag = cord.AdvanceAndRead(&it, 300);
+    EXPECT_EQ(frag, substr.substr(1700, 300));
+    EXPECT_TRUE(it == cord.Chars().end());
+  }
+}
+
 TEST_P(CordTest, CharIteratorTraits) {
   static_assert(std::is_copy_constructible<absl::Cord::CharIterator>::value,
                 "");

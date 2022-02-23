@@ -80,6 +80,7 @@
 #include "absl/functional/function_ref.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/cord_analysis.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_btree_reader.h"
@@ -388,12 +389,6 @@ class Cord {
     using CordRepBtree = absl::cord_internal::CordRepBtree;
     using CordRepBtreeReader = absl::cord_internal::CordRepBtreeReader;
 
-    // Stack of right children of concat nodes that we have to visit.
-    // Keep this at the end of the structure to avoid cache-thrashing.
-    // TODO(jgm): Benchmark to see if there's a more optimal value than 47 for
-    // the inlined vector size (47 exists for backward compatibility).
-    using Stack = absl::InlinedVector<absl::cord_internal::CordRep*, 47>;
-
     // Constructs a `begin()` iterator from `tree`. `tree` must not be null.
     explicit ChunkIterator(cord_internal::CordRep* tree);
 
@@ -409,16 +404,9 @@ class Cord {
     Cord AdvanceAndReadBytes(size_t n);
     void AdvanceBytes(size_t n);
 
-    // Stack specific operator++
-    ChunkIterator& AdvanceStack();
-
     // Btree specific operator++
     ChunkIterator& AdvanceBtree();
     void AdvanceBytesBtree(size_t n);
-
-    // Iterates `n` bytes, where `n` is expected to be greater than or equal to
-    // `current_chunk_.size()`.
-    void AdvanceBytesSlowPath(size_t n);
 
     // A view into bytes of the current `CordRep`. It may only be a view to a
     // suffix of bytes if this is being used by `CharIterator`.
@@ -432,9 +420,6 @@ class Cord {
 
     // Cord reader for cord btrees. Empty if not traversing a btree.
     CordRepBtreeReader btree_reader_;
-
-    // See 'Stack' alias definition.
-    Stack stack_of_right_children_;
   };
 
   // Cord::ChunkIterator::chunk_begin()
@@ -725,7 +710,8 @@ class Cord {
   // be used by spelling absl::strings_internal::MakeStringConstant, which is
   // also an internal API.
   template <typename T>
-  explicit constexpr Cord(strings_internal::StringConstant<T>);
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr Cord(strings_internal::StringConstant<T>);
 
  private:
   using CordRep = absl::cord_internal::CordRep;
@@ -1321,25 +1307,24 @@ inline void Cord::ChunkIterator::InitTree(cord_internal::CordRep* tree) {
   tree = cord_internal::SkipCrcNode(tree);
   if (tree->tag == cord_internal::BTREE) {
     current_chunk_ = btree_reader_.Init(tree->btree());
-    return;
+  } else {
+    current_leaf_ = tree;
+    current_chunk_ = cord_internal::EdgeData(tree);
   }
-
-  stack_of_right_children_.push_back(tree);
-  operator++();
 }
 
-inline Cord::ChunkIterator::ChunkIterator(cord_internal::CordRep* tree)
-    : bytes_remaining_(tree->length) {
+inline Cord::ChunkIterator::ChunkIterator(cord_internal::CordRep* tree) {
+  bytes_remaining_ = tree->length;
   InitTree(tree);
 }
 
-inline Cord::ChunkIterator::ChunkIterator(const Cord* cord)
-    : bytes_remaining_(cord->size()) {
-  if (cord->contents_.is_tree()) {
-    InitTree(cord->contents_.as_tree());
+inline Cord::ChunkIterator::ChunkIterator(const Cord* cord) {
+  if (CordRep* tree = cord->contents_.tree()) {
+    bytes_remaining_ = tree->length;
+    InitTree(tree);
   } else {
-    current_chunk_ =
-        absl::string_view(cord->contents_.data(), bytes_remaining_);
+    bytes_remaining_ = cord->contents_.inline_size();
+    current_chunk_ = {cord->contents_.data(), bytes_remaining_};
   }
 }
 
@@ -1369,8 +1354,11 @@ inline Cord::ChunkIterator& Cord::ChunkIterator::operator++() {
   assert(bytes_remaining_ >= current_chunk_.size());
   bytes_remaining_ -= current_chunk_.size();
   if (bytes_remaining_ > 0) {
-    return btree_reader_ ? AdvanceBtree() : AdvanceStack();
-  } else {
+    if (btree_reader_) {
+      return AdvanceBtree();
+    } else {
+      assert(!current_chunk_.empty());  // Called on invalid iterator.
+    }
     current_chunk_ = {};
   }
   return *this;
@@ -1411,7 +1399,11 @@ inline void Cord::ChunkIterator::AdvanceBytes(size_t n) {
   if (ABSL_PREDICT_TRUE(n < current_chunk_.size())) {
     RemoveChunkPrefix(n);
   } else if (n != 0) {
-    btree_reader_ ? AdvanceBytesBtree(n) : AdvanceBytesSlowPath(n);
+    if (btree_reader_) {
+      AdvanceBytesBtree(n);
+    } else {
+      bytes_remaining_ = 0;
+    }
   }
 }
 

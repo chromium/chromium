@@ -276,6 +276,7 @@ cc_library(
         "internal/cord_rep_ring.cc",
     ],
     hdrs = [
+        "internal/cord_data_edge.h",
         "internal/cord_internal.h",
         "internal/cord_rep_btree.h",
         "internal/cord_rep_btree_navigator.h",
@@ -304,6 +305,21 @@ cc_library(
         "//absl/functional:function_ref",
         "//absl/meta:type_traits",
         "//absl/types:span",
+    ],
+)
+
+cc_test(
+    name = "cord_data_edge_test",
+    size = "small",
+    srcs = ["internal/cord_data_edge_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":cord_rep_test_util",
+        ":strings",
+        "//absl/base:config",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 

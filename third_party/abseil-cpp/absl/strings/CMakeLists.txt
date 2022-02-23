@@ -554,6 +554,7 @@ absl_cc_library(
   NAME
     cord_internal
   HDRS
+    "internal/cord_data_edge.h"
     "internal/cord_internal.h"
     "internal/cord_rep_btree.h"
     "internal/cord_rep_btree_navigator.h"
@@ -929,6 +930,23 @@ absl_cc_test(
     absl::random_random
     absl::raw_logging_internal
     absl::fixed_array
+    GTest::gmock_main
+)
+
+absl_cc_test(
+  NAME
+    cord_data_edge_test
+  SRCS
+    "internal/cord_data_edge_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::config
+    absl::cord_internal
+    absl::cord_rep_test_util
+    absl::core_headers
+    absl::strings
     GTest::gmock_main
 )
 

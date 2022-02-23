@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "absl/strings/cord_analysis.h"
+
 #include <cstddef>
 #include <cstdint>
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/container/inlined_vector.h"
-#include "absl/strings/cord_analysis.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_crc.h"
@@ -97,16 +99,6 @@ struct RawUsage<Mode::kFairShare> {
     total += static_cast<double>(size) * rep.fraction;
   }
 };
-
-// Returns true if the provided rep is a valid data edge.
-bool IsDataEdge(const CordRep* rep) {
-  // The fast path is that `rep` is an EXTERNAL or FLAT node, making the below
-  // if a single, well predicted branch. We then repeat the FLAT or EXTERNAL
-  // check in the slow path the SUBSTRING check to optimize for the hot path.
-  if (rep->tag == EXTERNAL || rep->tag >= FLAT) return true;
-  if (rep->tag == SUBSTRING) rep = rep->substring()->child;
-  return rep->tag == EXTERNAL || rep->tag >= FLAT;
-}
 
 // Computes the estimated memory size of the provided data edge.
 // External reps are assumed 'heap allocated at their exact size'.

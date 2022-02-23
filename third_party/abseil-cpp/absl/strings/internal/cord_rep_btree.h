@@ -22,6 +22,7 @@
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/base/optimization.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/string_view.h"
@@ -309,13 +310,6 @@ class CordRepBtree : public CordRep {
   // Returns reference to the data edge at `index`.
   // Requires this instance to be a leaf node, and `index` to be valid index.
   inline absl::string_view Data(size_t index) const;
-
-  static const char* EdgeDataPtr(const CordRep* r);
-  static absl::string_view EdgeData(const CordRep* r);
-
-  // Returns true if the provided rep is a FLAT, EXTERNAL or a SUBSTRING node
-  // holding a FLAT or EXTERNAL child rep.
-  static bool IsDataEdge(const CordRep* rep);
 
   // Diagnostics: returns true if `tree` is valid and internally consistent.
   // If `shallow` is false, then the provided top level node and all child nodes
@@ -631,32 +625,9 @@ inline absl::Span<CordRep* const> CordRepBtree::Edges(size_t begin,
   return {edges_ + begin, static_cast<size_t>(end - begin)};
 }
 
-inline const char* CordRepBtree::EdgeDataPtr(const CordRep* r) {
-  assert(IsDataEdge(r));
-  size_t offset = 0;
-  if (r->tag == SUBSTRING) {
-    offset = r->substring()->start;
-    r = r->substring()->child;
-  }
-  return (r->tag >= FLAT ? r->flat()->Data() : r->external()->base) + offset;
-}
-
-inline absl::string_view CordRepBtree::EdgeData(const CordRep* r) {
-  return absl::string_view(EdgeDataPtr(r), r->length);
-}
-
 inline absl::string_view CordRepBtree::Data(size_t index) const {
   assert(height() == 0);
   return EdgeData(Edge(index));
-}
-
-inline bool CordRepBtree::IsDataEdge(const CordRep* rep) {
-  // The fast path is that `rep` is an EXTERNAL or FLAT node, making the below
-  // if a single, well predicted branch. We then repeat the FLAT or EXTERNAL
-  // check in the slow path the SUBSTRING check to optimize for the hot path.
-  if (rep->tag == EXTERNAL || rep->tag >= FLAT) return true;
-  if (rep->tag == SUBSTRING) rep = rep->substring()->child;
-  return rep->tag == EXTERNAL || rep->tag >= FLAT;
 }
 
 inline CordRepBtree* CordRepBtree::New(int height) {

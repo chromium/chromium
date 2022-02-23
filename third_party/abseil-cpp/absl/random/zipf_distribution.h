@@ -30,7 +30,7 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 
 // absl::zipf_distribution produces random integer-values in the range [0, k],
-// distributed according to the discrete probability function:
+// distributed according to the unnormalized discrete probability function:
 //
 //  P(x) = (v + x) ^ -q
 //

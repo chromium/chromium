@@ -25,6 +25,7 @@
 #include "absl/base/config.h"
 #include "absl/base/internal/raw_logging.h"
 #include "absl/cleanup/cleanup.h"
+#include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_test_util.h"
 #include "absl/strings/str_cat.h"
@@ -323,30 +324,26 @@ TEST(CordRepBtreeTest, EdgeData) {
   CordRep* substr2 = MakeSubstring(1, 6, CordRep::Ref(external));
   CordRep* bad_substr = MakeSubstring(1, 2, CordRep::Ref(substr1));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(flat));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(flat),
-              TypedEq<const void*>(flat->Data()));
-  EXPECT_THAT(CordRepBtree::EdgeData(flat), Eq("Hello world"));
+  EXPECT_TRUE(IsDataEdge(flat));
+  EXPECT_THAT(EdgeData(flat).data(), TypedEq<const void*>(flat->Data()));
+  EXPECT_THAT(EdgeData(flat), Eq("Hello world"));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(external));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(external),
-              TypedEq<const void*>(external->base));
-  EXPECT_THAT(CordRepBtree::EdgeData(external), Eq("Hello external"));
+  EXPECT_TRUE(IsDataEdge(external));
+  EXPECT_THAT(EdgeData(external).data(), TypedEq<const void*>(external->base));
+  EXPECT_THAT(EdgeData(external), Eq("Hello external"));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(substr1));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(substr1),
-              TypedEq<const void*>(flat->Data() + 1));
-  EXPECT_THAT(CordRepBtree::EdgeData(substr1), Eq("ello w"));
+  EXPECT_TRUE(IsDataEdge(substr1));
+  EXPECT_THAT(EdgeData(substr1).data(), TypedEq<const void*>(flat->Data() + 1));
+  EXPECT_THAT(EdgeData(substr1), Eq("ello w"));
 
-  EXPECT_TRUE(CordRepBtree::IsDataEdge(substr2));
-  EXPECT_THAT(CordRepBtree::EdgeDataPtr(substr2),
+  EXPECT_TRUE(IsDataEdge(substr2));
+  EXPECT_THAT(EdgeData(substr2).data(),
               TypedEq<const void*>(external->base + 1));
-  EXPECT_THAT(CordRepBtree::EdgeData(substr2), Eq("ello e"));
+  EXPECT_THAT(EdgeData(substr2), Eq("ello e"));
 
-  EXPECT_FALSE(CordRepBtree::IsDataEdge(bad_substr));
+  EXPECT_FALSE(IsDataEdge(bad_substr));
 #if defined(GTEST_HAS_DEATH_TEST) && !defined(NDEBUG)
-  EXPECT_DEATH(CordRepBtree::EdgeData(bad_substr), ".*");
-  EXPECT_DEATH(CordRepBtree::EdgeDataPtr(bad_substr), ".*");
+  EXPECT_DEATH(EdgeData(bad_substr), ".*");
 #endif
 
   CordRep::Unref(bad_substr);

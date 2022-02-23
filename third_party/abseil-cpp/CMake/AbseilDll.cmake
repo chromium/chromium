@@ -204,6 +204,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/internal/charconv_bigint.h"
   "strings/internal/charconv_parse.cc"
   "strings/internal/charconv_parse.h"
+  "strings/internal/cord_data_edge.h"
   "strings/internal/cord_internal.cc"
   "strings/internal/cord_internal.h"
   "strings/internal/cord_rep_btree.cc"
