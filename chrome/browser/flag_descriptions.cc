@@ -2172,6 +2172,16 @@ const char kPwaUpdateDialogForNameAndIconDescription[] =
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";
 
+const char kQuickActionSearchWidgetAndroidName[] = "Quick Action Search Widget";
+const char kQuickActionSearchWidgetAndroidDescription[] =
+    "When enabled, the quick action search widget will be available to add to "
+    "the homescreen.";
+
+const char kQuickActionSearchWidgetAndroidDinoVariantName[] =
+    "Quick Action Search Widget - Dino Variant";
+const char kQuickActionSearchWidgetAndroidDinoVariantDescription[] =
+    "When enabled, the Dino widget will be available to add to the homescreen";
+
 const char kQuickDimName[] = "Enable lock on leave";
 const char kQuickDimDescription[] =
     "Enables lock on leave feature to better dim or lock the device. Can be "

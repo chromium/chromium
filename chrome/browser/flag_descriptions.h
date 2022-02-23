@@ -633,6 +633,9 @@ extern const char kMemlogStackModeDescription[];
 extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 
+extern const char kQuickActionSearchWidgetAndroidDinoVariantName[];
+extern const char kQuickActionSearchWidgetAndroidDinoVariantDescription[];
+
 extern const char kDownloadAutoResumptionNativeName[];
 extern const char kDownloadAutoResumptionNativeDescription[];
 
@@ -1229,6 +1232,9 @@ extern const char kPwaUpdateDialogForNameAndIconDescription[];
 
 extern const char kQuicName[];
 extern const char kQuicDescription[];
+
+extern const char kQuickActionSearchWidgetAndroidName[];
+extern const char kQuickActionSearchWidgetAndroidDescription[];
 
 extern const char kQuickDimName[];
 extern const char kQuickDimDescription[];

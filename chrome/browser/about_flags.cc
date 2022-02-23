@@ -5553,6 +5553,18 @@ const FeatureEntry kFeatureEntries[] = {
          kConditionalTabStripAndroidVariations,
          "ConditioanlTabStrip")},
 
+    {"enable-quick-action-search-widget-android",
+     flag_descriptions::kQuickActionSearchWidgetAndroidName,
+     flag_descriptions::kQuickActionSearchWidgetAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kQuickActionSearchWidgetAndroid)},
+
+    {"enable-quick-action-search-widget-android-dino-variant",
+     flag_descriptions::kQuickActionSearchWidgetAndroidDinoVariantName,
+     flag_descriptions::kQuickActionSearchWidgetAndroidDinoVariantDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kQuickActionSearchWidgetAndroidDinoVariant)},
+
     {"shopping-list", flag_descriptions::kShoppingListName,
      flag_descriptions::kShoppingListDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
