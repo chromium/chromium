@@ -3221,13 +3221,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.VirtualCard.Enroll.Attempt.{Source}"
+    enum="BooleanAttempted" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true whenever a virtual card Enroll request is sent. It is broken down
+    by the source of the request (i.e., Upstream, Downstream, settings page).
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.Enroll.Result.{Source}"
+    enum="BooleanSuccess" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emitted whenever a virtual card Enroll response is received. It is broken
+    down by the source of the request (i.e., Upstream, Downstream, settings
+    page) and logged based on whether the request suceeded.
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
+</histogram>
+
 <histogram name="Autofill.VirtualCard.GetDetailsForEnrollment.Attempt.{Source}"
     enum="BooleanAttempted" expires_after="2022-08-07">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true whenever a virtual card GetDetailsForEnrollment request is sent.
-    It is broken down by the source of the request.
+    It is broken down by the source of the request (i.e., Upstream, Downstream,
+    settings page).
   </summary>
   <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
 </histogram>
@@ -3238,8 +3262,8 @@ chromium-metrics-reviews@google.com.
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits whenever a virtual card GetDetailsForEnrollment response is received.
-    It is broken down by the source of the request and logged based on whether
-    the request suceeded.
+    It is broken down by the source of the request (i.e., Upstream, Downstream,
+    settings page) and logged based on whether the request suceeded.
   </summary>
   <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
 </histogram>
@@ -3253,6 +3277,30 @@ chromium-metrics-reviews@google.com.
     Sync. It is logged based on whether the metadata is for an existing card or
     a new card.
   </summary>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.Unenroll.Attempt.{Source}"
+    enum="BooleanAttempted" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emits true whenever a virtual card Unenroll request is sent. It is broken
+    down by the source of the request (i.e., Upstream, Downstream, settings
+    page).
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
+</histogram>
+
+<histogram name="Autofill.VirtualCard.Unenroll.Result.{Source}"
+    enum="BooleanSuccess" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Emitted whenever a virtual card Unenroll response is received. It is broken
+    down by the source of the request (i.e., Upstream, Downstream, settings
+    page) and logged based on whether the request suceeded.
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
 </histogram>
 
 <histogram name="Autofill.VirtualCardManualFallbackBubble.FieldClicked"

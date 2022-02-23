@@ -142,11 +142,13 @@ class VirtualCardEnrollmentManager {
       const std::string& guid);
 
  protected:
-  // Handles the response from the UpdateVirtualCardEnrollmentRequest.
+  // Handles the response from the UpdateVirtualCardEnrollmentRequest. |type|
+  // indicates the type of the request sent, i.e., enroll or unenroll.
   // |result| represents the result from the server call to change the virtual
   // card enrollment state for the credit card passed into
   // OfferVirtualCardEnroll().
   virtual void OnDidGetUpdateVirtualCardEnrollmentResponse(
+      VirtualCardEnrollmentRequestType type,
       AutofillClient::PaymentsRpcResult result);
 
   // Resets the state of this VirtualCardEnrollmentManager.

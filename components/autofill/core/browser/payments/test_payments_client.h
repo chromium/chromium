@@ -114,6 +114,11 @@ class TestPaymentsClient : public payments::PaymentsClient {
     select_challenge_option_result_ = result;
   }
 
+  void set_update_virtual_card_enrollment_result(
+      AutofillClient::PaymentsRpcResult result) {
+    update_virtual_card_enrollment_result_ = result;
+  }
+
   payments::PaymentsClient::UnmaskDetails* unmask_details() {
     return &unmask_details_;
   }
@@ -178,6 +183,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::unique_ptr<base::Value> LegalMessage();
   absl::optional<AutofillClient::PaymentsRpcResult>
       select_challenge_option_result_;
+  absl::optional<AutofillClient::PaymentsRpcResult>
+      update_virtual_card_enrollment_result_;
   payments::PaymentsClient::GetDetailsForEnrollmentRequestDetails
       get_details_for_enrollment_request_details_;
   payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails

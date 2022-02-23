@@ -16,6 +16,15 @@ void LogGetDetailsForEnrollmentRequestAttempt(
 void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
                                              bool succeeded);
 
+// UpdateVirtualCardEnrollmentRequest related metrics. Attempts and results
+// should be 1:1 mapping.
+void LogUpdateVirtualCardEnrollmentRequestAttempt(
+    VirtualCardEnrollmentSource source,
+    VirtualCardEnrollmentRequestType type);
+void LogUpdateVirtualCardEnrollmentRequestResult(
+    VirtualCardEnrollmentSource source,
+    VirtualCardEnrollmentRequestType type,
+    bool succeeded);
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_METRICS_H_
