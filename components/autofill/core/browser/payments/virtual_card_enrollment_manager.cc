@@ -53,12 +53,15 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source,
     const raw_ptr<PrefService> user_prefs,
-    RiskAssessmentFunction risk_assessment_function) {
+    RiskAssessmentFunction risk_assessment_function,
+    VirtualCardEnrollmentFieldsLoadedCallback
+        virtual_card_enrollment_fields_loaded_callback) {
   Reset();
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
   state_.virtual_card_enrollment_fields.credit_card = credit_card;
   risk_assessment_function_ = std::move(risk_assessment_function);
-
+  virtual_card_enrollment_fields_loaded_callback_ =
+      std::move(virtual_card_enrollment_fields_loaded_callback);
   // The |card_art_image| might not be synced yet from the sync server which
   // will result in a nullptr. This situation can occur in the upstream flow. If
   // it is not synced, GetCreditCardArtImageForUrl() will send a fetch request
@@ -87,6 +90,28 @@ void VirtualCardEnrollmentManager::OnCardSavedAnimationComplete() {
     if (enroll_response_details_received_)
       ShowVirtualCardEnrollBubble();
   }
+}
+
+void VirtualCardEnrollmentManager::Enroll() {
+  LogUpdateVirtualCardEnrollmentRequestAttempt(
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
+      VirtualCardEnrollmentRequestType::kEnroll);
+  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
+      request_details;
+  request_details.virtual_card_enrollment_source =
+      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
+  request_details.virtual_card_enrollment_request_type =
+      VirtualCardEnrollmentRequestType::kEnroll;
+  request_details.billing_customer_number =
+      payments::GetBillingCustomerId(personal_data_manager_);
+  request_details.vcn_context_token = state_.vcn_context_token;
+
+  payments_client_->UpdateVirtualCardEnrollment(
+      request_details,
+      base::BindOnce(&VirtualCardEnrollmentManager::
+                         OnDidGetUpdateVirtualCardEnrollmentResponse,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     VirtualCardEnrollmentRequestType::kEnroll));
 }
 
 void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {
@@ -271,31 +296,13 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   if (autofill_client_) {
     ShowVirtualCardEnrollBubble();
   } else {
-    // TODO(crbug.com/1281695): Run the callback that is passed from the Clank
-    // settings page here to display the Virtual Card Enroll Dialog.
+    // If the `autofill_client_` is not present, it means that the request is
+    // from Android settings page, thus run the callback with the
+    // `virtual_card_enrollment_fields_`, which would show the enrollment
+    // dialog.
+    std::move(virtual_card_enrollment_fields_loaded_callback_)
+        .Run(&state_.virtual_card_enrollment_fields);
   }
-}
-
-void VirtualCardEnrollmentManager::Enroll() {
-  LogUpdateVirtualCardEnrollmentRequestAttempt(
-      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
-      VirtualCardEnrollmentRequestType::kEnroll);
-  payments::PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails
-      request_details;
-  request_details.virtual_card_enrollment_source =
-      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
-  request_details.virtual_card_enrollment_request_type =
-      VirtualCardEnrollmentRequestType::kEnroll;
-  request_details.billing_customer_number =
-      payments::GetBillingCustomerId(personal_data_manager_);
-  request_details.vcn_context_token = state_.vcn_context_token;
-
-  payments_client_->UpdateVirtualCardEnrollment(
-      request_details,
-      base::BindOnce(&VirtualCardEnrollmentManager::
-                         OnDidGetUpdateVirtualCardEnrollmentResponse,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     VirtualCardEnrollmentRequestType::kEnroll));
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {

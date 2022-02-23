@@ -99,6 +99,9 @@ class VirtualCardEnrollmentManager {
       const raw_ptr<content::WebContents> web_contents,
       gfx::Rect window_bounds)>;
 
+  using VirtualCardEnrollmentFieldsLoadedCallback = base::OnceCallback<void(
+      VirtualCardEnrollmentFields* virtual_card_enrollment_fields)>;
+
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
@@ -108,21 +111,31 @@ class VirtualCardEnrollmentManager {
   void OfferVirtualCardEnroll(
       const CreditCard& credit_card,
       VirtualCardEnrollmentSource virtual_card_enrollment_source,
-      // |user_prefs| will be populated if we are in the clank settings page,
+      // |user_prefs| will be populated if we are in the Android settings page,
       // to then be used for loading risk data. Otherwise it will always be
       // nullptr, and we should load risk data through |autofill_client_| as we
       // have access to web contents.
       const raw_ptr<PrefService> user_prefs = nullptr,
-      // Callback that will be run in the Clank settings page use cases. It will
-      // take in a |callback|, |obfuscated_gaia_id|, and |user_prefs| that will
-      // end up being passed into the overloaded risk_util::LoadRiskData() call
-      // that does not require web contents.
-      RiskAssessmentFunction risk_assessment_function = base::DoNothing());
+      // Callback that will be run in the Android settings page use cases. It
+      // will take in a |callback|, |obfuscated_gaia_id|, and |user_prefs| that
+      // will end up being passed into the overloaded risk_util::LoadRiskData()
+      // call that does not require web contents.
+      RiskAssessmentFunction risk_assessment_function = base::DoNothing(),
+      // Callback that be run once the `state_.virtual_card_enrollment_fields_`
+      // is loaded from the server response. The callback would trigger the
+      // enrollment dialog in the Settings page on Android.
+      VirtualCardEnrollmentFieldsLoadedCallback = base::DoNothing());
 
   // Updates |avatar_animation_complete| to true if the user is beginning the
   // upstream enrollment flow. This is a prerequisite to showing the enrollment
   // bubble.
   void OnCardSavedAnimationComplete();
+
+  // Uses |payments_client_| to send the enroll request. |state_|'s
+  // |vcn_context_token_|, which should be set when we receive the
+  // GetDetailsForEnrollResponse, is used in the
+  // UpdateVirtualCardEnrollmentRequest to enroll the correct card.
+  void Enroll();
 
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
@@ -191,6 +204,12 @@ class VirtualCardEnrollmentManager {
   // VirtualCardEnrollmentBubbleController needs to display the correct bubble.
   virtual void ShowVirtualCardEnrollBubble();
 
+  // Callback triggered after the VirtualCardEnrollmentFields are loaded from
+  // the server response. Note: This is only called when the `autofill_client_`
+  // is not available.
+  VirtualCardEnrollmentFieldsLoadedCallback
+      virtual_card_enrollment_fields_loaded_callback_;
+
  private:
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
@@ -216,12 +235,6 @@ class VirtualCardEnrollmentManager {
       AutofillClient::PaymentsRpcResult result,
       const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
           response);
-
-  // Uses |payments_client_| to send the enroll request. |state_|'s
-  // |vcn_context_token_|, which should be set when we receive the
-  // GetDetailsForEnrollResponse, is used in the
-  // UpdateVirtualCardEnrollmentRequest to enroll the correct card.
-  void Enroll();
 
   // Cancels the entire Virtual Card Enrollment process.
   void OnVirtualCardEnrollmentBubbleCancelled();

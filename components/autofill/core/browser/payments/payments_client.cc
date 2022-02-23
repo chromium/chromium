@@ -1145,7 +1145,7 @@ void PaymentsClient::GetVirtualCardEnrollmentDetails(
         callback) {
   IssueRequest(std::make_unique<GetDetailsForEnrollmentRequest>(
                    request_details, std::move(callback)),
-               /*authenticate=*/false);
+               /*authenticate=*/true);
 }
 
 void PaymentsClient::UpdateVirtualCardEnrollment(

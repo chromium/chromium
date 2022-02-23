@@ -1980,7 +1980,7 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
       request_details,
       base::BindOnce(&PaymentsClientTest::OnDidGetVirtualCardEnrollmentDetails,
                      weak_ptr_factory_.GetWeakPtr()));
-
+  IssueOAuthToken();
   // Ensures the request contains the correct fields.
   EXPECT_TRUE(!GetUploadData().empty());
   EXPECT_TRUE(GetUploadData().find("language_code") != std::string::npos);
