@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -113,11 +112,6 @@ public class TabbedPaintPreview implements UserData {
         getService().captureTab(mTab, successCallback);
     }
 
-    private boolean shouldCompressBitmaps() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP, "compress_bitmaps", true);
-    }
-
     /**
      * Shows a Paint Preview for the provided tab if it exists.
      * @param listener An interface used for notifying events originated from the player.
@@ -140,7 +134,7 @@ public class TabbedPaintPreview implements UserData {
         mPlayerManager = new PlayerManager(mTab.getUrl(), mTab.getContext(), getService(),
                 String.valueOf(mTab.getId()), listener,
                 ChromeColors.getPrimaryBackgroundColor(mTab.getContext(), false),
-                /*ignoreInitialScrollOffset=*/false, shouldCompressBitmaps());
+                /*ignoreInitialScrollOffset=*/false);
 
         // TODO(crbug/1230021): Consider deferring/post tasking. Locally this appears to be slow.
         TraceEvent.begin("TabbedPaintPreview.maybeShow addTabViewProvider");

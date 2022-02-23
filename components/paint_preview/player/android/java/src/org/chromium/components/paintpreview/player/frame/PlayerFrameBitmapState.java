@@ -15,7 +15,6 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.memory.MemoryPressureMonitor;
-import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 import java.util.HashSet;
@@ -31,7 +30,7 @@ public class PlayerFrameBitmapState {
     /** The scale factor of bitmaps. */
     private float mScaleFactor;
     /** Bitmaps that make up the contents. */
-    private CompressibleBitmap[][] mBitmapMatrix;
+    private Bitmap[][] mBitmapMatrix;
     /** Whether a request for a bitmap tile is pending. */
     private BitmapRequestHandler[][] mPendingBitmapRequests;
     /**
@@ -47,20 +46,15 @@ public class PlayerFrameBitmapState {
     private final PlayerCompositorDelegate mCompositorDelegate;
     private final PlayerFrameBitmapStateController mStateController;
     private Set<Integer> mInitialMissingVisibleBitmaps = new HashSet<>();
-    private final SequencedTaskRunner mTaskRunner;
-    private final boolean mShouldCompressBitmaps;
 
     PlayerFrameBitmapState(UnguessableToken guid, int tileWidth, int tileHeight, float scaleFactor,
             Size contentSize, PlayerCompositorDelegate compositorDelegate,
-            PlayerFrameBitmapStateController stateController, SequencedTaskRunner taskRunner,
-            boolean shouldCompressBitmaps) {
+            PlayerFrameBitmapStateController stateController) {
         mGuid = guid;
         mTileSize = new Size(tileWidth, tileHeight);
         mScaleFactor = scaleFactor;
         mCompositorDelegate = compositorDelegate;
         mStateController = stateController;
-        mTaskRunner = taskRunner;
-        mShouldCompressBitmaps = shouldCompressBitmaps;
 
         // Each tile is as big as the initial view port. Here we determine the number of
         // columns and rows for the current scale factor.
@@ -69,7 +63,7 @@ public class PlayerFrameBitmapState {
         int cols =
                 (int) Math.max(1.0, Math.ceil((contentSize.getWidth() * scaleFactor) / tileWidth));
 
-        mBitmapMatrix = new CompressibleBitmap[rows][cols];
+        mBitmapMatrix = new Bitmap[rows][cols];
         mPendingBitmapRequests = new BitmapRequestHandler[rows][cols];
         mRequiredBitmaps = new boolean[rows][cols];
         mVisibleBitmaps = new boolean[rows][cols];
@@ -80,7 +74,7 @@ public class PlayerFrameBitmapState {
         return mRequiredBitmaps;
     }
 
-    CompressibleBitmap[][] getMatrix() {
+    Bitmap[][] getMatrix() {
         return mBitmapMatrix;
     }
 
@@ -112,7 +106,7 @@ public class PlayerFrameBitmapState {
         for (int i = 0; i < mBitmapMatrix.length; i++) {
             for (int j = 0; j < mBitmapMatrix[i].length; j++) {
                 if (mBitmapMatrix[i][j] != null) {
-                    mBitmapMatrix[i][j].forceDestroy();
+                    mBitmapMatrix[i][j].recycle();
                 }
             }
         }
@@ -188,9 +182,9 @@ public class PlayerFrameBitmapState {
 
         for (int row = 0; row < mBitmapMatrix.length; row++) {
             for (int col = 0; col < mBitmapMatrix[row].length; col++) {
-                CompressibleBitmap bitmap = mBitmapMatrix[row][col];
+                Bitmap bitmap = mBitmapMatrix[row][col];
                 if (!mVisibleBitmaps[row][col] && bitmap != null) {
-                    bitmap.destroy();
+                    bitmap.recycle();
                     mBitmapMatrix[row][col] = null;
                 }
             }
@@ -255,9 +249,9 @@ public class PlayerFrameBitmapState {
 
         for (int row = 0; row < mBitmapMatrix.length; row++) {
             for (int col = 0; col < mBitmapMatrix[row].length; col++) {
-                CompressibleBitmap bitmap = mBitmapMatrix[row][col];
+                Bitmap bitmap = mBitmapMatrix[row][col];
                 if (!mRequiredBitmaps[row][col] && bitmap != null) {
-                    bitmap.destroy();
+                    bitmap.recycle();
                     mBitmapMatrix[row][col] = null;
                 }
             }
@@ -384,8 +378,7 @@ public class PlayerFrameBitmapState {
                 return;
             }
 
-            mBitmapMatrix[mRequestRow][mRequestCol] =
-                    new CompressibleBitmap(result, mTaskRunner, mVisible, mShouldCompressBitmaps);
+            mBitmapMatrix[mRequestRow][mRequestCol] = result;
             deleteUnrequiredBitmaps();
             markBitmapReceived(mRequestRow, mRequestCol);
             mPendingBitmapRequests[mRequestRow][mRequestCol] = null;

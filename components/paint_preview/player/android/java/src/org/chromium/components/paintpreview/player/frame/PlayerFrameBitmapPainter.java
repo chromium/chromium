@@ -15,16 +15,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.TraceEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Given a viewport {@link Rect} and a matrix of {@link Bitmap} tiles, this class draws the bitmaps
  * on a {@link Canvas}.
  */
 class PlayerFrameBitmapPainter {
     private Size mTileSize;
-    private CompressibleBitmap[][] mBitmapMatrix;
+    private Bitmap[][] mBitmapMatrix;
     private Rect mViewPort = new Rect();
     private Rect mDrawBitmapSrc = new Rect();
     private Rect mDrawBitmapDst = new Rect();
@@ -32,30 +29,6 @@ class PlayerFrameBitmapPainter {
     private Runnable mFirstPaintListener;
     private Handler mHandler = new Handler();
     private boolean mDestroyed;
-
-    // The following sets should only be modified on {@link mHandler} or UI thread.
-
-    /**
-     * Tracks which bitmaps are used in each {@link onDraw(Canvas)} call. Bitmaps in this set were
-     * in the viewport for the last draw. Bitmaps that are not in this set but are in
-     * {@link mInflatedBitmaps} are discarded at the end of {@link onDraw(Canvas)}.
-     */
-    private Set<CompressibleBitmap> mBitmapsToKeep = new HashSet<>();
-    /**
-     * Keeps track of which bitmaps are queued for inflation. Each bitmap in this list will be
-     * inflated. Although if the bitmap leaves the viewport before being added to this set it
-     * will be discarded in the next {@link onDraw(Canvas)}.
-     */
-    private Set<CompressibleBitmap> mInflatingBitmaps = new HashSet<>();
-    /**
-     * Keeps track of which bitmaps are inflated. Bitmaps in this set are cached in inflated form
-     * to keep {@link onDraw(Canvas)} performant.
-     */
-    private Set<CompressibleBitmap> mInflatedBitmaps = new HashSet<>();
-    /**
-     * Keeps track of which bitmaps are locked.
-     */
-    private Set<CompressibleBitmap> mLockedBitmaps = new HashSet<>();
 
     PlayerFrameBitmapPainter(@NonNull Runnable invalidateCallback,
             @Nullable Runnable firstPaintListener) {
@@ -74,7 +47,7 @@ class PlayerFrameBitmapPainter {
         mInvalidateCallback.run();
     }
 
-    void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
         if (mDestroyed) return;
 
         mBitmapMatrix = bitmapMatrix;
@@ -102,49 +75,13 @@ class PlayerFrameBitmapPainter {
         rowEnd = Math.min(rowEnd, mBitmapMatrix.length);
         colEnd = Math.min(colEnd, rowEnd >= 1 ? mBitmapMatrix[rowEnd - 1].length : 0);
 
-        mBitmapsToKeep.clear();
         boolean needsInvalidate = false;
         for (int row = rowStart; row < rowEnd; row++) {
             for (int col = colStart; col < colEnd; col++) {
-                CompressibleBitmap compressibleBitmap = mBitmapMatrix[row][col];
-                if (compressibleBitmap == null) continue;
-                mBitmapsToKeep.add(compressibleBitmap);
+                Bitmap tileBitmap = mBitmapMatrix[row][col];
 
-                if (!mLockedBitmaps.contains(compressibleBitmap) && !compressibleBitmap.lock()) {
-                    // Re-issue an invalidation on the chance access was blocked due to being
-                    // discarded.
-                    needsInvalidate = true;
-                    continue;
-                }
-                mLockedBitmaps.add(compressibleBitmap);
-
-                if (mInflatingBitmaps.contains(compressibleBitmap)) continue;
-
-                Bitmap tileBitmap = compressibleBitmap.getBitmap();
-                if (tileBitmap == null) {
-                    mInflatingBitmaps.add(compressibleBitmap);
-                    compressibleBitmap.inflateInBackground(inflatedBitmap -> {
-                        final boolean inflated = inflatedBitmap.getBitmap() != null;
-                        // Handler is on the UI thread so the needed bitmaps will be the last
-                        // set of bitmaps requested.
-                        mHandler.post(() -> {
-                            // If this is destroyed, then make sure any straggling inflations are
-                            // destroyed.
-                            if (mInflatedBitmaps == null) {
-                                inflatedBitmap.destroy();
-                                return;
-                            }
-                            if (inflated) {
-                                mInflatedBitmaps.add(inflatedBitmap);
-                            }
-                            mInflatingBitmaps.remove(inflatedBitmap);
-                            mInvalidateCallback.run();
-                        });
-                    });
-                    continue;
-                } else {
-                    mInflatedBitmaps.add(compressibleBitmap);
-                }
+                // Request is ongoing.
+                if (tileBitmap == null) continue;
 
                 // Calculate the portion of this tileBitmap that is visible in mViewPort.
                 int bitmapLeft = Math.max(mViewPort.left - (col * mTileSize.getWidth()), 0);
@@ -169,34 +106,12 @@ class PlayerFrameBitmapPainter {
                 }
             }
         }
-        for (CompressibleBitmap inflatedBitmap : mInflatedBitmaps) {
-            if (mBitmapsToKeep.contains(inflatedBitmap)) continue;
-            mLockedBitmaps.remove(inflatedBitmap);
-            inflatedBitmap.unlock();
-
-            inflatedBitmap.discardBitmap();
-        }
-        mInflatedBitmaps.clear();
-        mInflatedBitmaps.addAll(mBitmapsToKeep);
-        if (needsInvalidate) {
-            mHandler.post(mInvalidateCallback);
-        }
         TraceEvent.end("PlayerFrameBitmapPainter.onDraw");
-    }
-
-    private void unlockAll() {
-        for (CompressibleBitmap bitmap : mLockedBitmaps) {
-            bitmap.unlock();
-        }
     }
 
     void destroy() {
         // Prevent future invalidation.
         mDestroyed = true;
         mBitmapMatrix = null;
-        mInflatedBitmaps = null;
-
-        // Unlock all bitmaps so they can be destroyed.
-        unlockAll();
     }
 }

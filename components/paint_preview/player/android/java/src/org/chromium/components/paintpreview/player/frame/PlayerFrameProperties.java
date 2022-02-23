@@ -4,6 +4,7 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 class PlayerFrameProperties {
     /** A matrix of bitmap tiles that collectively make the entire content. */
-    static final PropertyModel.WritableObjectPropertyKey<CompressibleBitmap[][]> BITMAP_MATRIX =
+    static final PropertyModel.WritableObjectPropertyKey<Bitmap[][]> BITMAP_MATRIX =
             new PropertyModel.WritableObjectPropertyKey<>(true);
     /** The dimensions of each bitmap tile in the current bitmap matrix. */
     static final PropertyModel.WritableObjectPropertyKey<Size> TILE_DIMENSIONS =

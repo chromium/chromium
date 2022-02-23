@@ -102,7 +102,6 @@ public class PlayerManager {
     private long mNativeAxTree;
     private PlayerAccessibilityDelegate mAccessibilityDelegate;
     private WebContentsAccessibilityImpl mWebContentsAccessibility;
-    private final boolean mShouldCompressBitmaps;
 
     // The minimum ratio value of a sub-frame's area to its parent, for the sub-frame to be
     // considered 'large'.
@@ -122,17 +121,15 @@ public class PlayerManager {
      * @param listener                          Interface that includes a number of callbacks.
      * @param ignoreInitialScrollOffset         If true the initial scroll state that is recorded at
      *                                          capture time is ignored.
-     * @param shouldCompressBitmaps             If true bitmaps outside the viewport are compressed.
      */
     public PlayerManager(GURL url, Context context,
             NativePaintPreviewServiceProvider nativePaintPreviewServiceProvider,
             String directoryKey, @NonNull Listener listener, int backgroundColor,
-            boolean ignoreInitialScrollOffset, boolean shouldCompressBitmaps) {
+            boolean ignoreInitialScrollOffset) {
         TraceEvent.begin("PlayerManager");
         TraceEvent.startAsync(sInitEvent, hashCode());
         mContext = context;
         mListener = listener;
-        mShouldCompressBitmaps = shouldCompressBitmaps;
         mIgnoreInitialScrollOffset = ignoreInitialScrollOffset;
 
         // This calls into native to set up the compositor.
@@ -200,13 +197,12 @@ public class PlayerManager {
                 scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects,
                 mIgnoreInitialScrollOffset);
 
-        mRootFrameCoordinator =
-                new PlayerFrameCoordinator(mContext, mDelegate, mRootFrameData.getGuid(),
-                        mRootFrameData.getContentWidth(), mRootFrameData.getContentHeight(),
-                        mRootFrameData.getInitialScrollX(), mRootFrameData.getInitialScrollY(),
-                        pageScaleFactor, true, mPlayerSwipeRefreshHandler, mPlayerGestureListener,
-                        mListener::onFirstPaint, mListener::isAccessibilityEnabled,
-                        this::initializeAccessibility, mShouldCompressBitmaps);
+        mRootFrameCoordinator = new PlayerFrameCoordinator(mContext, mDelegate,
+                mRootFrameData.getGuid(), mRootFrameData.getContentWidth(),
+                mRootFrameData.getContentHeight(), mRootFrameData.getInitialScrollX(),
+                mRootFrameData.getInitialScrollY(), pageScaleFactor, true,
+                mPlayerSwipeRefreshHandler, mPlayerGestureListener, mListener::onFirstPaint,
+                mListener::isAccessibilityEnabled, this::initializeAccessibility);
         buildSubFrameCoordinators(mRootFrameCoordinator, mRootFrameData);
         mHostView.addView(mRootFrameCoordinator.getView(),
                 new FrameLayout.LayoutParams(
@@ -390,11 +386,11 @@ public class PlayerManager {
 
         for (int i = 0; i < frame.getSubFrames().length; i++) {
             PaintPreviewFrame childFrame = frame.getSubFrames()[i];
-            PlayerFrameCoordinator childCoordinator = new PlayerFrameCoordinator(mContext,
-                    mDelegate, childFrame.getGuid(), childFrame.getContentWidth(),
-                    childFrame.getContentHeight(), childFrame.getInitialScrollX(),
-                    childFrame.getInitialScrollY(), 0f, false, null, mPlayerGestureListener, null,
-                    null, null, mShouldCompressBitmaps);
+            PlayerFrameCoordinator childCoordinator =
+                    new PlayerFrameCoordinator(mContext, mDelegate, childFrame.getGuid(),
+                            childFrame.getContentWidth(), childFrame.getContentHeight(),
+                            childFrame.getInitialScrollX(), childFrame.getInitialScrollY(), 0f,
+                            false, null, mPlayerGestureListener, null, null, null);
             buildSubFrameCoordinators(childCoordinator, childFrame);
             frameCoordinator.addSubFrame(childCoordinator, frame.getSubFrameClips()[i]);
         }

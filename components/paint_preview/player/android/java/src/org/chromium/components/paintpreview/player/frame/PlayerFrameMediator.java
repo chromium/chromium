@@ -4,6 +4,7 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -13,9 +14,6 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,7 +29,7 @@ import java.util.List;
  * <li>Maintaining a viewport {@link Rect} that represents the current user-visible section of this
  * frame. The dimension of the viewport is constant and is equal to the initial values received on
  * {@link #setLayoutDimensions}.</li>
- * <li>Constructing a matrix of {@link CompressibleBitmap} tiles that represents the content of this
+ * <li>Constructing a matrix of {@link Bitmap} tiles that represents the content of this
  * frame for a given scale factor. Each tile is as big as the view port.</li>
  * <li>Requesting bitmaps from Paint Preview compositor.</li>
  * <li>Updating the viewport on touch gesture notifications (scrolling and scaling).<li/>
@@ -82,7 +80,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     PlayerFrameMediator(PropertyModel model, PlayerCompositorDelegate compositorDelegate,
             PlayerGestureListener gestureListener, UnguessableToken frameGuid, Size contentSize,
             int initialScrollX, int initialScrollY, float initialScaleFactor,
-            Runnable initialViewportSizeAvailable, boolean shouldCompressBitmaps) {
+            Runnable initialViewportSizeAvailable) {
         mBitmapScaleMatrix = new Matrix();
         mOffsetForScaling = new Point();
         mModel = model;
@@ -95,10 +93,8 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mInitialScaleFactor = initialScaleFactor;
         mGuid = frameGuid;
         mContentSize = contentSize;
-        SequencedTaskRunner taskRunner =
-                PostTask.createSequencedTaskRunner(TaskTraits.THREAD_POOL_USER_VISIBLE);
-        mBitmapStateController = new PlayerFrameBitmapStateController(mGuid, mViewport,
-                mContentSize, mCompositorDelegate, this, taskRunner, shouldCompressBitmaps);
+        mBitmapStateController = new PlayerFrameBitmapStateController(
+                mGuid, mViewport, mContentSize, mCompositorDelegate, this);
         mViewport.offset(initialScrollX, initialScrollY);
         mViewport.setScale(mInitialScaleFactor);
         mInitialViewportSizeAvailable = initialViewportSizeAvailable;
@@ -318,7 +314,7 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
     }
 
     @Override
-    public void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
+    public void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
         mModel.set(PlayerFrameProperties.BITMAP_MATRIX, bitmapMatrix);
     }
 

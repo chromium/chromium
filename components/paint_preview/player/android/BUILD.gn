@@ -69,7 +69,6 @@ android_library("java") {
     "java/src/org/chromium/components/paintpreview/player/PlayerUserActionRecorder.java",
     "java/src/org/chromium/components/paintpreview/player/PlayerUserFrustrationDetector.java",
     "java/src/org/chromium/components/paintpreview/player/accessibility/PlayerAccessibilityDelegate.java",
-    "java/src/org/chromium/components/paintpreview/player/frame/CompressibleBitmap.java",
     "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapPainter.java",
     "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapState.java",
     "java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapStateController.java",
@@ -177,7 +176,6 @@ junit_binary("paint_preview_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/paintpreview/player/PlayerManagerTest.java",
     "junit/src/org/chromium/components/paintpreview/player/PlayerUserFrustrationDetectorTest.java",
-    "junit/src/org/chromium/components/paintpreview/player/frame/CompressibleBitmapTest.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PaintPreviewCustomFlingingShadowScroller.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameBitmapPainterTest.java",
     "junit/src/org/chromium/components/paintpreview/player/frame/PlayerFrameCoordinatorTest.java",

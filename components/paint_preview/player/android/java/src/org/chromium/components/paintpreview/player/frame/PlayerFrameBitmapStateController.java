@@ -9,7 +9,6 @@ import android.util.Size;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 
 /**
@@ -24,13 +23,10 @@ public class PlayerFrameBitmapStateController {
     private final Size mContentSize;
     private final PlayerCompositorDelegate mCompositorDelegate;
     private final PlayerFrameMediatorDelegate mMediatorDelegate;
-    private final SequencedTaskRunner mTaskRunner;
-    private final boolean mShouldCompressBitmaps;
 
     PlayerFrameBitmapStateController(UnguessableToken guid, PlayerFrameViewport viewport,
             Size contentSize, PlayerCompositorDelegate compositorDelegate,
-            PlayerFrameMediatorDelegate mediatorDelegate, SequencedTaskRunner taskRunner,
-            boolean shouldCompressBitmaps) {
+            PlayerFrameMediatorDelegate mediatorDelegate) {
         mGuid = guid;
         mViewport = viewport;
         mContentSize = contentSize;
@@ -39,8 +35,6 @@ public class PlayerFrameBitmapStateController {
             mCompositorDelegate.addMemoryPressureListener(this::onMemoryPressure);
         }
         mMediatorDelegate = mediatorDelegate;
-        mTaskRunner = taskRunner;
-        mShouldCompressBitmaps = shouldCompressBitmaps;
     }
 
     void deleteAll() {
@@ -82,9 +76,9 @@ public class PlayerFrameBitmapStateController {
         if (scaleUpdated || activeLoadingState == null) {
             invalidateLoadingBitmaps();
             Size tileSize = mViewport.getBitmapTileSize();
-            mLoadingBitmapState = new PlayerFrameBitmapState(mGuid, tileSize.getWidth(),
-                    tileSize.getHeight(), mViewport.getScale(), mContentSize, mCompositorDelegate,
-                    this, mTaskRunner, mShouldCompressBitmaps);
+            mLoadingBitmapState =
+                    new PlayerFrameBitmapState(mGuid, tileSize.getWidth(), tileSize.getHeight(),
+                            mViewport.getScale(), mContentSize, mCompositorDelegate, this);
             if (mVisibleBitmapState == null) {
                 mLoadingBitmapState.skipWaitingForVisibleBitmaps();
                 swap(mLoadingBitmapState);

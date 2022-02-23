@@ -5,6 +5,7 @@
 package org.chromium.components.paintpreview.player.frame;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
@@ -113,7 +114,7 @@ public class PlayerFrameView extends FrameLayout {
         layoutSubFrames();
     }
 
-    void updateBitmapMatrix(CompressibleBitmap[][] bitmapMatrix) {
+    void updateBitmapMatrix(Bitmap[][] bitmapMatrix) {
         mBitmapPainter.updateBitmapMatrix(bitmapMatrix);
     }
 
