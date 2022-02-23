@@ -14,4 +14,36 @@ mojom("mojom") {
     "//components/services/app_service/public/mojom",
     "//mojo/public/mojom/base",
   ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromeos.settings.app_notification.mojom.Permission"
+          cpp = "::apps::PermissionPtr"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_type_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_types.h",
+        "//components/services/app_service/public/cpp/permission.h",
+      ]
+      traits_sources = [ "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_type_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//components/services/app_service/public/cpp:app_types" ]
+    },
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  deps = [
+    ":mojom",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
 }

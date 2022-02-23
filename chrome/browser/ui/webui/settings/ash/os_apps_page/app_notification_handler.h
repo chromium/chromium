@@ -41,9 +41,8 @@ class AppNotificationHandler
 
   // settings::mojom::AppNotificationHandler:
   void SetQuietMode(bool in_quiet_mode) override;
-  void SetNotificationPermission(
-      const std::string& app_id,
-      apps::mojom::PermissionPtr permission) override;
+  void SetNotificationPermission(const std::string& app_id,
+                                 apps::PermissionPtr permission) override;
   void GetApps(GetAppsCallback callback) override;
   void GetQuietMode(GetQuietModeCallback callback) override;
 

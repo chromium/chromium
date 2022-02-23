@@ -11,19 +11,21 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_type_mojom_traits.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace chromeos {
 namespace settings {
 
 namespace {
 app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
-  apps::mojom::PermissionPtr permission_copy;
+  apps::PermissionPtr permission_copy;
   for (const auto& permission : update.Permissions()) {
     if (permission->permission_type ==
         apps::mojom::PermissionType::kNotifications) {
-      permission_copy = permission->Clone();
+      permission_copy = apps::ConvertMojomPermissionToPermission(permission);
       break;
     }
   }
@@ -32,7 +34,9 @@ app_notification::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
   app->id = update.AppId();
   app->title = update.Name();
   app->notification_permission = std::move(permission_copy);
-  app->readiness = update.Readiness();
+  app->readiness =
+      mojo::EnumTraits<app_notification::mojom::Readiness, apps::Readiness>::
+          ToMojom(apps::ConvertMojomReadinessToReadiness(update.Readiness()));
 
   return app;
 }
@@ -103,8 +107,9 @@ void AppNotificationHandler::SetQuietMode(bool in_quiet_mode) {
 
 void AppNotificationHandler::SetNotificationPermission(
     const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
-  app_service_proxy_->SetPermission(app_id, std::move(permission));
+    apps::PermissionPtr permission) {
+  app_service_proxy_->SetPermission(
+      app_id, apps::ConvertPermissionToMojomPermission(permission));
 }
 
 void AppNotificationHandler::GetApps(GetAppsCallback callback) {

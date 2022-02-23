@@ -4,7 +4,48 @@
 
 module chromeos.settings.app_notification.mojom;
 
-import "components/services/app_service/public/mojom/types.mojom";
+// Whether an app is ready to launch, i.e. installed.
+enum Readiness {
+  kUnknown = 0,
+  kReady,                // Installed and launchable.
+  kDisabledByBlocklist,  // Disabled by SafeBrowsing.
+  kDisabledByPolicy,     // Disabled by admin policy.
+  kDisabledByUser,       // Disabled by explicit user action.
+  kTerminated,           // Renderer process crashed.
+  kUninstalledByUser,
+  kRemoved,
+  kUninstalledByMigration,
+};
+
+// The types of permission.
+enum PermissionType {
+  kUnknown         = 0,
+  kCamera          = 1,
+  kLocation        = 2,
+  kMicrophone      = 3,
+  kNotifications   = 4,
+  kContacts        = 5,
+  kStorage         = 6,
+  kPrinting        = 7,
+};
+
+enum TriState {
+  kAllow,
+  kBlock,
+  kAsk,
+};
+
+union PermissionValue {
+  bool bool_value;
+  TriState tristate_value;
+};
+
+struct Permission {
+  PermissionType permission_type;
+  PermissionValue value;
+  // If the permission is managed by an enterprise policy.
+  bool is_managed;
+};
 
 // Implementation of App
 // Contains the app's id, title, and only the notification permission, as this
@@ -19,10 +60,10 @@ struct App {
   string? title;
 
   // Whether an app is ready to launch, i.e. installed.
-  apps.mojom.Readiness readiness;
+  Readiness readiness;
 
   // Contains the current permission state of the App's notification.
-  apps.mojom.Permission notification_permission;
+  Permission notification_permission;
 };
 
 // Browser interface.
@@ -36,7 +77,7 @@ interface AppNotificationsHandler {
   AddObserver(pending_remote<AppNotificationsObserver> observer);
 
   // Updates the permission of the specified app (via app_id).
-  SetNotificationPermission(string app_id, apps.mojom.Permission permission);
+  SetNotificationPermission(string app_id, Permission permission);
 
   // Get the list of installed apps.
   GetApps() => (array<App> apps);
