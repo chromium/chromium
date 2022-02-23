@@ -1350,6 +1350,7 @@ bool ClearExcessInterestGroups(sql::Database& db,
                                size_t max_owners,
                                size_t max_owner_interest_groups) {
   const base::Time distant_past = base::Time::Min();
+  const base::Time distant_future = base::Time::Max();
   const absl::optional<std::vector<url::Origin>> maybe_all_origins =
       DoGetAllInterestGroupOwners(db, distant_past);
   if (!maybe_all_origins)
@@ -1357,9 +1358,9 @@ bool ClearExcessInterestGroups(sql::Database& db,
   for (size_t owner_idx = 0; owner_idx < maybe_all_origins.value().size();
        owner_idx++) {
     const url::Origin& affected_origin = maybe_all_origins.value()[owner_idx];
-    const absl::optional<std::vector<StorageInterestGroup>>
-        maybe_interest_groups =
-            DoGetInterestGroupsForOwner(db, affected_origin, distant_past);
+    const absl::optional<std::vector<std::string>> maybe_interest_groups =
+        DoGetInterestGroupNamesForOwner(db, affected_origin, distant_past,
+                                        distant_future);
     if (!maybe_interest_groups)
       return false;
     size_t first_idx = max_owner_interest_groups;
@@ -1367,9 +1368,8 @@ bool ClearExcessInterestGroups(sql::Database& db,
       first_idx = 0;
     for (size_t group_idx = first_idx;
          group_idx < maybe_interest_groups.value().size(); group_idx++) {
-      if (!DoRemoveInterestGroup(
-              db, affected_origin,
-              maybe_interest_groups.value()[group_idx].interest_group.name)) {
+      if (!DoRemoveInterestGroup(db, affected_origin,
+                                 maybe_interest_groups.value()[group_idx])) {
         return false;
       }
     }
