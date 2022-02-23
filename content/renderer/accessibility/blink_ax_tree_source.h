@@ -24,6 +24,7 @@
 namespace content {
 
 class AXImageAnnotator;
+class AXScreenAIAnnotator;
 class BlinkAXTreeSource;
 class RenderFrameImpl;
 
@@ -93,6 +94,12 @@ class CONTENT_EXPORT BlinkAXTreeSource
   void RemoveBlinkImageAnnotator() {
     image_annotator_ = nullptr;
     first_unlabeled_image_id_ = absl::nullopt;
+  }
+
+  // The following method add or remove Screen AI annotator that is used to
+  // analyze the image of the nodes and provide additional metadata.
+  void set_screen_ai_annotator(AXScreenAIAnnotator* annotator) {
+    screen_ai_annotator_ = annotator;
   }
 
   // Query or update a set of IDs for which we should load inline text boxes.
@@ -189,6 +196,11 @@ class CONTENT_EXPORT BlinkAXTreeSource
 
   // The class instance that retrieves and manages automatic labels for images.
   AXImageAnnotator* image_annotator_ = nullptr;
+
+  // The class instance that uses Screen AI library to analyze snapshots.
+  // |screen_ai_annotator_| belongs to RenderAccessibilityImpl which owns
+  // |BlinkAXTreeSource|.
+  AXScreenAIAnnotator* screen_ai_annotator_ = nullptr;
 
   // Whether we should highlight annotation results visually on the page
   // for debugging.

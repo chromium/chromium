@@ -2520,8 +2520,12 @@ static_library("browser") {
     ]
   }
   if (is_linux || is_chromeos) {
-    deps += [ "//chrome/browser/error_reporting" ]
+    deps += [
+      "//chrome/browser/error_reporting",
+      "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
+    ]
   }
+
   if (use_ozone) {
     deps += [
       "//ui/events/ozone",

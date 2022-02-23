@@ -49,6 +49,10 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/renderer/accessibility/ax_screen_ai_annotator.h"
+#endif
+
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 using blink::WebAXObject;
@@ -587,6 +591,13 @@ void BlinkAXTreeSource::SerializeOtherScreenReaderAttributes(
                                     element.GetAttribute("type").Utf8());
     }
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (screen_ai_annotator_ &&
+      !screen_ai_annotator_->ApplyAnnotationsIfAvailable(src, *dst)) {
+    screen_ai_annotator_->MaybeRunScreenAI(src);
+  }
+#endif
 }
 
 blink::WebDocument BlinkAXTreeSource::GetMainDocument() const {

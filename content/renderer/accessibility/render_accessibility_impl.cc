@@ -26,6 +26,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/common/content_features.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 #include "content/renderer/accessibility/ax_image_annotator.h"
@@ -51,6 +52,10 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/renderer/accessibility/ax_screen_ai_annotator.h"
+#endif
 
 using blink::WebAXContext;
 using blink::WebAXObject;
@@ -168,6 +173,10 @@ RenderAccessibilityImpl::RenderAccessibilityImpl(
   image_annotation_debugging_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kEnableExperimentalAccessibilityLabelsDebugging);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  StartOrStopScreenAIAnnotator(mode);
+#endif
 }
 
 RenderAccessibilityImpl::~RenderAccessibilityImpl() = default;
@@ -240,6 +249,9 @@ void RenderAccessibilityImpl::AccessibilityModeChanged(const ui::AXMode& mode) {
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
     ScheduleSendPendingAccessibilityEvents();
   }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  StartOrStopScreenAIAnnotator(mode);
+#endif
 }
 
 void RenderAccessibilityImpl::HitTest(
@@ -1244,6 +1256,33 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
     ax_image_annotator_.reset();
   }
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+void RenderAccessibilityImpl::StartOrStopScreenAIAnnotator(
+    ui::AXMode new_mode) {
+  if (!base::FeatureList::IsEnabled(features::kScreenAI))
+    return;
+
+  if (new_mode.has_mode(ui::AXMode::kScreenReader) &&
+      !ax_screen_ai_annotator_.get()) {
+    mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
+        screen_ai_annotator;
+    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+        screen_ai_annotator.InitWithNewPipeAndPassReceiver());
+
+    ax_screen_ai_annotator_ = std::make_unique<AXScreenAIAnnotator>(
+        this, std::move(screen_ai_annotator));
+    tree_source_->set_screen_ai_annotator(ax_screen_ai_annotator_.get());
+    return;
+  }
+
+  if (ax_screen_ai_annotator_.get() &&
+      !new_mode.has_mode(ui::AXMode::kScreenReader)) {
+    tree_source_->set_screen_ai_annotator(nullptr);
+    ax_screen_ai_annotator_.reset();
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void RenderAccessibilityImpl::MarkAllAXObjectsDirty(
     ax::mojom::Role role,

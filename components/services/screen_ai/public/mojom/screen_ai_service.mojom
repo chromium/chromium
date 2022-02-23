@@ -1,0 +1,86 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module screen_ai.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The type of object that the Screen AI module has detected.
+// This list is in sync with the following proto:
+// google3/research/socrates/multimodal/visual_annotation/config/
+// labelmap_layout_extractor_v1.pbtxt
+enum NodeType {
+  kImage = 1,
+  kPictogram = 2,
+  kButton = 3,
+  kText = 4,
+  kTextInput = 5,
+  kLabel = 6,
+  kMap = 7,
+  kCheckBox = 8,
+  kSwitch = 9,
+  kPageIndicator = 10,
+  kRadioButton = 11,
+  kSlider = 12,
+  kSpinner = 13,
+  kProgressBar = 14,
+  kAdvertisement = 15,
+  kDrawer = 16,
+  kNavigationBar = 17,
+  kToolbar = 18,
+  kListItem = 19,
+  kCardView = 20,
+  kContainer = 21,
+  kDatePicker = 22,
+  kNumberStepper = 23,
+  kKeyboard = 24
+};
+
+// An object detected by the Screen AI library.
+struct Node {
+  // Rectangle covering the detected object, with respect to the top-left of
+  // the image.
+  gfx.mojom.Rect rect;
+
+  // Detected type of the object.
+  NodeType type;
+
+  // Confidence level of detection, [0..1].
+  float confidence;
+};
+
+// Indicates the result of image processing service.
+enum ErrorType {
+  // No error.
+  kOK = 0,
+
+  // Could not find the library.
+  kFailedLibraryNotFound = 1,
+
+  // Library could not process image.
+  kFailedProcessingImage = 2,
+};
+
+// Main interface a client uses for Screen AI services. Each renderer has its
+// own ScreenAIAnnotator and all ScreenAIAnnotators of one profile use one
+// ScreenAIService.
+// Requests are sent from renderers in AxScreenAIAnnotator class.
+interface ScreenAIAnnotator {
+  // Receives a snapshot, schedules image processing, and returns the error
+  // type (if any) and an array of detected nodes.
+  Annotate(skia.mojom.BitmapN32 image) =>
+    (ErrorType error, array<Node> nodes);
+};
+
+
+// The service runs in a sandboxed process to run Screen AI service library. The
+// library provides an image processing module to analyze snapshots of the
+// browser and add more details to the accessibility tree.
+[ServiceSandbox=sandbox.mojom.Sandbox.kScreenAI]
+interface ScreenAIService {
+  // Binds a new annotator to the service.
+  BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);
+};

@@ -141,6 +141,11 @@ class UtilityProcessSandboxBrowserTest
         EXPECT_EQ(sandbox_status, kExpectedPartialSandboxFlags);
         break;
       }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      case Sandbox::kScreenAI:
+        // TODO(https://crbug.com/1278249): Add test.
+        break;
+#endif
 
       case Sandbox::kGpu:
       case Sandbox::kRenderer:

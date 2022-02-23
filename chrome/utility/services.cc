@@ -28,6 +28,10 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "components/services/screen_ai/screen_ai_service_impl.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/services/util_win/processor_metrics.h"
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
@@ -209,6 +213,13 @@ auto RunSpeechRecognitionService(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+auto RunScreenAIService(
+    mojo::PendingReceiver<screen_ai::mojom::ScreenAIService> receiver) {
+  return std::make_unique<screen_ai::ScreenAIService>(std::move(receiver));
+}
+#endif
+
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunCupsIppParser(
     mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
@@ -361,6 +372,11 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
   services.Add(RunSpeechRecognitionService);
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kScreenAI))
+    services.Add(RunScreenAIService);
 #endif
 
 #if BUILDFLAG(IS_WIN)

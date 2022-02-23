@@ -134,6 +134,10 @@ static_library("utility") {
     ]
   }
 
+  if (is_linux || is_chromeos) {
+    deps += [ "//components/services/screen_ai" ]
+  }
+
   if (enable_extensions) {
     deps += [
       "//chrome/common/extensions/api",

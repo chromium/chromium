@@ -72,6 +72,7 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
 #endif  // // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kZygoteIntermediateSandbox:
+    case Sandbox::kScreenAI:
 #endif
     case Sandbox::kSpeechRecognition:
       return false;
@@ -144,6 +145,9 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #if BUILDFLAG(IS_MAC)
     case Sandbox::kMirroring:
 #endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    case Sandbox::kScreenAI:
+#endif
     case Sandbox::kSpeechRecognition:
       DCHECK(command_line->GetSwitchValueASCII(switches::kProcessType) ==
              switches::kUtilityProcess);
@@ -257,6 +261,10 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
       return switches::kServiceSandboxWithJit;
     case Sandbox::kSpeechRecognition:
       return switches::kSpeechRecognitionSandbox;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    case Sandbox::kScreenAI:
+      return switches::kScreenAISandbox;
+#endif
 #if BUILDFLAG(IS_WIN)
     case Sandbox::kXrCompositing:
       return switches::kXrCompositingSandbox;
@@ -355,6 +363,10 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kAudio;
   if (sandbox_string == switches::kSpeechRecognitionSandbox)
     return Sandbox::kSpeechRecognition;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (sandbox_string == switches::kScreenAISandbox)
+    return Sandbox::kScreenAI;
+#endif
 #if BUILDFLAG(IS_FUCHSIA)
   if (sandbox_string == switches::kVideoCaptureSandbox)
     return Sandbox::kVideoCapture;

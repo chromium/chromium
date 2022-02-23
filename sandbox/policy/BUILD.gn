@@ -59,6 +59,8 @@ component("policy") {
       "linux/bpf_print_compositor_policy_linux.h",
       "linux/bpf_renderer_policy_linux.cc",
       "linux/bpf_renderer_policy_linux.h",
+      "linux/bpf_screen_ai_policy_linux.cc",
+      "linux/bpf_screen_ai_policy_linux.h",
       "linux/bpf_service_policy_linux.cc",
       "linux/bpf_service_policy_linux.h",
       "linux/bpf_speech_recognition_policy_linux.cc",

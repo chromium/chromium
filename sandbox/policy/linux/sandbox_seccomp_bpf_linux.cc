@@ -48,6 +48,7 @@
 #include "sandbox/policy/linux/bpf_print_backend_policy_linux.h"
 #include "sandbox/policy/linux/bpf_print_compositor_policy_linux.h"
 #include "sandbox/policy/linux/bpf_renderer_policy_linux.h"
+#include "sandbox/policy/linux/bpf_screen_ai_policy_linux.h"
 #include "sandbox/policy/linux/bpf_service_policy_linux.h"
 #include "sandbox/policy/linux/bpf_speech_recognition_policy_linux.h"
 #include "sandbox/policy/linux/bpf_utility_policy_linux.h"
@@ -190,6 +191,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
+    case sandbox::mojom::Sandbox::kScreenAI:
+      return std::make_unique<ScreenAIProcessPolicy>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       // TODO(b/195769334): we're using the GPU process sandbox policy for now
@@ -259,6 +262,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kLibassistant:
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    case sandbox::mojom::Sandbox::kScreenAI:
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:

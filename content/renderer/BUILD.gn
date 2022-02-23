@@ -203,7 +203,11 @@ target(link_target_type, "renderer") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "renderer_main_platform_delegate_linux.cc" ]
+    sources += [
+      "accessibility/ax_screen_ai_annotator.cc",
+      "accessibility/ax_screen_ai_annotator.h",
+      "renderer_main_platform_delegate_linux.cc",
+    ]
   }
 
   if (is_mac) {
@@ -345,7 +349,11 @@ target(link_target_type, "renderer") {
   }
 
   if (is_linux || is_chromeos) {
-    deps += [ "//components/services/font/public/cpp" ]
+    deps += [
+      "//components/services/font/public/cpp",
+      "//components/services/screen_ai",
+      "//ui/gfx/codec",
+    ]
   }
 
   if (is_fuchsia) {
