@@ -53,7 +53,7 @@ async def test_invalid_json(websocket):
 @pytest.mark.asyncio
 async def test_empty_object(websocket):
     command = {}
-    await send_JSON_command(websocket, command)
+    await websocket.send(json.dumps(command))
     resp = await read_JSON_message(websocket)
     assert resp == {
         "error": "invalid argument",

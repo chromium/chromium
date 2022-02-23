@@ -86,7 +86,24 @@ export class Context {
 
   private _initializeEventListeners() {
     this._initializePageLifecycleEventListener();
+    this._initializeCdpEventListeners();
     this._handleBindingCalledEvent();
+  }
+
+  private _initializeCdpEventListeners() {
+    this._cdpClient.on('event', async (method, params) => {
+      await this._eventManager.sendEvent(
+        {
+          method: 'PROTO.cdp.eventReceived',
+          params: {
+            cdpMethod: method,
+            cdpParams: params,
+            session: this._sessionId,
+          },
+        },
+        null
+      );
+    });
   }
 
   private _handleBindingCalledEvent() {

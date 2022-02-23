@@ -5,6 +5,7 @@ export namespace Message {
     | BrowsingContext.Command
     | Script.Command
     | Session.Command
+    | CDP.Command
   );
 
   export type CommandResponse = {
@@ -14,9 +15,14 @@ export namespace Message {
   export type CommandResponseResult =
     | BrowsingContext.CommandResult
     | Script.CommandResult
-    | Session.CommandResult;
+    | Session.CommandResult
+    | CDP.CommandResult;
 
-  export type Event = BrowsingContext.Event | Script.Event | Log.Event;
+  export type Event =
+    | BrowsingContext.Event
+    | Script.Event
+    | Log.Event
+    | CDP.Event;
 
   export type Error = {
     id?: number;
@@ -537,4 +543,47 @@ export namespace Log {
     method: 'log.entryAdded';
     params: LogEntry;
   };
+}
+
+export namespace CDP {
+  export type Command = PROTO.SendCommandCommand | PROTO.GetSessionCommand;
+  export type CommandResult = PROTO.SendCommandResult | PROTO.GetSessionResult;
+  export type Event = PROTO.EventReceivedEvent;
+
+  export namespace PROTO {
+    export type SendCommandCommand = {
+      method: 'PROTO.cdp.sendCommand';
+      params: SendCdpCommandParams;
+    };
+
+    export type SendCdpCommandParams = {
+      cdpMethod: string;
+      cdpParams: object;
+      cdpSession: string;
+    };
+
+    export type SendCommandResult = { result: any };
+
+    export type GetSessionCommand = {
+      method: 'PROTO.cdp.getSession';
+      params: GetSessionParams;
+    };
+
+    export type GetSessionParams = {
+      context: BrowsingContext.BrowsingContext;
+    };
+
+    export type GetSessionResult = { result: { session: string } };
+
+    export type EventReceivedEvent = {
+      method: 'PROTO.cdp.eventReceived';
+      params: EventReceivedParams;
+    };
+
+    export type EventReceivedParams = {
+      cdpMethod: string;
+      cdpParams: object;
+      session?: string;
+    };
+  }
 }

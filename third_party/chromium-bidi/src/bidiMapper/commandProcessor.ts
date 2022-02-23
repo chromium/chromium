@@ -16,7 +16,13 @@
  */
 
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
-import { BrowsingContext, Message, Script, Session } from './bidiProtocolTypes';
+import {
+  BrowsingContext,
+  CDP,
+  Message,
+  Script,
+  Session,
+} from './bidiProtocolTypes';
 import { CdpClient, CdpConnection } from '../cdp';
 import { IBidiServer } from './utils/bidiServer';
 import { IEventManager } from './domains/events/EventManager';
@@ -172,6 +178,15 @@ export class CommandProcessor {
       case 'PROTO.browsingContext.close':
         return await this._contextProcessor.process_PROTO_browsingContext_close(
           commandData as BrowsingContext.PROTO.CloseCommand
+        );
+
+      case 'PROTO.cdp.sendCommand':
+        return await this._contextProcessor.process_PROTO_cdp_sendCommand(
+          commandData as CDP.PROTO.SendCommandCommand
+        );
+      case 'PROTO.cdp.getSession':
+        return await this._contextProcessor.process_PROTO_cdp_getSession(
+          commandData as CDP.PROTO.GetSessionCommand
         );
 
       default:

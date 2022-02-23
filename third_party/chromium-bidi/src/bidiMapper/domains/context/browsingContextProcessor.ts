@@ -18,7 +18,7 @@
 import { log } from '../../../utils/log';
 import { CdpClient, CdpConnection } from '../../../cdp';
 import { Context } from './context';
-import { BrowsingContext, Script } from '../../bidiProtocolTypes';
+import { BrowsingContext, CDP, Script } from '../../bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
@@ -326,5 +326,23 @@ export class BrowsingContextProcessor {
     if (target.targetId === this._selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;
+  }
+
+  async process_PROTO_cdp_sendCommand(
+    commandData: CDP.PROTO.SendCommandCommand
+  ) {
+    const sendCdpCommandResult = await this._cdpConnection.sendCommand(
+      commandData.params.cdpMethod,
+      commandData.params.cdpParams,
+      commandData.params.cdpSession
+    );
+    return { result: sendCdpCommandResult };
+  }
+
+  async process_PROTO_cdp_getSession(commandData: CDP.PROTO.GetSessionCommand) {
+    const context = commandData.params.context;
+    const sessionId = (await this._getKnownContext(context))._sessionId;
+    if (sessionId === undefined) return { result: { session: null } };
+    return { result: { session: sessionId } };
   }
 }
