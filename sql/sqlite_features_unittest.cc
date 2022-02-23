@@ -382,6 +382,23 @@ TEST_F(SQLiteFeaturesTest, DeleteCurrentlySelectedRow) {
   ASSERT_TRUE(db_.Execute("DELETE FROM rows WHERE id=6"));
 
   EXPECT_FALSE(select.Step());
+
+  // Check that the DELETEs were applied as expected.
+
+  static const char kSelectAllSql[] = "SELECT id,t FROM rows";
+  sql::Statement select_all(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectAllSql));
+  std::vector<int> remaining_ids;
+  std::vector<std::string> remaining_texts;
+  while (select_all.Step()) {
+    remaining_ids.push_back(select_all.ColumnInt(0));
+    remaining_texts.push_back(select_all.ColumnString(1));
+  }
+
+  std::vector<int> expected_remaining_ids = {3, 5};
+  EXPECT_EQ(expected_remaining_ids, remaining_ids);
+  std::vector<std::string> expected_remaining_texts = {"three", "five"};
+  EXPECT_EQ(expected_remaining_texts, remaining_texts);
 }
 
 // The "No Isolation Between Operations On The Same Database Connection" section
@@ -417,6 +434,93 @@ TEST_F(SQLiteFeaturesTest, DeletePreviouslySelectedRows) {
   ASSERT_TRUE(db_.Execute("DELETE FROM rows WHERE id=6"));
 
   EXPECT_FALSE(select.Step());
+
+  // Check that the DELETEs were applied as expected.
+
+  static const char kSelectAllSql[] = "SELECT id,t FROM rows";
+  sql::Statement select_all(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectAllSql));
+  std::vector<int> remaining_ids;
+  std::vector<std::string> remaining_texts;
+  while (select_all.Step()) {
+    remaining_ids.push_back(select_all.ColumnInt(0));
+    remaining_texts.push_back(select_all.ColumnString(1));
+  }
+
+  std::vector<int> expected_remaining_ids = {3, 5};
+  EXPECT_EQ(expected_remaining_ids, remaining_ids);
+  std::vector<std::string> expected_remaining_texts = {"three", "five"};
+  EXPECT_EQ(expected_remaining_texts, remaining_texts);
+}
+
+// The "No Isolation Between Operations On The Same Database Connection" section
+// in https://sqlite.org/isolation.html states that it's safe to DELETE a row
+// while a SELECT statement executes, but the DELETEd row may or may not show up
+// in the SELECT results. (See the test above for a case where the DELETEd row
+// is guaranteed to now show up in the SELECT results.)
+//
+// This seems to imply that DELETEing from a table that is not read by the
+// concurrent SELECT statement is safe and well-defined, as the DELETEd row(s)
+// cannot possibly show up in the SELECT results.
+//
+// Chrome features are allowed to rely on the implication above, because it
+// comes in very handy for DELETEing data across multiple tables. This test
+// ensures that our assumption remains valid.
+TEST_F(SQLiteFeaturesTest, DeleteWhileSelectingFromDifferentTable) {
+  ASSERT_TRUE(db_.Execute("CREATE TABLE main(id INTEGER PRIMARY KEY, t TEXT)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO main VALUES(2, 'two')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO main VALUES(3, 'three')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO main VALUES(4, 'four')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO main VALUES(5, 'five')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO main VALUES(6, 'six')"));
+
+  ASSERT_TRUE(
+      db_.Execute("CREATE TABLE other(id INTEGER PRIMARY KEY, t TEXT)"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(1, 'one')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(2, 'two')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(3, 'three')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(4, 'four')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(5, 'five')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(6, 'six')"));
+  ASSERT_TRUE(db_.Execute("INSERT INTO other VALUES(7, 'seven')"));
+
+  static const char kSelectEvenSql[] = "SELECT id,t FROM main WHERE id%2=0";
+  sql::Statement select(db_.GetCachedStatement(SQL_FROM_HERE, kSelectEvenSql));
+
+  ASSERT_TRUE(select.Step());
+  ASSERT_EQ(select.ColumnInt(0), 2);
+  ASSERT_EQ(select.ColumnString(1), "two");
+  EXPECT_TRUE(db_.Execute("DELETE FROM other WHERE id=2"));
+
+  ASSERT_TRUE(select.Step());
+  ASSERT_EQ(select.ColumnInt(0), 4);
+  ASSERT_EQ(select.ColumnString(1), "four");
+
+  ASSERT_TRUE(select.Step());
+  ASSERT_EQ(select.ColumnInt(0), 6);
+  ASSERT_EQ(select.ColumnString(1), "six");
+  ASSERT_TRUE(db_.Execute("DELETE FROM other WHERE id=4"));
+  ASSERT_TRUE(db_.Execute("DELETE FROM other WHERE id=5"));
+  ASSERT_TRUE(db_.Execute("DELETE FROM other WHERE id=6"));
+
+  EXPECT_FALSE(select.Step());
+
+  // Check that the DELETEs were applied as expected.
+
+  static const char kSelectAllSql[] = "SELECT id,t FROM other";
+  sql::Statement select_all(
+      db_.GetCachedStatement(SQL_FROM_HERE, kSelectAllSql));
+  std::vector<int> remaining_ids;
+  std::vector<std::string> remaining_texts;
+  while (select_all.Step()) {
+    remaining_ids.push_back(select_all.ColumnInt(0));
+    remaining_texts.push_back(select_all.ColumnString(1));
+  }
+
+  std::vector<int> expected_remaining_ids = {1, 3, 7};
+  EXPECT_EQ(expected_remaining_ids, remaining_ids);
+  std::vector<std::string> expected_remaining_texts = {"one", "three", "seven"};
+  EXPECT_EQ(expected_remaining_texts, remaining_texts);
 }
 
 // The "No Isolation Between Operations On The Same Database Connection" section
@@ -446,7 +550,7 @@ TEST_F(SQLiteFeaturesTest, InsertWhileSelectingFromDifferentTable) {
   ASSERT_TRUE(select_src.Step());
   ASSERT_EQ(select_src.ColumnInt(0), 2);
   ASSERT_EQ(select_src.ColumnString(1), "two");
-  EXPECT_TRUE(db_.Execute("INSERT INTO dst VALUES(2, 'two');"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO dst VALUES(2, 'two')"));
   ASSERT_TRUE(db_.Execute("INSERT INTO dst VALUES(3, 'three')"));
 
   ASSERT_TRUE(select_src.Step());
@@ -472,11 +576,11 @@ TEST_F(SQLiteFeaturesTest, InsertWhileSelectingFromDifferentTable) {
     dst_texts.push_back(select_dst.ColumnString(1));
   }
 
-  std::vector<int> golden_dst_ids = {2, 3, 4, 5, 6};
-  EXPECT_EQ(golden_dst_ids, dst_ids);
-  std::vector<std::string> golden_dst_texts = {"two", "three", "four", "five",
-                                               "six"};
-  EXPECT_EQ(golden_dst_texts, dst_texts);
+  std::vector<int> expected_dst_ids = {2, 3, 4, 5, 6};
+  EXPECT_EQ(expected_dst_ids, dst_ids);
+  std::vector<std::string> expected_dst_texts = {"two", "three", "four", "five",
+                                                 "six"};
+  EXPECT_EQ(expected_dst_texts, dst_texts);
 }
 
 #if BUILDFLAG(IS_APPLE)
