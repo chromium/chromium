@@ -122,8 +122,6 @@ class ProcessorEntity {
   // and caches it in the instance.
   void SetCommitData(std::unique_ptr<EntityData> data);
 
-  void CacheCommitData(std::unique_ptr<EntityData> data);
-
   // Check if the instance has cached commit data.
   bool HasCommitData() const;
 

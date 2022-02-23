@@ -90,12 +90,6 @@ void ProcessorEntity::SetCommitData(std::unique_ptr<EntityData> data) {
   data->creation_time = ProtoTimeToTime(metadata_.creation_time());
   data->modification_time = ProtoTimeToTime(metadata_.modification_time());
 
-  commit_data_.reset();
-  CacheCommitData(std::move(data));
-}
-
-void ProcessorEntity::CacheCommitData(std::unique_ptr<EntityData> data) {
-  DCHECK(RequiresCommitData());
   commit_data_ = std::move(data);
   DCHECK(HasCommitData());
 }
