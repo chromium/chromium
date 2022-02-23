@@ -5,7 +5,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="org.chromium.example.partnercustomizations">
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="21" />
+    <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="23" />
     <application>
         <!-- Provider for partner bookmarks. android:authorities must not be changed. -->
         <provider android:name="PartnerBookmarksProviderExample"
