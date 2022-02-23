@@ -80,6 +80,13 @@ bool IsDeprecateAltClickEnabled() {
   return base::FeatureList::IsEnabled(kDeprecateAltClick);
 }
 
+const base::Feature kRgbKeyboard = {"RgbKeyboard",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsRgbKeyboardEnabled() {
+  return base::FeatureList::IsEnabled(kRgbKeyboard);
+}
+
 const base::Feature kShortcutCustomizationApp = {
     "ShortcutCustomizationApp", base::FEATURE_DISABLED_BY_DEFAULT};
 

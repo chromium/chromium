@@ -1003,6 +1003,10 @@ const char kEnableGpuServiceLoggingName[] = "Enable gpu service logging";
 const char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
+const char kEnableRgbKeyboardName[] = "Enable RGB Keyboard Support";
+const char kEnableRgbKeyboardDescription[] =
+    "Enable RGB Keyboard support on supported devices.";
+
 const char kEnableShortcutCustomizationAppName[] =
     "Enable shortcut customization app";
 const char kEnableShortcutCustomizationAppDescription[] =

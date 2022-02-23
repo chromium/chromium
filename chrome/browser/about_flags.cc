@@ -6092,6 +6092,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFirmwareUpdaterAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFirmwareUpdaterApp)},
 
+    {"enable-rgb-keyboard", flag_descriptions::kEnableRgbKeyboardName,
+     flag_descriptions::kEnableRgbKeyboardDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kRgbKeyboard)},
+
     {"enhanced-network-voices", flag_descriptions::kEnhancedNetworkVoicesName,
      flag_descriptions::kEnhancedNetworkVoicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnhancedNetworkVoices)},

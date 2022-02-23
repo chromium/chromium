@@ -54519,6 +54519,7 @@ from previous Chrome versions.
   <int value="60023885" label="AutofillNoLocalSaveOnUnmaskSuccess:disabled"/>
   <int value="60442188" label="MultilingualTyping:enabled"/>
   <int value="60461879" label="AppListBubble:enabled"/>
+  <int value="60661012" label="RgbKeyboard:enabled"/>
   <int value="61130490" label="WebViewBrotliSupport:enabled"/>
   <int value="61205887" label="enable-text-input-focus-manager"/>
   <int value="61466986" label="AsyncDns:disabled"/>
@@ -55893,6 +55894,7 @@ from previous Chrome versions.
   <int value="1044928476"
       label="AllowDownloadResumptionWithoutStrongValidators:enabled"/>
   <int value="1045152062" label="SecurePaymentConfirmationBrowser:enabled"/>
+  <int value="1046786976" label="RgbKeyboard:disabled"/>
   <int value="1046878091" label="PasswordForceSaving:enabled"/>
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>
   <int value="1047110483" label="ShelfHotseat:disabled"/>
