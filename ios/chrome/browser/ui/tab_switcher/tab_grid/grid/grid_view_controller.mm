@@ -969,6 +969,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)insertItem:(TabSwitcherItem*)item
            atIndex:(NSUInteger)index
     selectedItemID:(NSString*)selectedItemID {
+  if (_mode == TabGridModeSearch) {
+    // Prevent inserting items while viewing search results.
+    return;
+  }
+
   // Consistency check: |item|'s ID is not in |items|.
   // (using DCHECK rather than DCHECK_EQ to avoid a checked_cast on NSNotFound).
   DCHECK([self indexOfItemWithID:item.identifier] == NSNotFound);
@@ -1080,6 +1085,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (void)moveItemWithID:(NSString*)itemID toIndex:(NSUInteger)toIndex {
+  if (_mode == TabGridModeSearch) {
+    // Prevent moving items while viewing search results.
+    return;
+  }
+
   NSUInteger fromIndex = [self indexOfItemWithID:itemID];
   // If this move would be a no-op, early return and avoid spurious UI updates.
   if (fromIndex == toIndex)
