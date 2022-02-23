@@ -1272,5 +1272,8 @@ const base::Feature kWindowPlacement{"WindowPlacement",
 // TODO(crbug.com/1277431): This flag should be eventually disabled.
 const base::Feature kEventPath{"EventPath", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kReduceUserAgentMinorVersion{
+    "ReduceUserAgentMinorVersion", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

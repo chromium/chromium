@@ -1647,6 +1647,9 @@ extern const char kForceMajorVersionInMinorPositionInUserAgentDescription[];
 extern const char kDurableClientHintsCacheName[];
 extern const char kDurableClientHintsCacheDescription[];
 
+extern const char kReduceUserAgentMinorVersionName[];
+extern const char kReduceUserAgentMinorVersionDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

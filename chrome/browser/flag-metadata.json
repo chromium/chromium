@@ -5086,6 +5086,11 @@
     "expiry_milestone": 113
   },
   {
+    "name": "reduce-user-agent-minor-version",
+    "owners": [ "abeyad", "victortan"],
+    "expiry_milestone": 113
+  },
+  {
     "name": "reengagement-notification",
     "owners": [ "dtrainor", "xingliu" ],
     "expiry_milestone": 90

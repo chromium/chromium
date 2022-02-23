@@ -15,9 +15,13 @@ class Version;
 
 namespace version_info {
 
-// Returns the product name and version information for UserAgent header,
-// e.g. "Chrome/a.b.c.d".
+// Returns the product name and version information for the User-Agent header,
+// in the format: Chrome/<major_version>.<minor_version>.<build>.<patch>.
 const std::string& GetProductNameAndVersionForUserAgent();
+
+// Returns the product name and reduced version information for the User-Agent
+// header, in the format: Chrome/<major_version>.0.0.0.
+const std::string& GetProductNameAndVersionForReducedUserAgent();
 
 // Returns the product name, e.g. "Chromium" or "Google Chrome".
 std::string GetProductName();

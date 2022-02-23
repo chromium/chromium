@@ -53,7 +53,6 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/version_info/version_info.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -639,8 +638,7 @@ std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
   // also for |structured_ua.platform_version| below.
   constexpr char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
   // Override the user agent to request mobile version web sites.
-  const std::string product =
-      version_info::GetProductNameAndVersionForUserAgent();
+  const std::string product = embedder_support::GetProductAndVersion();
   blink::UserAgentOverride ua_override;
   ua_override.ua_string_override = content::BuildUserAgentFromOSAndProduct(
       kOsOverrideForTabletSite, product);

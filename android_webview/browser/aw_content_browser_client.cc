@@ -203,7 +203,7 @@ void MaybeCreateSafeBrowsing(
 }  // anonymous namespace
 
 std::string GetProduct() {
-  return embedder_support::GetProduct(/*allow_override=*/true);
+  return embedder_support::GetProductAndVersion();
 }
 
 std::string GetUserAgent() {

@@ -23,6 +23,12 @@ const std::string& GetProductNameAndVersionForUserAgent() {
   return *product_and_version;
 }
 
+const std::string& GetProductNameAndVersionForReducedUserAgent() {
+  static const base::NoDestructor<std::string> product_and_version(
+      "Chrome/" + GetMajorVersionNumber() + ".0.0.0");
+  return *product_and_version;
+}
+
 std::string GetProductName() {
   return PRODUCT_NAME;
 }

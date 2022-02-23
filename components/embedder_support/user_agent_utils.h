@@ -36,13 +36,10 @@ struct UserAgentOptions {
   ForceMajorVersionToMinorPosition force_major_to_minor = kDefault;
 };
 
-// Returns the product string, e.g. "Chrome/98.0.4521.0".  If `allow_override`
-// is set to true, it's possible to have a mismatch between the product's
-// version number and the version number in the User-Agent string if there are
-// flag-enabled overrides.
-// TODO(crbug.com/1291612): modify to accept an optional PrefService*.
-std::string GetProduct(
-    bool allow_override = false,
+// Returns the product & version string.  Examples:
+//   "Chrome/101.0.0.0"    -  if UA reduction is enabled
+//   "Chrome/101.0.4698.0" -  if UA reduction is not enabled
+std::string GetProductAndVersion(
     ForceMajorVersionToMinorPosition force_major_to_minor = kDefault);
 
 // Returns the user agent string for Chrome.

@@ -53400,6 +53400,7 @@ from previous Chrome versions.
   <int value="-734067604"
       label="notification-scheduler-immediate-background-task"/>
   <int value="-733934949" label="SystemTransliterationPhysicalTyping:disabled"/>
+  <int value="-733616934" label="ReduceUserAgentMinorVersion:enabled"/>
   <int value="-733210914"
       label="AutofillEnableMerchantBoundVirtualCards:disabled"/>
   <int value="-731502579" label="CupsPrintersUiOverhaul:disabled"/>
@@ -55710,6 +55711,7 @@ from previous Chrome versions.
   <int value="908523940" label="PassiveEventListenersDueToFling:disabled"/>
   <int value="909439558" label="disable-device-discovery"/>
   <int value="909525364" label="ExtensionsCheckup:enabled"/>
+  <int value="909685129" label="ReduceUserAgentMinorVersion:disabled"/>
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>

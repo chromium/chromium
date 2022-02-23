@@ -2879,6 +2879,13 @@ const char kDurableClientHintsCacheName[] = "Persistent client hints";
 const char kDurableClientHintsCacheDescription[] =
     "Persist the client hints cache beyond browser restarts.";
 
+const char kReduceUserAgentMinorVersionName[] =
+    "Reduce the minor version in the User-Agent string";
+const char kReduceUserAgentMinorVersionDescription[] =
+    "Reduce the minor, build, and patch versions in the User-Agent string.  "
+    "The Chrome version in the User-Agent string will be reported as "
+    "Chrome/<major_version>.0.0.0.";
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

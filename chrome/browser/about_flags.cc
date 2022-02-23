@@ -8160,6 +8160,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadBubbleDescription, kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(safe_browsing::kDownloadBubble)},
 
+    {"reduce-user-agent-minor-version",
+     flag_descriptions::kReduceUserAgentMinorVersionName,
+     flag_descriptions::kReduceUserAgentMinorVersionDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kReduceUserAgentMinorVersion)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

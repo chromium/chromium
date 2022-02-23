@@ -197,6 +197,17 @@ const std::string& GetMajorInMinorVersionNumber() {
   return *version_number;
 }
 
+const std::string& GetReducedMajorInMinorVersionNumber() {
+  static const base::NoDestructor<std::string> version_number([] {
+    std::string version_str(kVersion99);
+    version_str.append(".");
+    version_str.append(version_info::GetMajorVersionNumber());
+    version_str.append(".0.0");
+    return version_str;
+  }());
+  return *version_number;
+}
+
 std::string GetVersionNumber(const UserAgentOptions& options) {
   // Force major version to 99.
   if (ShouldForceMajorVersionToMinorPosition(options.force_major_to_minor))
@@ -316,14 +327,24 @@ std::string GetMajorVersionForUserAgentString(
 
 }  // namespace
 
-std::string GetProduct(const bool allow_version_override,
-                       ForceMajorVersionToMinorPosition force_major_to_minor) {
-  // Force major version to 99 and minor version to major position.
-  if (allow_version_override &&
-      ShouldForceMajorVersionToMinorPosition(force_major_to_minor))
-    return "Chrome/" + GetMajorInMinorVersionNumber();
-
-  return version_info::GetProductNameAndVersionForUserAgent();
+std::string GetProductAndVersion(
+    ForceMajorVersionToMinorPosition force_major_to_minor) {
+  if (ShouldForceMajorVersionToMinorPosition(force_major_to_minor)) {
+    // Force major version to 99 and major version to minor version position.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kReduceUserAgentMinorVersion)) {
+      return "Chrome/" + GetReducedMajorInMinorVersionNumber();
+    } else {
+      return "Chrome/" + GetMajorInMinorVersionNumber();
+    }
+  } else {
+    if (base::FeatureList::IsEnabled(
+            blink::features::kReduceUserAgentMinorVersion)) {
+      return version_info::GetProductNameAndVersionForReducedUserAgent();
+    } else {
+      return version_info::GetProductNameAndVersionForUserAgent();
+    }
+  }
 }
 
 std::string GetUserAgent(
@@ -355,8 +376,7 @@ std::string GetReducedUserAgent(
 
 std::string GetFullUserAgent(
     ForceMajorVersionToMinorPosition force_major_to_minor) {
-  std::string product =
-      GetProduct(/*allow_override=*/true, force_major_to_minor);
+  std::string product = GetProductAndVersion(force_major_to_minor);
 #if BUILDFLAG(IS_ANDROID)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseMobileUserAgent))
@@ -554,7 +574,7 @@ void SetDesktopUserAgentOverride(content::WebContents* web_contents,
 
   blink::UserAgentOverride spoofed_ua;
   spoofed_ua.ua_string_override = content::BuildUserAgentFromOSAndProduct(
-      kLinuxInfoStr, GetProduct(/*allow_override=*/true));
+      kLinuxInfoStr, GetProductAndVersion());
   spoofed_ua.ua_metadata_override = metadata;
   spoofed_ua.ua_metadata_override->platform = "Linux";
   spoofed_ua.ua_metadata_override->platform_version =

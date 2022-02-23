@@ -657,6 +657,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kWindowPlacement;
 // Gates the non-standard API Event.path to help its deprecation and removal.
 BLINK_COMMON_EXPORT extern const base::Feature kEventPath;
 
+// If enabled, the minor version of the User-Agent string will be reduced.
+BLINK_COMMON_EXPORT extern const base::Feature kReduceUserAgentMinorVersion;
+
 }  // namespace features
 }  // namespace blink
 
