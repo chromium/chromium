@@ -121,7 +121,7 @@ MediaPlayerBridge::~MediaPlayerBridge() {
 
 void MediaPlayerBridge::Initialize() {
   cookies_.clear();
-  if (url_.SchemeIsBlob()) {
+  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
     NOTREACHED();
     return;
   }
@@ -182,19 +182,12 @@ void MediaPlayerBridge::SetPlaybackRate(double playback_rate) {
 void MediaPlayerBridge::Prepare() {
   DCHECK(j_media_player_bridge_.is_null());
 
-  if (url_.SchemeIsBlob()) {
+  if (url_.SchemeIsBlob() || url_.SchemeIsFileSystem()) {
     NOTREACHED();
     return;
   }
 
   CreateJavaMediaPlayerBridge();
-
-  if (url_.SchemeIsFileSystem()) {
-    client_->GetMediaResourceGetter()->GetPlatformPathFromURL(
-        url_, base::BindOnce(&MediaPlayerBridge::SetDataSource,
-                             weak_factory_.GetWeakPtr()));
-    return;
-  }
 
   SetDataSource(url_.spec());
 }
