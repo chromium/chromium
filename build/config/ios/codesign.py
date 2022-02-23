@@ -401,7 +401,7 @@ def GenerateBundleInfoPlist(bundle, plist_compiler, partial_plist):
 
   # Invoke the plist_compiler script. It needs to be a python script.
   subprocess.check_call([
-      'python',
+      'python3',
       plist_compiler,
       'merge',
       '-f',
