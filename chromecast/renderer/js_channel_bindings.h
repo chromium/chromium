@@ -7,6 +7,7 @@
 
 #include "chromecast/common/mojom/js_channel.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromecast {
 

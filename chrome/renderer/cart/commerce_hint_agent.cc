@@ -32,6 +32,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "v8/include/v8-isolate.h"
 
 using base::UserMetricsAction;
 using blink::WebElement;

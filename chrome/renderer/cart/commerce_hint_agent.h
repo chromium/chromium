@@ -5,13 +5,20 @@
 #ifndef CHROME_RENDERER_CART_COMMERCE_HINT_AGENT_H_
 #define CHROME_RENDERER_CART_COMMERCE_HINT_AGENT_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/common/cart/commerce_hints.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "url/gurl.h"
+
+namespace base {
+class Value;
+}
 
 namespace cart {
 

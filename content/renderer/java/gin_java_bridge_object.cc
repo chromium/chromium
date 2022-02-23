@@ -11,6 +11,7 @@
 #include "gin/function_template.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "v8/include/v8-function.h"
 
 namespace content {
 

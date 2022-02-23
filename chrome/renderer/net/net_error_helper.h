@@ -34,6 +34,10 @@ namespace error_page {
 class Error;
 }
 
+namespace network {
+struct ResourceRequest;
+}
+
 // Listens for NetErrorInfo messages from the NetErrorTabHelper on the
 // browser side and updates the error page with more details (currently, just
 // DNS probe results) if/when available.

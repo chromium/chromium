@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "ui/accessibility/ax_mode.h"
@@ -36,17 +36,20 @@ namespace blink {
 class WebDocumentLoader;
 class WebElement;
 class WebFormElement;
+class WebSecurityOrigin;
 class WebString;
+class WebURLRequest;
 class WebWorkerFetchContext;
+struct MobileFriendliness;
 }  // namespace blink
-
-namespace network {
-struct URLLoaderCompletionStatus;
-}  // namespace network
 
 namespace gfx {
 class Rect;
 }  // namespace gfx
+
+namespace network {
+struct URLLoaderCompletionStatus;
+}  // namespace network
 
 namespace content {
 

@@ -14,6 +14,7 @@
 #include "content/common/android/gin_java_bridge_value.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
 #include "gin/array_buffer.h"
+#include "v8/include/v8-typed-array.h"
 
 namespace content {
 

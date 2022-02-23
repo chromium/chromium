@@ -18,6 +18,10 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
+namespace blink {
+class WebLocalFrame;
+}
+
 namespace autofill_assistant {
 
 // Autofill assistant agent to control a web page.

@@ -12,6 +12,7 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
 #include "content/renderer/java/gin_java_bridge_value_converter.h"
+#include "v8/include/v8-exception.h"
 
 namespace content {
 
