@@ -5303,11 +5303,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "share-context-menu",
-    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "share-usage-ranking",
     "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 100

@@ -26380,6 +26380,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShareSubmenu.Abandoned">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <description>
@@ -26389,6 +26390,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShareSubmenu.CopyLinkSelected">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <description>
@@ -26397,6 +26399,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShareSubmenu.QRCodeSelected">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <description>
@@ -26405,6 +26408,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShareSubmenu.SendTabToSelfSelected">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <description>
@@ -26413,6 +26417,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ShareSubmenu.ThirdPartySelected">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <description>
@@ -26737,6 +26742,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="SharingQRCode.DialogLaunched.ContextMenuLink">
+  <obsolete>Removed 02/2022.</obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <description>

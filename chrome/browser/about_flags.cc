@@ -53,7 +53,6 @@
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/share/share_features.h"
-#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
@@ -7719,12 +7718,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSwapAndroidShareHubRowsName,
      flag_descriptions::kSwapAndroidShareHubRowsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(share::kSwapAndroidShareHubRows)},
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"share-context-menu", flag_descriptions::kShareContextMenuName,
-     flag_descriptions::kShareContextMenuDescription, kOsAll,
-     FEATURE_VALUE_TYPE(share::kShareMenu)},
 #endif
 
     {"enable-drdc", flag_descriptions::kEnableDrDcName,

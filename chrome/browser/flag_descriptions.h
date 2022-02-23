@@ -1641,11 +1641,6 @@ extern const char kUsePassthroughCommandDecoderDescription[];
 extern const char kExtensionWorkflowJustificationName[];
 extern const char kExtensionWorkflowJustificationDescription[];
 
-#if !BUILDFLAG(IS_ANDROID)
-extern const char kShareContextMenuName[];
-extern const char kShareContextMenuDescription[];
-#endif
-
 extern const char kForceMajorVersionInMinorPositionInUserAgentName[];
 extern const char kForceMajorVersionInMinorPositionInUserAgentDescription[];
 

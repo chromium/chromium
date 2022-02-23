@@ -14,7 +14,7 @@ namespace share {
 enum class ShareSourceDesktop {
   kUnknown = 0,
   kOmniboxSharingHub = 1,
-  kWebContextMenu = 2,
+  // kWebContextMenu = 2,
   kAppMenuSharingHub = 3,
   kMaxValue = kAppMenuSharingHub,
 };

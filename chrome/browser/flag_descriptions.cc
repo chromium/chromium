@@ -2867,13 +2867,6 @@ const char kExtensionWorkflowJustificationDescription[] =
     "Enables users to justify their extension requests by causing a text field "
     "to appear on the extension request dialog.";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kShareContextMenuName[] = "Share context menu";
-const char kShareContextMenuDescription[] =
-    "Whether the sharing options in various context menus are grouped into "
-    "a common submenu.";
-#endif
-
 const char kForceMajorVersionInMinorPositionInUserAgentName[] =
     "Put major version in minor version position in User-Agent";
 const char kForceMajorVersionInMinorPositionInUserAgentDescription[] =

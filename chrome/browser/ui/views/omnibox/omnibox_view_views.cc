@@ -257,14 +257,12 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
-  // The context menu holds references to share_submenu_model_ and
-  // send_tab_to_self_sub_menu_model_; invalidate it here so we can destroy
-  // those below.
+  // The context menu holds a reference to send_tab_to_self_sub_menu_model_;
+  // invalidate it here so we can destroy those below.
   InvalidateContextMenu();
 
-  // These have a reference to the WebContents, which might be being destroyed
+  // This has a reference to the WebContents, which might be being destroyed
   // here:
-  share_submenu_model_.reset();
   send_tab_to_self_sub_menu_model_.reset();
 
   const OmniboxState* state = static_cast<OmniboxState*>(
@@ -1808,10 +1806,7 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
-  if (share::ShareSubmenuModel::IsEnabled())
-    MaybeAddShareSubmenu(menu_contents);
-  else
-    MaybeAddSendTabToSelfItem(menu_contents);
+  MaybeAddSendTabToSelfItem(menu_contents);
 
   int paste_position = menu_contents->GetIndexOfCommandId(Textfield::kPaste);
   DCHECK_GE(paste_position, 0);
@@ -1914,33 +1909,6 @@ void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
     RequestFocus();
   SelectAll(false);
   output_drag_op = DragOperation::kCopy;
-}
-
-void OmniboxViewViews::MaybeAddShareSubmenu(
-    ui::SimpleMenuModel* menu_contents) {
-  content::WebContents* web_contents = location_bar_view_->GetWebContents();
-
-  const GURL& page_url = web_contents->GetVisibleURL();
-
-  if (!page_url.is_valid())
-    return;
-
-  int index = menu_contents->GetIndexOfCommandId(Textfield::kUndo);
-  // Add a separator if this is not the first item.
-  if (index) {
-    menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
-  }
-
-  share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-      web_contents,
-      std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kDefault,
-                                                 false),
-      share::ShareSubmenuModel::Context::PAGE, page_url,
-      web_contents->GetTitle());
-  menu_contents->InsertSubMenuWithStringIdAt(
-      index, IDC_CONTENT_CONTEXT_SHARING_SUBMENU, IDS_SHARE_MENU_TITLE,
-      share_submenu_model_.get());
-  menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }
 
 void OmniboxViewViews::MaybeAddSendTabToSelfItem(

@@ -63,8 +63,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
-#include "chrome/browser/share/share_features.h"
-#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_context_menu_observer.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
@@ -622,11 +620,6 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
   return web_app::GetSystemWebAppTypeForAppId(profile, *link_app_id);
 }
 
-bool ShouldUseShareMenu() {
-  return base::FeatureList::IsEnabled(share::kShareMenu) ||
-         share::AreUpcomingSharingFeaturesEnabled();
-}
-
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||    \
         BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ui::MenuSourceType GetMenuSourceType(int event_flags) {
@@ -849,8 +842,6 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// TODO(https://crbug.com/1250495): Remove this in favor of the copy in
-// ShareSubmenuModel.
 std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
   DCHECK(!url.is_empty());
   DCHECK(url.is_valid());
@@ -1395,25 +1386,8 @@ void RenderViewContextMenu::AppendLinkItems() {
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 
-    if (ShouldUseShareMenu()) {
-      share::ShareSubmenuModel::Context context =
-          params_.has_image_contents ? share::ShareSubmenuModel::Context::IMAGE
-                                     : share::ShareSubmenuModel::Context::LINK;
-      GURL url =
-          params_.has_image_contents ? params_.src_url : params_.link_url;
-      std::u16string text =
-          params_.has_image_contents ? u"" : params_.link_text;
-      share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-          source_web_contents_, CreateDataEndpoint(true), context, url, text);
-      if (share_submenu_model_->GetItemCount() > 0) {
-        menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
-                                           IDS_SHARE_MENU_TITLE,
-                                           share_submenu_model_.get());
-      }
-    }
-
     // Place QR Generator close to send-tab-to-self feature for link images.
-    if (!ShouldUseShareMenu() && params_.has_image_contents)
+    if (params_.has_image_contents)
       AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/true);
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -1544,19 +1518,8 @@ void RenderViewContextMenu::AppendImageItems() {
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYIMAGELOCATION,
                                   IDS_CONTENT_CONTEXT_COPYIMAGELOCATION);
 
-  if (ShouldUseShareMenu() && !share_submenu_model_) {
-    share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        source_web_contents_, CreateDataEndpoint(true),
-        share::ShareSubmenuModel::Context::IMAGE, params_.src_url, u"");
-    if (share_submenu_model_->GetItemCount() > 0) {
-      menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
-                                         IDS_SHARE_MENU_TITLE,
-                                         share_submenu_model_.get());
-    }
-  }
-
   // Don't double-add for linked images, which also add the item.
-  if (!ShouldUseShareMenu() && params_.link_url.is_empty())
+  if (params_.link_url.is_empty())
     AppendQRCodeGeneratorItem(/*for_image=*/true, /*draw_icon=*/false);
 }
 
@@ -1674,26 +1637,9 @@ void RenderViewContextMenu::AppendPageItems() {
   }
 #endif
 
-  // For sharing, use `embedder_web_contents_` rather than
-  // `source_web_contents_`. `source_web_contents_` returns the embedded content
-  // (e.g. the PDF extension origin).
-  if (ShouldUseShareMenu()) {
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-    share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
-        embedder_web_contents_, CreateDataEndpoint(true),
-        share::ShareSubmenuModel::Context::PAGE,
-        embedder_web_contents_->GetLastCommittedURL(),
-        embedder_web_contents_->GetTitle());
-    if (share_submenu_model_->GetItemCount() > 0) {
-      menu_model_.AddSubMenuWithStringId(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
-                                         IDS_SHARE_MENU_TITLE,
-                                         share_submenu_model_.get());
-    }
-  }
-
   // Send-Tab-To-Self (user's other devices), page level.
   bool send_tab_to_self_menu_present = false;
-  if (GetBrowser() && !ShouldUseShareMenu() &&
+  if (GetBrowser() &&
       send_tab_to_self::ShouldOfferFeature(embedder_web_contents_)) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     send_tab_to_self_menu_present = true;
@@ -1710,7 +1656,7 @@ void RenderViewContextMenu::AppendPageItems() {
   }
 
   // Context menu item for QR Code Generator.
-  if (!ShouldUseShareMenu() && IsQRCodeGeneratorEnabled()) {
+  if (IsQRCodeGeneratorEnabled()) {
     // This is presented alongside the send-tab-to-self items, though each may
     // be present without the other due to feature experimentation. Therefore we
     // may or may not need to create a new separator.
@@ -1720,7 +1666,7 @@ void RenderViewContextMenu::AppendPageItems() {
     AppendQRCodeGeneratorItem(/*for_image=*/false, /*draw_icon=*/true);
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  } else if (!ShouldUseShareMenu() && send_tab_to_self_menu_present) {
+  } else if (send_tab_to_self_menu_present) {
     // Close out sharing section if send-tab-to-self was present but QR
     // generator was not.
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
