@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.CaptureModeController.SaveToLocation.{TabletOrClamshell}"
+<histogram name="Ash.CaptureModeController.SaveLocation.{TabletOrClamshell}"
     enum="CaptureModeSaveToLocation" expires_after="2022-09-09">
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
