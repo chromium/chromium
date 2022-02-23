@@ -655,12 +655,62 @@ bool SelectorChecker::CheckPseudoNot(const SelectorCheckingContext& context,
   return true;
 }
 
+namespace {
+
+Element* TraverseToParent(Element* element) {
+  return element->parentElement();
+}
+
+Element* TraverseToPreviousSibling(Element* element) {
+  return ElementTraversal::PreviousSibling(*element);
+}
+
+inline bool CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
+    Element* has_scope_element,
+    HeapVector<Member<Element>>& has_argument_leftmost_compound_matches,
+    ElementHasMatchedMap& map,
+    Element* (*next)(Element*)) {
+  bool selector_matched = false;
+  for (auto leftmost : has_argument_leftmost_compound_matches) {
+    for (Element* has_matched_element = next(leftmost); has_matched_element;
+         has_matched_element = next(has_matched_element)) {
+      if (has_matched_element == has_scope_element)
+        selector_matched = true;
+      auto cache_result = map.insert(has_matched_element, true);
+      if (cache_result.is_new_entry)
+        continue;
+      if (cache_result.stored_value->value)
+        break;
+      cache_result.stored_value->value = true;
+    }
+  }
+  return selector_matched;
+}
+
+inline bool CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
+    Element* has_scope_element,
+    HeapVector<Member<Element>>& has_argument_leftmost_compound_matches,
+    ElementHasMatchedMap& map,
+    Element* (*next)(Element*)) {
+  bool selector_matched = false;
+  for (auto leftmost : has_argument_leftmost_compound_matches) {
+    if (Element* has_matched_element = next(leftmost)) {
+      map.Set(has_matched_element, true);
+      if (has_matched_element == has_scope_element)
+        selector_matched = true;
+    }
+  }
+  return selector_matched;
+}
+
+}  // namespace
+
 bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
                                      MatchResult& result) const {
-  Document& document = context.element->GetDocument();
+  Element* has_scope_element = context.element;
+  Document& document = has_scope_element->GetDocument();
   DCHECK(document.GetHasMatchedCacheScope());
-  Element* element = context.element;
-  SelectorCheckingContext sub_context(element);
+  SelectorCheckingContext sub_context(has_scope_element);
   // TODO(blee@igalia.com) Need to clarify the :scope dependency in relative
   // selector definition.
   // - spec : https://www.w3.org/TR/selectors-4/#relative
@@ -684,7 +734,8 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     //    move to the next argument selector.
     //  - Otherwise, mark the element as checked but not matched.
     {  // Limit the the AddResult scope to prevent SECURITY_DCHECK
-      auto cache_result = map.insert(element, false);  // Mark as checked
+      auto cache_result =
+          map.insert(has_scope_element, false);  // Mark as checked
       if (!cache_result.is_new_entry) {        // Was already marked as checked
         if (cache_result.stored_value->value)  // Was already marked as matched
           return true;
@@ -735,20 +786,20 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     // - csswg issue : https://github.com/w3c/csswg-drafts/issues/6399
     if (!depth_fixed) {
       sub_context.relative_leftmost_element =
-          &element->GetTreeScope().RootNode();
+          &has_scope_element->GetTreeScope().RootNode();
     } else if (has_argument_match_context.AdjacentDistanceFixed()) {
-      if (ContainerNode* parent_node = element->parentNode()) {
+      if (ContainerNode* parent_node = has_scope_element->parentNode()) {
         sub_context.relative_leftmost_element =
             Traversal<Element>::FirstChild(*parent_node);
       } else {
-        sub_context.relative_leftmost_element = element;
+        sub_context.relative_leftmost_element = has_scope_element;
       }
     } else {
-      sub_context.relative_leftmost_element = element;
+      sub_context.relative_leftmost_element = has_scope_element;
     }
 
     bool selector_matched = false;
-    for (HasArgumentSubtreeIterator iterator(*element,
+    for (HasArgumentSubtreeIterator iterator(*has_scope_element,
                                              has_argument_match_context);
          !iterator.AtEnd(); ++iterator) {
       if (depth_fixed && !iterator.AtFixedDepth())
@@ -763,52 +814,28 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
       switch (has_argument_match_context.LeftmostRelation()) {
         case CSSSelector::kRelativeDescendant:
-          map.insert(iterator.CurrentElement(), false);  // Mark as checked
-          if (!has_argument_leftmost_compound_matches.IsEmpty()) {
-            sub_context.element =
-                has_argument_leftmost_compound_matches.front();
-            for (sub_context.element = ParentElement(sub_context);
-                 sub_context.element;
-                 sub_context.element = ParentElement(sub_context)) {
-              map.Set(sub_context.element, true);  // Mark as matched
-              if (sub_context.element == element)
-                selector_matched = true;
-            }
-          }
+          selector_matched =
+              CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
+                  has_scope_element, has_argument_leftmost_compound_matches,
+                  map, TraverseToParent);
           break;
         case CSSSelector::kRelativeChild:
-          for (auto leftmost : has_argument_leftmost_compound_matches) {
-            Element* parent = leftmost->parentElement();
-            map.Set(parent, true);  // Mark as matched
-            if (parent == element)
-              selector_matched = true;
-          }
+          selector_matched =
+              CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
+                  has_scope_element, has_argument_leftmost_compound_matches,
+                  map, TraverseToParent);
           break;
         case CSSSelector::kRelativeDirectAdjacent:
-          if (!depth_fixed && !iterator.AtSiblingOfHasScope())
-            map.insert(iterator.CurrentElement(), false);  // Mark as checked
-          for (auto leftmost : has_argument_leftmost_compound_matches) {
-            if (Element* sibling =
-                    Traversal<Element>::PreviousSibling(*leftmost)) {
-              map.Set(sibling, true);  // Mark as matched
-              if (sibling == element)
-                selector_matched = true;
-            }
-          }
+          selector_matched =
+              CacheMatchedElementsAndReturnMatchedResultForDirectRelation(
+                  has_scope_element, has_argument_leftmost_compound_matches,
+                  map, TraverseToPreviousSibling);
           break;
         case CSSSelector::kRelativeIndirectAdjacent:
-          if (!depth_fixed)
-            map.insert(iterator.CurrentElement(), false);  // Mark as checked
-          for (auto leftmost : has_argument_leftmost_compound_matches) {
-            for (Element* sibling =
-                     Traversal<Element>::PreviousSibling(*leftmost);
-                 sibling;
-                 sibling = Traversal<Element>::PreviousSibling(*sibling)) {
-              map.Set(sibling, true);  // Mark as matched
-              if (sibling == element)
-                selector_matched = true;
-            }
-          }
+          selector_matched =
+              CacheMatchedElementsAndReturnMatchedResultForIndirectRelation(
+                  has_scope_element, has_argument_leftmost_compound_matches,
+                  map, TraverseToPreviousSibling);
           break;
         default:
           NOTREACHED();
@@ -840,7 +867,8 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         // ancestors to support sibling combinator and complex selector in
         // :has() argument.
         for (Element* parent = iterator.CurrentElement();
-             parent && parent != element; parent = parent->parentElement()) {
+             parent && parent != has_scope_element;
+             parent = parent->parentElement()) {
           parent->SetAncestorsAffectedByHas();
         }
         return true;
