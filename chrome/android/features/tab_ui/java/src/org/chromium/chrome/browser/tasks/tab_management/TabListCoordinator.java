@@ -23,10 +23,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -165,18 +165,10 @@ public class TabListCoordinator
                     return;
                 }
 
-                if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-                    float expectedThumbnailAspectRatio =
-                            (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-                    expectedThumbnailAspectRatio =
-                            MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
-                    int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
-                    thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
-                    thumbnail.setImageDrawable(null);
-                } else {
-                    thumbnail.setImageDrawable(null);
-                    thumbnail.setMinimumHeight(thumbnail.getWidth());
-                }
+                float expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(context);
+                int height = (int) (thumbnail.getWidth() * 1.0 / expectedThumbnailAspectRatio);
+                thumbnail.setMinimumHeight(Math.min(thumbnail.getHeight(), height));
+                thumbnail.setImageDrawable(null);
             };
         } else if (mMode == TabListMode.STRIP) {
             mAdapter.registerType(UiType.STRIP, parent -> {

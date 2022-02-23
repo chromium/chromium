@@ -18,10 +18,10 @@ import android.graphics.drawable.Drawable;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
-import org.chromium.base.MathUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -216,9 +216,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
             TabModelSelector tabModelSelector) {
         mContext = context;
         Resources resource = context.getResources();
-        float expectedThumbnailAspectRatio =
-                (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-        expectedThumbnailAspectRatio = MathUtils.clamp(expectedThumbnailAspectRatio, 0.5f, 2.0f);
+        float expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(context);
 
         mThumbnailWidth = (int) resource.getDimension(R.dimen.tab_grid_thumbnail_card_default_size);
         mThumbnailHeight = (int) (mThumbnailWidth / expectedThumbnailAspectRatio);

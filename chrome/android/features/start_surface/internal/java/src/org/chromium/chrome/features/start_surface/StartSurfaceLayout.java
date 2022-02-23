@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.jank_tracker.JankScenario;
 import org.chromium.base.jank_tracker.JankTracker;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.TasksSurface;
@@ -173,10 +173,7 @@ public class StartSurfaceLayout extends Layout {
         };
 
         mController.addOverviewModeObserver(mStartSurfaceObserver);
-        if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-            mThumbnailAspectRatio = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
-            mThumbnailAspectRatio = MathUtils.clamp(mThumbnailAspectRatio, 0.5f, 2.0f);
-        }
+        mThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(getContext());
     }
 
     @Override
@@ -479,10 +476,8 @@ public class StartSurfaceLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT, sourceLayoutTab.getUnclampedOriginalContentHeight(),
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                        ? Math.min(getWidth() / mThumbnailAspectRatio,
-                                sourceLayoutTab.getUnclampedOriginalContentHeight())
-                        : getWidth(),
+                Math.min(getWidth() / mThumbnailAspectRatio,
+                        sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 ZOOMING_DURATION, Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
         CompositorAnimator backgroundAlpha =
@@ -535,10 +530,8 @@ public class StartSurfaceLayout extends Layout {
         // down, making the "create group" visible for a while.
         animationList.add(CompositorAnimator.ofWritableFloatPropertyKey(handler, sourceLayoutTab,
                 LayoutTab.MAX_CONTENT_HEIGHT,
-                TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()
-                        ? Math.min(getWidth() / mThumbnailAspectRatio,
-                                sourceLayoutTab.getUnclampedOriginalContentHeight())
-                        : getWidth(),
+                Math.min(getWidth() / mThumbnailAspectRatio,
+                        sourceLayoutTab.getUnclampedOriginalContentHeight()),
                 sourceLayoutTab.getUnclampedOriginalContentHeight(), ZOOMING_DURATION,
                 Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR));
 
