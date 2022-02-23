@@ -990,7 +990,8 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
       return MF_E_INVALID_STREAM_DATA;
     }
 
-    if (gmb->GetType() == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE) {
+    if (gmb->GetType() == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE &&
+        dxgi_device_manager_ != nullptr) {
       return PopulateInputSampleBufferGpu(std::move(frame));
     }
 
@@ -1087,6 +1088,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
   DCHECK(frame->HasGpuMemoryBuffer());
   DCHECK_EQ(frame->GetGpuMemoryBuffer()->GetType(),
             gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+  DCHECK(dxgi_device_manager_);
 
   gfx::GpuMemoryBufferHandle buffer_handle =
       frame->GetGpuMemoryBuffer()->CloneHandle();
