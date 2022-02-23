@@ -70,9 +70,6 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//headless:headless_browsertests",  # 47 errors
-  "//headless:headless_browsertests__exec",
-  "//headless:headless_example",  # 3 errors
   "//headless:headless_non_renderer",  # 9 errors
   "//headless:headless_renderer",  # 13 errors
   "//headless:headless_shared_sources",  # 4 errors

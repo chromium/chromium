@@ -454,6 +454,7 @@ component("headless_non_renderer") {
   }
 
   public_deps = [
+    ":headless_shared_sources",
     "//base",
     "//net",
   ]
@@ -468,7 +469,6 @@ component("headless_non_renderer") {
 
   deps = [
     ":backend_cdp_bindings",
-    ":headless_shared_sources",
     ":version_header",
     "//base:base_static",
     "//build:branding_buildflags",
@@ -661,8 +661,9 @@ if (!is_component_build) {
       ]
     }
 
+    public_deps = [ ":headless_shared_sources" ]
+
     deps = [
-      ":headless_shared_sources",
       "//build:chromeos_buildflags",
       "//components/crash/core/common",
       "//components/security_state/content",
@@ -713,7 +714,7 @@ if (!is_component_build) {
   # For component builds all dependencies are already included in the headless
   # component.
   group("headless_renderer") {
-    deps = [ ":headless_non_renderer" ]
+    public_deps = [ ":headless_non_renderer" ]
   }
 }
 
@@ -862,6 +863,7 @@ test("headless_browsertests") {
     "//gin",
     "//net:test_support",
     "//printing/buildflags",
+    "//services/device/public/cpp:test_support",
     "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
@@ -944,7 +946,6 @@ static_library("headless_shell_lib") {
   }
 
   deps = [
-    ":headless_renderer",
     "//build:branding_buildflags",
     "//components/embedder_support",
     "//components/security_state/content",
@@ -958,6 +959,7 @@ static_library("headless_shell_lib") {
   ]
 
   public_deps = [
+    ":headless_renderer",
     "//base",
     "//third_party/inspector_protocol:crdtp",
   ]
