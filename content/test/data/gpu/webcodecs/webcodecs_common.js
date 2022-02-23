@@ -349,9 +349,13 @@ async function prepareDecoderSource(
     hardwareAcceleration: acceleration
   };
 
-  let support = await VideoDecoder.isConfigSupported(decoder_config);
-  if (!support.supported)
+  try {
+    let support = await VideoDecoder.isConfigSupported(decoder_config);
+    if (!support.supported)
+      return null;
+  } catch (e) {
     return null;
+  }
 
   let chunks = [];
   let errors = 0;
@@ -411,12 +415,13 @@ async function createFrameSource(type, width, height) {
     }
     case 'hw_decoder': {
       // Trying to find any hardware decoder supported by the platform.
-      let src = prepareDecoderSource(
+      let src = await prepareDecoderSource(
           40, width, height, 'avc1.42001E', 'prefer-hardware');
       if (!src)
-        src = prepareDecoderSource(40, width, height, 'vp8', 'prefer-hardware');
+        src = await prepareDecoderSource(
+            40, width, height, 'vp8', 'prefer-hardware');
       if (!src) {
-        src = prepareDecoderSource(
+        src = await prepareDecoderSource(
             40, width, height, 'vp09.00.10.08', 'prefer-hardware');
       }
       if (!src) {
@@ -425,7 +430,8 @@ async function createFrameSource(type, width, height) {
       return src;
     }
     case 'sw_decoder': {
-      return prepareDecoderSource(40, width, height, 'vp8', 'prefer-software');
+      return await prepareDecoderSource(
+          40, width, height, 'vp8', 'prefer-software');
     }
     case 'arraybuffer': {
       return new ArrayBufferSource(width, height);
