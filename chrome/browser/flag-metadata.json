@@ -2640,16 +2640,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-quick-action-search-widget-android",
-    "owners": [ "maxtauro@google.com", "ender@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
-    "name": "enable-quick-action-search-widget-android-dino-variant",
-    "owners": [ "maxtauro@google.com", "ender@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "enable-raw-draw",
     "owners": [ "penghuang" ],
     "expiry_milestone": 110
