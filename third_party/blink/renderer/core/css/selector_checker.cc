@@ -695,7 +695,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     sub_context.selector = selector;
     HasArgumentMatchContext has_argument_match_context(selector);
 
-    bool depth_fixed = has_argument_match_context.GetDepthFixed();
+    bool depth_fixed = has_argument_match_context.DepthFixed();
 
     // To prevent incorrect 'NotChecked' status while matching ':has' pseudo
     // class, change the argument matching context scope when the ':has'
@@ -736,7 +736,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     if (!depth_fixed) {
       sub_context.relative_leftmost_element =
           &element->GetTreeScope().RootNode();
-    } else if (has_argument_match_context.GetAdjacentDistanceFixed()) {
+    } else if (has_argument_match_context.AdjacentDistanceFixed()) {
       if (ContainerNode* parent_node = element->parentNode()) {
         sub_context.relative_leftmost_element =
             Traversal<Element>::FirstChild(*parent_node);
@@ -750,10 +750,10 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
     bool selector_matched = false;
     for (HasArgumentSubtreeIterator iterator(*element,
                                              has_argument_match_context);
-         !iterator.IsEnd(); ++iterator) {
-      if (depth_fixed && !iterator.IsAtFixedDepth())
+         !iterator.AtEnd(); ++iterator) {
+      if (depth_fixed && !iterator.AtFixedDepth())
         continue;
-      sub_context.element = iterator.Get();
+      sub_context.element = iterator.CurrentElement();
       HeapVector<Member<Element>> has_argument_leftmost_compound_matches;
       MatchResult sub_result;
       sub_result.has_argument_leftmost_compound_matches =
@@ -761,9 +761,9 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
 
       MatchSelector(sub_context, sub_result);
 
-      switch (has_argument_match_context.GetLeftMostRelation()) {
+      switch (has_argument_match_context.LeftmostRelation()) {
         case CSSSelector::kRelativeDescendant:
-          map.insert(iterator.Get(), false);  // Mark as checked
+          map.insert(iterator.CurrentElement(), false);  // Mark as checked
           if (!has_argument_leftmost_compound_matches.IsEmpty()) {
             sub_context.element =
                 has_argument_leftmost_compound_matches.front();
@@ -785,8 +785,8 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           }
           break;
         case CSSSelector::kRelativeDirectAdjacent:
-          if (!depth_fixed && !iterator.IsAtSiblingOfHasScope())
-            map.insert(iterator.Get(), false);  // Mark as checked
+          if (!depth_fixed && !iterator.AtSiblingOfHasScope())
+            map.insert(iterator.CurrentElement(), false);  // Mark as checked
           for (auto leftmost : has_argument_leftmost_compound_matches) {
             if (Element* sibling =
                     Traversal<Element>::PreviousSibling(*leftmost)) {
@@ -798,7 +798,7 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           break;
         case CSSSelector::kRelativeIndirectAdjacent:
           if (!depth_fixed)
-            map.insert(iterator.Get(), false);  // Mark as checked
+            map.insert(iterator.CurrentElement(), false);  // Mark as checked
           for (auto leftmost : has_argument_leftmost_compound_matches) {
             for (Element* sibling =
                      Traversal<Element>::PreviousSibling(*leftmost);
@@ -839,13 +839,13 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
         // TODO(blee@igalia.com) Need to traverse to siblings and siblings of
         // ancestors to support sibling combinator and complex selector in
         // :has() argument.
-        for (Element* parent = iterator.Get(); parent && parent != element;
-             parent = parent->parentElement()) {
+        for (Element* parent = iterator.CurrentElement();
+             parent && parent != element; parent = parent->parentElement()) {
           parent->SetAncestorsAffectedByHas();
         }
         return true;
       } else {
-        iterator.Get()->SetAncestorsAffectedByHas();
+        iterator.CurrentElement()->SetAncestorsAffectedByHas();
       }
     }
   }
