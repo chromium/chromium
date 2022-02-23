@@ -178,15 +178,13 @@ class HistoryClustersServiceTestBase : public testing::Test {
   }
 
   // Verifies that the hardcoded visits were passed to the clustering backend.
-  void AwaitAndVerifyTestClusteringBackendRequest(bool for_keywords = false) {
+  void AwaitAndVerifyTestClusteringBackendRequest() {
     test_clustering_backend_->WaitForGetClustersCall();
 
     std::vector<history::AnnotatedVisit> visits =
         test_clustering_backend_->LastClusteredVisits();
 
-    // Keyword requests should not fetch visits older than 30 days; cluster
-    // requests should fetch all visits.
-    ASSERT_EQ(visits.size(), for_keywords ? 2u : 3u);
+    ASSERT_EQ(visits.size(), 3u);
 
     auto& visit = visits[0];
     EXPECT_EQ(visit.visit_row.visit_id, 2);
@@ -204,10 +202,8 @@ class HistoryClustersServiceTestBase : public testing::Test {
     EXPECT_EQ(visit.url_row.url(), "https://google.com/");
     EXPECT_EQ(visit.context_annotations.page_end_reason, 3);
 
-    if (!for_keywords) {
-      visit = visits[2];
-      EXPECT_EQ(visit.visit_row.visit_id, 4);
-    }
+    visit = visits[2];
+    EXPECT_EQ(visit.visit_row.visit_id, 4);
 
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
     //  the HistoryService test methods to support that field.
@@ -574,9 +570,8 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("apples"));
 
   // Providing the response and running the task loop should populate the cache.
-  // This will also verify that visits older than 30 days are not included for
-  // keyword requests.
-  AwaitAndVerifyTestClusteringBackendRequest(true);
+  // This also verifies that visits older than 30 days are also included.
+  AwaitAndVerifyTestClusteringBackendRequest();
 
   std::vector<history::Cluster> clusters;
   clusters.push_back(
