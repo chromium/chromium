@@ -1195,6 +1195,19 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      'android-weblayer-11-x86-rel-tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          '11-x86-emulator',
+          'emulator-4-cores',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_weblayer_x86_10_gtests',
+        }
+      },
       'android-weblayer-pie-x86-wpt-fyi-rel': {
         'mixins': [
           'has_native_resultdb_integration',

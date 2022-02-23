@@ -56,6 +56,16 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-weblayer-11-x86-rel-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|weblayer",
+        short_name = "11",
+    ),
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
+    notifies = ["weblayer-sheriff"],
+)
+
+ci.builder(
     name = "android-weblayer-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "builder_tester|weblayer",
