@@ -661,7 +661,7 @@ void AshNotificationView::RemoveGroupNotification(
   if (!to_be_deleted)
     return;
 
-  grouped_notifications_container_->RemoveChildView(to_be_deleted);
+  grouped_notifications_container_->RemoveChildViewT(to_be_deleted);
   total_grouped_notifications_--;
   left_content_->SetVisible(total_grouped_notifications_ == 0);
   expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
