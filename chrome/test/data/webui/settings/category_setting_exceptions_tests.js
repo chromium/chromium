@@ -35,68 +35,11 @@ suite('CategorySettingExceptions', function() {
     document.body.appendChild(testElement);
   });
 
-  test('create category-setting-exceptions', function() {
-    // The category-setting-exceptions is mainly a container for site-lists.
-    // There's not much that merits testing.
-    assertTrue(!!testElement);
-  });
-
-  test(
-      'allow site list is hidden when showAllowSiteList_ is false', function() {
-        testElement.showAllowSiteList_ = false;
-
-        // Flush to be sure that the container is updated.
-        flush();
-
-        // Make sure that the Allow and Session Only site lists are hidden.
-        const siteListElements = testElement.querySelectorAll('site-list');
-        siteListElements.forEach(element => {
-          if (element.categorySubtype === ContentSetting.BLOCK) {
-            assertFalse(
-                element.hidden,
-                `site-list for ${
-                    element.categorySubtype} should not be hidden`);
-          } else {
-            assertTrue(
-                element.hidden,
-                `site-list for ${element.categorySubtype} should be hidden`);
-          }
-        });
-      });
-
-  test(
-      'block site list is hidden when showBlockSiteList_ is false', function() {
-        testElement.showBlockSiteList_ = false;
-
-        // Flush to be sure that the container is updated.
-        flush();
-
-        // Make sure that the Allow and Session Only site lists are hidden.
-        const siteListElements = testElement.querySelectorAll('site-list');
-        siteListElements.forEach(element => {
-          if (element.categorySubtype === ContentSetting.ALLOW) {
-            assertFalse(
-                element.hidden,
-                `site-list for ${
-                    element.categorySubtype} should not be hidden`);
-          } else {
-            assertTrue(
-                element.hidden,
-                `site-list for ${element.categorySubtype} should be hidden`);
-          }
-        });
-      });
-
   test('allow site list is hidden for FILE_SYSTEM_WRITE', function() {
     testElement.category = ContentSettingsTypes.FILE_SYSTEM_WRITE;
 
     // Flush to be sure that the container is updated.
     flush();
-
-    assertFalse(
-        testElement.showAllowSiteList_, 'showAllowSiteList_ should be false');
-    assertTrue(
-        testElement.showBlockSiteList_, 'showBlockSiteList_ should be true');
 
     // Make sure that the Allow and Session Only site lists are hidden.
     const siteListElements = testElement.querySelectorAll('site-list');
@@ -115,7 +58,7 @@ suite('CategorySettingExceptions', function() {
 
   test(
       'all lists are read-only if the default policy is set by policy',
-      function() {
+      async function() {
         PolymerTest.clearBody();
         const policyPref = createSiteSettingsPrefs(
             [
@@ -135,25 +78,22 @@ suite('CategorySettingExceptions', function() {
         testElement.category = ContentSettingsTypes.COOKIES;
         document.body.appendChild(testElement);
 
-        const initializationTest =
-            browserProxy.whenCalled('getDefaultValueForContentType')
-                .then(function() {
-                  // Flush the container to ensure that the container is
-                  // populated.
-                  flush();
+        await browserProxy.whenCalled('getDefaultValueForContentType');
+        // Flush the container to ensure that the container is populated.
+        flush();
 
-                  assertTrue(testElement.getReadOnlyList_());
-                  assertTrue(testElement.defaultManaged_);
+        const siteListElements =
+            testElement.shadowRoot.querySelectorAll('site-list');
+        assertEquals(3, siteListElements.length);
+        siteListElements.forEach(element => {
+          assertTrue(element.readOnlyList);
+        });
+      });
 
-                  // Make sure that the Allow and Session Only site lists are
-                  // hidden.
-                  const siteListElements =
-                      testElement.shadowRoot.querySelectorAll('site-list');
-                  siteListElements.forEach(element => {
-                    assertTrue(!!element.readOnlyList);
-                  });
-                });
-
+  test(
+      'all lists are not read-only if the default policy is set by user',
+      async function() {
+        PolymerTest.clearBody();
         const dummyPref = createSiteSettingsPrefs(
             [
               createContentSettingTypeToValuePair(
@@ -162,26 +102,24 @@ suite('CategorySettingExceptions', function() {
                   })),
             ],
             []);
+        browserProxy.reset();
         browserProxy.setPrefs(dummyPref);
 
-        const updateTest =
-            browserProxy.whenCalled('getDefaultValueForContentType')
-                .then(function() {
-                  // Flush the container to ensure that the container is
-                  // populated.
-                  flush();
+        // Creates a new category-setting-exceptions element to that it is
+        // initialized with the right value.
+        testElement = document.createElement('category-setting-exceptions');
+        testElement.category = ContentSettingsTypes.COOKIES;
+        document.body.appendChild(testElement);
 
-                  assertFalse(testElement.getReadOnlyList_());
-                  assertFalse(testElement.defaultManaged_);
+        await browserProxy.whenCalled('getDefaultValueForContentType');
+        // Flush the container to ensure that the container is populated.
+        flush();
 
-                  // Make sure that the Allow and Session Only site lists are
-                  // hidden.
-                  const siteListElements =
-                      testElement.shadowRoot.querySelectorAll('site-list');
-                  siteListElements.forEach(element => {
-                    assertTrue(!element.readOnlyList);
-                  });
-                });
-        return Promise.all([initializationTest, updateTest]);
+        const siteListElements =
+            testElement.shadowRoot.querySelectorAll('site-list');
+        assertEquals(3, siteListElements.length);
+        siteListElements.forEach(element => {
+          assertTrue(!element.readOnlyList);
+        });
       });
 });

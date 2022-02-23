@@ -86,14 +86,6 @@ export class CategorySettingExceptionsElement extends
       },
 
       /**
-       * If true, displays the Block site list. Defaults to true.
-       */
-      showBlockSiteList_: {
-        type: Boolean,
-        value: true,
-      },
-
-      /**
        * Expose ContentSetting enum to HTML bindings.
        */
       contentSettingEnum_: {
@@ -117,7 +109,6 @@ export class CategorySettingExceptionsElement extends
   allowHeader: string;
   searchFilter: string;
   private showAllowSiteList_: boolean;
-  private showBlockSiteList_: boolean;
 
   ready() {
     super.ready();
