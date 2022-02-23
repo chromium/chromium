@@ -46,49 +46,47 @@ export function helpContentTestSuite() {
   }
 
   /** Test that expected html elements are in the element. */
-  test('HelpContentLoaded', () => {
-    return initializeHelpContentElement(fakeHelpContentList).then(() => {
-      // Verify the title is in the helpContentElement.
-      const title = getElement('#helpContentLabel');
-      assertTrue(!!title);
-      assertEquals('Suggested help content:', title.textContent);
+  test('HelpContentLoaded', async () => {
+    await initializeHelpContentElement(fakeHelpContentList);
 
-      // Verify the help content is populated with correct number of items.
-      assertEquals(5, getElement('dom-repeat').items.length);
-      const helpLinks =
-          helpContentElement.shadowRoot.querySelectorAll('.help-item a');
-      assertEquals(5, helpLinks.length);
+    // Verify the title is in the helpContentElement.
+    const title = getElement('#helpContentLabel');
+    assertTrue(!!title);
+    assertEquals('Suggested help content:', title.textContent);
 
-      // Verify the help links are displayed in order with correct title and
-      // url.
-      assertEquals('Fix connection problems', helpLinks[0].innerText);
-      assertEquals(
-          'https://support.google.com/chromebook/?q=6318213',
-          helpLinks[0].href);
+    // Verify the help content is populated with correct number of items.
+    assertEquals(5, getElement('dom-repeat').items.length);
+    const helpLinks =
+        helpContentElement.shadowRoot.querySelectorAll('.help-item a');
+    assertEquals(5, helpLinks.length);
 
-      assertEquals(
-          'Why won\'t my wireless mouse with a USB piece wor...?',
-          helpLinks[1].innerText);
-      assertEquals(
-          'https://support.google.com/chromebook/?q=123920509',
-          helpLinks[1].href);
+    // Verify the help links are displayed in order with correct title and
+    // url.
+    assertEquals('Fix connection problems', helpLinks[0].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=6318213', helpLinks[0].href);
 
-      assertEquals('Wifi Issues - only on Chromebooks', helpLinks[2].innerText);
-      assertEquals(
-          'https://support.google.com/chromebook/?q=114174470',
-          helpLinks[2].href);
+    assertEquals(
+        'Why won\'t my wireless mouse with a USB piece wor...?',
+        helpLinks[1].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=123920509',
+        helpLinks[1].href);
 
-      assertEquals('Network Connectivity Fault', helpLinks[3].innerText);
-      assertEquals(
-          'https://support.google.com/chromebook/?q=131459420',
-          helpLinks[3].href);
+    assertEquals('Wifi Issues - only on Chromebooks', helpLinks[2].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=114174470',
+        helpLinks[2].href);
 
-      assertEquals(
-          'Connected to WiFi but can\'t connect to the internet',
-          helpLinks[4].innerText);
-      assertEquals(
-          'https://support.google.com/chromebook/?q=22864239',
-          helpLinks[4].href);
-    });
+    assertEquals('Network Connectivity Fault', helpLinks[3].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=131459420',
+        helpLinks[3].href);
+
+    assertEquals(
+        'Connected to WiFi but can\'t connect to the internet',
+        helpLinks[4].innerText);
+    assertEquals(
+        'https://support.google.com/chromebook/?q=22864239', helpLinks[4].href);
   });
 }
