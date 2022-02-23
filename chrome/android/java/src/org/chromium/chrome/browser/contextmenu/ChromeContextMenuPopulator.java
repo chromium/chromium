@@ -258,6 +258,18 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         static void record(WebContents webContents, ContextMenuParams params, @Action int action) {
             String histogramName = String.format("ContextMenu.SelectedOptionAndroid.%s",
                     ContextMenuUtils.getContextMenuTypeForHistogram(params));
+
+            // Record SharedHighlightingInteraction only for Shared Highlighting V2 menu options
+            // (share highlight, remove highlight and learn more).
+            if (params.getOpenedFromHighlight() && !params.isVideo() && !params.isImage()) {
+                assert histogramName.equals(
+                        "ContextMenu.SelectedOptionAndroid.SharedHighlightingInteraction");
+                if (action != Action.SHARE_HIGHLIGHT || action != Action.REMOVE_HIGHLIGHT
+                        || action != Action.LEARN_MORE) {
+                    histogramName = "ContextMenu.SelectedOptionAndroid.Link";
+                }
+            }
+
             RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);
 
             if (params.isAnchor() && !params.isVideo() && !params.getOpenedFromHighlight()) {
