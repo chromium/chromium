@@ -2820,21 +2820,13 @@ crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/datetimelocal-s
 crbug.com/1299212 fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Pass Failure Timeout Skip ]
 crbug.com/1299212 fast/forms/color-scheme/select/select-popup-appearance-basic.html [ Pass Failure Timeout Skip ]
 crbug.com/1299212 fast/forms/select/menulist-popup-type-ahead-style-change.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance-zoom125.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-locale-hebrew.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/month-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/month-suggestion-picker-appearance-with-scroll-bar.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance-locale-hebrew.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
-crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Pass Failure Timeout ]
+# This might be just flaky on Windows:
+crbug.com/1299212 virtual/scroll-unification/fast/forms/suggestion-picker/* [ Pass Failure Timeout ]
 # At least scrollbars, if not window sizes, are flaky on Win7:
 crbug.com/1299212 [ Win7 ] fast/forms/select-popup/popup-menu-appearance-tall.html [ Pass Failure Timeout ]
 crbug.com/1299212 [ Win7 ] fast/forms/suggestion-picker/* [ Pass Failure Timeout ]
 crbug.com/1299212 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance-rtl.html [ Pass Failure Timeout ]
+crbug.com/1299212 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html [ Failure Timeout Pass ]
 
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
@@ -7599,7 +7591,3 @@ crbug.com/1299903 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prer
 crbug.com/1299946 [ Mac ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Timeout Pass ]
 crbug.com/1299948 [ Mac ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Timeout Pass ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Timeout Pass ]
-crbug.com/1299972 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html [ Failure Timeout Pass ]
-crbug.com/1299993 [ Win ] virtual/scroll-unification/fast/forms/suggestion-picker/date-suggestion-picker-appearance.html [ Failure Timeout Pass ]
-crbug.com/1299993 [ Win ] virtual/scroll-unification/fast/forms/suggestion-picker/month-suggestion-picker-appearance.html [ Failure Timeout Pass ]
-
