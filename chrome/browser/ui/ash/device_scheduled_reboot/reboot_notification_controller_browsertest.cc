@@ -37,6 +37,8 @@ class RebootNotificationControllerDialogTest : public DialogBrowserTest {
     notification_controller_.MaybeShowPendingRebootDialog(deadline,
                                                           base::DoNothing());
   }
+  // DialogBrowserTest:
+  void DismissUi() override { notification_controller_.CloseRebootDialog(); }
 
  private:
   RebootNotificationControllerForTest notification_controller_;

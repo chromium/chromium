@@ -8,17 +8,17 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/ash/device_scheduled_reboot/scheduled_reboot_dialog.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace base {
 class Time;
 }
-
-using ButtonClickCallback =
-    message_center::HandleNotificationClickDelegate::ButtonClickCallback;
 
 // This class is responsible for creating and managing notifications about the
 // reboot when DeviceScheduledRebootPolicy is set.
@@ -34,12 +34,16 @@ class RebootNotificationController {
   // in progress.
   void MaybeShowPendingRebootNotification(
       const base::Time& reboot_time,
-      ButtonClickCallback reboot_callback) const;
+      base::RepeatingClosure reboot_callback);
 
   // Only show dialog if the user is in session and kiosk session is not
   // in progress.
   void MaybeShowPendingRebootDialog(const base::Time& reboot_time,
                                     base::OnceClosure reboot_callback);
+
+  void CloseRebootNotification() const;
+
+  void CloseRebootDialog();
 
  protected:
   // Only notify in-session users that are not running in kiosk mode.
@@ -53,8 +57,15 @@ class RebootNotificationController {
       const message_center::RichNotificationData& data,
       scoped_refptr<message_center::NotificationDelegate> delegate) const;
 
+  // Button click callback.
+  void HandleNotificationClick(absl::optional<int> button_index) const;
+
   // Dialog notifying the user about the pending reboot.
   std::unique_ptr<ScheduledRebootDialog> scheduled_reboot_dialog_;
+
+  // Callback to run on notification button click.
+  base::RepeatingClosure notification_callback_;
+  base::WeakPtrFactory<RebootNotificationController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_DEVICE_SCHEDULED_REBOOT_REBOOT_NOTIFICATION_CONTROLLER_H_
