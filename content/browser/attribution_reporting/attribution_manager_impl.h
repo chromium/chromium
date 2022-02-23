@@ -17,13 +17,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
-#include "base/timer/wall_clock_timer.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report_scheduler.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/common/content_export.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -67,9 +66,7 @@ class AttributionManagerProviderImpl : public AttributionManager::Provider {
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
 // partition.
-class CONTENT_EXPORT AttributionManagerImpl
-    : public AttributionManager,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver {
+class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
  public:
   using IsReportAllowedCallback =
       base::RepeatingCallback<bool(const AttributionReport&)>;
@@ -135,10 +132,6 @@ class CONTENT_EXPORT AttributionManagerImpl
       std::unique_ptr<AttributionNetworkSender> network_sender,
       std::unique_ptr<AttributionDataHostManager> data_host_manager);
 
-  // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(
-      network::mojom::ConnectionType connection_type) override;
-
   void MaybeEnqueueEvent(SourceOrTrigger event);
   void ProcessEvents();
   void ProcessNextEvent(bool is_debug_cookie_set);
@@ -154,8 +147,6 @@ class CONTENT_EXPORT AttributionManagerImpl
                            base::Time max_report_time,
                            int limit);
 
-  void UpdateGetReportsToSendTimer(absl::optional<base::Time> time);
-  void StartGetReportsToSendTimer();
   void GetReportsToSend();
   void OnGetReportsToSend(std::vector<AttributionReport> reports);
 
@@ -196,6 +187,8 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 
+  AttributionReportScheduler scheduler_;
+
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
 
   // Storage policy for the browser context |this| is in. May be nullptr.
@@ -204,8 +197,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   std::unique_ptr<AttributionCookieChecker> cookie_checker_;
 
   std::unique_ptr<AttributionNetworkSender> network_sender_;
-
-  base::WallClockTimer get_reports_to_send_timer_;
 
   // Set of all conversion IDs that are currently being sent, deleted, or
   // updated. The number of concurrent conversion reports being sent at any time

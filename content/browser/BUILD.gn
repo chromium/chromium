@@ -411,6 +411,8 @@ source_set("browser") {
     "attribution_reporting/attribution_random_generator.h",
     "attribution_reporting/attribution_report.cc",
     "attribution_reporting/attribution_report.h",
+    "attribution_reporting/attribution_report_scheduler.cc",
+    "attribution_reporting/attribution_report_scheduler.h",
     "attribution_reporting/attribution_reporting.cc",
     "attribution_reporting/attribution_storage.cc",
     "attribution_reporting/attribution_storage.h",

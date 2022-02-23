@@ -35,7 +35,6 @@
 #include "content/public/browser/attribution_reporting.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -119,10 +118,6 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
       report.report_time() - attribution_info.time;
   UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
                             time_from_conversion_to_report_send.InHours());
-}
-
-bool IsOffline() {
-  return content::GetNetworkConnectionTracker()->IsOffline();
 }
 
 std::unique_ptr<AttributionStorageDelegate> MakeStorageDelegate() {
@@ -216,6 +211,9 @@ AttributionManagerImpl::AttributionManagerImpl(
           g_storage_task_runner.Get(),
           user_data_directory,
           std::move(storage_delegate))),
+      scheduler_(base::BindRepeating(&AttributionManagerImpl::GetReportsToSend,
+                                     base::Unretained(this)),
+                 attribution_storage_),
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
@@ -224,15 +222,9 @@ AttributionManagerImpl::AttributionManagerImpl(
   DCHECK(is_report_allowed_callback_);
   DCHECK(cookie_checker_);
   DCHECK(network_sender_);
-
-  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
-
-  OnConnectionChanged(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
-  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
-
   // Browser contexts are not required to have a special storage policy.
   if (!special_storage_policy_ ||
       !special_storage_policy_->HasSessionOnlyOrigins()) {
@@ -289,10 +281,7 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
             for (Observer& observer : manager->observers_)
               observer.OnSourceHandled(source, result.status);
 
-            if (result.min_fake_report_time.has_value()) {
-              manager->UpdateGetReportsToSendTimer(
-                  *result.min_fake_report_time);
-            }
+            manager->scheduler_.ScheduleSend(result.min_fake_report_time);
 
             manager->NotifySourcesChanged();
 
@@ -411,7 +400,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool is_debug_cookie_set) {
 void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
   RecordCreateReportStatus(result.status());
 
-  UpdateGetReportsToSendTimer(result.report_time());
+  scheduler_.ScheduleSend(result.report_time());
 
   if (result.status() != AttributionTrigger::Result::kInternalError) {
     // Sources are changed here because storing a report can cause sources to be
@@ -465,31 +454,12 @@ void AttributionManagerImpl::ClearData(
             std::move(done).Run();
 
             if (manager) {
-              manager->StartGetReportsToSendTimer();
+              manager->scheduler_.Refresh();
               manager->NotifySourcesChanged();
               manager->NotifyReportsChanged();
             }
           },
           std::move(done), weak_factory_.GetWeakPtr()));
-}
-
-void AttributionManagerImpl::OnConnectionChanged(
-    network::mojom::ConnectionType connection_type) {
-  if (IsOffline()) {
-    get_reports_to_send_timer_.Stop();
-  } else {
-    DCHECK(!get_reports_to_send_timer_.IsRunning());
-
-    // Add delay to all reports that should have been sent while the browser was
-    // offline so they are not temporally joinable. We do this in storage to
-    // avoid pulling an unbounded number of reports into memory, only to
-    // immediately issue async storage calls to modify their report times.
-    attribution_storage_
-        .AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
-        .Then(
-            base::BindOnce(&AttributionManagerImpl::UpdateGetReportsToSendTimer,
-                           weak_factory_.GetWeakPtr()));
-  }
 }
 
 void AttributionManagerImpl::GetAndHandleReports(
@@ -501,31 +471,7 @@ void AttributionManagerImpl::GetAndHandleReports(
       .Then(std::move(handler_function));
 }
 
-void AttributionManagerImpl::UpdateGetReportsToSendTimer(
-    absl::optional<base::Time> time) {
-  if (!time.has_value() || IsOffline())
-    return;
-
-  if (!get_reports_to_send_timer_.IsRunning() ||
-      *time < get_reports_to_send_timer_.desired_run_time()) {
-    get_reports_to_send_timer_.Start(FROM_HERE, *time, this,
-                                     &AttributionManagerImpl::GetReportsToSend);
-  }
-}
-
-void AttributionManagerImpl::StartGetReportsToSendTimer() {
-  if (IsOffline())
-    return;
-
-  attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
-      .WithArgs(base::Time::Now())
-      .Then(base::BindOnce(&AttributionManagerImpl::UpdateGetReportsToSendTimer,
-                           weak_factory_.GetWeakPtr()));
-}
-
 void AttributionManagerImpl::GetReportsToSend() {
-  DCHECK(!IsOffline());
-
   // We only get the next report time strictly after now, because if we are
   // sending a report now but haven't finished doing so and it is still present
   // in storage, storage will return the report time for the same report.
@@ -542,17 +488,17 @@ void AttributionManagerImpl::GetReportsToSend() {
 
 void AttributionManagerImpl::OnGetReportsToSend(
     std::vector<AttributionReport> reports) {
-  if (reports.empty() || IsOffline())
+  if (reports.empty())
     return;
 
   SendReports(std::move(reports), /*log_metrics=*/true, base::DoNothing());
-  StartGetReportsToSendTimer();
+  scheduler_.Refresh();
 }
 
 void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
     base::OnceClosure done,
     std::vector<AttributionReport> reports) {
-  if (reports.empty() || IsOffline()) {
+  if (reports.empty()) {
     std::move(done).Run();
     return;
   }
@@ -654,7 +600,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 
               if (manager && success) {
                 manager->MarkReportCompleted(report_id);
-                manager->UpdateGetReportsToSendTimer(new_report_time);
+                manager->scheduler_.ScheduleSend(new_report_time);
                 manager->NotifyReportsChanged();
               }
             },
