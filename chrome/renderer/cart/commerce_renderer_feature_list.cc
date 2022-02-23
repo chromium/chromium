@@ -57,7 +57,7 @@ bool IsDiscountPartnerMerchant(const GURL& url) {
 }  // namespace
 
 const base::Feature kRetailCoupons{"RetailCoupons",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsPartnerMerchant(const GURL& url) {
   return IsCouponPartnerMerchant(url) || IsDiscountPartnerMerchant(url);

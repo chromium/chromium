@@ -554,6 +554,13 @@ class CouponServiceFeatureDisabledTest : public CouponServiceTest {
     feature_list_.Reset();
     feature_list_.InitAndDisableFeature(commerce::kRetailCoupons);
   }
+
+  void SetUp() override {
+    CouponServiceTest::SetUp();
+
+    // Assume that relevant features are disabled initially.
+    service_->MaybeFeatureStatusChanged(false);
+  }
 };
 
 TEST_F(CouponServiceFeatureDisabledTest, FeatureDisabled) {
