@@ -2551,6 +2551,8 @@ source_set("chromeos") {
     "../ash/policy/enrollment/auto_enrollment_client.h",
     "../ash/policy/enrollment/auto_enrollment_client_impl.cc",
     "../ash/policy/enrollment/auto_enrollment_client_impl.h",
+    "../ash/policy/enrollment/auto_enrollment_type_checker.cc",
+    "../ash/policy/enrollment/auto_enrollment_type_checker.h",
     "../ash/policy/enrollment/device_cloud_policy_initializer.cc",
     "../ash/policy/enrollment/device_cloud_policy_initializer.h",
     "../ash/policy/enrollment/enrollment_config.cc",
