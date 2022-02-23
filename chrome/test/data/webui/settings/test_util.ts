@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ChooserType, ContentSetting, ContentSettingsTypes, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, RawChooserException, RawSiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {Route, Router} from 'chrome://settings/settings.js';
 // clang-format on
 
@@ -32,7 +32,7 @@ export function createDefaultContentSetting(
   return Object.assign(
       {
         setting: ContentSetting.ASK,
-        source: SiteSettingSource.PREFERENCE,
+        source: ContentSettingProvider.PREFERENCE,
       },
       override || {});
 }

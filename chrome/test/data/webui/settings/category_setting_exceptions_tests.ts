@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ContentSetting,ContentSettingProvider,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {CategorySettingExceptionsElement, ContentSetting, ContentSettingProvider, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createContentSettingTypeToValuePair,createDefaultContentSetting,createSiteSettingsPrefs} from './test_util.js';
@@ -16,21 +15,19 @@ import {createContentSettingTypeToValuePair,createDefaultContentSetting,createSi
 suite('CategorySettingExceptions', function() {
   /**
    * A site settings exceptions created before each test.
-   * @type {SiteSettingsExceptionsElement}
    */
-  let testElement;
+  let testElement: CategorySettingExceptionsElement;
 
   /**
    * The mock proxy object to use during test.
-   * @type {TestSiteSettingsPrefsBrowserProxy}
    */
-  let browserProxy = null;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   // Initialize a category-setting-exceptions before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('category-setting-exceptions');
     document.body.appendChild(testElement);
   });
@@ -59,13 +56,13 @@ suite('CategorySettingExceptions', function() {
   test(
       'all lists are read-only if the default policy is set by policy',
       async function() {
-        PolymerTest.clearBody();
+        document.body.innerHTML = '';
         const policyPref = createSiteSettingsPrefs(
             [
               createContentSettingTypeToValuePair(
                   ContentSettingsTypes.COOKIES, createDefaultContentSetting({
                     setting: ContentSetting.ALLOW,
-                    source: SiteSettingSource.POLICY
+                    source: ContentSettingProvider.POLICY
                   })),
             ],
             []);
@@ -83,7 +80,7 @@ suite('CategorySettingExceptions', function() {
         flush();
 
         const siteListElements =
-            testElement.shadowRoot.querySelectorAll('site-list');
+            testElement.shadowRoot!.querySelectorAll('site-list');
         assertEquals(3, siteListElements.length);
         siteListElements.forEach(element => {
           assertTrue(element.readOnlyList);
@@ -93,7 +90,7 @@ suite('CategorySettingExceptions', function() {
   test(
       'all lists are not read-only if the default policy is set by user',
       async function() {
-        PolymerTest.clearBody();
+        document.body.innerHTML = '';
         const dummyPref = createSiteSettingsPrefs(
             [
               createContentSettingTypeToValuePair(
@@ -116,7 +113,7 @@ suite('CategorySettingExceptions', function() {
         flush();
 
         const siteListElements =
-            testElement.shadowRoot.querySelectorAll('site-list');
+            testElement.shadowRoot!.querySelectorAll('site-list');
         assertEquals(3, siteListElements.length);
         siteListElements.forEach(element => {
           assertTrue(!element.readOnlyList);
