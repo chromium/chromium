@@ -65,6 +65,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     static final String AGSA_VERSION_HISTOGRAM = "Assistant.VoiceSearch.AgsaVersion";
     private static final String DEFAULT_ASSISTANT_AGSA_MIN_VERSION = "11.7";
     private static final boolean DEFAULT_ASSISTANT_COLORFUL_MIC_ENABLED = false;
+    private static Boolean sAlwaysUseAssistantVoiceSearchForTesting;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -193,6 +194,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * - The consent flow must be accepted.
      */
     public boolean shouldRequestAssistantVoiceSearch() {
+        if (sAlwaysUseAssistantVoiceSearchForTesting != null) {
+            return sAlwaysUseAssistantVoiceSearchForTesting;
+        }
         return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch()
                 && isEnabledByPreference();
     }
@@ -203,6 +207,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
      * conditions.
      */
     public boolean canRequestAssistantVoiceSearch() {
+        if (sAlwaysUseAssistantVoiceSearchForTesting != null) {
+            return sAlwaysUseAssistantVoiceSearchForTesting;
+        }
         return mIsAssistantVoiceSearchEnabled
                 && isDeviceEligibleForAssistant(/* returnImmediately= */ true, /* outList= */ null);
     }
@@ -454,5 +461,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
     void setMultiAccountCheckEnabledForTesting(boolean enabled) {
         mIsMultiAccountCheckEnabled = enabled;
+    }
+
+    static void setAlwaysUseAssistantVoiceSearchForTestingEnabled(Boolean enabled) {
+        sAlwaysUseAssistantVoiceSearchForTesting = enabled;
     }
 }
