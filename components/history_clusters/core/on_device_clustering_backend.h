@@ -100,11 +100,12 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
       in_flight_batch_entity_metadata_tasks_;
 
   // The task runners to run clustering passes on.
-  // |high_priority_background_task_runner_| should be used iff clustering is
-  // blocking content on a page that user is actively looking at.
+  // |user_visible_priority_background_task_runner_| should be used iff
+  // clustering is blocking content on a page that user is actively looking at.
   scoped_refptr<base::SequencedTaskRunner>
-      high_priority_background_task_runner_;
-  scoped_refptr<base::SequencedTaskRunner> low_priority_background_task_runner_;
+      user_visible_priority_background_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner>
+      best_effort_priority_background_task_runner_;
 
   // Last time |engagement_score_cache_| was refreshed.
   base::TimeTicks engagement_score_cache_last_refresh_timestamp_;

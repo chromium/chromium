@@ -88,10 +88,10 @@ OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     : template_url_service_(template_url_service),
       entity_metadata_provider_(entity_metadata_provider),
       engagement_score_provider_(engagement_score_provider),
-      high_priority_background_task_runner_(
+      user_visible_priority_background_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      low_priority_background_task_runner_(
+      best_effort_priority_background_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       engagement_score_cache_last_refresh_timestamp_(base::TimeTicks::Now()),
@@ -376,7 +376,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
           features::kSplitClusteringTasksToSmallerBatches) &&
       clustering_request_source ==
           ClusteringRequestSource::kKeywordCacheGeneration) {
-    low_priority_background_task_runner_->PostTaskAndReplyWithResult(
+    best_effort_priority_background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
             &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
@@ -389,7 +389,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
          clustering_request_source ==
              ClusteringRequestSource::kKeywordCacheGeneration);
 
-  high_priority_background_task_runner_->PostTaskAndReplyWithResult(
+  user_visible_priority_background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
@@ -456,6 +456,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   // log several metrics about the result.
   std::vector<int> keyword_sizes;
   std::vector<int> visits_in_clusters;
+  keyword_sizes.reserve(clusters.size());
+  visits_in_clusters.reserve(clusters.size());
   for (auto& cluster : clusters) {
     for (const auto& finalizer : cluster_finalizers) {
       finalizer->FinalizeCluster(cluster);

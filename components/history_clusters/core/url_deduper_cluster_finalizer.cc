@@ -13,11 +13,12 @@ UrlDeduperClusterFinalizer::UrlDeduperClusterFinalizer() = default;
 UrlDeduperClusterFinalizer::~UrlDeduperClusterFinalizer() = default;
 
 void UrlDeduperClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
-  base::flat_map<GURL, history::ClusterVisit*> url_to_canonical_visit;
+  base::flat_map<std::string, history::ClusterVisit*> url_to_canonical_visit;
   // First do a prepass to find the canonical visit for each URL. This simply
   // marks the last visit in `cluster` with any given URL as the canonical one.
   for (auto& visit : cluster.visits) {
-    url_to_canonical_visit[visit.url_for_deduping] = &visit;
+    url_to_canonical_visit[visit.url_for_deduping.possibly_invalid_spec()] =
+        &visit;
   }
 
   cluster.visits.erase(
@@ -26,7 +27,8 @@ void UrlDeduperClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
           [&](auto& visit) {
             // We are guaranteed to find a matching canonical visit, due to our
             // prepass above.
-            auto it = url_to_canonical_visit.find(visit.url_for_deduping);
+            auto it = url_to_canonical_visit.find(
+                visit.url_for_deduping.possibly_invalid_spec());
             DCHECK(it != url_to_canonical_visit.end());
             history::ClusterVisit* canonical_visit = it->second;
 

@@ -112,7 +112,7 @@ base::TimeDelta TimeElapsedBetweenVisits(const history::VisitRow& visit1,
 
 // Returns with the provided `url` matches the provided `history_url`
 // which must be either the basic history URL or history_clusters URL.
-bool IsHistoryPage(GURL url, GURL history_url) {
+bool IsHistoryPage(GURL url, const GURL& history_url) {
   GURL::Replacements replacements;
   replacements.ClearQuery();
   return url.ReplaceComponents(replacements) == history_url;

@@ -46,11 +46,11 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
                b.annotated_visit.visit_row.visit_id;
       });
 
-  base::flat_map<GURL, size_t> url_to_cluster_map;
+  base::flat_map<std::string, size_t> url_to_cluster_map;
   base::flat_map<history::VisitID, size_t> visit_id_to_cluster_map;
   std::vector<history::Cluster> clusters;
   for (const auto& visit : sorted_visits) {
-    auto visit_url = visit.normalized_url;
+    const auto& visit_url = visit.normalized_url;
     absl::optional<size_t> cluster_idx;
     history::VisitID previous_visit_id =
         (visit.annotated_visit.referring_visit_of_redirect_chain_start != 0)
@@ -64,7 +64,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
       }
     } else {
       // See if we have clustered the URL. (forward-back, reload, etc.)
-      auto it = url_to_cluster_map.find(visit_url);
+      auto it = url_to_cluster_map.find(visit_url.possibly_invalid_spec());
       if (it != url_to_cluster_map.end()) {
         cluster_idx = it->second;
       }
@@ -83,7 +83,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
         for (const auto& visit : finalized_cluster.visits) {
           visit_id_to_cluster_map.erase(
               visit.annotated_visit.visit_row.visit_id);
-          url_to_cluster_map.erase(visit_url);
+          url_to_cluster_map.erase(visit_url.possibly_invalid_spec());
         }
 
         // Reset the working cluster index so we start a new cluster for this
@@ -108,7 +108,7 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     }
     visit_id_to_cluster_map[visit.annotated_visit.visit_row.visit_id] =
         *cluster_idx;
-    url_to_cluster_map[visit_url] = *cluster_idx;
+    url_to_cluster_map[visit_url.possibly_invalid_spec()] = *cluster_idx;
   }
 
   return clusters;
