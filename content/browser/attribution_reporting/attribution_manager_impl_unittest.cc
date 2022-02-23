@@ -259,10 +259,10 @@ class AttributionManagerImplTest : public testing::Test {
 
   void ForceGetReportsToSend() { attribution_manager_->GetReportsToSend(); }
 
-  void SetOfflineAndWaitForObserversToBeNotified(bool offline) {
+  void SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType connection_type) {
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        offline ? network::mojom::ConnectionType::CONNECTION_NONE
-                : network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+        connection_type);
     // Ensure that the network connection observers have been notified before
     // this call returns.
     task_environment_.RunUntilIdle();
@@ -1147,11 +1147,42 @@ TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
-  SetOfflineAndWaitForObserversToBeNotified(true);
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kFirstReportingWindow);
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
-  SetOfflineAndWaitForObserversToBeNotified(false);
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+  EXPECT_THAT(report_sender_->calls(), SizeIs(1));
+}
+
+TEST_F(AttributionManagerImplTest,
+       OnlineConnectionTypeChanges_ReportTimesNotAdjusted) {
+  storage_delegate_->set_offline_report_delay_config(
+      AttributionStorageDelegate::OfflineReportDelayConfig{
+          .min = base::Minutes(1),
+          .max = base::Minutes(1),
+      });
+
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+  EXPECT_THAT(StoredReports(), SizeIs(1));
+
+  // Deliberately avoid running tasks so that the connection change and time
+  // advance can be "atomic", which is necessary because
+  // `AttributionStorage::AdjustOfflineReportTimes()` only adjusts times for
+  // reports that should have been sent before now. In other words, the call to
+  // `AdjustOfflineReportTimes()` would have no effect if we used
+  // `FastForwardBy()` here, and we wouldn't be able to detect it below.
+  task_environment_.AdvanceClock(kFirstReportingWindow + base::Microseconds(1));
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_4G);
+
+  // Cause any scheduled tasks to run.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  // This will fail with 0 calls if the report time was adjusted to +1 minute.
   EXPECT_THAT(report_sender_->calls(), SizeIs(1));
 }
 
@@ -1177,11 +1208,13 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   // Prevent the report from being sent until after its original report time.
-  SetOfflineAndWaitForObserversToBeNotified(true);
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_NONE);
   task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
-  SetOfflineAndWaitForObserversToBeNotified(false);
+  SetConnectionTypeAndWaitForObserversToBeNotified(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 
   auto delay = storage_delegate_->GetOfflineReportDelayConfig();
   task_environment_.FastForwardBy(delay->max);

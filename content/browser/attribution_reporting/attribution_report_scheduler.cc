@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/check.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/public/browser/network_service_instance.h"
@@ -64,13 +63,21 @@ void AttributionReportScheduler::OnConnectionChanged(
     network::mojom::ConnectionType connection_type) {
   if (IsOffline()) {
     get_reports_to_send_timer_.Stop();
-  } else {
-    DCHECK(!get_reports_to_send_timer_.IsRunning());
-
+  } else if (!get_reports_to_send_timer_.IsRunning()) {
     // Add delay to all reports that should have been sent while the browser was
     // offline so they are not temporally joinable. We do this in storage to
     // avoid pulling an unbounded number of reports into memory, only to
     // immediately issue async storage calls to modify their report times.
+    //
+    // We only need to do this if the connection changes from offline to online,
+    // not if an online connection changes between, e.g., 3G and 4G. Rather than
+    // track the previous connection state, we use the timer's running state:
+    // The timer is running if and only if at least one report has been stored
+    // and the browser is not offline. This results in an extra call to
+    // `AttributionStorage::AdjustOfflineReportTimes()` when no reports have
+    // been stored and the browser changes online connection types, but storage
+    // will have no reports to adjust in that case, so we don't bother
+    // preventing it.
     attribution_storage_
         .AsyncCall(&AttributionStorage::AdjustOfflineReportTimes)
         .Then(base::BindOnce(&AttributionReportScheduler::ScheduleSend,
