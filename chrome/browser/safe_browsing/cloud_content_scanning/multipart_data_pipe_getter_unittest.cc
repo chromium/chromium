@@ -17,12 +17,17 @@ namespace safe_browsing {
 
 class MultipartDataPipeGetterTest : public testing::Test {
  public:
-  base::File CreateFile(const std::string& content) {
+  absl::optional<base::File> CreateFile(const std::string& content) {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath path = temp_dir_.GetPath().AppendASCII("test.txt");
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(content.data(), content.size());
+    if (!file.IsValid())
+      return absl::nullopt;
+
+    if (file.WriteAtCurrentPos(content.data(), content.size()) < 0)
+      return absl::nullopt;
+
     return file;
   }
 
@@ -106,9 +111,12 @@ class MultipartDataPipeGetterParametrizedTest
   std::unique_ptr<MultipartDataPipeGetter> CreateDataPipeGetter(
       const std::string& content) {
     if (is_file_data_pipe()) {
-      base::File file = CreateFile(content);
+      absl::optional<base::File> file = CreateFile(content);
+      if (!file)
+        return nullptr;
+
       return MultipartDataPipeGetter::Create("boundary", metadata_,
-                                             std::move(file));
+                                             std::move(*file));
     } else {
       base::ReadOnlySharedMemoryRegion page = CreatePage(content);
       return MultipartDataPipeGetter::Create("boundary", metadata_,
@@ -140,6 +148,7 @@ TEST_P(MultipartDataPipeGetterParametrizedTest, SmallFile) {
 
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter("small file content");
+  EXPECT_TRUE(data_pipe_getter);
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
@@ -163,6 +172,11 @@ TEST_P(MultipartDataPipeGetterParametrizedTest, LargeFile) {
 
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(large_file_content);
+  // It's possible the large file couldn't be created due to a lack of space on
+  // the device, in this case stop the test early.
+  if (!data_pipe_getter)
+    return;
+
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
@@ -188,6 +202,11 @@ TEST_P(MultipartDataPipeGetterParametrizedTest, LargeFileAndMetadata) {
   set_metadata(large_data);
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(large_data);
+  // It's possible the large file couldn't be created due to a lack of space on
+  // the device, in this case stop the test early.
+  if (!data_pipe_getter)
+    return;
+
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
@@ -209,6 +228,7 @@ TEST_P(MultipartDataPipeGetterParametrizedTest, MultipleReads) {
 
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter("small file content");
+  EXPECT_TRUE(data_pipe_getter);
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
@@ -234,6 +254,11 @@ TEST_P(MultipartDataPipeGetterParametrizedTest, ResetsCorrectly) {
 
   std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter =
       CreateDataPipeGetter(large_file_content);
+  // It's possible the large file couldn't be created due to a lack of space on
+  // the device, in this case stop the test early.
+  if (!data_pipe_getter)
+    return;
+
   EXPECT_EQ(data_pipe_getter->is_page_data_pipe(), is_page_data_pipe());
   EXPECT_EQ(data_pipe_getter->is_file_data_pipe(), is_file_data_pipe());
 
