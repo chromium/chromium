@@ -455,75 +455,115 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 }
 
 // Tests deleting a deletable omnibox extension suggestion result.
-// Flaky on Windows and Linux TSan. https://crbug.com/1287949
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
-#define MAYBE_DeleteOmniboxSuggestionResult \
-  DISABLED_DeleteOmniboxSuggestionResult
-#else
-#define MAYBE_DeleteOmniboxSuggestionResult DeleteOmniboxSuggestionResult
-#endif
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
-  ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DeleteOmniboxSuggestionResult) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  static constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           suggest([
+             {content: text + ' first', description: 'first description'},
+             {
+               content: text + ' second',
+               description: 'second description',
+               deletable: true,
+             },
+             {content: text + ' third', description: 'third description'},
+           ]);
+         });
+         chrome.omnibox.onDeleteSuggestion.addListener((text) => {
+           chrome.test.sendMessage('onDeleteSuggestion: ' + text);
+         });)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller = GetAutocompleteController();
 
   chrome::FocusLocationBar(browser());
   ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
-  // Input a keyword query and wait for suggestions from the extension.
-  InputKeys(browser(), {ui::VKEY_K, ui::VKEY_W, ui::VKEY_TAB, ui::VKEY_D});
-
+  // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"alpha input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile()));
+  autocomplete_controller->Start(input);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
 
   // Peek into the controller to see if it has the results we expect.
   const AutocompleteResult& result = autocomplete_controller->result();
-  ASSERT_EQ(4U, result.size()) << AutocompleteResultAsString(result);
+  ASSERT_EQ(5u, result.size()) << AutocompleteResultAsString(result);
 
-  EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(0).provider->type());
   EXPECT_FALSE(result.match_at(0).deletable);
 
-  EXPECT_EQ(u"kw n1", result.match_at(1).fill_into_edit);
+  EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(1).provider->type());
-  // Verify that the first omnibox extension suggestion is deletable.
-  EXPECT_TRUE(result.match_at(1).deletable);
+  EXPECT_FALSE(result.match_at(1).deletable);
 
-  EXPECT_EQ(u"kw n2", result.match_at(2).fill_into_edit);
+  EXPECT_EQ(u"alpha input second", result.match_at(2).fill_into_edit);
   EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
             result.match_at(2).provider->type());
-  // Verify that the second omnibox extension suggestion is not deletable.
-  EXPECT_FALSE(result.match_at(2).deletable);
+  EXPECT_TRUE(result.match_at(2).deletable);
 
-  EXPECT_EQ(u"kw d", result.match_at(3).fill_into_edit);
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            result.match_at(3).type);
+  EXPECT_EQ(u"alpha input third", result.match_at(3).fill_into_edit);
+  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+            result.match_at(3).provider->type());
   EXPECT_FALSE(result.match_at(3).deletable);
 
-// This test portion is excluded from Mac because the Mac key combination
-// FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
-// This is because the FN key is not supported in interactive_test_util.h.
-#if !BUILDFLAG(IS_MAC)
-  ExtensionTestMessageListener delete_suggestion_listener(
-      "onDeleteSuggestion: des1", false);
+  EXPECT_EQ(u"alpha input", result.match_at(4).fill_into_edit);
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
+            result.match_at(4).type);
+  EXPECT_FALSE(result.match_at(3).deletable);
 
-  // Skip the first suggestion result.
+  // This test portion is excluded from Mac because the Mac key combination
+  // FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
+  // This is because the FN key is not supported in interactive_test_util.h.
+  // On (some?) platforms, there is also a navigable "x" in the suggestion that
+  // we could use instead. However, this is more prone to UI churn, and mostly
+  // tests functionality that should instead be tested as part of the omnibox
+  // view. We should have sufficient Mac coverage here by ensuring the result
+  // matches are marked as deletable (verified above).
+#if !BUILDFLAG(IS_MAC)
+  ExtensionTestMessageListener delete_suggestion_listener(/*will_reply=*/false);
+
+  // Skip the first (accept current input) and second (first extension-provided
+  // suggestion) omnibox results.
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
                                               false, false, false));
-  // Delete the second suggestion result. On Linux, this is done via SHIFT+DEL.
+  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
+                                              false, false, false));
+
+  // Delete the second suggestion result. On non-Mac, this is done via
+  // SHIFT+DEL.
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DELETE, false,
                                               true, false, false));
-  // Verify that the onDeleteSuggestion event was fired.
-  ASSERT_TRUE(delete_suggestion_listener.WaitUntilSatisfied());
 
-  // Verify that the first suggestion result was deleted. There should be one
-  // less suggestion result, 3 now instead of 4.
-  ASSERT_EQ(3U, result.size());
-  EXPECT_EQ(u"kw d", result.match_at(0).fill_into_edit);
-  EXPECT_EQ(u"kw n2", result.match_at(1).fill_into_edit);
-  EXPECT_EQ(u"kw d", result.match_at(2).fill_into_edit);
+  // Verify that the onDeleteSuggestion event was fired. When this happens, the
+  // extension sends us a message.
+  ASSERT_TRUE(delete_suggestion_listener.WaitUntilSatisfied());
+  EXPECT_EQ("onDeleteSuggestion: second description",
+            delete_suggestion_listener.message());
+
+  // Verify that the second suggestion result was deleted. There should be one
+  // less suggestion result, 4 now instead of 5 (accept current input, two
+  // extension-provided suggestions, and "search what you typed").
+  ASSERT_EQ(4u, result.size());
+  EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
+  EXPECT_EQ(u"alpha input third", result.match_at(2).fill_into_edit);
+  EXPECT_EQ(u"alpha input", result.match_at(3).fill_into_edit);
 #endif
 }
 
