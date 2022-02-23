@@ -279,7 +279,7 @@ public class MessageBannerMediatorUnitTest {
     }
 
     @Test
-    public void testHorizontalFlingFromOutsideThresholdToCenterNotDismissed() {
+    public void testHorizontalFlingFromOutsideThresholdToCenterDismissed() {
         mMediator.show(mShownRunnable);
 
         shadowOf(getMainLooper()).idle();
@@ -295,19 +295,8 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
-
-        // More than the threshold to dismiss, fling back to center
-        swipeHorizontal(-30, 100);
-
-        // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(-30, 0, .75f, "after swipe.");
-
-        shadowOf(getMainLooper()).idle();
-
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
+        assertModelState(120, 0, 0, "after swipe");
+        verify(mDismissedRunnable).run();
     }
 
     @Test
@@ -327,19 +316,8 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
-
-        // Less than the threshold to dismiss, fling back to center
-        swipeVertical(-10, 100);
-
-        // .9 is 1 (fully opaque) - 10 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -10, .9f, "after swipe.");
-
-        shadowOf(getMainLooper()).idle();
-
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
+        assertModelState(0, -100, 0, "after swipe");
+        verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
@@ -398,7 +376,7 @@ public class MessageBannerMediatorUnitTest {
     }
 
     @Test
-    public void testLeftFlingWithinThresholdPositiveXDismisses() {
+    public void testLeftFlingWithinThresholdPositiveXNoDismisses() {
         mMediator.show(mShownRunnable);
 
         shadowOf(getMainLooper()).idle();
@@ -414,12 +392,12 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, "dismissed to left after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testLeftFlingWithinThresholdNegativeXDismisses() {
+    public void testLeftFlingWithinThresholdNegativeXNoDismisses() {
         mMediator.show(mShownRunnable);
 
         shadowOf(getMainLooper()).idle();
@@ -435,12 +413,12 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, "dismissed to left after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testRightFlingWithinThresholdNegativeXDismisses() {
+    public void testRightFlingWithinThresholdNegativeXNoDismisses() {
         mMediator.show(mShownRunnable);
 
         shadowOf(getMainLooper()).idle();
@@ -456,12 +434,12 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, "dismissed to right after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testRightFlingWithinThresholdPositiveXDismisses() {
+    public void testRightFlingWithinThresholdPositiveXNoDismisses() {
         mMediator.show(mShownRunnable);
 
         shadowOf(getMainLooper()).idle();
@@ -477,8 +455,8 @@ public class MessageBannerMediatorUnitTest {
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, "dismissed to right after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
