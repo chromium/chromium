@@ -33,6 +33,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_devinfo.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device_handle.h"
@@ -50,6 +51,12 @@ bool IsCompositeDevice(const std::wstring& service_name) {
          base::EqualsCaseInsensitiveASCII(service_name, L"dg_ssudbus");
 }
 
+std::ostream& operator<<(std::ostream& os, const DEVPROPKEY& value) {
+  os << "{" << base::win::WStringFromGUID(value.fmtid) << ", " << value.pid
+     << "}";
+  return os;
+}
+
 absl::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
                                                  SP_DEVINFO_DATA* dev_info_data,
                                                  const DEVPROPKEY& property) {
@@ -61,8 +68,15 @@ absl::optional<uint32_t> GetDeviceUint32Property(HDEVINFO dev_info,
   uint32_t buffer;
   if (!SetupDiGetDeviceProperty(
           dev_info, dev_info_data, &property, &property_type,
-          reinterpret_cast<PBYTE>(&buffer), sizeof(buffer), nullptr, 0) ||
-      property_type != DEVPROP_TYPE_UINT32) {
+          reinterpret_cast<PBYTE>(&buffer), sizeof(buffer), nullptr, 0)) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
+  }
+
+  if (property_type != DEVPROP_TYPE_UINT32) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") returned unexpected type (" << property_type
+                   << " != " << DEVPROP_TYPE_UINT32 << ")";
     return absl::nullopt;
   }
 
@@ -80,9 +94,21 @@ absl::optional<std::wstring> GetDeviceStringProperty(
   DEVPROPTYPE property_type;
   DWORD required_size;
   if (SetupDiGetDeviceProperty(dev_info, dev_info_data, &property,
-                               &property_type, nullptr, 0, &required_size, 0) ||
-      GetLastError() != ERROR_INSUFFICIENT_BUFFER ||
-      property_type != DEVPROP_TYPE_STRING) {
+                               &property_type, nullptr, 0, &required_size, 0)) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") unexpectedly succeeded";
+    return absl::nullopt;
+  }
+
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
+  }
+
+  if (property_type != DEVPROP_TYPE_STRING) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") returned unexpected type (" << property_type
+                   << " != " << DEVPROP_TYPE_STRING << ")";
     return absl::nullopt;
   }
 
@@ -91,6 +117,7 @@ absl::optional<std::wstring> GetDeviceStringProperty(
           dev_info, dev_info_data, &property, &property_type,
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
     return absl::nullopt;
   }
 
@@ -108,9 +135,24 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
   DEVPROPTYPE property_type;
   DWORD required_size;
   if (SetupDiGetDeviceProperty(dev_info, dev_info_data, &property,
-                               &property_type, nullptr, 0, &required_size, 0) ||
-      GetLastError() != ERROR_INSUFFICIENT_BUFFER ||
-      property_type != DEVPROP_TYPE_STRING_LIST) {
+                               &property_type, nullptr, 0, &required_size, 0)) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") unexpectedly succeeded";
+    return absl::nullopt;
+  }
+
+  if (GetLastError() == ERROR_NOT_FOUND)
+    return {};
+
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
+    return absl::nullopt;
+  }
+
+  if (property_type != DEVPROP_TYPE_STRING_LIST) {
+    USB_LOG(ERROR) << "SetupDiGetDeviceProperty(" << property
+                   << ") returned unexpected type (" << property_type
+                   << " != " << DEVPROP_TYPE_STRING_LIST << ")";
     return absl::nullopt;
   }
 
@@ -119,6 +161,7 @@ absl::optional<std::vector<std::wstring>> GetDeviceStringListProperty(
           dev_info, dev_info_data, &property, &property_type,
           reinterpret_cast<PBYTE>(base::WriteInto(&buffer, required_size)),
           required_size, nullptr, 0)) {
+    USB_PLOG(ERROR) << "SetupDiGetDeviceProperty(" << property << ") failed";
     return absl::nullopt;
   }
 
@@ -189,75 +232,54 @@ bool GetDeviceInterfaceDetails(HDEVINFO dev_info,
   if (bus_number) {
     auto result = GetDeviceUint32Property(dev_info, &dev_info_data,
                                           DEVPKEY_Device_BusNumber);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get device bus number";
+    if (!result.has_value())
       return false;
-    }
     *bus_number = result.value();
   }
 
   if (port_number) {
     auto result = GetDeviceUint32Property(dev_info, &dev_info_data,
                                           DEVPKEY_Device_Address);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get device address";
+    if (!result.has_value())
       return false;
-    }
     *port_number = result.value();
   }
 
   if (instance_id) {
     auto result = GetDeviceStringProperty(dev_info, &dev_info_data,
                                           DEVPKEY_Device_InstanceId);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get the instance ID";
+    if (!result.has_value())
       return false;
-    }
     *instance_id = std::move(result.value());
   }
 
   if (parent_instance_id) {
     auto result = GetDeviceStringProperty(dev_info, &dev_info_data,
                                           DEVPKEY_Device_Parent);
-    if (!result.has_value()) {
-      USB_PLOG(ERROR) << "Failed to get the device parent";
+    if (!result.has_value())
       return false;
-    }
     *parent_instance_id = std::move(result.value());
   }
 
   if (child_instance_ids) {
     auto result = GetDeviceStringListProperty(dev_info, &dev_info_data,
                                               DEVPKEY_Device_Children);
-    if (!result.has_value()) {
-      if (GetLastError() == ERROR_NOT_FOUND) {
-        result.emplace();
-      } else {
-        USB_PLOG(ERROR) << "Failed to get device children";
-        return false;
-      }
-    }
+    if (!result.has_value())
+      return false;
     *child_instance_ids = std::move(result.value());
   }
 
   if (hardware_ids) {
     auto result = GetDeviceStringListProperty(dev_info, &dev_info_data,
                                               DEVPKEY_Device_HardwareIds);
-    if (!result.has_value()) {
-      if (GetLastError() == ERROR_NOT_FOUND) {
-        result.emplace();
-      } else {
-        USB_PLOG(ERROR) << "Failed to get hardware IDs";
-        return false;
-      }
-    }
+    if (!result.has_value())
+      return false;
     *hardware_ids = std::move(result.value());
   }
 
   if (service_name) {
     *service_name = GetServiceName(dev_info, &dev_info_data);
     if (service_name->empty()) {
-      USB_PLOG(ERROR) << "Failed to get device driver name";
       return false;
     }
   }
@@ -351,19 +373,19 @@ UsbDeviceWin::FunctionInfo GetFunctionInfo(const std::wstring& instance_id) {
 
   info.driver = GetServiceName(dev_info.get(), &dev_info_data);
   if (info.driver.empty()) {
-    USB_PLOG(ERROR) << "Could not get child device's service name";
     return info;
   }
 
   absl::optional<std::vector<std::wstring>> hardware_ids =
       GetDeviceStringListProperty(dev_info.get(), &dev_info_data,
                                   DEVPKEY_Device_HardwareIds);
-  if (!hardware_ids) {
-    USB_PLOG(ERROR) << "Could not get the child device's hardware IDs";
+  if (!hardware_ids.has_value()) {
     return info;
   }
 
   info.interface_number = GetInterfaceNumber(instance_id, *hardware_ids);
+  if (info.interface_number == -1)
+    return info;
 
   if (!base::EqualsCaseInsensitiveASCII(info.driver, L"winusb"))
     return info;
