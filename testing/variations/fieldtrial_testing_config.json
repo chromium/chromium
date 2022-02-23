@@ -1932,6 +1932,7 @@
                     "enable_features": [
                         "EarlyCodeCache",
                         "EarlyEstablishGpuChannel",
+                        "FontManagerEarlyInit",
                         "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
                         "OptimizeLookalikeUrlNavigationThrottle",
