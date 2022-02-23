@@ -19,10 +19,12 @@ const char kDiscoveryClientName[] = "CrosBluetoothConfig API";
 DiscoverySessionManagerImpl::DiscoverySessionManagerImpl(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DiscoveredDevicesProvider* discovered_devices_provider)
+    DiscoveredDevicesProvider* discovered_devices_provider,
+    FastPairDelegate* fast_pair_delegate)
     : DiscoverySessionManager(adapter_state_controller,
                               discovered_devices_provider),
-      bluetooth_adapter_(std::move(bluetooth_adapter)) {
+      bluetooth_adapter_(std::move(bluetooth_adapter)),
+      fast_pair_delegate_(fast_pair_delegate) {
   adapter_observation_.Observe(bluetooth_adapter_.get());
 }
 
@@ -43,7 +45,7 @@ DiscoverySessionManagerImpl::CreateDevicePairingHandler(
     base::OnceClosure finished_pairing_callback) {
   return DevicePairingHandlerImpl::Factory::Create(
       std::move(receiver), adapter_state_controller, bluetooth_adapter_,
-      std::move(finished_pairing_callback));
+      fast_pair_delegate_, std::move(finished_pairing_callback));
 }
 
 void DiscoverySessionManagerImpl::AdapterDiscoveringChanged(

@@ -46,7 +46,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
       discovery_session_manager_(initializer.CreateDiscoverySessionManager(
           adapter_state_controller_.get(),
           bluetooth_adapter,
-          discovered_devices_provider_.get())),
+          discovered_devices_provider_.get(),
+          fast_pair_delegate)),
       device_operation_handler_(initializer.CreateDeviceOperationHandler(
           adapter_state_controller_.get(),
           bluetooth_adapter,

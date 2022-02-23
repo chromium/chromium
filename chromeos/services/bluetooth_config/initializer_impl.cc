@@ -69,10 +69,11 @@ std::unique_ptr<DiscoverySessionManager>
 InitializerImpl::CreateDiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DiscoveredDevicesProvider* discovered_devices_provider) {
+    DiscoveredDevicesProvider* discovered_devices_provider,
+    FastPairDelegate* fast_pair_delegate) {
   return std::make_unique<DiscoverySessionManagerImpl>(
       adapter_state_controller, std::move(bluetooth_adapter),
-      discovered_devices_provider);
+      discovered_devices_provider, fast_pair_delegate);
 }
 
 std::unique_ptr<DeviceOperationHandler>

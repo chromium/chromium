@@ -80,7 +80,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
 
     discovery_session_manager_ = std::make_unique<DiscoverySessionManagerImpl>(
         &fake_adapter_state_controller_, mock_adapter_,
-        &fake_discovered_devices_provider_);
+        &fake_discovered_devices_provider_, /*fast_pair_delegate=*/nullptr);
   }
 
   void TearDown() override {
@@ -196,6 +196,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
         mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
         AdapterStateController* adapter_state_controller,
         scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+        FastPairDelegate* fast_pair_delegate,
         base::OnceClosure finished_pairing_callback) override {
       EXPECT_TRUE(pending_receiver);
       EXPECT_TRUE(adapter_state_controller);

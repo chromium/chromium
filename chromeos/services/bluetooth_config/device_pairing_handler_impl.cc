@@ -18,16 +18,18 @@ std::unique_ptr<DevicePairingHandler> DevicePairingHandlerImpl::Factory::Create(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    FastPairDelegate* fast_pair_delegate,
     base::OnceClosure finished_pairing_callback) {
   if (g_test_factory) {
-    return g_test_factory->CreateInstance(
-        std::move(pending_receiver), adapter_state_controller,
-        bluetooth_adapter, std::move(finished_pairing_callback));
+    return g_test_factory->CreateInstance(std::move(pending_receiver),
+                                          adapter_state_controller,
+                                          bluetooth_adapter, fast_pair_delegate,
+                                          std::move(finished_pairing_callback));
   }
 
   return base::WrapUnique(new DevicePairingHandlerImpl(
       std::move(pending_receiver), adapter_state_controller, bluetooth_adapter,
-      std::move(finished_pairing_callback)));
+      fast_pair_delegate, std::move(finished_pairing_callback)));
 }
 
 // static
@@ -42,11 +44,13 @@ DevicePairingHandlerImpl::DevicePairingHandlerImpl(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    FastPairDelegate* fast_pair_delegate,
     base::OnceClosure finished_pairing_callback)
     : DevicePairingHandler(std::move(pending_receiver),
                            adapter_state_controller,
                            std::move(finished_pairing_callback)),
-      bluetooth_adapter_(std::move(bluetooth_adapter)) {}
+      bluetooth_adapter_(std::move(bluetooth_adapter)),
+      fast_pair_delegate_(fast_pair_delegate) {}
 
 DevicePairingHandlerImpl::~DevicePairingHandlerImpl() {
   // If we have a pairing attempt and this class is destroyed, cancel the
@@ -68,12 +72,8 @@ void DevicePairingHandlerImpl::FetchDevice(const std::string& device_address,
     if (device->GetAddress() != device_address)
       continue;
 
-    // Return the BluetoothDeviceProperties corresponding with device. We always
-    // input |fast_pair_delegate| as null here regardless if the Fast Pair
-    // delegate exists in CrosBluetoothConfig because clients of this method
-    // don't need properties related to the Fast Pair delegate (eg. image info).
-    std::move(callback).Run(GenerateBluetoothDeviceMojoProperties(
-        device, /*fast_pair_delegate=*/nullptr));
+    std::move(callback).Run(
+        GenerateBluetoothDeviceMojoProperties(device, fast_pair_delegate_));
     return;
   }
   BLUETOOTH_LOG(ERROR) << "Device with address: " << device_address

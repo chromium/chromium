@@ -89,7 +89,8 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
   std::unique_ptr<DiscoverySessionManager> CreateDiscoverySessionManager(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      DiscoveredDevicesProvider* discovered_devices_provider) override;
+      DiscoveredDevicesProvider* discovered_devices_provider,
+      FastPairDelegate* fast_pair_delegate) override;
   std::unique_ptr<DeviceOperationHandler> CreateDeviceOperationHandler(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,

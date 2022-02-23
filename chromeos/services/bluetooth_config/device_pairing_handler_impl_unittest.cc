@@ -12,6 +12,7 @@
 #include "base/time/clock.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_delegate.h"
+#include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_key_entered_handler.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -29,6 +30,7 @@ using NiceMockDevice =
 const char kTestDeviceIdSuffix[] = "-Identifier";
 const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
+constexpr char kTestDefaultImage[] = "data:image/png;base64,TestDefaultImage";
 
 const char kDefaultPinCode[] = "132546";
 const uint32_t kDefaultPinCodeNum = 132546u;
@@ -69,6 +71,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
     device_pairing_handler_ = std::make_unique<DevicePairingHandlerImpl>(
         remote_handler_.BindNewPipeAndPassReceiver(),
         &fake_adapter_state_controller_, mock_adapter_,
+        &fake_fast_pair_delegate_,
         base::BindOnce(&DevicePairingHandlerImplTest::OnPairingAttemptFinished,
                        base::Unretained(this)));
   }
@@ -280,7 +283,10 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
   std::string received_pin_code() const { return received_pin_code_; }
   uint32_t received_passkey() const { return received_passkey_; }
-  base::HistogramTester histogram_tester;
+
+  FakeFastPairDelegate* fake_fast_pair_delegate() {
+    return &fake_fast_pair_delegate_;
+  }
 
  private:
   std::vector<const device::BluetoothDevice*> GetMockDevices() {
@@ -302,6 +308,8 @@ class DevicePairingHandlerImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
+  base::HistogramTester histogram_tester;
+
   absl::optional<mojom::PairingResult> pairing_result_;
   size_t num_pairing_attempt_finished_calls_ = 0u;
 
@@ -318,6 +326,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
 
   FakeAdapterStateController fake_adapter_state_controller_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  FakeFastPairDelegate fake_fast_pair_delegate_;
 
   mojo::Remote<mojom::DevicePairingHandler> remote_handler_;
   std::unique_ptr<DevicePairingHandlerImpl> device_pairing_handler_;
@@ -327,11 +336,19 @@ TEST_F(DevicePairingHandlerImplTest, FetchDeviceExists) {
   std::string device_id;
   AddDevice(&device_id, AuthType::kNone);
 
+  // Add device image info to ensure the FastPairDelegate is correctly provided
+  // to DeviceConversionUtil.
+  DeviceImageInfo image_info = DeviceImageInfo(
+      /*default_image=*/kTestDefaultImage, /*left_bud_image=*/"",
+      /*right_bud_image=*/"", /*case_image=*/"");
+  fake_fast_pair_delegate()->SetDeviceImageInfo(device_id, image_info);
+
   std::string device_address = GetDeviceAddress(device_id);
   mojom::BluetoothDevicePropertiesPtr device = FetchDevice(device_address);
   EXPECT_TRUE(device);
   EXPECT_EQ(device->id, device_id);
   EXPECT_EQ(device->address, device_address);
+  EXPECT_TRUE(device->image_info);
 }
 
 TEST_F(DevicePairingHandlerImplTest, FetchDeviceNotFound) {
