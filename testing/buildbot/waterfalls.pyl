@@ -5901,6 +5901,22 @@
           ]
         },
       },
+      'win7-updater-tester-dbg-uac': {
+        'mixins': [
+          'win7',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'updater_gtests_win_uac',
+        },
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.win.uac',
+            }
+          ]
+        },
+      },
       'win7-updater-tester-rel': {
         'mixins': [
           'win7',
