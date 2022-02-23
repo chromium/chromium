@@ -23,21 +23,27 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
-    expires_after="2022-05-04">
+    expires_after="never">
   <owner>ellyjones@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     The UI surface that started any share attempt. Android only.
+
+    This is a vital metric for the sharing team; please do not remove it or
+    change its behavior without consulting the metric owners.
   </summary>
 </histogram>
 
 <histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
-    expires_after="2022-05-04">
+    expires_after="never">
   <owner>kristipark@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     The UI surface that started any share attempt. Desktop only.
+
+    This is a vital metric for the sharing team; please do not remove it or
+    change its behavior without consulting the metric owners.
   </summary>
 </histogram>
 
