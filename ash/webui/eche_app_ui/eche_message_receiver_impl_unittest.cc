@@ -23,12 +23,18 @@ class FakeObserver : public EcheMessageReceiver::Observer {
 
   size_t apps_setup_response_num_calls() const { return apps_setup_response_; }
 
+  size_t status_change_num_calls() const { return status_change_num_calls_; }
+
   proto::GetAppsAccessStateResponse get_last_apps_access_state() const {
     return last_apps_access_state_response_;
   }
 
   proto::SendAppsSetupResponse get_last_apps_setup_response() const {
     return last_apps_setup_reponse_;
+  }
+
+  proto::StatusChangeType get_last_status_change_type() const {
+    return last_status_change_type_;
   }
 
   // EcheMessageReceiver::Observer:
@@ -42,13 +48,18 @@ class FakeObserver : public EcheMessageReceiver::Observer {
     last_apps_setup_reponse_ = apps_setup_response;
     ++apps_setup_response_;
   }
-  void OnStatusChange(proto::StatusChangeType status_change_type) override {}
+  void OnStatusChange(proto::StatusChangeType status_change_type) override {
+    last_status_change_type_ = status_change_type;
+    ++status_change_num_calls_;
+  }
 
  private:
   size_t apps_access_state_response_num_calls_ = 0;
   size_t apps_setup_response_ = 0;
+  size_t status_change_num_calls_ = 0;
   proto::GetAppsAccessStateResponse last_apps_access_state_response_;
   proto::SendAppsSetupResponse last_apps_setup_reponse_;
+  proto::StatusChangeType last_status_change_type_;
 };
 }  // namespace
 
@@ -81,12 +92,20 @@ class EcheMessageReceiverImplTest : public testing::Test {
     return fake_observer_.apps_setup_response_num_calls();
   }
 
+  size_t GetNumStatusChangeCalls() const {
+    return fake_observer_.status_change_num_calls();
+  }
+
   proto::GetAppsAccessStateResponse GetLastAppsAccessState() const {
     return fake_observer_.get_last_apps_access_state();
   }
 
   proto::SendAppsSetupResponse GetLastAppsSetupResponse() const {
     return fake_observer_.get_last_apps_setup_response();
+  }
+
+  proto::StatusChangeType GetLastStatusChangeType() const {
+    return fake_observer_.get_last_status_change_type();
   }
 
   FakeObserver fake_observer_;
@@ -110,6 +129,7 @@ TEST_F(EcheMessageReceiverImplTest, OnGetAppsAccessStateResponseReceived) {
 
   EXPECT_EQ(1u, GetNumAppsAccessStateResponseCalls());
   EXPECT_EQ(0u, GetNumAppsSetupResponseCalls());
+  EXPECT_EQ(0u, GetNumStatusChangeCalls());
   EXPECT_EQ(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED,
             actual_apps_state.result());
   EXPECT_EQ(eche_app::proto::AppsAccessState::ACCESS_GRANTED,
@@ -131,10 +151,27 @@ TEST_F(EcheMessageReceiverImplTest, OnSendAppsSetupResponseReceived) {
 
   EXPECT_EQ(0u, GetNumAppsAccessStateResponseCalls());
   EXPECT_EQ(1u, GetNumAppsSetupResponseCalls());
+  EXPECT_EQ(0u, GetNumStatusChangeCalls());
   EXPECT_EQ(eche_app::proto::Result::RESULT_ERROR_ACTION_FAILED,
             actual_apps_setup_response.result());
   EXPECT_EQ(eche_app::proto::AppsAccessState::ACCESS_GRANTED,
             actual_apps_setup_response.apps_access_state());
+}
+
+TEST_F(EcheMessageReceiverImplTest, OnStatusChangeReceived) {
+  proto::StatusChange status_change;
+  status_change.set_type(proto::StatusChangeType::TYPE_STREAM_START);
+  proto::ExoMessage message;
+  *message.mutable_status_change() = std::move(status_change);
+
+  fake_connection_manager_->NotifyMessageReceived(message.SerializeAsString());
+
+  proto::StatusChangeType status_change_type = GetLastStatusChangeType();
+
+  EXPECT_EQ(0u, GetNumAppsAccessStateResponseCalls());
+  EXPECT_EQ(0u, GetNumAppsSetupResponseCalls());
+  EXPECT_EQ(1u, GetNumStatusChangeCalls());
+  EXPECT_EQ(proto::StatusChangeType::TYPE_STREAM_START, status_change_type);
 }
 
 }  // namespace eche_app
