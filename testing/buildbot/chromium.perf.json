@@ -987,7 +987,8 @@
   },
   "chromeos-amd64-generic-lacros-builder-perf": {
     "additional_compile_targets": [
-      "chrome"
+      "chrome",
+      "lacros_version_metadata"
     ],
     "isolated_scripts": [
       {

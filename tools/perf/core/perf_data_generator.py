@@ -1000,7 +1000,7 @@ BUILDERS = {
         False,
     },
     'chromeos-amd64-generic-lacros-builder-perf': {
-        'additional_compile_targets': ['chrome'],
+        'additional_compile_targets': ['chrome', 'lacros_version_metadata'],
         'tests': [
             {
                 'name': 'resource_sizes_lacros_chrome',
