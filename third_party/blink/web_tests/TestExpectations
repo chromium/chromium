@@ -2827,6 +2827,10 @@ crbug.com/1299212 [ Win7 ] fast/forms/select-popup/popup-menu-appearance-tall.ht
 crbug.com/1299212 [ Win7 ] fast/forms/suggestion-picker/* [ Failure Pass Timeout ]
 crbug.com/1299212 [ Win7 ] virtual/scroll-unification/fast/forms/suggestion-picker/time-suggestion-picker-appearance-rtl.html [ Failure Pass Timeout ]
 crbug.com/1299212 [ Linux ] fast/forms/select/menulist-popup-mutation-crash.html [ Failure Pass Timeout ]
+# These appear to be flaky at least on Linux:
+crbug.com/1299212 [ Linux ] fast/forms/week/week-picker-ax.html [ Failure Pass ]
+crbug.com/1299212 [ Linux ] fast/forms/month/month-picker-ax.html [ Failure Pass ]
+crbug.com/1299212 [ Linux ] fast/forms/calendar-picker/date-picker-ax.html [ Failure Pass ]
 
 # isInputPending requires threaded compositing and layerized iframes
 crbug.com/910421 external/wpt/is-input-pending/* [ Skip ]
