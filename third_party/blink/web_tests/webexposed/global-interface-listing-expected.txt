@@ -8278,6 +8278,15 @@ interface Screen
     method dispatchEvent
     method removeEventListener
     setter onchange
+interface ScreenDetailed : Screen
+    attribute @@toStringTag
+    getter devicePixelRatio
+    getter isInternal
+    getter isPrimary
+    getter label
+    getter left
+    getter top
+    method constructor
 interface ScreenDetails : EventTarget
     attribute @@toStringTag
     getter currentScreen

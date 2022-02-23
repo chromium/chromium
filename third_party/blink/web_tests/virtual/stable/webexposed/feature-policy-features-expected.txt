@@ -46,5 +46,6 @@ serial
 shared-autofill
 sync-xhr
 usb
+window-placement
 xr-spatial-tracking
 
