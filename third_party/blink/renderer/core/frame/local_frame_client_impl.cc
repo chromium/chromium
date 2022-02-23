@@ -745,12 +745,6 @@ void LocalFrameClientImpl::DidObserveLayoutNg(uint32_t all_block_count,
   }
 }
 
-void LocalFrameClientImpl::DidObserveLazyLoadBehavior(
-    WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {
-  if (WebLocalFrameClient* client = web_frame_->Client())
-    client->DidObserveLazyLoadBehavior(lazy_load_behavior);
-}
-
 void LocalFrameClientImpl::PreloadSubresourceOptimizationsForOrigins(
     const WTF::HashSet<scoped_refptr<const SecurityOrigin>, SecurityOriginHash>&
         origins) {

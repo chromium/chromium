@@ -107,13 +107,8 @@ FetchParameters CSSImageValue::PrepareFetch(
       image_request_behavior == FetchParameters::kDeferImageLoad &&
       // Only http/https images are eligible to be lazily loaded.
       params.Url().ProtocolIsInHTTPFamily();
-  if (is_lazily_loaded) {
-    if (document.GetFrame() && document.GetFrame()->Client()) {
-      document.GetFrame()->Client()->DidObserveLazyLoadBehavior(
-          WebLocalFrameClient::LazyLoadBehavior::kDeferredImage);
-    }
+  if (is_lazily_loaded)
     params.SetLazyImageDeferred();
-  }
 
   if (origin_clean_ != OriginClean::kTrue)
     params.SetFromOriginDirtyStyleSheet(true);

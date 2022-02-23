@@ -149,8 +149,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
                           uint32_t ng_call_count) override;
-  void DidObserveLazyLoadBehavior(
-      WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) override;
   void PreloadSubresourceOptimizationsForOrigins(
       const WTF::HashSet<scoped_refptr<const SecurityOrigin>,
                          SecurityOriginHash>& origins) override;

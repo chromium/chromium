@@ -4427,12 +4427,6 @@ void RenderFrameImpl::DidObserveLayoutNg(uint32_t all_block_count,
                                 ng_call_count);
 }
 
-void RenderFrameImpl::DidObserveLazyLoadBehavior(
-    WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {
-  for (auto& observer : observers_)
-    observer.DidObserveLazyLoadBehavior(lazy_load_behavior);
-}
-
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
                                              int world_id) {
   v8::MicrotasksScope microtasks(blink::MainThreadIsolate(),

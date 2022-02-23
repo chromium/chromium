@@ -215,13 +215,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
                                   uint32_t all_call_count,
                                   uint32_t ng_call_count) {}
 
-  // Reports lazy loaded behavior when the frame or image is fully deferred or
-  // if the frame or image is loaded after being deferred. Called every time the
-  // behavior occurs. This does not apply to images that were loaded as
-  // placeholders.
-  virtual void DidObserveLazyLoadBehavior(
-      WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
-
   // Notifies the observers of the origins for which subresource redirect
   // optimizations can be preloaded.
   virtual void PreloadSubresourceOptimizationsForOrigins(

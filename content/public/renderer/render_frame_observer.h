@@ -220,13 +220,6 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
                                   uint32_t all_call_count,
                                   uint32_t ng_call_count) {}
 
-  // Reports lazy loaded behavior when the frame or image is fully deferred or
-  // if the frame or image is loaded after being deferred by lazy load.
-  // Called every time the behavior occurs. This does not apply to image
-  // requests for placeholder images.
-  virtual void DidObserveLazyLoadBehavior(
-      blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
-
 #if !BUILDFLAG(IS_ANDROID)
   // Reports that a resource will be requested.
   virtual void WillSendRequest(const blink::WebURLRequest& request) {}

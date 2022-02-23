@@ -535,10 +535,6 @@ void ImageLoader::DoUpdateFromElement(
             was_deferred_explicitly_ =
                 (loading_attr == LoadingAttributeValue::kLazy);
             params.SetLazyImageDeferred();
-            if (frame->Client()) {
-              frame->Client()->DidObserveLazyLoadBehavior(
-                  WebLocalFrameClient::LazyLoadBehavior::kDeferredImage);
-            }
             break;
           case LazyImageHelper::Eligibility::kDisabled:
             break;
@@ -944,11 +940,6 @@ void ImageLoader::LoadDeferredImage(
 
   // If the image has been fully deferred (no placeholder fetch), report it as
   // fully loaded now.
-  LocalFrame* frame = element_->GetDocument().GetFrame();
-  if (frame && frame->Client()) {
-    frame->Client()->DidObserveLazyLoadBehavior(
-        WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedImage);
-  }
   UpdateFromElement(kUpdateNormal, referrer_policy, force_blocking);
 }
 

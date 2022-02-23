@@ -130,8 +130,6 @@ void LazyLoadFrameObserver::LoadImmediately() {
     UMA_HISTOGRAM_ENUMERATION(
         "Blink.LazyLoad.CrossOriginFrames.LoadStartedAfterBeingDeferred",
         GetNetworkStateNotifier().EffectiveType());
-    element_->GetDocument().GetFrame()->Client()->DidObserveLazyLoadBehavior(
-        WebLocalFrameClient::LazyLoadBehavior::kLazyLoadedFrame);
   }
 
   std::unique_ptr<LazyLoadRequestInfo> scoped_request_info =
@@ -339,11 +337,8 @@ void LazyLoadFrameObserver::RecordInitialDeferralAction(
       break;
   }
 
-  if (action == FrameInitialDeferralAction::kDeferred) {
-    element_->GetDocument().GetFrame()->Client()->DidObserveLazyLoadBehavior(
-        WebLocalFrameClient::LazyLoadBehavior::kDeferredFrame);
+  if (action == FrameInitialDeferralAction::kDeferred)
     was_recorded_as_deferred_ = true;
-  }
 }
 
 void LazyLoadFrameObserver::Trace(Visitor* visitor) const {

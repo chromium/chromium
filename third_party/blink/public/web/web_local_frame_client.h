@@ -575,22 +575,6 @@ class BLINK_EXPORT WebLocalFrameClient {
                                   uint32_t all_call_count,
                                   uint32_t ng_call_count) {}
 
-  enum class LazyLoadBehavior {
-    kDeferredImage,    // An image is being deferred by the lazy load feature.
-    kDeferredFrame,    // A frame is being deferred by the lazy load feature.
-    kLazyLoadedImage,  // An image that was previously deferred by the lazy load
-                       // feature is being fully loaded.
-    kLazyLoadedFrame   // A frame that was previously deferred by the lazy load
-                       // feature is being fully loaded.
-  };
-
-  // Reports lazy loaded behavior when the frame or image is fully deferred or
-  // if the frame or image is loaded after being deferred. Called every time the
-  // behavior occurs. This does not apply to images that were loaded as
-  // placeholders.
-  virtual void DidObserveLazyLoadBehavior(
-      WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
-
   // Script notifications ------------------------------------------------
 
   // Notifies that a new script context has been created for this frame.
