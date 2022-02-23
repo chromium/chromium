@@ -81,6 +81,8 @@ class UninstallDialog {
                               bool report_rebuse,
                               UninstallDialog* uninstall_dialog)>;
 
+  using OnUninstallForTestingCallback = base::OnceCallback<void(bool)>;
+
   UninstallDialog(Profile* profile,
                   apps::mojom::AppType app_type,
                   const std::string& app_id,
@@ -100,7 +102,8 @@ class UninstallDialog {
   // the uninstall.
   void OnDialogClosed(bool uninstall, bool clear_site_data, bool report_abuse);
 
-  void SetDialogCreatedCallbackForTesting(base::OnceClosure callback);
+  void SetDialogCreatedCallbackForTesting(
+      OnUninstallForTestingCallback callback);
 
  private:
   // Callback invoked when the icon is loaded.
@@ -113,7 +116,7 @@ class UninstallDialog {
   gfx::NativeWindow parent_window_;
   UninstallCallback uninstall_callback_;
 
-  base::OnceClosure dialog_created_callback_;
+  OnUninstallForTestingCallback uninstall_dialog_created_callback_;
 
   // Tracks whether |parent_window_| got destroyed.
   std::unique_ptr<NativeWindowTracker> parent_window_tracker_;

@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -47,8 +48,9 @@ class AppUninstallDialogViewBrowserTest : public DialogBrowserTest {
     ASSERT_TRUE(app_service_proxy);
 
     base::RunLoop run_loop;
-    app_service_proxy->UninstallForTesting(app_id_, nullptr,
-                                           run_loop.QuitClosure());
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr,
+        base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
     run_loop.Run();
 
     ASSERT_NE(nullptr, ActiveView());
@@ -202,4 +204,67 @@ IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest, InvokeUi_Accept) {
 IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest, InvokeUi_Cancel) {
   CreateApp();
   ShowUi("cancel");
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsUninstallDialogViewBrowserTest,
+                       PreventDuplicateUninstallDialogs) {
+  CreateApp();
+
+  EXPECT_EQ(nullptr, ActiveView());
+
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
+
+  // First call to uninstall should return true in callback for successful.
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  // Second call should be unsuccessful.
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_FALSE(dialog_opened);
+          run_loop.Quit();
+        }));
+
+    run_loop.Run();
+  }
+
+  ASSERT_NE(nullptr, ActiveView());
+  EXPECT_EQ(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL,
+            ActiveView()->GetDialogButtons());
+  std::u16string title =
+      u"Uninstall \"" + base::ASCIIToUTF16(app_name_) + u"\"?";
+  EXPECT_EQ(title, ActiveView()->GetWindowTitle());
+
+  // Cancelling the active dialog should not uninstall the web app.
+  ActiveView()->CancelDialog();
+  app_service_proxy->FlushMojoCallsForTesting();
+  bool is_installed = true;
+  app_service_proxy->AppRegistryCache().ForOneApp(
+      app_id_, [&is_installed](const apps::AppUpdate& update) {
+        is_installed = update.Readiness() == apps::mojom::Readiness::kReady;
+      });
+  EXPECT_TRUE(is_installed);
+
+  // Uninstall dialog should be reopenable.
+  EXPECT_EQ(nullptr, ActiveView());
+  {
+    base::RunLoop run_loop;
+    app_service_proxy->UninstallForTesting(
+        app_id_, nullptr, base::BindLambdaForTesting([&](bool dialog_opened) {
+          EXPECT_TRUE(dialog_opened);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  ASSERT_NE(nullptr, ActiveView());
 }

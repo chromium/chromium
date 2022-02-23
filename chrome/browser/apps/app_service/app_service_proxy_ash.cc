@@ -243,9 +243,10 @@ void AppServiceProxyAsh::SetDialogCreatedCallbackForTesting(
   dialog_created_callback_ = std::move(callback);
 }
 
-void AppServiceProxyAsh::UninstallForTesting(const std::string& app_id,
-                                             gfx::NativeWindow parent_window,
-                                             base::OnceClosure callback) {
+void AppServiceProxyAsh::UninstallForTesting(
+    const std::string& app_id,
+    gfx::NativeWindow parent_window,
+    OnUninstallForTestingCallback callback) {
   UninstallImpl(app_id, apps::mojom::UninstallSource::kUnknown, parent_window,
                 std::move(callback));
 }
@@ -270,8 +271,18 @@ void AppServiceProxyAsh::UninstallImpl(
     const std::string& app_id,
     apps::mojom::UninstallSource uninstall_source,
     gfx::NativeWindow parent_window,
-    base::OnceClosure callback) {
+    OnUninstallForTestingCallback callback) {
   if (!app_service_.is_connected()) {
+    if (!callback.is_null()) {
+      std::move(callback).Run(false);
+    }
+    return;
+  }
+
+  if (uninstall_dialogs_.find(app_id) != uninstall_dialogs_.end()) {
+    if (!callback.is_null()) {
+      std::move(callback).Run(false);
+    }
     return;
   }
 
@@ -288,7 +299,7 @@ void AppServiceProxyAsh::UninstallImpl(
     UninstallDialog* uninstall_dialog = uninstall_dialog_ptr.get();
     uninstall_dialog_ptr->SetDialogCreatedCallbackForTesting(
         std::move(callback));
-    uninstall_dialogs_.emplace(std::move(uninstall_dialog_ptr));
+    uninstall_dialogs_.emplace(update.AppId(), std::move(uninstall_dialog_ptr));
     uninstall_dialog->PrepareToShow(std::move(icon_key), this);
   });
 }
@@ -311,7 +322,7 @@ void AppServiceProxyAsh::OnUninstallDialogClosed(
   }
 
   DCHECK(uninstall_dialog);
-  auto it = uninstall_dialogs_.find(uninstall_dialog);
+  auto it = uninstall_dialogs_.find(app_id);
   DCHECK(it != uninstall_dialogs_.end());
   uninstall_dialogs_.erase(it);
 }

@@ -93,8 +93,8 @@ void UninstallDialog::OnDialogClosed(bool uninstall,
 }
 
 void UninstallDialog::SetDialogCreatedCallbackForTesting(
-    base::OnceClosure callback) {
-  dialog_created_callback_ = std::move(callback);
+    OnUninstallForTestingCallback callback) {
+  uninstall_dialog_created_callback_ = std::move(callback);
 }
 
 void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
@@ -114,8 +114,8 @@ void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
 
   // For browser tests, if the callback is set, run the callback to stop the run
   // loop.
-  if (!dialog_created_callback_.is_null()) {
-    std::move(dialog_created_callback_).Run();
+  if (!uninstall_dialog_created_callback_.is_null()) {
+    std::move(uninstall_dialog_created_callback_).Run(true);
   }
 }
 

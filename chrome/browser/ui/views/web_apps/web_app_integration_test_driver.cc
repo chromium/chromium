@@ -1084,8 +1084,9 @@ void WebAppIntegrationTestDriver::UninstallFromList(
   apps::AppServiceProxy* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   base::RunLoop run_loop;
-  app_service_proxy->UninstallForTesting(app_state->id, nullptr,
-                                         run_loop.QuitClosure());
+  app_service_proxy->UninstallForTesting(
+      app_state->id, nullptr,
+      base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
   run_loop.Run();
 
   ASSERT_NE(nullptr, AppUninstallDialogView::GetActiveViewForTesting());
