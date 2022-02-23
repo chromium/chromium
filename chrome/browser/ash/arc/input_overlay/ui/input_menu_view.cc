@@ -125,7 +125,8 @@ void InputMenuView::Init() {
           &InputMenuView::OnToggleGameControlPressed, base::Unretained(this))));
   game_control_toggle_->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_GAME_CONTROL));
-  game_control_toggle_->SetIsOn(true);
+  game_control_toggle_->SetIsOn(
+      display_overlay_controller_->GetTouchInjectorEnable());
 
   auto close_icon = gfx::CreateVectorIcon(vector_icons::kCloseIcon, color);
   auto close_button = std::make_unique<views::ImageButton>(
@@ -247,8 +248,15 @@ std::unique_ptr<views::View> InputMenuView::BuildSeparator() {
 }
 
 void InputMenuView::OnToggleGameControlPressed() {
-  // TODO(djacobo|cuicuiruan): General knob to turn feature ON/OFF, determinate
-  // functionality of this main knob.
+  DCHECK(display_overlay_controller_);
+  if (!display_overlay_controller_)
+    return;
+  display_overlay_controller_->SetTouchInjectorEnable(
+      game_control_toggle_->GetIsOn());
+  // Also show/hide the input mapping when enable/disable the game controller.
+  show_hint_toggle_->SetIsOn(game_control_toggle_->GetIsOn());
+  display_overlay_controller_->SetInputMappingVisible(
+      show_hint_toggle_->GetIsOn());
 }
 
 void InputMenuView::OnToggleShowHintPressed() {

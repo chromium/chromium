@@ -46,9 +46,17 @@ class TouchInjector : public ui::EventRewriter {
     return actions_;
   }
   bool is_mouse_locked() const { return is_mouse_locked_; }
+  bool touch_injector_enable() const { return touch_injector_enable_; }
+  bool input_mapping_visible() const { return input_mapping_visible_; }
   void set_display_mode(DisplayMode mode) { display_mode_ = mode; }
   void set_display_overlay_controller(DisplayOverlayController* controller) {
     display_overlay_controller_ = controller;
+  }
+  void store_touch_injector_enable(bool enable) {
+    touch_injector_enable_ = enable;
+  }
+  void store_input_mapping_visible(bool enable) {
+    input_mapping_visible_ = enable;
   }
 
   // Parse Json to actions.
@@ -108,14 +116,18 @@ class TouchInjector : public ui::EventRewriter {
                           &ui::EventSource::RemoveEventRewriter>
       observation_{this};
   std::unique_ptr<KeyCommand> mouse_lock_;
-  // It is used temporarily for switching view and edit mode.
-  // TODO(cuicuiruan): Remove this after the entry point is ready.
-  std::unique_ptr<KeyCommand> switch_mode_;
   bool text_input_active_ = false;
   // The mouse is unlocked by default.
   bool is_mouse_locked_ = false;
   DisplayMode display_mode_ = DisplayMode::kView;
   DisplayOverlayController* display_overlay_controller_ = nullptr;
+  // Linked to game controller toggle in the menu. Set it enabled by default.
+  // This is to save status if display overlay is destroyed during window
+  // operations.
+  bool touch_injector_enable_ = true;
+  // Linked to input mapping toggle in the menu. Set it enabled by default. This
+  // is to save status if display overlay is destroyed during window operations.
+  bool input_mapping_visible_ = true;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };

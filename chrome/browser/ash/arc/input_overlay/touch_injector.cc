@@ -278,9 +278,6 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (text_input_active_)
     return SendEvent(continuation, &event);
 
-  if (switch_mode_ && switch_mode_->Process(event))
-    return DiscardEvent(continuation);
-
   if (display_mode_ != DisplayMode::kView)
     return SendEvent(continuation, &event);
 
@@ -297,6 +294,9 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
     display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
     return SendEvent(continuation, &event);
   }
+
+  if (!touch_injector_enable_)
+    return SendEvent(continuation, &event);
 
   if (mouse_lock_ && mouse_lock_->Process(event))
     return DiscardEvent(continuation);

@@ -63,6 +63,9 @@ class DisplayOverlayController {
   void SetInputMappingVisible(bool visible);
   bool GetInputMappingViewVisible() const;
 
+  void SetTouchInjectorEnable(bool enable);
+  bool GetTouchInjectorEnable();
+
   TouchInjector* touch_injector_;
 
   // References to UI elements owned by the overlay widget.
