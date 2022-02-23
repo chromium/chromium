@@ -83,8 +83,6 @@ crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
 crbug.com/1286918 [ android android-pixel-6 ] WebCodecs_TexImage2d_sw_decoder [ Failure ]
 crbug.com/1288914 [ android android-pixel-6 ] WebCodecs_TexImage2d_camera [ Failure ]
 
-crbug.com/1291374 [ android android-pixel-6 ] WebCodecs_Encoding* [ Failure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
