@@ -52,9 +52,9 @@ BatchingMediaLog::BatchingMediaLog(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::vector<std::unique_ptr<EventHandler>> event_handlers)
     : task_runner_(std::move(task_runner)),
-      event_handlers_(std::move(event_handlers)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       last_ipc_send_time_(tick_clock_->NowTicks()),
+      event_handlers_(std::move(event_handlers)),
       ipc_send_pending_(false),
       logged_rate_limit_warning_(false) {
   // Pre-bind the WeakPtr on the right thread since we'll receive calls from
@@ -76,6 +76,7 @@ BatchingMediaLog::~BatchingMediaLog() {
 }
 
 void BatchingMediaLog::OnWebMediaPlayerDestroyedLocked() {
+  base::AutoLock lock(lock_);
   for (const auto& handler : event_handlers_)
     handler->OnWebMediaPlayerDestroyed();
 }
@@ -198,32 +199,30 @@ std::string BatchingMediaLog::MediaEventToMessageString(
 
 void BatchingMediaLog::SendQueuedMediaEvents() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  base::AutoLock auto_lock(lock_);
 
-  std::vector<media::MediaLogRecord> events_to_send;
-  {
-    base::AutoLock auto_lock(lock_);
-    DCHECK(ipc_send_pending_);
-    ipc_send_pending_ = false;
+  DCHECK(ipc_send_pending_);
+  ipc_send_pending_ = false;
 
-    if (last_duration_changed_event_) {
-      queued_media_events_.push_back(*last_duration_changed_event_);
-      last_duration_changed_event_.reset();
-    }
-
-    if (last_buffering_state_event_) {
-      queued_media_events_.push_back(*last_buffering_state_event_);
-      last_buffering_state_event_.reset();
-    }
-
-    queued_media_events_.swap(events_to_send);
-    last_ipc_send_time_ = tick_clock_->NowTicks();
+  if (last_duration_changed_event_) {
+    queued_media_events_.push_back(*last_duration_changed_event_);
+    last_duration_changed_event_.reset();
   }
 
-  if (events_to_send.empty())
+  if (last_buffering_state_event_) {
+    queued_media_events_.push_back(*last_buffering_state_event_);
+    last_buffering_state_event_.reset();
+  }
+
+  last_ipc_send_time_ = tick_clock_->NowTicks();
+
+  if (queued_media_events_.empty())
     return;
 
   for (const auto& handler : event_handlers_)
-    handler->SendQueuedMediaEvents(events_to_send);
+    handler->SendQueuedMediaEvents(queued_media_events_);
+
+  queued_media_events_.clear();
 }
 
 void BatchingMediaLog::SetTickClockForTesting(
