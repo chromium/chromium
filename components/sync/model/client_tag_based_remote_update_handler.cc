@@ -288,23 +288,18 @@ void ClientTagBasedRemoteUpdateHandler::ResolveConflict(
 }
 
 ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
-    const std::string& storage_key,
     const EntityData& data) {
   DCHECK(!data.client_tag_hash.value().empty());
-  DCHECK(!bridge_->SupportsGetStorageKey() || !storage_key.empty());
-  return entity_tracker_->Add(storage_key, data);
-}
-
-ProcessorEntity* ClientTagBasedRemoteUpdateHandler::CreateEntity(
-    const EntityData& data) {
   if (bridge_->SupportsGetClientTag()) {
     DCHECK_EQ(data.client_tag_hash,
               ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(data)));
   }
   std::string storage_key;
-  if (bridge_->SupportsGetStorageKey())
+  if (bridge_->SupportsGetStorageKey()) {
     storage_key = bridge_->GetStorageKey(data);
-  return CreateEntity(storage_key, data);
+    DCHECK(!storage_key.empty());
+  }
+  return entity_tracker_->Add(storage_key, data);
 }
 
 }  // namespace syncer
