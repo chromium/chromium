@@ -67305,6 +67305,14 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OptimizationGuidePageTopicsOverrideListFileLoadResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Could not read file"/>
+  <int value="3" label="Could not uncompress file"/>
+  <int value="4" label="Could not unmarshal the encoded protobuf"/>
+</enum>
+
 <enum name="OptimizationGuidePredictionManagerModelStatus">
   <int value="0" label="Unknown"/>
   <int value="1" label="Model for target is available">

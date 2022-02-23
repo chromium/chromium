@@ -19,6 +19,7 @@ proto_library("optimization_guide_proto") {
     "page_entities_metadata.proto",
     "page_entities_model_metadata.proto",
     "page_topics_model_metadata.proto",
+    "page_topics_override_list.proto",
     "performance_hints_metadata.proto",
     "public_image_metadata.proto",
     "push_notification.proto",

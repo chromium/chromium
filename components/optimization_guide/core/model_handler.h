@@ -101,8 +101,9 @@ class ModelHandler : public OptimizationTargetModelObserver {
   }
 
   // Requests that the model executor unload the model from memory, if it is
-  // currently loaded.
-  void UnloadModel() {
+  // currently loaded. Virtual to allow derived classes to also observe this
+  // signal.
+  virtual void UnloadModel() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     model_executor_task_runner_->PostTask(
         FROM_HERE,

@@ -26,8 +26,10 @@ class PageContentAnnotationJobExecutor {
   // executing the job and calling its OnComplete method, then running the
   // |on_job_complete_callback| to notify the caller that the job is
   // complete.
-  void ExecuteJob(base::OnceClosure on_job_complete_callback,
-                  std::unique_ptr<PageContentAnnotationJob> job);
+  // Virtual to allow derived classes to override the default behavior, though
+  // they should still call the base implementation eventually.
+  virtual void ExecuteJob(base::OnceClosure on_job_complete_callback,
+                          std::unique_ptr<PageContentAnnotationJob> job);
 
  protected:
   // Implemented by derived classes to execute a model input.

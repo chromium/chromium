@@ -195,6 +195,7 @@ static_library("core") {
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",
       "//third_party/tflite_support:tflite_support_proto",
+      "//third_party/zlib/google:compression_utils",
     ]
   }
 
