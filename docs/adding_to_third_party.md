@@ -186,8 +186,9 @@ Non-Googlers can email one of the people in
 
 * Make sure you have the approval from Chrome Eng Review as mentioned
   [above](#before-you-start).
-* Get security@chromium.org approval. Email the list with relevant details and
-  a link to the CL. Third party code is a hot spot for security vulnerabilities.
+* Get security@chromium.org (or chrome-security@google.com, Google-only)
+  approval. Email the list with relevant details and a link to the CL.
+  Third party code is a hot spot for security vulnerabilities.
   When adding a new package that could potentially carry security risk, make
   sure to highlight risk to security@chromium.org. You may be asked to add
   a README.security or, in dangerous cases, README.SECURITY.URGENTLY file.
