@@ -12,7 +12,7 @@ export class WaitableEvent<T = void> {
   // recognize that. Disable the check by adding "!" to the property name.
   protected resolve!: (val: T) => void;
   protected reject!: (val: Error) => void;
-  private promise: Promise<T>;
+  private readonly promise: Promise<T>;
 
   constructor() {
     this.promise = new Promise((resolve, reject) => {

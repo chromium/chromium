@@ -52,7 +52,7 @@ export class AppWindow {
   private inClosingItself = false;
   private readonly errors: ErrorInfo[] = [];
   private readonly perfs: PerfEntry[] = [];
-  private launchedTime = performance.now();
+  private readonly launchedTime = performance.now();
   /**
    * @param fromColdStart Whether this app is launched from a cold start. It is
    *     used for performance measurement.

@@ -64,7 +64,7 @@ export class ChromeHelper {
   /**
    * An interface remote that is used to communicate with Chrome.
    */
-  private remote: CameraAppHelperRemote =
+  private readonly remote: CameraAppHelperRemote =
       wrapEndpoint(CameraAppHelper.getRemote());
 
   /**

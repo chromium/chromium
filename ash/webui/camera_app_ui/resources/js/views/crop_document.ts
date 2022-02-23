@@ -119,7 +119,7 @@ interface Corner {
  * View controller for review document crop area page.
  */
 export class CropDocument extends Review<boolean> {
-  private imageFrame: HTMLDivElement;
+  private readonly imageFrame: HTMLDivElement;
 
   /**
    * Size of image frame.
@@ -137,8 +137,8 @@ export class CropDocument extends Review<boolean> {
    */
   private cornerSpaceSize: Size|null = null;
 
-  private cropAreaContainer: SVGElement;
-  private cropArea: SVGPolygonElement;
+  private readonly cropAreaContainer: SVGElement;
+  private readonly cropArea: SVGPolygonElement;
 
   /**
    * Index of |ROTATION| as current photo rotation.
@@ -146,7 +146,7 @@ export class CropDocument extends Review<boolean> {
   private rotation = 0;
 
   private initialCorners: Point[] = [];
-  private corners: Corner[];
+  private readonly corners: Corner[];
 
   constructor() {
     super(ViewName.CROP_DOCUMENT);

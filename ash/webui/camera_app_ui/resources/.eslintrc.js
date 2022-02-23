@@ -479,4 +479,16 @@ module.exports = {
     // This is covered by @typescript-eslint/naming-convention.
     'camelcase': 'off',
   }),
+  'overrides': [{
+    files: ['**/*.ts'],
+    parserOptions: {
+      // eslint-disable-next-line no-undef
+      tsconfigRootDir: __dirname,
+      project: './tsconfig_base.json',
+    },
+    rules: {
+      // go/tsstyle#use-readonly
+      '@typescript-eslint/prefer-readonly': 'error',
+    },
+  }],
 };

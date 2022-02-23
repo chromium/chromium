@@ -322,7 +322,7 @@ enum OperationType {
 export class OperationScheduler {
   public cameraInfo: CameraInfo|null = null;
   private pendingUpdateInfo: CameraInfo|null = null;
-  private firstInfoUpdate = new WaitableEvent();
+  private readonly firstInfoUpdate = new WaitableEvent();
 
   readonly reconfigurer: Reconfigurer;
   readonly capturer: Capturer;

@@ -52,11 +52,11 @@ const appWindow = window.appWindow;
  * Creates the Camera App main object.
  */
 export class App {
-  private perfLogger: PerfLogger;
-  private intent: Intent|null;
+  private readonly perfLogger: PerfLogger;
+  private readonly intent: Intent|null;
   private readonly cameraManager: CameraManager;
-  private galleryButton = new GalleryButton();
-  private cameraView: Camera;
+  private readonly galleryButton = new GalleryButton();
+  private readonly cameraView: Camera;
 
   constructor({perfLogger, intent, facing, mode: defaultMode}: {
     perfLogger: PerfLogger,

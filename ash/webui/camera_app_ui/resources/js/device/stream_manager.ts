@@ -85,7 +85,7 @@ export class StreamManager {
   /**
    * Filter out lagging 720p on grunt. See https://crbug.com/1122852.
    */
-  private videoConfigFilter: (config: VideoConfig) => boolean;
+  private readonly videoConfigFilter: (config: VideoConfig) => boolean;
 
   private constructor() {
     this.videoConfigFilter = (() => {

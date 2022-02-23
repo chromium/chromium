@@ -12,7 +12,7 @@ import {DialogEnterOptions, View} from './view.js';
  * Creates the Dialog view controller.
  */
 export class Dialog extends View {
-  private positiveButton: HTMLButtonElement;
+  private readonly positiveButton: HTMLButtonElement;
   private negativeButton: HTMLButtonElement|null;
   private messageHolder: HTMLElement;
 

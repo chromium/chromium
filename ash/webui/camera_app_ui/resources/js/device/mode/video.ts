@@ -179,7 +179,7 @@ export class Video extends ModeBase {
   /**
    * Record-time for the elapsed gif recording time.
    */
-  private gifRecordTime: GifRecordTime;
+  private readonly gifRecordTime: GifRecordTime;
 
   /**
    * Record type of ongoing recording.
