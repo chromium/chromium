@@ -21,7 +21,7 @@ FakeWebAppDatabaseFactory::FakeWebAppDatabaseFactory() {
   store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
 }
 
-FakeWebAppDatabaseFactory::~FakeWebAppDatabaseFactory() {}
+FakeWebAppDatabaseFactory::~FakeWebAppDatabaseFactory() = default;
 
 syncer::OnceModelTypeStoreFactory FakeWebAppDatabaseFactory::GetStoreFactory() {
   return syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(

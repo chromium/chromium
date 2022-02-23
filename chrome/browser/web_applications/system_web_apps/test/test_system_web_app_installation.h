@@ -209,7 +209,7 @@ class TestSystemWebAppInstallation {
   }
 
  private:
-  TestSystemWebAppInstallation(
+  explicit TestSystemWebAppInstallation(
       std::unique_ptr<UnittestingSystemAppDelegate> system_app_delegate);
   TestSystemWebAppInstallation();
 

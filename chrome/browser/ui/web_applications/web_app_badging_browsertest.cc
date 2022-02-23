@@ -31,8 +31,7 @@ namespace web_app {
 class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppBadgingBrowserTest()
-      : WebAppControllerBrowserTest(),
-        cross_origin_https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : cross_origin_https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebAppControllerBrowserTest::SetUpCommandLine(command_line);

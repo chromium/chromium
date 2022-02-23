@@ -55,8 +55,6 @@ std::string OsIntegrationStateToString(OsIntegrationState state) {
 
 WebApp::WebApp(const AppId& app_id)
     : app_id_(app_id),
-      display_mode_(DisplayMode::kUndefined),
-      user_display_mode_(DisplayMode::kUndefined),
       chromeos_data_(IsChromeOsDataMandatory()
                          ? absl::make_optional<WebAppChromeOsData>()
                          : absl::nullopt) {}
@@ -689,8 +687,7 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("start_url", ConvertToString(start_url_));
 
-  root.SetKey("sync_fallback_data",
-              base::Value(sync_fallback_data_.AsDebugValue()));
+  root.SetKey("sync_fallback_data", sync_fallback_data_.AsDebugValue());
 
   root.SetStringKey("theme_color", ColorToString(theme_color_));
 

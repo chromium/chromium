@@ -1355,5 +1355,5 @@ void AppLauncherHandler::InstallOsHooks(const web_app::AppId& app_id) {
       app_id,
       base::BindOnce(&AppLauncherHandler::OnOsHooksInstalled,
                      weak_ptr_factory_.GetWeakPtr(), app_id),
-      /*web_application_info=*/nullptr, std::move(options));
+      /*web_app_info=*/nullptr, std::move(options));
 }

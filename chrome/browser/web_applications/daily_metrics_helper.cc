@@ -22,8 +22,8 @@ namespace web_app {
 namespace {
 
 int BucketedDailySeconds(base::TimeDelta delta) {
-  int64_t sample =
-      base::clamp(delta.InSeconds(), int64_t(0), base::Days(1).InSeconds());
+  int64_t sample = base::clamp(delta.InSeconds(), static_cast<int64_t>(0),
+                               base::Days(1).InSeconds());
   // Result between 1 sec and 1 day, in 50 linear buckets per day.
   int32_t bucket_size = base::Days(1).InSeconds() / 50;
   int result = ukm::GetLinearBucketMin(sample, bucket_size);

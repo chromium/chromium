@@ -46,7 +46,7 @@ WebAppMenuModel::WebAppMenuModel(ui::AcceleratorProvider* provider,
                                  Browser* browser)
     : AppMenuModel(provider, browser) {}
 
-WebAppMenuModel::~WebAppMenuModel() {}
+WebAppMenuModel::~WebAppMenuModel() = default;
 
 bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {

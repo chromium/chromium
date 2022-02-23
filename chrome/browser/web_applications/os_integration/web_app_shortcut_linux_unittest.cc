@@ -49,12 +49,14 @@ class MockEnvironment : public base::Environment {
   MockEnvironment& operator=(const MockEnvironment&) = delete;
 
   void Set(base::StringPiece name, const std::string& value) {
-    variables_[std::string(name)] = value;
+    const std::string key(name);
+    variables_[key] = value;
   }
 
   bool GetVar(base::StringPiece variable_name, std::string* result) override {
-    if (base::Contains(variables_, std::string(variable_name))) {
-      *result = variables_[std::string(variable_name)];
+    const std::string key(variable_name);
+    if (base::Contains(variables_, key)) {
+      *result = variables_[key];
       return true;
     }
 

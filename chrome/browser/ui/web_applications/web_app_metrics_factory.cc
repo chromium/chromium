@@ -17,7 +17,7 @@ namespace web_app {
 WebAppMetrics* WebAppMetricsFactory::GetForProfile(Profile* profile) {
   return static_cast<WebAppMetrics*>(
       WebAppMetricsFactory::GetInstance()->GetServiceForBrowserContext(
-          profile, /*create_service=*/true));
+          profile, /*create=*/true));
 }
 
 // static

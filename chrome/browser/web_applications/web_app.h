@@ -358,8 +358,8 @@ class WebApp {
   absl::optional<SkColor> dark_mode_theme_color_;
   absl::optional<SkColor> background_color_;
   absl::optional<SkColor> dark_mode_background_color_;
-  DisplayMode display_mode_;
-  DisplayMode user_display_mode_;
+  DisplayMode display_mode_ = DisplayMode::kUndefined;
+  DisplayMode user_display_mode_ = DisplayMode::kUndefined;
   std::vector<DisplayMode> display_mode_override_;
   syncer::StringOrdinal user_page_ordinal_;
   syncer::StringOrdinal user_launch_ordinal_;

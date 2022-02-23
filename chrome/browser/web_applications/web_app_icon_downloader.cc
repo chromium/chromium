@@ -21,8 +21,6 @@ WebAppIconDownloader::WebAppIconDownloader(
     const std::vector<GURL>& extra_favicon_urls,
     WebAppIconDownloaderCallback callback)
     : content::WebContentsObserver(web_contents),
-      need_favicon_urls_(true),
-      fail_all_if_any_fail_(false),
       extra_favicon_urls_(extra_favicon_urls),
       callback_(std::move(callback)) {}
 

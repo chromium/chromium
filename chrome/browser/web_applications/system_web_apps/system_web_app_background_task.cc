@@ -40,8 +40,6 @@ SystemAppBackgroundTask::SystemAppBackgroundTask(
       timer_(std::make_unique<base::OneShotTimer>()),
       url_(info.url),
       period_(info.period),
-      opened_count_(0),
-      timer_activated_count_(0),
       open_immediately_(info.open_immediately),
       delegate_(this) {}
 
