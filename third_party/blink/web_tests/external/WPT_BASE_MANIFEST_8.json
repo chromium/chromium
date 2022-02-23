@@ -1238,6 +1238,13 @@
         {}
        ]
       ],
+      "chrome-legacy-propagation-remove-body-crash.html": [
+       "94b57285e1b9ec6d9eee102c1343b5d0990e2f8c",
+       [
+        null,
+        {}
+       ]
+      ],
       "firefox-bug-1715631.html": [
        "d7dedd929e9e4f959e585b7bfab931bd71fa2c8f",
        [
@@ -92546,6 +92553,19 @@
         {}
        ]
       ],
+      "custom-layout-container-001.https.html": [
+       "ef8c5ccf596389203c514a3e3a56a152034bc5f8",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "display-in-container.html": [
        "1def7eebcb886c521c81617e87af0aaafb964247",
        [
@@ -143356,6 +143376,19 @@
         [
          [
           "/css/css-position/sticky/position-sticky-table-tr-top-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "position-sticky-top-and-bottom-003.html": [
+       "af68bcef729aca98fe7c792df3deb067fbf32763",
+       [
+        null,
+        [
+         [
+          "/css/css-position/sticky/reference/position-sticky-top-and-bottom-003-ref.html",
           "=="
          ]
         ],
@@ -263900,7 +263933,13 @@
       "position-sticky-writing-modes-ref.html": [
        "4bbedfbfe0aaaf68abd15a2499db6dc764b95418",
        []
-      ]
+      ],
+      "reference": {
+       "position-sticky-top-and-bottom-003-ref.html": [
+        "36af9a33bc5bcd115de80b22c4cc698cb4768f6c",
+        []
+       ]
+      }
      },
      "z-index-blend-will-change-overlapping-layers-ref.html": [
       "883ffed46d201ed6875adef584b07d892dface49",
@@ -279513,26 +279552,6 @@
      "invalidation": {
       "class-id-attr-ref.html": [
        "a3cc6d3d8f56fd31c4b19d23af606d7c65487145",
-       []
-      ],
-      "has-in-adjacent-position-expected.txt": [
-       "4eca5d7f7e017fbea7865c68f9aca416b019d2e5",
-       []
-      ],
-      "has-in-ancestor-position-expected.txt": [
-       "010e5e18a6aa3f21d914e4283935861b7de7685f",
-       []
-      ],
-      "has-in-parent-position-expected.txt": [
-       "5cec677d485358f51e6086edfce4a208a317cb78",
-       []
-      ],
-      "has-in-sibling-position-expected.txt": [
-       "4eca5d7f7e017fbea7865c68f9aca416b019d2e5",
-       []
-      ],
-      "has-sibling-expected.txt": [
-       "01f64f5161ea4a19d58f13bc14b59b1e189e5255",
        []
       ],
       "sheet-going-away-002-ref.html": [
