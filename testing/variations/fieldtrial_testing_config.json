@@ -2724,7 +2724,7 @@
             ]
         }
     ],
-    "DurableClientHintsCache": [
+    "DurableClientHintsCacheStudy": [
         {
             "platforms": [
                 "android",
