@@ -360,3 +360,14 @@ TEST_F('NewTabPageModulesPhotosModuleTest', 'All', function() {
 });
 
 GEN('#endif  // !defined(OFFICIAL_BUILD)');
+
+var NewTabPageDiscountConsentDialogTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/cart/discount_consent_dialog_test.js&host=webui-test';
+  }
+};
+
+TEST_F('NewTabPageDiscountConsentDialogTest', 'All', function() {
+  mocha.run();
+});

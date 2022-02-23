@@ -303,7 +303,11 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_CART_ITEM_COUNT_SINGULAR},
       {"modulesCartItemCountMultiple",
        IDS_NTP_MODULES_CART_ITEM_COUNT_MULTIPLE},
-  };
+      {"modulesCartDiscountConsentContentV3",
+       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT_V3},
+      {"modulesCartDiscountConentTitle",
+       IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_TITLE},
+     };
   source->AddLocalizedStrings(kStrings);
 
 #if !defined(OFFICIAL_BUILD)

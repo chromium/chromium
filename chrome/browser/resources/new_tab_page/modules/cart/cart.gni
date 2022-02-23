@@ -6,4 +6,7 @@
 cart_non_web_component_files = [ "modules/cart/chrome_cart_proxy.ts" ]
 
 # List of files that should be passed to html_to_js().
-cart_web_component_files = [ "modules/cart/module.ts" ]
+cart_web_component_files = [
+  "modules/cart/discount_consent_dialog.ts",
+  "modules/cart/module.ts",
+]
