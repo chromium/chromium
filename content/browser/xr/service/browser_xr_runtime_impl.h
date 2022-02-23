@@ -121,7 +121,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   mojo::Remote<device::mojom::XRRuntime> runtime_;
   mojo::Remote<device::mojom::XRSessionController>
       immersive_session_controller_;
-  bool immersive_session_has_camera_access_;
+  bool immersive_session_has_camera_access_ = false;
 
   std::set<VRServiceImpl*> services_;
   device::mojom::VRDisplayInfoPtr display_info_;
