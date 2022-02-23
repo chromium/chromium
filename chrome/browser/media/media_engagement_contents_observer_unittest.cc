@@ -26,14 +26,17 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 // TODO(crbug/1004580) All these tests crash on Android
 #if !BUILDFLAG(IS_ANDROID)
@@ -1360,6 +1363,92 @@ TEST_F(MediaEngagementContentsObserverTest, PlayerStateIsCleanedUp) {
   EXPECT_EQ(1u, GetStoredPlayerStatesCount());
   SimulateMediaDestroyed(1);
   EXPECT_EQ(0u, GetStoredPlayerStatesCount());
+}
+
+class MediaEngagementContentsObserverPrerenderTest
+    : public MediaEngagementContentsObserverTest {
+ public:
+  MediaEngagementContentsObserverPrerenderTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+  ~MediaEngagementContentsObserverPrerenderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MediaEngagementContentsObserverPrerenderTest,
+       EnsureDoNotCleanupAfterNavigation_AudioContextInPrerendering) {
+  GURL url = GURL("https://example.com");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+  EXPECT_EQ(0u, GetAudioContextPlayersCount());
+
+  SimulateAudioContextStarted(0);
+  EXPECT_EQ(1u, GetAudioContextPlayersCount());
+
+  // Add a prerender page.
+  auto* prerender_frame = content::WebContentsTester::For(web_contents())
+                              ->AddPrerenderAndCommitNavigation(url);
+  DCHECK_NE(prerender_frame, nullptr);
+  EXPECT_EQ(prerender_frame->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kPrerendering);
+  EXPECT_EQ(1u, GetAudioContextPlayersCount());
+
+  // Activate the prerendered page.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      url, web_contents()->GetMainFrame());
+  EXPECT_EQ(prerender_frame->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+  EXPECT_EQ(0u, GetAudioContextPlayersCount());
+}
+
+class MediaEngagementContentsObserverFencedFrameTest
+    : public MediaEngagementContentsObserverTest {
+ public:
+  MediaEngagementContentsObserverFencedFrameTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~MediaEngagementContentsObserverFencedFrameTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(MediaEngagementContentsObserverFencedFrameTest,
+       EnsureDoNotCleanupAfterNavigation_AudioContextOnFencedFrame) {
+  GURL url("https://example.com");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             url);
+  EXPECT_EQ(0u, GetAudioContextPlayersCount());
+
+  SimulateAudioContextStarted(0);
+  EXPECT_EQ(1u, GetAudioContextPlayersCount());
+
+  // Navigate a fenced frame.
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateForFencedFrame(url, fenced_frame_rfh);
+  navigation_simulator->Commit();
+  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+  EXPECT_EQ(1u, GetAudioContextPlayersCount());
+
+  Navigate(url);
+  EXPECT_EQ(0u, GetAudioContextPlayersCount());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
