@@ -128,6 +128,15 @@ export class InfiniteList extends PolymerElement {
     }
   }
 
+  scrollIndexIntoView(index: number) {
+    assert(
+        index >= 0 && index < this.selectableIndexToItemIndex_!.size(),
+        'Index is out of range.');
+    this.ensureSelectableDomItemAvailable_(index);
+    this.getSelectableDomItem_(index)!.scrollIntoView(
+        {behavior: 'smooth', block: 'nearest'});
+  }
+
   /**
    * @param key Keyboard event key value.
    * @param focusItem Whether to focus the selected item.
@@ -252,15 +261,7 @@ export class InfiniteList extends PolymerElement {
 
   private getDomItem_(index: number): HTMLElement|undefined {
     const instance = this.instances_[index];
-    if (instance === undefined) {
-      // TODO(crbug.com/1225247): Remove this after we root cause the issue.
-      console.error(`Unexpected call to non-existing instance index: ${
-          index}. Instance count: ${this.instances_.length}. Item count: ${
-          this.items.length}`);
-      return undefined;
-    }
-
-    return instance.children[0] as HTMLElement;
+    return instance!.children[0] as HTMLElement;
   }
 
   private getSelectableDomItem_(selectableItemIndex: number): HTMLElement

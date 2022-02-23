@@ -502,6 +502,15 @@ export class TabSearchAppElement extends PolymerElement {
     this.apiProxy_.saveRecentlyClosedExpandedPref(expanded);
 
     this.updateFilteredTabs_();
+
+    // If a section's title item is the last visible element in the list and the
+    // list's height is at its maximum, it will not be evident to the user that
+    // on expanding the section there are now section tab items available. By
+    // ensuring the first element of the section is visible, we can avoid this
+    // confusion.
+    if (expanded) {
+      this.$.tabsList.scrollIndexIntoView(this.filteredOpenTabsCount_);
+    }
     e.stopPropagation();
   }
 

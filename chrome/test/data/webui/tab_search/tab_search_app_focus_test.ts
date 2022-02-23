@@ -5,11 +5,11 @@
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertEquals, assertGT, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {createProfileData, generateSampleDataFromSiteNames, sampleSiteNames} from './tab_search_test_data.js';
-import {assertTabItemAndNeighborsInViewBounds, disableAnimationBehavior, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
+import {createProfileData, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleTabsFromSiteNames, sampleSiteNames, sampleToken} from './tab_search_test_data.js';
+import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableAnimationBehavior, getStylePropertyPixelValue, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppFocusTest', () => {
@@ -37,6 +37,10 @@ suite('TabSearchAppFocusTest', () => {
 
   function queryRows() {
     return tabSearchApp.$.tabsList.querySelectorAll('tab-search-item');
+  }
+
+  function queryListTitle(): NodeListOf<HTMLElement> {
+    return tabSearchApp.$.tabsList.querySelectorAll('.list-section-title');
   }
 
   test('KeyNavigation', async () => {
@@ -157,5 +161,47 @@ suite('TabSearchAppFocusTest', () => {
     document.dispatchEvent(new Event('visibilitychange'));
     await flushTasks();
     assertEquals(searchInput, getDeepActiveElement());
+  });
+
+  test('Section item visible on recently closed section expand', async () => {
+    // A list height that encompasses two title items, and four open tab items,
+    // thus ensuring that on adding a recently closed item to the list, it will
+    // be outside the visible boundaries.
+    const tabItemHeight =
+        getStylePropertyPixelValue(tabSearchApp, '--mwb-item-height');
+    const titleItemHeight = getStylePropertyPixelValue(
+        tabSearchApp, '--mwb-list-section-title-height');
+    const windowHeight = (titleItemHeight * 2) + (4 * tabItemHeight);
+
+    await setupTest(createProfileData({
+      windows: [{
+        active: true,
+        height: windowHeight,
+        tabs: generateSampleTabsFromSiteNames(sampleSiteNames(4))
+      }],
+      recentlyClosedTabs: generateSampleRecentlyClosedTabs(
+          'Sample Tab', 1, sampleToken(0n, 1n)),
+      recentlyClosedSectionExpanded: false,
+    }));
+
+    const recentlyClosedTitleItem = queryListTitle()[1];
+    assertTrue(!!recentlyClosedTitleItem);
+
+    const recentlyClosedTitleExpandButton =
+        recentlyClosedTitleItem!.querySelector('cr-expand-button');
+    assertTrue(!!recentlyClosedTitleExpandButton);
+
+    // Expand the `Recently Closed` section.
+    recentlyClosedTitleExpandButton!.click();
+
+    await waitAfterNextRender(tabSearchApp);
+    const tabsDiv = tabSearchApp.$.tabsList;
+    // Assert that the tabs are in a overflowing state.
+    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+
+    // Assert the first recently closed item is in view bounds.
+    const tabItems =
+        tabSearchApp.$.tabsList.querySelectorAll('tab-search-item');
+    assertTabItemInViewBounds(tabsDiv, tabItems[4]!);
   });
 });
