@@ -3515,7 +3515,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "IOSTabGridSearch"
+                        "TabsSearch"
                     ]
                 }
             ]
