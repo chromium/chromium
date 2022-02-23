@@ -150,7 +150,7 @@ class PrivacySandboxHandlerTest : public testing::Test {
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   PrivacySandboxHandler* handler() { return handler_.get(); }
   TestingProfile* profile() { return &profile_; }
-  PrivacySandboxSettings* privacy_sandbox_settings() {
+  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
     return PrivacySandboxSettingsFactory::GetForProfile(profile());
   }
 

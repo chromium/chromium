@@ -19,7 +19,8 @@ class HostContentSettingsMap;
 
 namespace privacy_sandbox_test_util {
 
-class MockPrivacySandboxObserver : public PrivacySandboxSettings::Observer {
+class MockPrivacySandboxObserver
+    : public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   MockPrivacySandboxObserver();
   ~MockPrivacySandboxObserver();

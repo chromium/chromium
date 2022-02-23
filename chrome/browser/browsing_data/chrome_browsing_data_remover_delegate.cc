@@ -636,7 +636,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     if (filter_builder->GetMode() ==
         BrowsingDataFilterBuilder::Mode::kPreserve) {
-      PrivacySandboxSettings* privacy_sandbox_settings =
+      auto* privacy_sandbox_settings =
           PrivacySandboxSettingsFactory::GetForProfile(profile_);
       if (privacy_sandbox_settings)
         privacy_sandbox_settings->OnCookiesCleared();

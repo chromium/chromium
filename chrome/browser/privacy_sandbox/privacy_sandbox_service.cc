@@ -111,7 +111,7 @@ int GetNumberOfDaysRoundedAboveOne(base::TimeDelta time) {
 PrivacySandboxService::PrivacySandboxService() = default;
 
 PrivacySandboxService::PrivacySandboxService(
-    PrivacySandboxSettings* privacy_sandbox_settings,
+    privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     content_settings::CookieSettings* cookie_settings,
     PrefService* pref_service,
     policy::PolicyService* policy_service,

@@ -64,7 +64,7 @@ class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
     observer.BlockUntilCompletion();
   }
 
-  PrivacySandboxSettings* privacy_sandbox_settings() {
+  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
     return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   }
 

@@ -25,6 +25,8 @@ namespace url {
 class Origin;
 }
 
+namespace privacy_sandbox {
+
 // A service which acts as a intermediary between Privacy Sandbox APIs and the
 // preferences and content settings which define when they are allowed to be
 // accessed. Privacy Sandbox APIs, regardless of where they live (renderer,
@@ -178,5 +180,7 @@ class PrivacySandboxSettings : public KeyedService {
   PrefChangeRegistrar pref_change_registrar_;
   bool incognito_profile_;
 };
+
+}  // namespace privacy_sandbox
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_

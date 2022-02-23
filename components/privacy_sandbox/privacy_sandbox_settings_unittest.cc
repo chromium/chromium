@@ -20,6 +20,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+namespace privacy_sandbox {
+
 class MockPrivacySandboxDelegate : public PrivacySandboxSettings::Delegate {
  public:
   void SetupDefaultResponse() {
@@ -833,3 +835,5 @@ TEST_P(PrivacySandboxSettingsMockDelegateTest, IsPrivacySandboxRestricted) {
 INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsMockDelegateTestInstance,
                          PrivacySandboxSettingsMockDelegateTest,
                          testing::Bool());
+
+}  // namespace privacy_sandbox

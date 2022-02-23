@@ -2774,7 +2774,7 @@ bool ChromeContentBrowserClient::IsInterestGroupAPIAllowed(
     const url::Origin& api_origin) {
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  PrivacySandboxSettings* privacy_sandbox_settings =
+  auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   DCHECK(privacy_sandbox_settings);
 
@@ -2804,7 +2804,7 @@ bool ChromeContentBrowserClient::IsConversionMeasurementOperationAllowed(
     const url::Origin* reporting_origin) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  PrivacySandboxSettings* privacy_sandbox_settings =
+  auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(profile);
   if (!privacy_sandbox_settings)
     return false;

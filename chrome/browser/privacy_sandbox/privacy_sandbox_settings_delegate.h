@@ -9,7 +9,8 @@
 
 class Profile;
 
-class PrivacySandboxSettingsDelegate : public PrivacySandboxSettings::Delegate {
+class PrivacySandboxSettingsDelegate
+    : public privacy_sandbox::PrivacySandboxSettings::Delegate {
  public:
   explicit PrivacySandboxSettingsDelegate(Profile* profile);
   ~PrivacySandboxSettingsDelegate() override;

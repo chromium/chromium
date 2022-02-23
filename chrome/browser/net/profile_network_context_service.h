@@ -58,7 +58,7 @@ class ProfileNetworkContextService
     : public KeyedService,
       public content_settings::Observer,
       public content_settings::CookieSettings::Observer,
-      public PrivacySandboxSettings::Observer {
+      public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   explicit ProfileNetworkContextService(Profile* profile);
 
@@ -191,8 +191,8 @@ class ProfileNetworkContextService
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>
       cookie_settings_observation_{this};
-  base::ScopedObservation<PrivacySandboxSettings,
-                          PrivacySandboxSettings::Observer>
+  base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
+                          privacy_sandbox::PrivacySandboxSettings::Observer>
       privacy_sandbox_settings_observer_{this};
 
   // Used to post schedule CT policy updates

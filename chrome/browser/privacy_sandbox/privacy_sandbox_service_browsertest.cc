@@ -36,7 +36,7 @@ class PrivacySandboxSettingsBrowserPolicyTest : public InProcessBrowserTest {
     policy_provider()->UpdateChromePolicy(third_party_cookies_blocked_policy);
   }
 
-  PrivacySandboxSettings* privacy_sandbox_settings() {
+  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
     return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   }
 

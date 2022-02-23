@@ -661,7 +661,7 @@ class PrivacySandboxServiceTest : public testing::Test {
   PrivacySandboxService* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
   }
-  PrivacySandboxSettings* privacy_sandbox_settings() {
+  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
     return PrivacySandboxSettingsFactory::GetForProfile(profile());
   }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
