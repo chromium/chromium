@@ -555,6 +555,40 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
   mocha.run();
 });
 
+
+var CrSettingsSiteDataTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/site_data_test.js&host=webui-test';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['features::kConsolidatedSiteStorageControls']};
+  }
+};
+
+TEST_F('CrSettingsSiteDataTest', 'All', function() {
+  mocha.run();
+});
+
+var CrSettingsSiteDataDetailsSubpageTest = class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/site_data_details_subpage_tests.js&host=webui-test';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['features::kConsolidatedSiteStorageControls']};
+  }
+};
+
+TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
+  mocha.run();
+});
+
+
 [['AllSites', 'all_sites_tests.js'],
  ['AppearanceFontsPage', 'appearance_fonts_page_test.js'],
  ['AppearancePage', 'appearance_page_test.js'],
@@ -593,8 +627,6 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
  ['SecurityKeysSubpage', 'security_keys_subpage_test.js'],
  ['SecurityKeysPhonesSubpage', 'security_keys_phones_subpage_test.js'],
  ['SecureDns', 'secure_dns_test.js'],
- ['SiteData', 'site_data_test.js'],
- ['SiteDataDetails', 'site_data_details_subpage_tests.js'],
  ['SiteDetailsPermission', 'site_details_permission_tests.js'],
  ['SiteEntry', 'site_entry_tests.js'],
  ['SiteFavicon', 'site_favicon_test.js'],

@@ -24,12 +24,6 @@ suite('SiteDataTest', function() {
   let testMetricsBrowserProxy;
 
   setup(function() {
-    const routes = Router.getInstance().getRoutes();
-    routes.SITE_SETTINGS_SITE_DATA = routes.COOKIES.createChild('/siteData');
-    routes.SITE_SETTINGS_DATA_DETAILS =
-        routes.SITE_SETTINGS_SITE_DATA.createChild('/cookies/detail');
-    Router.resetInstanceForTesting(new Router(routes));
-
     Router.getInstance().navigateTo(routes.SITE_SETTINGS);
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
