@@ -80,6 +80,7 @@ constexpr char kBookmarkIconResourceName[] =
 constexpr char kCalculatorIconResourceName[] = "realbox/icons/calculator.svg";
 constexpr char kClockIconResourceName[] =
     "chrome://resources/images/icon_clock.svg";
+constexpr char kDinoIconResourceName[] = "realbox/icons/dino.svg";
 constexpr char kDriveDocsIconResourceName[] = "realbox/icons/drive_docs.svg";
 constexpr char kDriveFolderIconResourceName[] =
     "realbox/icons/drive_folder.svg";
@@ -100,10 +101,21 @@ constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
 #endif
+constexpr char kIncognitoIconResourceName[] = "realbox/icons/incognito.svg";
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
 constexpr char kPedalsIconResourceName[] =
     "chrome://theme/current-channel-logo";
 constexpr char kTrendingUpIconResourceName[] = "realbox/icons/trending_up.svg";
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kCrosShareIconResourceName[] = "realbox/icons/cros_share.svg";
+#elif BUILDFLAG(IS_MAC)
+constexpr char kMacShareIconResourceName[] = "realbox/icons/mac_share.svg";
+#elif BUILDFLAG(IS_WIN)
+constexpr char kWinShareIconResourceName[] = "realbox/icons/win_share.svg";
+#else
+constexpr char kLinuxShareIconResourceName[] = "realbox/icons/linux_share.svg";
+#endif
 
 base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
@@ -385,6 +397,9 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
 // static
 std::string RealboxHandler::PedalVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
+  if (icon.name == omnibox::kDinoIcon.name) {
+    return kDinoIconResourceName;
+  }
   if (icon.name == omnibox::kDriveFormsIcon.name) {
     return kDriveFormIconResourceName;
   }
@@ -411,9 +426,29 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
     return kGoogleGIconResourceName;
   }
 #endif
+  if (icon.name == omnibox::kIncognitoIcon.name) {
+    return kIncognitoIconResourceName;
+  }
   if (icon.name == omnibox::kPedalIcon.name) {
     return kPedalsIconResourceName;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (icon.name == omnibox::kShareIcon.name) {
+    return kCrosShareIconResourceName;
+  }
+#elif BUILDFLAG(IS_MAC)
+  if (icon.name == omnibox::kShareMacIcon.name) {
+    return kMacShareIconResourceName;
+  }
+#elif BUILDFLAG(IS_WIN)
+  if (icon.name == omnibox::kShareWinIcon.name) {
+    return kWinShareIconResourceName;
+  }
+#else
+  if (icon.name == omnibox::kSendIcon.name) {
+    return kLinuxShareIconResourceName;
+  }
+#endif
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
                   "must have an equivalent SVG resource for the NTP Realbox.";
   return "";

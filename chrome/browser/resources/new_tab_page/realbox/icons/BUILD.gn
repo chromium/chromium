@@ -11,9 +11,11 @@ generate_grd("build_grdp") {
   input_files = [
     "calculator.svg",
     "calendar.svg",
+    "cros_share.svg",
     "currency.svg",
     "default.svg",
     "definition.svg",
+    "dino.svg",
     "drive_docs.svg",
     "drive_folder.svg",
     "drive_form.svg",
@@ -25,6 +27,9 @@ generate_grd("build_grdp") {
     "extension_app.svg",
     "finance.svg",
     "google_g.svg",
+    "incognito.svg",
+    "linux_share.svg",
+    "mac_share.svg",
     "note.svg",
     "page.svg",
     "sites.svg",
@@ -32,6 +37,7 @@ generate_grd("build_grdp") {
     "translation.svg",
     "trending_up.svg",
     "when_is.svg",
+    "win_share.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
 }

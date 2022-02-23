@@ -102,9 +102,7 @@ using RealboxHandlerPedalIconTest = InProcessBrowserTest;
 
 // Tests that all Omnibox Pedal vector icons map to an equivalent SVG for use in
 // the NTP Realbox.
-// TODO(crbug.com/1287340): Re-enable this test after making sure the latest
-// Omnibox pedals have realbox couterparts.
-IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, DISABLED_PedalVectorIcons) {
+IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals =
       GetPedalImplementations(/*incognito=*/true, /*testing=*/true);
   for (auto const& it : pedals) {
