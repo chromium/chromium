@@ -1269,6 +1269,10 @@ ScriptPromise CredentialsContainer::store(ScriptState* script_state,
 
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
+
+  DCHECK_NE(mojom::blink::CredentialType::EMPTY,
+            CredentialInfo::From(credential)->type);
+
   credential_manager->Store(
       CredentialInfo::From(credential),
       WTF::Bind(&OnStoreComplete,
