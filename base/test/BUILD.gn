@@ -145,12 +145,6 @@ static_library("test_support") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  data_deps = [
-    # The isolate needs this script for setting up the test. It's not actually
-    # needed to run this target locally.
-    "//testing:test_scripts_shared",
-  ]
-
   public_deps = [
     ":test_config",
     "//base",

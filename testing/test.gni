@@ -330,6 +330,9 @@ template("test") {
       } else {
         data_deps = []
       }
+
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       if (tests_have_location_tags) {
         data = [ "//testing/location_tags.json" ]
       }
@@ -487,6 +490,8 @@ template("test") {
         data_deps = []
       }
 
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       # TODO(crbug.com/1199334): Because perfetto unit test is defined outside
       # of chromium, the dependency to the filter file is added here.
       data_deps += [ "//testing/buildbot/filters:perfetto_unittests_filters" ]
@@ -600,6 +605,8 @@ template("test") {
         data_deps = []
       }
 
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       # Include the generate_wrapper as part of data_deps
       data_deps += [ ":${_wrapper_output_name}" ]
       write_runtime_deps = _runtime_deps_file
@@ -667,10 +674,13 @@ template("test") {
       data += [ _runtime_deps_file ]
       deps += [ ":$_gen_runner_target" ]
 
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
+
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       if (use_rts) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
@@ -755,6 +765,8 @@ template("test") {
         data_deps = []
       }
 
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
       if (_use_ash_chrome && also_build_ash_chrome) {
@@ -837,10 +849,13 @@ template("test") {
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
 
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
+
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       if (use_rts) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
@@ -858,10 +873,13 @@ template("test") {
         deps = []
       }
 
+      if (!defined(data_deps)) {
+        data_deps = []
+      }
+
+      data_deps += [ "//testing:test_scripts_shared" ]
+
       if (use_rts) {
-        if (!defined(data_deps)) {
-          data_deps = []
-        }
         data_deps += [ ":${invoker.target_name}__rts_filters" ]
       }
     }
