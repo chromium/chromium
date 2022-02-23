@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "content/public/browser/web_contents_observer.h"

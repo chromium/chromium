@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 
+#include "base/timer/timer.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 
 namespace content {

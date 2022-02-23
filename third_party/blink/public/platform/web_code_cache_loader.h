@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CODE_CACHE_LOADER_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"

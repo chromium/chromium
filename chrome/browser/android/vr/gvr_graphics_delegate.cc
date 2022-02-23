@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"

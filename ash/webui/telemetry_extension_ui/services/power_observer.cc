@@ -20,8 +20,7 @@ PowerObserver::~PowerObserver() = default;
 
 void PowerObserver::AddObserver(
     mojo::PendingRemote<health::mojom::PowerObserver> observer) {
-  health::mojom::PowerObserverPtr ptr{std::move(observer)};
-  observers_.Add(ptr.PassInterface());
+  observers_.Add(std::move(observer));
 }
 
 void PowerObserver::OnAcInserted() {

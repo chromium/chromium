@@ -34,7 +34,6 @@
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom.h"
 
 using blink::mojom::IdleManagerError;
-using blink::mojom::IdleMonitorPtr;
 using blink::mojom::IdleStatePtr;
 using ::testing::_;
 using ::testing::Invoke;

@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
-#include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -301,8 +300,9 @@ class Remote {
     CHECK(!internal_state_.has_pending_callbacks());
     State state;
     internal_state_.Swap(&state);
-    InterfacePtrInfo<Interface> info = state.PassInterface();
-    return PendingRemote<Interface>(info.PassHandle(), info.version());
+    internal::PendingRemoteState pending_state = state.Unbind();
+    return PendingRemote<Interface>(std::move(pending_state.pipe),
+                                    pending_state.version);
   }
 
   // Queries the max version that the receiving endpoint supports. Once a

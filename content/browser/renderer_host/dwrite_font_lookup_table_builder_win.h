@@ -19,6 +19,7 @@
 #include "base/memory/singleton.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"

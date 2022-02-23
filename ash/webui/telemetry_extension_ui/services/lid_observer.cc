@@ -20,8 +20,7 @@ LidObserver::~LidObserver() = default;
 
 void LidObserver::AddObserver(
     mojo::PendingRemote<health::mojom::LidObserver> observer) {
-  health::mojom::LidObserverPtr ptr{std::move(observer)};
-  observers_.Add(ptr.PassInterface());
+  observers_.Add(std::move(observer));
 }
 
 void LidObserver::OnLidClosed() {

@@ -20,8 +20,7 @@ BluetoothObserver::~BluetoothObserver() = default;
 
 void BluetoothObserver::AddObserver(
     mojo::PendingRemote<health::mojom::BluetoothObserver> observer) {
-  health::mojom::BluetoothObserverPtr ptr{std::move(observer)};
-  observers_.Add(ptr.PassInterface());
+  observers_.Add(std::move(observer));
 }
 
 void BluetoothObserver::OnAdapterAdded() {

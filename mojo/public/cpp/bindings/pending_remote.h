@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
@@ -55,11 +54,6 @@ class PendingRemote {
   PendingRemote() = default;
   PendingRemote(PendingRemote&&) noexcept = default;
 
-  // Temporary helper for transitioning away from old types. Intentionally an
-  // implicit constructor.
-  PendingRemote(InterfacePtrInfo<Interface>&& ptr_info)
-      : PendingRemote(ptr_info.PassHandle(), ptr_info.version()) {}
-
   // Constructs a valid PendingRemote over a valid raw message pipe handle and
   // expected interface version number.
   PendingRemote(ScopedMessagePipeHandle pipe, uint32_t version)
@@ -92,14 +86,6 @@ class PendingRemote {
   // the entangled Receiver.
   bool is_valid() const { return state_.pipe.is_valid(); }
   explicit operator bool() const { return is_valid(); }
-
-  // Temporary helper for transitioning away from old bindings types. This is
-  // intentionally an implicit conversion.
-  operator InterfacePtrInfo<Interface>() && {
-    // |PassPipe()| invalidates all state, so capture |version()| first.
-    uint32_t version = this->version();
-    return InterfacePtrInfo<Interface>(PassPipe(), version);
-  }
 
   // Resets this PendingRemote to an invalid state. If it was entangled with a
   // Receiver or PendingReceiver, that object remains in a valid state and will

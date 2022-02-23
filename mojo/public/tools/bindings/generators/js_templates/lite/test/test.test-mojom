@@ -20,7 +20,7 @@ struct TestStruct {
   map<uint32, string> numberToStringMap;
   map<Message, array<Message>> messageToArrayMap;
   map<TestEnum, map<TestEnum, TestEnum>> enumToMapMap;
-  map<uint32, TestPage> numberToInterfaceProxyMap;
+  map<uint32, pending_remote<TestPage>> numberToInterfaceProxyMap;
 };
 
 interface TestPageHandler {

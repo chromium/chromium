@@ -7,7 +7,7 @@ struct NativeMessageResultMojo {
 };
 
 interface TestUIHandlerMojo {
-  SetClientPage(TestPage page);
+  SetClientPage(pending_remote<TestPage> page);
   HandleJsMessage(string message);
 };
 

@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
 
 namespace chromeos {

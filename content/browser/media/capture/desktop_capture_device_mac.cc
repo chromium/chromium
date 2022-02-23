@@ -7,6 +7,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 
 #include "base/threading/thread_checker.h"
+#include "base/timer/timer.h"
 #include "media/base/video_util.h"
 #include "media/capture/content/capture_resolution_chooser.h"
 #include "media/capture/video/video_capture_device.h"

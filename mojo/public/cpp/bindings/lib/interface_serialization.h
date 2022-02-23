@@ -10,7 +10,6 @@
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/interface_data_view.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/handle_serialization.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -119,49 +118,6 @@ struct Serializer<AssociatedInterfaceRequestDataView<T>,
                           ScopedInterfaceEndpointHandle* output,
                           Message* message) {
     *output = DeserializeAssociatedEndpointHandle(*input, *message);
-    return true;
-  }
-};
-
-template <typename Base, typename T>
-struct Serializer<InterfacePtrDataView<Base>, InterfacePtr<T>> {
-  static_assert(std::is_base_of<Base, T>::value, "Interface type mismatch.");
-
-  static void Serialize(InterfacePtr<T>& input,
-                        Interface_Data* output,
-                        Message* message) {
-    InterfacePtrInfo<T> info = input.PassInterface();
-    SerializeInterfaceInfo(info.PassHandle(), info.version(), *message,
-                           *output);
-  }
-
-  static bool Deserialize(Interface_Data* input,
-                          InterfacePtr<T>* output,
-                          Message* message) {
-    output->Bind(InterfacePtrInfo<T>(
-        DeserializeHandleAs<MessagePipeHandle>(input->handle, *message),
-        input->version));
-    return true;
-  }
-};
-
-template <typename Base, typename T>
-struct Serializer<InterfacePtrDataView<Base>, InterfacePtrInfo<T>> {
-  static_assert(std::is_base_of<Base, T>::value, "Interface type mismatch.");
-
-  static void Serialize(InterfacePtrInfo<T>& input,
-                        Interface_Data* output,
-                        Message* message) {
-    SerializeInterfaceInfo(input.PassHandle(), input.version(), *message,
-                           *output);
-  }
-
-  static bool Deserialize(Interface_Data* input,
-                          InterfacePtrInfo<T>* output,
-                          Message* message) {
-    *output = InterfacePtrInfo<T>(
-        DeserializeHandleAs<MessagePipeHandle>(input->handle, *message),
-        input->version);
     return true;
   }
 };

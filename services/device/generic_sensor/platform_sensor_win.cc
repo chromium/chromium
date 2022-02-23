@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 namespace device {

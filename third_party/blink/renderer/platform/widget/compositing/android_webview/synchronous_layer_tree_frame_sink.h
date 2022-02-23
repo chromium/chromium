@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-forward.h"
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_compositor_registry.h"
@@ -170,7 +171,7 @@ class SynchronousLayerTreeFrameSink
       unbound_compositor_frame_sink_;
   mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSinkClient>
       unbound_client_;
-  viz::mojom::blink::CompositorFrameSinkPtr compositor_frame_sink_;
+  mojo::Remote<viz::mojom::blink::CompositorFrameSink> compositor_frame_sink_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> client_receiver_{
       this};
   viz::LocalSurfaceId local_surface_id_;

@@ -150,8 +150,6 @@ component("bindings") {
     "generic_pending_receiver.h",
     "interface_endpoint_client.h",
     "interface_endpoint_controller.h",
-    "interface_ptr.h",
-    "interface_ptr_info.h",
     "lib/associated_interface_ptr_state.cc",
     "lib/associated_interface_ptr_state.h",
     "lib/associated_receiver.cc",

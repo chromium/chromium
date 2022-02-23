@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom.h"

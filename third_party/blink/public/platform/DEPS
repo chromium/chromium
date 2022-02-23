@@ -18,6 +18,7 @@ include_rules = [
     "+base/task/single_thread_task_runner.h",
     "+base/strings",
     "+base/synchronization/lock.h",
+    "+base/synchronization/waitable_event.h",
     "+base/threading/platform_thread.h",
     "+base/threading/thread.h",
     "+base/threading/thread_checker.h",

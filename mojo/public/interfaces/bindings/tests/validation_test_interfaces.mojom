@@ -91,8 +91,8 @@ interface ConformanceTestInterface {
   Method10(map<string, uint8> param0);
   Method11(StructG param0);
   Method12(float param0) => (float param0);
-  Method13(InterfaceA? param0, uint32 param1,
-           InterfaceA? param2);
+  Method13(pending_remote<InterfaceA>? param0, uint32 param1,
+           pending_remote<InterfaceA>? param2);
   Method14(EnumA param0, EnumB param1);
   Method15(array<EnumA>? param0, array<EnumB>? param1);
   Method16(map<EnumA, EnumA>? param0);

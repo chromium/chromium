@@ -20,7 +20,9 @@
 #include "ios/web/test/mojo_test.mojom.h"
 #include "ios/web/test/test_url_constants.h"
 #import "ios/web/test/web_int_test.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -56,7 +58,9 @@ class TestUIHandler : public TestUIHandlerMojo {
   bool IsFinReceived() { return fin_received_; }
 
   // TestUIHandlerMojo overrides.
-  void SetClientPage(TestPagePtr page) override { page_ = std::move(page); }
+  void SetClientPage(mojo::PendingRemote<TestPage> page) override {
+    page_.Bind(std::move(page));
+  }
   void HandleJsMessage(const std::string& message) override {
     if (message == "syn") {
       // Received "syn" message from WebUI page, send "ack" as reply.
@@ -82,7 +86,7 @@ class TestUIHandler : public TestUIHandlerMojo {
 
  private:
   mojo::ReceiverSet<TestUIHandlerMojo> receivers_;
-  TestPagePtr page_ = nullptr;
+  mojo::Remote<TestPage> page_;
   // |true| if "syn" has been received.
   bool syn_received_ = false;
   // |true| if "fin" has been received.

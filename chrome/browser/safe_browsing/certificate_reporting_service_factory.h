@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/time/time.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

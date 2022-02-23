@@ -67,6 +67,10 @@ void InterfacePtrStateBase::Bind(
       GetTaskRunnerToUseFromUserProvidedTaskRunner(std::move(task_runner));
 }
 
+PendingRemoteState InterfacePtrStateBase::Unbind() {
+  return PendingRemoteState(PassMessagePipe(), version());
+}
+
 void InterfacePtrStateBase::OnQueryVersion(
     base::OnceCallback<void(uint32_t)> callback,
     uint32_t version) {

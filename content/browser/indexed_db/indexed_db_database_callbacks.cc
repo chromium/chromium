@@ -15,8 +15,6 @@
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-using blink::mojom::IDBDatabaseCallbacksAssociatedPtrInfo;
-
 namespace content {
 
 IndexedDBDatabaseCallbacks::IndexedDBDatabaseCallbacks(

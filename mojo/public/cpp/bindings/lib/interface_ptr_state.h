@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
-#include "mojo/public/cpp/bindings/interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
@@ -90,6 +89,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfacePtrStateBase {
   void Swap(InterfacePtrStateBase* other);
   void Bind(PendingRemoteState* remote_state,
             scoped_refptr<base::SequencedTaskRunner> task_runner);
+  PendingRemoteState Unbind();
 
   ScopedMessagePipeHandle PassMessagePipe() {
     endpoint_client_.reset();
@@ -195,9 +195,9 @@ class InterfacePtrState : public InterfacePtrStateBase {
 
   // After this method is called, the object is in an invalid state and
   // shouldn't be reused.
-  InterfacePtrInfo<Interface> PassInterface() {
+  PendingRemoteState Unbind() {
     proxy_.reset();
-    return InterfacePtrInfo<Interface>(PassMessagePipe(), version());
+    return InterfacePtrStateBase::Unbind();
   }
 
   void set_connection_error_handler(base::OnceClosure error_handler) {
