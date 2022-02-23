@@ -1489,7 +1489,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
       *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle(),
       WasViewportResized(), state.AffectsCompositorSnapshots());
   CSSAnimations::SnapshotCompositorKeyframes(
-      element, state.AnimationUpdate(),
+      *animating_element, state.AnimationUpdate(),
       *state.StyleRef().GetBaseComputedStyle(), state.ParentStyle());
   CSSAnimations::UpdateAnimationFlags(
       *animating_element, state.AnimationUpdate(), state.StyleRef());

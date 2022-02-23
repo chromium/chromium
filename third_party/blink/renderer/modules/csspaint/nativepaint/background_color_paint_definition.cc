@@ -120,13 +120,6 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
   return true;
 }
 
-void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
-                                 Vector<double>* offsets) {
-  const CompositorKeyframeDouble& value =
-      To<CompositorKeyframeDouble>(*(frame->GetCompositorKeyframeValue()));
-  offsets->push_back(value.ToDouble());
-}
-
 bool GetBGColorPaintWorkletParamsInternal(
     Element* element,
     Vector<Color>* animated_colors,
@@ -145,7 +138,7 @@ bool GetBGColorPaintWorkletParamsInternal(
   for (const auto& frame : *frames) {
     if (!GetColorsFromKeyframe(frame, model, animated_colors, element))
       return false;
-    GetCompositorKeyframeOffset(frame, offsets);
+    offsets->push_back(frame->Offset());
   }
   *progress = compositable_animation->effect()->Progress();
   return true;
