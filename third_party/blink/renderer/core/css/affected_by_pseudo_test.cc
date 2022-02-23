@@ -26,6 +26,17 @@ class AffectedByPseudoTest : public PageTestBase {
   void SetHtmlInnerHTML(const char* html_content);
   void CheckElementsForFocus(ElementResult expected[],
                              unsigned expected_count) const;
+
+  enum AffectedByFlagName {
+    kAffectedBySubjectHas,
+    kAffectedByNonSubjectHas,
+    kAncestorsAffectedByHas,
+    kAffectedByPseudoInSubjectHas,
+    kAncestorsAffectedByHoverInSubjectHas
+  };
+  void CheckAffectedByFlagsForHas(
+      const char* element_id,
+      std::map<AffectedByFlagName, bool> expected) const;
 };
 
 void AffectedByPseudoTest::SetHtmlInnerHTML(const char* html_content) {
@@ -49,6 +60,50 @@ void AffectedByPseudoTest::CheckElementsForFocus(
 
   DCHECK(!element);
   DCHECK_EQ(i, expected_count);
+}
+
+void AffectedByPseudoTest::CheckAffectedByFlagsForHas(
+    const char* element_id,
+    std::map<AffectedByFlagName, bool> expected) const {
+  bool actual;
+  const char* flag_name = nullptr;
+  for (auto iter : expected) {
+    switch (iter.first) {
+      case kAffectedBySubjectHas:
+        actual = GetElementById(element_id)
+                     ->GetComputedStyle()
+                     ->AffectedBySubjectHas();
+        flag_name = "AffectedBySubjectHas";
+        break;
+      case kAffectedByNonSubjectHas:
+        actual = GetElementById(element_id)->AffectedByNonSubjectHas();
+        flag_name = "AffectedByNonSubjectHas";
+        break;
+      case kAncestorsAffectedByHas:
+        actual = GetElementById(element_id)->AncestorsAffectedByHas();
+        flag_name = "AncestorsAffectedByHas";
+        break;
+      case kAffectedByPseudoInSubjectHas:
+        actual = GetElementById(element_id)
+                     ->GetComputedStyle()
+                     ->AffectedByPseudoInSubjectHas();
+        flag_name = "AffectedByPseudoInSubjectHas";
+        break;
+      case kAncestorsAffectedByHoverInSubjectHas:
+        actual = GetElementById(element_id)
+                     ->GetComputedStyle()
+                     ->AncestorsAffectedByHoverInSubjectHas();
+        flag_name = "AncestorsAffectedByHoverInSubjectHas";
+        break;
+    }
+    DCHECK(flag_name);
+    if (iter.second == actual)
+      continue;
+
+    ADD_FAILURE() << "#" << element_id << " : " << flag_name << " should be "
+                  << (iter.second ? "true" : "false") << " but "
+                  << (actual ? "true" : "false");
+  }
 }
 
 // ":focus div" will mark ascendants of all divs with
@@ -328,7 +383,7 @@ TEST_F(AffectedByPseudoTest, HoverScrollbar) {
   EXPECT_FALSE(GetElementById("div1")->GetComputedStyle()->AffectedByHover());
 }
 
-TEST_F(AffectedByPseudoTest, AffectedByHasAndAncestorsAffectedByHas) {
+TEST_F(AffectedByPseudoTest, AffectedBySubjectHasAndAncestorsAffectedByHas) {
   SetHtmlInnerHTML(R"HTML(
     <style>.a:has(.b) { background-color: lime; }</style>
     <div id=div1>
@@ -348,36 +403,26 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAndAncestorsAffectedByHas) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(
-      GetElementById("div1")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div1")->AncestorsAffectedByHas());
-  EXPECT_TRUE(
-      GetElementById("div2")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div2")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div3")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_TRUE(GetElementById("div3")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div4")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_TRUE(GetElementById("div4")->AncestorsAffectedByHas());
-  EXPECT_TRUE(
-      GetElementById("div5")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div5")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div6")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div6")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div7")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_TRUE(GetElementById("div7")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div8")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div8")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div9")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div9")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div10")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div10")->AncestorsAffectedByHas());
+  CheckAffectedByFlagsForHas("div1", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div2", {{kAffectedBySubjectHas, true},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div3", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div4", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div5", {{kAffectedBySubjectHas, true},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div6", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div7", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div8", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div9", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div10", {{kAffectedBySubjectHas, false},
+                                       {kAncestorsAffectedByHas, false}});
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div10")->setAttribute(html_names::kClassAttr, "b");
@@ -410,15 +455,12 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAndAncestorsAffectedByHas) {
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  EXPECT_TRUE(
-      GetElementById("div5")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_FALSE(GetElementById("div5")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div6")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_TRUE(GetElementById("div6")->AncestorsAffectedByHas());
-  EXPECT_FALSE(
-      GetElementById("div7")->GetComputedStyle()->AffectedBySubjectHas());
-  EXPECT_TRUE(GetElementById("div7")->AncestorsAffectedByHas());
+  CheckAffectedByFlagsForHas("div5", {{kAffectedBySubjectHas, true},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div6", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div7", {{kAffectedBySubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
 }
 
 TEST_F(AffectedByPseudoTest,
@@ -450,78 +492,42 @@ TEST_F(AffectedByPseudoTest,
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div2")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_TRUE(GetElementById("div5")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div5")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div6")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div6")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div7")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div7")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_TRUE(GetElementById("div8")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div8")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div9")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div9")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div10")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div10")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div11")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div11")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div12")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div12")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div13")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div13")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
+  CheckAffectedByFlagsForHas("div2",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div3",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div4",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div5",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div6",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div7",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div8",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div9",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div10",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div11",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div12",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div13",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div3")->SetHovered(true);
@@ -546,24 +552,15 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(3U, element_count);
 
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div3")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div4")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
+  CheckAffectedByFlagsForHas("div2",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div3",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div4",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div3")->setAttribute(html_names::kClassAttr, "b");
@@ -571,24 +568,15 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div3")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div4")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
+  CheckAffectedByFlagsForHas("div2",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div3",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div4",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div3")->SetHovered(true);
@@ -612,24 +600,15 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div3")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_TRUE(GetElementById("div4")
-                  ->GetComputedStyle()
-                  ->AncestorsAffectedByHoverInSubjectHas());
+  CheckAffectedByFlagsForHas("div2",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div3",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
+  CheckAffectedByFlagsForHas("div4",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div4")->setAttribute(html_names::kClassAttr, "");
@@ -637,24 +616,15 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(3U, element_count);
 
-  EXPECT_TRUE(GetElementById("div2")
-                  ->GetComputedStyle()
-                  ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div2")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AffectedByPseudoInSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")
-                   ->GetComputedStyle()
-                   ->AncestorsAffectedByHoverInSubjectHas());
+  CheckAffectedByFlagsForHas("div2",
+                             {{kAffectedByPseudoInSubjectHas, true},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div3",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
+  CheckAffectedByFlagsForHas("div4",
+                             {{kAffectedByPseudoInSubjectHas, false},
+                              {kAncestorsAffectedByHoverInSubjectHas, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div6")->SetHovered(true);
@@ -723,20 +693,20 @@ TEST_F(AffectedByPseudoTest,
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(GetElementById("div1")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div1")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div2")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div2")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div3")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div3")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div4")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div5")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div5")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div6")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div6")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div7")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div7")->AncestorsAffectedByHas());
+  CheckAffectedByFlagsForHas("div1", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div2", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div3", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div4", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div5", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div6", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div7", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div7")->setAttribute(html_names::kClassAttr, "c");
@@ -745,20 +715,20 @@ TEST_F(AffectedByPseudoTest,
       GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  EXPECT_FALSE(GetElementById("div1")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div1")->AncestorsAffectedByHas());
-  EXPECT_TRUE(GetElementById("div2")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div2")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div3")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div3")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div4")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div4")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div5")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div5")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div6")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div6")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div7")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div7")->AncestorsAffectedByHas());
+  CheckAffectedByFlagsForHas("div1", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div2", {{kAffectedByNonSubjectHas, true},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div3", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div4", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div5", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div6", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div7", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div6")->setAttribute(html_names::kClassAttr, "");
@@ -766,20 +736,20 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  EXPECT_FALSE(GetElementById("div1")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div1")->AncestorsAffectedByHas());
-  EXPECT_TRUE(GetElementById("div2")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div2")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div3")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div3")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div4")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div4")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div5")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div5")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div6")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div6")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div7")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div7")->AncestorsAffectedByHas());
+  CheckAffectedByFlagsForHas("div1", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div2", {{kAffectedByNonSubjectHas, true},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div3", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div4", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div5", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div6", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div7", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetElementById("div5")->setAttribute(html_names::kClassAttr, "b");
@@ -787,20 +757,20 @@ TEST_F(AffectedByPseudoTest,
   element_count = GetStyleEngine().StyleForElementCount() - start_count;
   ASSERT_EQ(1U, element_count);
 
-  EXPECT_FALSE(GetElementById("div1")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div1")->AncestorsAffectedByHas());
-  EXPECT_TRUE(GetElementById("div2")->AffectedByNonSubjectHas());
-  EXPECT_FALSE(GetElementById("div2")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div3")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div3")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div4")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div4")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div5")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div5")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div6")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div6")->AncestorsAffectedByHas());
-  EXPECT_FALSE(GetElementById("div7")->AffectedByNonSubjectHas());
-  EXPECT_TRUE(GetElementById("div7")->AncestorsAffectedByHas());
+  CheckAffectedByFlagsForHas("div1", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div2", {{kAffectedByNonSubjectHas, true},
+                                      {kAncestorsAffectedByHas, false}});
+  CheckAffectedByFlagsForHas("div3", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div4", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div5", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div6", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
+  CheckAffectedByFlagsForHas("div7", {{kAffectedByNonSubjectHas, false},
+                                      {kAncestorsAffectedByHas, true}});
 }
 
 }  // namespace blink
