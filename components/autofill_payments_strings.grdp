@@ -539,6 +539,9 @@
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL" desc="Accept enrolling card as a virtual card." formatter_data="android_java">
       Yes
   </message>
+  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL" desc="Title encouraging users to enroll their card to VCN." formatter_data="android_java">
+      Make it more secure with a virtual card?
+  </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_ISSUER_CONFIRMATION_TEXT" desc="The issuer confirmation text shown in the Autofill card unmask authentication selection dialog on Desktop. This is the header text of the dialog, and it is the text stating that the issuer wants additional authentication. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
       Your bank wants to confirm it's you.
   </message>
@@ -598,9 +601,6 @@
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_NUMBER_SWITCH_LABEL" desc="The text shown as the label for virtual card enrollment switch in the server card edit page." formatter_data="android_java">
     Virtual card
-  </message>
-  <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL" desc="Title encouraging users to enroll their card to VCN.">
-    Make it more secure with a virtual card?
   </message>
   <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL" desc="Text explaining the benefit of enrolling a credit card as a virtual card. Also contains a link to learn more about virtual cards from IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL.">
     A virtual card disguises your actual card to help protect you from potential fraud. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL">$1<ex>Learn about virtual cards</ex></ph>

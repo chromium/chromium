@@ -79,15 +79,14 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 assert mDelegate
                         != null
                     : "mDelegate must be initialized before making (un)enrolment calls.";
+                final ModalDialogManager modalDialogManager = new ModalDialogManager(
+                        new AppModalPresenter(getActivity()), ModalDialogType.APP);
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
-                    // TODO (crbug/1281695): Implement enroll dialog.
-                    mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId());
-
-                    // Change button label and behavior to Unenroll.
-                    setVirtualCardEnrollmentButtonLabel(true);
+                    mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId(),
+                            result -> showVirtualCardEnrollmentDialog(result, modalDialogManager));
+                    // Disable the button until we receive a response from the server.
+                    mVirtualCardEnrollmentButton.setEnabled(false);
                 } else {
-                    final ModalDialogManager modalDialogManager = new ModalDialogManager(
-                            new AppModalPresenter(getActivity()), ModalDialogType.APP);
                     AutofillVirtualCardUnenrollmentDialog dialog =
                             new AutofillVirtualCardUnenrollmentDialog(
                                     getActivity(), modalDialogManager, unenrollRequested -> {
@@ -134,6 +133,26 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         }
     }
 
+    private void showVirtualCardEnrollmentDialog(
+            VirtualCardEnrollmentFields virtualCardEnrollmentFields,
+            ModalDialogManager modalDialogManager) {
+        AutofillVirtualCardEnrollmentDialog dialog =
+                new AutofillVirtualCardEnrollmentDialog(getActivity(), modalDialogManager,
+                        virtualCardEnrollmentFields, (positiveButtonClicked) -> {
+                            if (positiveButtonClicked) {
+                                // Silently enroll the virtual card.
+                                mDelegate.enrollOfferedVirtualCard();
+                                // Update the button label to allow un-enroll.
+                                setVirtualCardEnrollmentButtonLabel(true);
+                            } else {
+                                // Since the user canceled the enrollment dialog, enable the button
+                                // again to allow for enrollment.
+                                mVirtualCardEnrollmentButton.setEnabled(true);
+                            }
+                        });
+        dialog.show();
+    }
+
     private void removeLocalCopyViews() {
         ViewGroup parent = (ViewGroup) mClearLocalCopy.getParent();
         if (parent == null) return;
@@ -155,6 +174,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
      */
     private void setVirtualCardEnrollmentButtonLabel(boolean isEnrolled) {
         mVirtualCardEnrollmentButtonShowsUnenroll = isEnrolled;
+        mVirtualCardEnrollmentButton.setEnabled(true);
         mVirtualCardEnrollmentButton.setText(
                 mVirtualCardEnrollmentButtonShowsUnenroll ? R.string.remove : R.string.add);
     }

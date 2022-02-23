@@ -158,6 +158,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/settings/AutofillVirtualCardUnenrollmentDialog.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/CardEditor.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/CreditCardNumberFormattingTextWatcher.java",
+  "java/src/org/chromium/chrome/browser/autofill/settings/VirtualCardEnrollmentFields.java",
   "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantPreferenceFragment.java",
   "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTask.java",
   "java/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskScheduler.java",

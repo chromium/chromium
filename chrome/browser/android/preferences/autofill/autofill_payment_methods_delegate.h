@@ -10,8 +10,12 @@
 
 #include "build/build_config.h"
 
+#include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+
+using base::android::JavaParamRef;
 
 class Profile;
 
@@ -40,8 +44,11 @@ class AutofillPaymentMethodsDelegate {
   void Cleanup(JNIEnv* env);
 
   // Trigger enrollment/unenrollment action.
-  void OfferVirtualCardEnrollment(JNIEnv* env, int64_t instrumentId);
-  void UnenrollVirtualCard(JNIEnv* env, int64_t instrumentId);
+  void OfferVirtualCardEnrollment(JNIEnv* env,
+                                  int64_t instrument_id,
+                                  const JavaParamRef<jobject>& jcallback);
+  void EnrollOfferedVirtualCard(JNIEnv* env);
+  void UnenrollVirtualCard(JNIEnv* env, int64_t instrument_id);
 
  private:
   raw_ptr<Profile> profile_;                            // weak reference
