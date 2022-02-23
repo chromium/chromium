@@ -107,16 +107,16 @@ PrivacySandboxSettings::PrivacySandboxSettings(
 
 PrivacySandboxSettings::~PrivacySandboxSettings() = default;
 
-bool PrivacySandboxSettings::IsFlocAllowed() const {
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled) &&
-         IsPrivacySandboxEnabled();
+bool PrivacySandboxSettings::IsTopicsAllowed() const {
+  return IsPrivacySandboxEnabled();
 }
 
-bool PrivacySandboxSettings::IsFlocAllowedForContext(
+bool PrivacySandboxSettings::IsTopicsAllowedForContext(
     const GURL& url,
     const absl::optional<url::Origin>& top_frame_origin) const {
-  // If FLoC is disabled completely, it is not available in any context.
-  if (!IsFlocAllowed())
+  // If the Topics API is disabled completely, it is not available in any
+  // context.
+  if (!IsTopicsAllowed())
     return false;
 
   ContentSettingsForOneType cookie_settings;
@@ -126,17 +126,9 @@ bool PrivacySandboxSettings::IsFlocAllowedForContext(
                                            cookie_settings);
 }
 
-base::Time PrivacySandboxSettings::FlocDataAccessibleSince() const {
-  return pref_service_->GetTime(prefs::kPrivacySandboxFlocDataAccessibleSince);
-}
-
-void PrivacySandboxSettings::SetFlocDataAccessibleFromNow(
-    bool reset_calculate_timer) const {
-  pref_service_->SetTime(prefs::kPrivacySandboxFlocDataAccessibleSince,
-                         base::Time::Now());
-
-  for (auto& observer : observers_)
-    observer.OnFlocDataAccessibleSinceUpdated(reset_calculate_timer);
+base::Time PrivacySandboxSettings::TopicsDataAccessibleSince() const {
+  return pref_service_->GetTime(
+      prefs::kPrivacySandboxTopicsDataAccessibleSince);
 }
 
 bool PrivacySandboxSettings::IsConversionMeasurementAllowed(
@@ -340,7 +332,7 @@ bool PrivacySandboxSettings::IsPrivacySandboxRestricted() {
 }
 
 void PrivacySandboxSettings::OnCookiesCleared() {
-  SetFlocDataAccessibleFromNow(/*reset_calculate_timer=*/false);
+  SetTopicsDataAccessibleFromNow();
 }
 
 void PrivacySandboxSettings::OnPrivacySandboxPrefChanged() {
@@ -374,6 +366,14 @@ bool PrivacySandboxSettings::IsPrivacySandboxEnabledForContext(
   return !HasNonDefaultBlockSetting(
       cookie_settings, url,
       top_frame_origin ? top_frame_origin->GetURL() : GURL());
+}
+
+void PrivacySandboxSettings::SetTopicsDataAccessibleFromNow() const {
+  pref_service_->SetTime(prefs::kPrivacySandboxTopicsDataAccessibleSince,
+                         base::Time::Now());
+
+  for (auto& observer : observers_)
+    observer.OnTopicsDataAccessibleSinceUpdated();
 }
 
 }  // namespace privacy_sandbox

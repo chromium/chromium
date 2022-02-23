@@ -177,16 +177,10 @@ TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
 }
 
 TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
-  // Observers of the PrivacySandboxSettings service should be informed that
-  // the FLoC ID was reset.
-  privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
-  privacy_sandbox_settings()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
-
   base::Value args(base::Value::Type::LIST);
   handler()->HandleResetFlocId(args.GetListDeprecated());
 
-  // Resetting the FLoC ID should also fire the appropriate WebUI listener.
+  // Resetting the FLoC ID should fire the appropriate WebUI listener.
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
   EXPECT_EQ("floc-id-changed", data.arg1()->GetString());

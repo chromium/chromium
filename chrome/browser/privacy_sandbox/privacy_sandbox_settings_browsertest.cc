@@ -78,38 +78,38 @@ class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
 };
 
 // Test that cookie clearings triggered by "Clear browsing data" will trigger
-// an update to floc-data-accessible-since and invoke the corresponding observer
-// method.
+// an update to topics-data-accessible-since and invoke the corresponding
+// observer method.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest, ClearAllCookies) {
   EXPECT_EQ(base::Time(),
-            privacy_sandbox_settings()->FlocDataAccessibleSince());
+            privacy_sandbox_settings()->TopicsDataAccessibleSince());
 
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(false));
+  EXPECT_CALL(observer, OnTopicsDataAccessibleSinceUpdated());
 
   ClearAllCookies();
 
   EXPECT_NE(base::Time(),
-            privacy_sandbox_settings()->FlocDataAccessibleSince());
+            privacy_sandbox_settings()->TopicsDataAccessibleSince());
 }
 
 // Test that cookie clearings triggered by Clear-Site-Data header won't trigger
-// an update to floc-data-accessible-since or invoke the corresponding observer
-// method.
+// an update to topics-data-accessible-since or invoke the corresponding
+// observer method.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsBrowserTest,
                        ClearSiteDataCookies) {
   EXPECT_EQ(base::Time(),
-            privacy_sandbox_settings()->FlocDataAccessibleSince());
+            privacy_sandbox_settings()->TopicsDataAccessibleSince());
 
   privacy_sandbox_test_util::MockPrivacySandboxObserver observer;
   privacy_sandbox_settings()->AddObserver(&observer);
-  EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(testing::_)).Times(0);
+  EXPECT_CALL(observer, OnTopicsDataAccessibleSinceUpdated()).Times(0);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       https_server_.GetURL("a.test", "/clear_site_data_header_cookies")));
 
   EXPECT_EQ(base::Time(),
-            privacy_sandbox_settings()->FlocDataAccessibleSince());
+            privacy_sandbox_settings()->TopicsDataAccessibleSince());
 }

@@ -195,23 +195,27 @@ void PrivacySandboxService::DialogActionOccurred(
 }
 
 std::u16string PrivacySandboxService::GetFlocDescriptionForDisplay() const {
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
   return l10n_util::GetPluralStringFUTF16(
       IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
       GetNumberOfDaysRoundedAboveOne(base::Days(7)));
 }
 
 std::u16string PrivacySandboxService::GetFlocIdForDisplay() const {
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
   return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_INVALID);
 }
 
 std::u16string PrivacySandboxService::GetFlocIdNextUpdateForDisplay(
     const base::Time& current_time) {
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
   return l10n_util::GetStringUTF16(
       IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID);
 }
 
 std::u16string PrivacySandboxService::GetFlocResetExplanationForDisplay()
     const {
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
   return l10n_util::GetPluralStringFUTF16(
       IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION,
       GetNumberOfDaysRoundedAboveOne(base::Days(7)));
@@ -219,32 +223,31 @@ std::u16string PrivacySandboxService::GetFlocResetExplanationForDisplay()
 
 std::u16string PrivacySandboxService::GetFlocStatusForDisplay() const {
   // FLoC always disabled while OT not active.
-  // TODO(crbug.com/1287951): Perform cleanup / adjustment as required.
+  // TODO(crbug.com/1299720): Perform cleanup / adjustment as required.
   return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE);
 }
 
 bool PrivacySandboxService::IsFlocIdResettable() const {
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
   return false;
 }
 
 void PrivacySandboxService::ResetFlocId(bool user_initiated) const {
-  privacy_sandbox_settings_->SetFlocDataAccessibleFromNow(
-      /*reset_calculate_timer=*/true);
-  if (user_initiated) {
-    base::RecordAction(
-        base::UserMetricsAction("Settings.PrivacySandbox.ResetFloc"));
-  }
+  // This function is left as a non-functional stub to support UI code for the
+  // removed FLoC feature. The UI should not allow the user to perform this
+  // action (see IsFlocIdResettable() definition)
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
+  return;
 }
 
 bool PrivacySandboxService::IsFlocPrefEnabled() const {
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxFlocEnabled);
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
+  return false;
 }
 
 void PrivacySandboxService::SetFlocPrefEnabled(bool enabled) const {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxFlocEnabled, enabled);
-  base::RecordAction(base::UserMetricsAction(
-      enabled ? "Settings.PrivacySandbox.FlocEnabled"
-              : "Settings.PrivacySandbox.FlocDisabled"));
+  // TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
+  return;
 }
 
 bool PrivacySandboxService::IsPrivacySandboxEnabled() {

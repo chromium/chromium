@@ -38,7 +38,7 @@ class PrivacySandboxSettings : public KeyedService {
  public:
   class Observer {
    public:
-    virtual void OnFlocDataAccessibleSinceUpdated(bool reset_compute_timer) {}
+    virtual void OnTopicsDataAccessibleSinceUpdated() {}
 
     virtual void OnTrustTokenBlockingChanged(bool blocked) {}
   };
@@ -62,29 +62,25 @@ class PrivacySandboxSettings : public KeyedService {
       bool incognito_profile);
   ~PrivacySandboxSettings() override;
 
-  // Returns whether FLoC is allowed at all. If false, FLoC calculations should
-  // not occur. If true, the more specific function, IsFlocAllowedForContext(),
-  // should be consulted for the relevant context.
-  bool IsFlocAllowed() const;
+  // Returns whether the Topics API is allowed at all. If false, Topics API
+  // calculations should not occur. If true, the more specific function,
+  // IsTopicsApiAllowedForContext(), should be consulted for the relevant
+  // context.
+  bool IsTopicsAllowed() const;
 
-  // Determines whether FLoC is allowable in a particular context.
+  // Determines whether the Topics API is allowable in a particular context.
   // |top_frame_origin| is used to check for content settings which could both
   // affect 1P and 3P contexts.
-  bool IsFlocAllowedForContext(
+  bool IsTopicsAllowedForContext(
       const GURL& url,
       const absl::optional<url::Origin>& top_frame_origin) const;
 
   // Returns the point in time from which history is eligible to be used when
-  // calculating a user's FLoC ID. Reset when a user clears all cookies, or
-  // when the browser restarts with "Clear on exit" enabled. The returned time
-  // will have been fuzzed for local privacy, and so may be in the future, in
-  // which case no history is eligible.
-  base::Time FlocDataAccessibleSince() const;
-
-  // Sets the time when history is accessible for FLoC calculation to the
-  // current time, optionally resetting the time to the next FLoC id calculation
-  // if |reset_calculate_timer| is true.
-  void SetFlocDataAccessibleFromNow(bool reset_calculate_timer) const;
+  // calculating a user's Topics API topics. Reset when a user clears all
+  // cookies, or when the browser restarts with "Clear on exit" enabled. The
+  // returned time will have been fuzzed for local privacy, and so may be in the
+  // future, in which case no history is eligible.
+  base::Time TopicsDataAccessibleSince() const;
 
   // Determines whether Conversion Measurement is allowable in a particular
   // context. Should be called at both impression & conversion. At each of these
@@ -173,6 +169,8 @@ class PrivacySandboxSettings : public KeyedService {
       const GURL& url,
       const absl::optional<url::Origin>& top_frame_origin,
       const ContentSettingsForOneType& cookie_settings) const;
+
+  void SetTopicsDataAccessibleFromNow() const;
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
