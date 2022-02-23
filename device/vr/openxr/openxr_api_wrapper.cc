@@ -180,16 +180,20 @@ void OpenXrApiWrapper::Uninitialize() {
     xrDestroySession(session_);
   }
 
-  if (on_session_ended_callback_) {
-    on_session_ended_callback_.Run();
-  }
-
   if (test_hook_)
     test_hook_->DetachCurrentThread();
 
   Reset();
   session_running_ = false;
   pending_frame_ = false;
+
+  // This callback must be called at the end of this function because the
+  // callback destroys this OpenXrApiWrapper object.
+  // TOOD(crbug.com/1300244) will improve lifetime and ownership so that the
+  // order of this callback does not matter.
+  if (on_session_ended_callback_) {
+    on_session_ended_callback_.Run();
+  }
 }
 
 bool OpenXrApiWrapper::HasInstance() const {
