@@ -17,10 +17,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -61,6 +64,9 @@ public class TabViewAndroidDelegateTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, false);
+        FeatureList.setTestValues(testValues);
         mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mContentView);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
     }

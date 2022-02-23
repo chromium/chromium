@@ -41,7 +41,7 @@ public class FeatureList {
         }
 
         /**
-         * Add an override for a field trial parameter.
+         * Add an override for a feature flag.
          */
         public void addFeatureFlagOverride(String featureName, boolean testValue) {
             mFeatureFlags.put(featureName, testValue);

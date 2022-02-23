@@ -47,10 +47,11 @@ public class DropDataContentProvider extends ContentProvider {
         }
     }
 
+    public static final int DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS = 60_000;
+
     private static final String[] COLUMNS = {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
     private static final String URI_AUTHORITY_SUFFIX = ".DropDataProvider";
-    // Needed by DropDataContentProviderTest.
-    protected static final int CLEAR_CACHED_DATA_INTERVAL_MS = 60000;
+    private static int sClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
     private static byte[] sImageBytes;
     private static String sEncodingFormat;
     /** The URI handled by this content provider. */
@@ -58,6 +59,13 @@ public class DropDataContentProvider extends ContentProvider {
     private static String sTimestamp;
     private static Handler sHandler;
     private DropPipeDataWriter mDropPipeDataWriter;
+
+    /**
+     * Update the delayed time before clearing the image cache.
+     */
+    public static void setClearCachedDataIntervalMs(int milliseconds) {
+        sClearCachedDataIntervalMs = milliseconds;
+    }
 
     /**
      * Cache the passed-in image data of Drag and Drop.
@@ -104,7 +112,7 @@ public class DropDataContentProvider extends ContentProvider {
         if (sHandler == null) {
             sHandler = new Handler(Looper.getMainLooper());
         }
-        sHandler.postDelayed(DropDataContentProvider::clearCache, CLEAR_CACHED_DATA_INTERVAL_MS);
+        sHandler.postDelayed(DropDataContentProvider::clearCache, sClearCachedDataIntervalMs);
     }
 
     /**

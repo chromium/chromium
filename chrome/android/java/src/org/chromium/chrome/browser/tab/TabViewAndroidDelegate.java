@@ -11,8 +11,11 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderWidgetHostView;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.DragStateTracker;
+import org.chromium.ui.base.DropDataContentProvider;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -20,6 +23,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Implementation of the abstract class {@link ViewAndroidDelegate} for Chrome.
  */
 public class TabViewAndroidDelegate extends ViewAndroidDelegate {
+    private static final String PARAM_CLEAR_CACHE_DELAYED_MS = "ClearCacheDelayedMs";
     private final TabImpl mTab;
 
     /**
@@ -35,6 +39,12 @@ public class TabViewAndroidDelegate extends ViewAndroidDelegate {
         super(containerView);
         mTab = (TabImpl) tab;
         containerView.addOnDragListener(getDragStateTrackerInternal());
+        if (ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)) {
+            int delay = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, PARAM_CLEAR_CACHE_DELAYED_MS,
+                    DropDataContentProvider.DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS);
+            DropDataContentProvider.setClearCachedDataIntervalMs(delay);
+        }
 
         Callback<Integer> insetObserver = (inset) -> updateInsetViewportBottom();
         mCurrentInsetSupplier = tab.getWindowAndroid().getApplicationBottomInsetProvider();
