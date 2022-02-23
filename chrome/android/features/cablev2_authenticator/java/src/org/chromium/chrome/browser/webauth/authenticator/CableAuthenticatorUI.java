@@ -84,6 +84,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
     private static final int ERROR_UNEXPECTED_EOF = 100;
     private static final int ERROR_NO_SCREENLOCK = 110;
     private static final int ERROR_NO_BLUETOOTH_PERMISSION = 111;
+    private static final int ERROR_AUTHENTICATOR_SELECTION_RECEIVED = 114;
+    private static final int ERROR_DISCOVERABLE_CREDENTIALS_REQUEST = 115;
 
     // These entries duplicate some of the enum values from
     // `CableV2MobileEvent`. The C++ enum is the source of truth for these
@@ -758,6 +760,12 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                 desc = getResources().getString(R.string.cablev2_error_no_screenlock, packageLabel);
                 settingsButtonVisible = true;
                 break;
+
+                // TODO: create a dedicated error message for these cases, which
+                // result when the client sends a discoverable-credentials
+                // request that Android cannot handle.
+                // case ERROR_AUTHENTICATOR_SELECTION_RECEIVED:
+                // case ERROR_DISCOVERABLE_CREDENTIALS_REQUEST:
 
             default:
                 TextView errorCodeTextView = (TextView) mErrorView.findViewById(R.id.error_code);

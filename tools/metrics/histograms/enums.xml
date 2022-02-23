@@ -93946,6 +93946,7 @@ others/histograms.xml -->
   <int value="9" label="Invalid QR"/>
   <int value="10" label="Invalid server link data"/>
   <int value="11" label="EOF while processing a request"/>
+  <int value="12" label="Discoverable credentials request rejected"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2TunnelEvent">
