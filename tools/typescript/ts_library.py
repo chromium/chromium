@@ -82,20 +82,34 @@ def main(argv):
 
   _write_tsconfig_json(args.gen_dir, tsconfig)
 
-  # Delete any obsolete .ts files (from previous builds) corresponding to .js
-  # |in_files| in the |root_dir| folder, as they would cause the following error
-  # to be thrown:
-  #
-  # "error TS5056: Cannot write file '...' because it would be overwritten by
-  # multiple input files."
-  #
-  # This can happen when a ts_library() is migrating JS to TS one file at a time
-  # and a bot is switched from building a later CL to building an earlier CL.
+  # Detect and delete obsolete files that can cause build problems.
   if args.in_files is not None:
     for f in args.in_files:
       [pathname, extension] = os.path.splitext(f)
+
+      # Delete any obsolete .ts files (from previous builds) corresponding to
+      # .js |in_files| in the |root_dir| folder, as they would cause the
+      # following error to be thrown:
+      #
+      # "error TS5056: Cannot write file '...' because it would be overwritten
+      # by multiple input files."
+      #
+      # This can happen when a ts_library() is migrating JS to TS one file at a
+      # time and a bot is switched from building a later CL to building an
+      # earlier CL.
       if extension == '.js':
         to_check = os.path.join(args.root_dir, pathname + '.ts')
+        if os.path.exists(to_check):
+          os.remove(to_check)
+
+      # Delete any obsolete .d.ts files (from previous builds) corresponding to
+      # .ts |in_files| in |root_dir| folder.
+      #
+      # This can happen when a ts_library() is migrating JS to TS one file at a
+      # time and a previous checked-in or auto-generated .d.ts file is now
+      # obsolete.
+      if extension == '.ts':
+        to_check = os.path.join(args.root_dir, pathname + '.d.ts')
         if os.path.exists(to_check):
           os.remove(to_check)
 
