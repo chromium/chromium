@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/input/scroll_manager.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/focusgroup_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
@@ -434,6 +435,12 @@ void KeyboardEventManager::DefaultArrowEventHandler(
   Page* page = frame_->GetPage();
   if (!page)
     return;
+
+  if (RuntimeEnabledFeatures::FocusgroupEnabled() &&
+      FocusgroupController::HandleArrowKeyboardEvent(event, frame_)) {
+    event->SetDefaultHandled();
+    return;
+  }
 
   if (IsSpatialNavigationEnabled(frame_) &&
       !frame_->GetDocument()->InDesignMode()) {

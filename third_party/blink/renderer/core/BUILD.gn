@@ -1393,6 +1393,7 @@ source_set("unit_tests") {
     "page/drag_controller_test.cc",
     "page/drag_image_test.cc",
     "page/focus_controller_test.cc",
+    "page/focusgroup_controller_test.cc",
     "page/named_pages_mapper_test.cc",
     "page/page_popup_client_test.cc",
     "page/plugin_data_test.cc",
