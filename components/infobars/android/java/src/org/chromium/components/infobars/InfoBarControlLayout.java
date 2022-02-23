@@ -6,6 +6,7 @@ package org.chromium.components.infobars;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
@@ -361,6 +362,52 @@ public final class InfoBarControlLayout extends ViewGroup {
 
         ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
         iconView.setImageResource(iconResourceId);
+        if (iconColorId != 0) {
+            iconView.setColorFilter(ApiCompatibilityUtils.getColor(getResources(), iconColorId));
+        }
+
+        // The primary message text is always displayed.
+        TextView primaryView = (TextView) layout.findViewById(R.id.control_message);
+        primaryView.setText(primaryMessage);
+        primaryView.setTextSize(
+                TypedValue.COMPLEX_UNIT_PX, getContext().getResources().getDimension(resourceId));
+
+        // The secondary message text is optional.
+        TextView secondaryView = (TextView) layout.findViewById(R.id.control_secondary_message);
+        if (secondaryMessage == null) {
+            layout.removeView(secondaryView);
+        } else {
+            secondaryView.setText(secondaryMessage);
+            secondaryView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    getContext().getResources().getDimension(resourceId));
+        }
+
+        return layout;
+    }
+
+    /**
+     * Adds an icon with a descriptive message to the layout.
+     *
+     * -----------------------------------------------------
+     * | ICON | PRIMARY MESSAGE SECONDARY MESSAGE          |
+     * -----------------------------------------------------
+     * If an icon is not provided, the ImageView that would normally show it is hidden.
+     *
+     * @param iconBitmap       Bitmap image of the icon.
+     * @param iconColorId      ID of the tint color for the icon, or 0 for default.
+     * @param primaryMessage   Message to display for the toggle.
+     * @param secondaryMessage Additional descriptive text for the toggle.  May be null.
+     * @param resourceId       Size of resource id to be applied to primaryMessage
+     *                         and secondaryMessage.
+     */
+    public View addIcon(Bitmap iconBitmap, int iconColorId, CharSequence primaryMessage,
+            CharSequence secondaryMessage, int resourceId) {
+        LinearLayout layout = (LinearLayout) inflateLayout(
+                getContext(), R.layout.infobar_control_icon_with_description, this);
+        addView(layout, new ControlLayoutParams());
+
+        ImageView iconView = (ImageView) layout.findViewById(R.id.control_icon);
+        iconView.setImageBitmap(iconBitmap);
         if (iconColorId != 0) {
             iconView.setColorFilter(ApiCompatibilityUtils.getColor(getResources(), iconColorId));
         }

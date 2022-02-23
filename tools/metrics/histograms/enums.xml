@@ -46247,6 +46247,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="107" label="ADD_TO_READING_LIST_IOS"/>
   <int value="108" label="IOS_PERMISSIONS_INFOBAR_DELEGATE"/>
   <int value="109" label="SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS"/>
+  <int value="110"
+      label="AUTOFILL_VIRTUAL_CARD_ENROLLMENT_INFOBAR_DELEGATE_MOBILE"/>
 </enum>
 
 <enum name="InfoBarResponse">
