@@ -1454,8 +1454,14 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListProductivityLauncherTest,
   sm_.Replay();
 }
 
+// This test is flaky on chromeos: http://crbug.com/1300248
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LauncherSearchInClamshell DISABLED_LauncherSearchInClamshell
+#else
+#define MAYBE_LauncherSearchInClamshell LauncherSearchInClamshell
+#endif
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListSearchProductivityLauncherTest,
-                       LauncherSearchInClamshell) {
+                       MAYBE_LauncherSearchInClamshell) {
   EnableChromeVox();
 
   // Focus the shelf. This selects the launcher button.
