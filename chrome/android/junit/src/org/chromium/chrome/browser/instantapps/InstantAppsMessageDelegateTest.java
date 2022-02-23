@@ -89,7 +89,8 @@ public class InstantAppsMessageDelegateTest {
                         mData.getAppName()),
                 message.get(MessageBannerProperties.TITLE_CONTENT_DESCRIPTION));
         Assert.assertTrue("Message description icon should match.",
-                ((BitmapDrawable) AppCompatResources.getDrawable(mContext, R.drawable.google_play))
+                ((BitmapDrawable) AppCompatResources.getDrawable(
+                         mContext, R.drawable.google_play_dark))
                         .getBitmap()
                         .sameAs(((BitmapDrawable) message.get(
                                          MessageBannerProperties.DESCRIPTION_ICON))
