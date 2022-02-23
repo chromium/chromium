@@ -7,12 +7,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/singleton.h"
 #include "base/time/default_clock.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/device_id_helper.h"
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
@@ -48,7 +50,9 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
 
   // syncer::DeviceInfoSyncClient:
   bool GetSendTabToSelfReceivingEnabled() const override {
-    return send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(prefs_);
+    return base::FeatureList::IsEnabled(syncer::kAlwaysReceiveSendTabToSelf)
+               ? true
+               : send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(prefs_);
   }
 
   // syncer::DeviceInfoSyncClient:

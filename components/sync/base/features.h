@@ -17,6 +17,11 @@ inline constexpr base::Feature kAllowSilentTrustedVaultDeviceRegistration{
     "AllowSilentTrustedVaultDeviceRegistration",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Causes the device to advertise itself as a send-tab-to-self target regardless
+// of UserSelectableType::kTabs and SyncRequested.
+inline constexpr base::Feature kAlwaysReceiveSendTabToSelf{
+    "AlwaysReceiveSendTabToSelf", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Causes Sync to ignore updates encrypted with keys that have been missing for
 // too long from this client; Sync will proceed normally as if those updates
 // didn't exist.
