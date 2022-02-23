@@ -11,6 +11,7 @@ import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVA
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.os.SystemClock;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
 
@@ -30,6 +32,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import org.mockito.Mock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
@@ -40,10 +43,16 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.WebContentsFactory;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentProgressObserver;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManagerWrapper;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.ContextualSearchTestHost;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeSlowResolveSearch;
@@ -51,16 +60,23 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
+import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.KeyUtils;
+import org.chromium.content_public.browser.test.util.TestSelectionPopupController;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
 import java.lang.annotation.Retention;
@@ -79,6 +95,179 @@ public class ContextualSearchInstrumentationBase {
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    ContextualSearchManager.Natives mContextualSearchManagerJniMock;
+
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * ContextualSearchPanel wrapper that prevents native calls.
+     */
+    protected static class ContextualSearchPanelWrapper extends ContextualSearchPanel {
+        public ContextualSearchPanelWrapper(Context context, LayoutManagerImpl layoutManager,
+                OverlayPanelManager panelManager) {
+            super(context, layoutManager, panelManager, null, null, null, 0, null, 0, null);
+        }
+
+        @Override
+        public void peekPanel(@StateChangeReason int reason) {
+            setHeightForTesting(1);
+            super.peekPanel(reason);
+        }
+
+        @Override
+        public void setBasePageTextControlsVisibility(boolean visible) {}
+    }
+
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * ContextualSearchManager wrapper that prevents network requests and most native calls.
+     */
+    protected static class ContextualSearchManagerWrapper extends ContextualSearchManager {
+        public ContextualSearchManagerWrapper(ChromeActivity activity) {
+            super(activity, null, activity.getRootUiCoordinatorForTesting().getScrimCoordinator(),
+                    activity.getActivityTabProvider(), activity.getFullscreenManager(),
+                    activity.getBrowserControlsManager(), activity.getWindowAndroid(),
+                    activity.getTabModelSelector(), () -> activity.getLastUserInteractionTime());
+            setSelectionController(new MockCSSelectionController(activity, this));
+            WebContents webContents = WebContentsFactory.createWebContents(
+                    Profile.getLastUsedRegularProfile(), false);
+            ContentView cv = ContentView.createContentView(
+                    activity, null /* eventOffsetHandler */, webContents);
+            webContents.initialize(null, ViewAndroidDelegate.createBasicDelegate(cv), null,
+                    activity.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
+            SelectionPopupController selectionPopupController =
+                    WebContentsUtils.createSelectionPopupController(webContents);
+            selectionPopupController.setSelectionClient(this.getContextualSearchSelectionClient());
+            MockContextualSearchPolicy policy =
+                    new MockContextualSearchPolicy(getSelectionController());
+            setContextualSearchPolicy(policy);
+            getSelectionController().setPolicy(policy);
+        }
+
+        @Override
+        public void startSearchTermResolutionRequest(
+                String selection, boolean isExactResolve, ContextualSearchContext searchContext) {
+            // Skip native calls and immediately "resolve" the search term.
+            onSearchTermResolutionResponse(true, 200, selection, selection, "", "", false, 0, 10,
+                    "", "", "", "", QuickActionCategory.NONE, 0, "", "", 0, "");
+        }
+
+        /**
+         * @return A stubbed SelectionPopupController for mocking text selection.
+         */
+        public StubbedSelectionPopupController getBaseSelectionPopupController() {
+            return (StubbedSelectionPopupController) getSelectionController()
+                    .getSelectionPopupController();
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Selection controller that mocks out anything to do with a WebContents.
+     */
+    private static class MockCSSelectionController extends ContextualSearchSelectionController {
+        private StubbedSelectionPopupController mPopupController;
+
+        public MockCSSelectionController(
+                ChromeActivity activity, ContextualSearchSelectionHandler handler) {
+            super(activity, handler, activity.getActivityTabProvider(),
+                    activity.getBrowserControlsManager());
+            mPopupController = new StubbedSelectionPopupController();
+        }
+
+        @Override
+        protected SelectionPopupController getSelectionPopupController() {
+            return mPopupController;
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * A SelectionPopupController that has some methods stubbed out for testing.
+     */
+    private static final class StubbedSelectionPopupController
+            extends TestSelectionPopupController {
+        private String mCurrentText;
+
+        public StubbedSelectionPopupController() {}
+
+        @Override
+        public String getSelectedText() {
+            return mCurrentText;
+        }
+
+        public void setSelectedText(String string) {
+            mCurrentText = string;
+        }
+    }
+
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Trigger text selection on the contextual search manager.
+     */
+    protected void mockLongpressText(String text) {
+        mContextualSearchManager.getBaseSelectionPopupController().setSelectedText(text);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> mContextualSearchClient.onSelectionEvent(
+                                SelectionEventType.SELECTION_HANDLES_SHOWN, 0, 0));
+    }
+
+    /**
+     * Trigger text selection on the contextual search manager.
+     */
+    protected void mockTapText(String text) {
+        mContextualSearchManager.getBaseSelectionPopupController().setSelectedText(text);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContextualSearchManager.getGestureStateListener().onTouchDown();
+            mContextualSearchManager.onShowUnhandledTapUIIfNeeded(0, 0, 12, 100);
+        });
+    }
+
+    /**
+     * Trigger empty space tap.
+     */
+    protected void mockTapEmptySpace() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContextualSearchManager.onShowUnhandledTapUIIfNeeded(0, 0, 0, 0);
+            mContextualSearchClient.onSelectionEvent(
+                    SelectionEventType.SELECTION_HANDLES_CLEARED, 0, 0);
+        });
+    }
+
+    /**
+     * Generates a call indicating that surrounding text and selection range are available.
+     */
+    protected void generateTextSurroundingSelectionAvailable() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // It only makes sense to send dummy data here because we can't easily control
+            // what's in the native context.
+            mContextualSearchManager.onTextSurroundingSelectionAvailable("UTF-8", "unused", 0, 0);
+        });
+    }
+
+    /**
+     * Generates an ACK for the SelectWordAroundCaret native call, which indicates that the select
+     * action has completed with the given result.
+     */
+    protected void generateSelectWordAroundCaretAck() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // It only makes sense to send dummy data here because we can't easily control
+            // what's in the native context.
+            mContextualSearchClient.selectAroundCaretAck(new SelectAroundCaretResult(0, 0, 0, 0));
+        });
+    }
+
+    // --------------------------------------------------------------------------------------------
 
     /**
      * Parameter provider for enabling/disabling triggering-related Features.
@@ -179,6 +368,11 @@ public class ContextualSearchInstrumentationBase {
 
     protected String mTestPage = "/chrome/test/data/android/contextualsearch/simple_test.html";
 
+    protected ContextualSearchManagerWrapper mContextualSearchManager;
+    protected OverlayPanelManagerWrapper mPanelManager;
+    private SelectionClient mContextualSearchClient;
+    private LayoutManagerImpl mLayoutManager;
+
     private ActivityMonitor mActivityMonitor;
     private ContextualSearchSelectionController mSelectionController;
     private ContextualSearchInstrumentationTestHost mTestHost;
@@ -211,7 +405,13 @@ public class ContextualSearchInstrumentationBase {
 
     @Before
     public void setUp() throws Exception {
+        final ChromeActivity activity = sActivityTestRule.getActivity();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mPanelManager = new OverlayPanelManagerWrapper();
+            mPanelManager.setContainerView(new LinearLayout(activity));
+            mContextualSearchManager = new ContextualSearchManagerWrapper(activity);
+            mContextualSearchClient = mContextualSearchManager.getContextualSearchSelectionClient();
+
             LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
                 @Override
                 public boolean needToCheckForSearchEnginePromo() {
@@ -219,6 +419,7 @@ public class ContextualSearchInstrumentationBase {
                 }
             });
         });
+
         mTestServer = sActivityTestRule.getTestServer();
 
         sActivityTestRule.loadUrl(mTestServer.getURL(mTestPage));
@@ -291,13 +492,17 @@ public class ContextualSearchInstrumentationBase {
     @After
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.dismissContextualSearchBar();
-            mPanel.closePanel(StateChangeReason.UNKNOWN, false);
+            if (mManager != null) mManager.dismissContextualSearchBar();
+            if (mPanel != null) mPanel.closePanel(StateChangeReason.UNKNOWN, false);
         });
-        InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
+        if (mActivityMonitor != null) {
+            InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
+        }
         mActivityMonitor = null;
         mLatestSlowResolveSearch = null;
-        mPolicy.overrideAllowSendingPageUrlForTesting(false);
+        if (mPolicy != null) {
+            mPolicy.overrideAllowSendingPageUrlForTesting(false);
+        }
     }
 
     /** Allows the fake server to call into this host to drive actions when simulating a search. */
