@@ -39,24 +39,42 @@ constexpr int kMaxNumHints = 5;
 constexpr SkColor kDefaultTextAndIconColorPrimary = SK_ColorBLACK;
 constexpr SkColor kDefaultTextAndIconColorSecondary = SK_ColorDKGRAY;
 
+SkColor text_color_primary() {
+  if (!features::IsDarkLightModeEnabled())
+    return kDefaultTextAndIconColorPrimary;
+
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+}
+
+SkColor icon_color_primary() {
+  if (!features::IsDarkLightModeEnabled())
+    return kDefaultTextAndIconColorPrimary;
+
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+}
+
+SkColor text_color_secondary() {
+  if (!features::IsDarkLightModeEnabled())
+    return kDefaultTextAndIconColorSecondary;
+
+  return AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+}
+
 std::unique_ptr<views::ImageView> CreateImageView(
     views::ImageView** destination_view,
     const gfx::VectorIcon& icon) {
-  SkColor color =
-      features::IsDarkLightModeEnabled()
-          ? AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)
-          : kDefaultTextAndIconColorPrimary;
   return views::Builder<views::ImageView>()
       .CopyAddressTo(destination_view)
-      .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, color))
+      .SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, icon_color_primary()))
       .Build();
 }
 
-void SetImageHelper(views::ImageView* image_view,
-                    const gfx::VectorIcon& icon,
-                    SkColor color) {
-  image_view->SetImage(gfx::CreateVectorIcon(icon, kIconSizeDip, color));
+void SetImageHelper(views::ImageView* image_view, const gfx::VectorIcon& icon) {
+  image_view->SetImage(
+      gfx::CreateVectorIcon(icon, kIconSizeDip, icon_color_primary()));
 }
 
 std::unique_ptr<views::Label> CreateLabelView(views::Label** destination_view,
@@ -109,13 +127,8 @@ class ASH_EXPORT TopRowView : public views::View {
                                  kDictationBubbleMacroSucceededIcon));
     AddChildView(
         CreateImageView(&macro_failed_image_, kDictationBubbleMacroFailedIcon));
-
-    SkColor text_color =
-        features::IsDarkLightModeEnabled()
-            ? AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorPrimary)
-            : kDefaultTextAndIconColorPrimary;
-    AddChildView(CreateLabelView(&label_, std::u16string(), text_color));
+    AddChildView(
+        CreateLabelView(&label_, std::u16string(), text_color_primary()));
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -127,12 +140,12 @@ class ASH_EXPORT TopRowView : public views::View {
   void Update(DictationBubbleIconType icon,
               const absl::optional<std::u16string>& text) {
     // Update visibility.
+    bool is_standby = icon == DictationBubbleIconType::kStandby;
     if (use_standby_animation_) {
-      standby_animation_->SetVisible(icon == DictationBubbleIconType::kStandby);
-      icon == DictationBubbleIconType::kStandby ? standby_animation_->Play()
-                                                : standby_animation_->Stop();
+      standby_animation_->SetVisible(is_standby);
+      is_standby ? standby_animation_->Play() : standby_animation_->Stop();
     } else {
-      standby_image_->SetVisible(icon == DictationBubbleIconType::kStandby);
+      standby_image_->SetVisible(is_standby);
     }
 
     macro_succeeded_image_->SetVisible(icon ==
@@ -148,21 +161,12 @@ class ASH_EXPORT TopRowView : public views::View {
 
   // Updates this view so that it respects the global dark mode setting.
   void OnColorModeChanged(bool dark_mode_enabled) {
-    AshColorProvider* color_provider = AshColorProvider::Get();
-    if (!color_provider)
-      return;
-
-    SkColor icon_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
-    SkColor text_color = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
     if (!use_standby_animation_)
-      SetImageHelper(standby_image_, kDictationBubbleIcon, icon_color);
-    SetImageHelper(macro_succeeded_image_, kDictationBubbleMacroSucceededIcon,
-                   icon_color);
-    SetImageHelper(macro_failed_image_, kDictationBubbleMacroFailedIcon,
-                   icon_color);
-    label_->SetEnabledColor(text_color);
+      SetImageHelper(standby_image_, kDictationBubbleIcon);
+
+    SetImageHelper(macro_succeeded_image_, kDictationBubbleMacroSucceededIcon);
+    SetImageHelper(macro_failed_image_, kDictationBubbleMacroFailedIcon);
+    label_->SetEnabledColor(text_color_primary());
   }
 
   // views::View:
@@ -171,7 +175,7 @@ class ASH_EXPORT TopRowView : public views::View {
   }
 
  private:
-  friend DictationBubbleView;
+  friend class ash::DictationBubbleView;
 
   // Returns a std::unique_ptr<AnimatedImageView> if the standby animation
   // can successfully be loaded. Otherwise, returns a std::unique_ptr<ImageView>
@@ -223,18 +227,11 @@ class ASH_EXPORT HintView : public views::View {
     layout->set_between_child_spacing(kSpaceBetweenHintLabelsDip);
     SetLayoutManager(std::move(layout));
 
-    bool is_dark_light_mode_enabled = features::IsDarkLightModeEnabled();
-    SkColor primary =
-        is_dark_light_mode_enabled
-            ? AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorPrimary)
-            : kDefaultTextAndIconColorPrimary;
-    SkColor secondary =
-        is_dark_light_mode_enabled
-            ? AshColorProvider::Get()->GetContentLayerColor(
-                  AshColorProvider::ContentLayerType::kTextColorSecondary)
-            : kDefaultTextAndIconColorSecondary;
+    SkColor primary = text_color_primary();
+    SkColor secondary = text_color_secondary();
     for (size_t i = 0; i < labels_.size(); ++i) {
+      // The first label should use the secondary text color. All other labels
+      // should use the primary text color.
       SkColor color = i == 0 ? secondary : primary;
       AddChildView(CreateLabelView(&labels_[i], std::u16string(), color));
     }
@@ -270,8 +267,6 @@ class ASH_EXPORT HintView : public views::View {
     // hints to the user.
     if (num_visible_hints > 0) {
       SetVisible(true);
-      // TODO(crbug.com/1252037): Write a DictationUITest to verify that
-      // ChromeVox announces hints.
       NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
     } else {
       SetVisible(false);
@@ -281,15 +276,11 @@ class ASH_EXPORT HintView : public views::View {
 
   // Updates this view so that it respects the global dark mode setting.
   void OnColorModeChanged(bool dark_mode_enabled) {
-    AshColorProvider* color_provider = AshColorProvider::Get();
-    if (!color_provider)
-      return;
-
-    SkColor primary = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
-    SkColor secondary = color_provider->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary);
+    SkColor primary = text_color_primary();
+    SkColor secondary = text_color_secondary();
     for (size_t i = 0; i < labels_.size(); ++i) {
+      // The first label should use the secondary text color. All other labels
+      // should use the primary text color.
       labels_[i]->SetEnabledColor(i == 0 ? secondary : primary);
     }
   }
@@ -300,7 +291,7 @@ class ASH_EXPORT HintView : public views::View {
   }
 
  private:
-  friend DictationBubbleView;
+  friend class ash::DictationBubbleView;
 
   // Labels containing hints for users of Dictation. A max of five hints can be
   // shown at any given time.
