@@ -1555,6 +1555,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue"
+    units="bool" expires_after="M104">
+  <owner>vidhanj@google.com</owner>
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, for each field, that did not get autofilled due to a prefilled
+    value, whether the submitted field value is the same as the non-empty value
+    that could have been autofilled in the field. This metric is recorded on
+    form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.KeyMetrics.FillingAcceptance{AutofillFormType}"
     enum="BooleanAutofillFillingAcceptance" expires_after="2022-12-12">
   <owner>battre@chromium.org</owner>

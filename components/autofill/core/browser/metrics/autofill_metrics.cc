@@ -3324,4 +3324,12 @@ void AutofillMetrics::LogOtpInputDialogNewOtpRequested() {
                             true);
 }
 
+// static
+void AutofillMetrics::
+    LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(bool is_same) {
+  base::UmaHistogramBoolean(
+      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
+      is_same);
+}
+
 }  // namespace autofill
