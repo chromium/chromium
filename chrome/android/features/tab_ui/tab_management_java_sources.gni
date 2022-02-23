@@ -62,7 +62,6 @@ tab_management_test_java_sources = [
 ]
 
 tab_management_junit_java_sources = [
-  "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tab/TabUtilsUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/SingleTabSwitcherMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/TasksSurfaceMediatorUnitTest.java",
   "//chrome/android/features/tab_ui/junit/src/org/chromium/chrome/browser/tasks/pseudotab/PseudoTabUnitTest.java",
