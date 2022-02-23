@@ -864,7 +864,10 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
   for (const auto& mailbox : released_overlays) {
     auto it = awaiting_release_overlay_locks_.find(mailbox);
     if (it == awaiting_release_overlay_locks_.end()) {
+    // TODO(crbug.com/1299794): Re-enable this DCHECK on Ozone.
+#if !defined(USE_OZONE)
       DLOG(FATAL) << "Got an unexpected mailbox";
+#endif  // !defined(USE_OZONE)
       continue;
     }
     awaiting_release_overlay_locks_.erase(it);
