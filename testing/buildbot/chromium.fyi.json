@@ -90111,6 +90111,10 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "wpt_tests_suite",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,

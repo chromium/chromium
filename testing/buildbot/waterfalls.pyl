@@ -3375,6 +3375,7 @@
       },
       'linux-wpt-fyi-rel': {
         'mixins': [
+          'has_native_resultdb_integration',
           'linux-bionic',
         ],
         'test_suites': {
