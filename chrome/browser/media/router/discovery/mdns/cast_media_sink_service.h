@@ -79,6 +79,8 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // Marked virtual for tests.
   virtual void BindLogger(LoggerImpl* logger_impl);
 
+  virtual void RemoveLogger();
+
  private:
   friend class CastMediaSinkServiceTest;
 

@@ -366,8 +366,12 @@ std::vector<MediaSinkInternal> DialMediaSinkServiceImpl::GetAvailableSinks(
 void DialMediaSinkServiceImpl::BindLogger(
     mojo::PendingRemote<mojom::Logger> pending_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Reset |logger_| if it is bound to a disconnected remote.
+  if (logger_.is_bound())
+    return;
   logger_.Bind(std::move(pending_remote));
-  DCHECK(dial_registry_);
+  logger_.reset_on_disconnect();
+
   logger_->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
                    "DialMediaSinkService has started.", "", "", "");
 }

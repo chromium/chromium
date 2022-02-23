@@ -52,6 +52,7 @@ class MockCastMediaSinkService : public CastMediaSinkService {
                void(const OnSinksDiscoveredCallback&, MediaSinkServiceBase*));
   MOCK_METHOD0(OnUserGesture, void());
   MOCK_METHOD1(BindLogger, void(LoggerImpl*));
+  MOCK_METHOD0(RemoveLogger, void());
   MOCK_METHOD0(StartMdnsDiscovery, void());
 };
 

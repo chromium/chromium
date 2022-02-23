@@ -172,4 +172,8 @@ void CastMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
                      base::Unretained(impl_.get()), std::move(pending_remote)));
 }
 
+void CastMediaSinkService::RemoveLogger() {
+  logger_impl_ = nullptr;
+}
+
 }  // namespace media_router
