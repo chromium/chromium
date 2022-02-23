@@ -1814,7 +1814,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     }
 
     output_device_->SchedulePrimaryPlane(output_surface_plane_);
-    output_surface_plane_.reset();
 
     if (frame->sub_buffer_rect) {
       if (capabilities().supports_post_sub_buffer) {
@@ -1835,6 +1834,9 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
                                   std::move(*frame));
     }
   }
+
+  // Reset the primary plane information even on skipped swap.
+  output_surface_plane_.reset();
 
   destroy_after_swap_.clear();
   context_state_->UpdateSkiaOwnedMemorySize();
