@@ -15,7 +15,8 @@ namespace page_load_metrics {
 class PageLoadTracker;
 
 // |MetricsLifecycleObserver| allows clients to observe lifecycle events for a
-// given |MetricsWebContentsObserver|.
+// given |MetricsWebContentsObserver|. It is only used in testing but will work
+// as intended if used in production.
 class MetricsLifecycleObserver : public base::CheckedObserver {
  public:
   explicit MetricsLifecycleObserver(content::WebContents* web_contents);
