@@ -41,6 +41,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -86,6 +87,7 @@ import java.util.List;
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class TabGroupUiMediatorUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

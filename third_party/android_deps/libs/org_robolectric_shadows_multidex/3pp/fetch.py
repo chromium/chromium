@@ -16,11 +16,11 @@ import re
 from six.moves import urllib
 
 _REPO_URL = 'https://repo.maven.apache.org/maven2'
-_GROUP_NAME = 'org/apache/ant'
-_MODULE_NAME = 'ant'
+_GROUP_NAME = 'org/robolectric'
+_MODULE_NAME = 'shadows-multidex'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
-_PATCH_VERSION = 'cr0'
+_PATCH_VERSION = 'cr1'
 
 
 def do_latest():

@@ -38,6 +38,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
@@ -76,6 +77,7 @@ import java.util.List;
 @SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures(
         {ChromeFeatureList.TAB_SWITCHER_ON_RETURN, ChromeFeatureList.START_SURFACE_ANDROID})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID, ChromeFeatureList.TAB_TO_GTS_ANIMATION})

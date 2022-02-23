@@ -206,6 +206,8 @@ def AddPropertiesJar(cmd_list, temp_dir, resource_apk):
   with zipfile.ZipFile(properties_jar_path, 'w') as z:
     z.writestr('com/android/tools/test_config.properties',
                'android_resource_apk=%s' % resource_apk)
+    z.writestr('robolectric.properties',
+               'application = android.app.Application')
 
   for cmd in cmd_list:
     cmd.extend(['--classpath', properties_jar_path])

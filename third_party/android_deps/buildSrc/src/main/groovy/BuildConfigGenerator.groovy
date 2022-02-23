@@ -560,16 +560,6 @@ class BuildConfigGenerator extends DefaultTask {
             String targetName = translateTargetName(dependency.id) + '_java'
             return !isTargetAutorolled(targetName)
         }
-        // TODO(crbug.com/1184780): Remove this once org_robolectric_shadows_multidex is updated to a newer version
-        // which does not need jetify.
-        if (dependency.directoryName == 'org_robolectric_shadows_multidex') {
-            if (dependency.version != '4.3.1') {
-                throw new RuntimeException('Got a new version for org_robolectric_shadows_multidex. If this new ' +
-                                           "version doesn't need jetify, please move this dependency back to the " +
-                                           'auto-generated section in //DEPS and //third_party/android_deps/BUILD.gn.')
-            }
-            return true
-        }
         return false
     }
 
@@ -906,6 +896,13 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
                 sb.append('requires_android = true')
+                break
+            case 'org_robolectric_shadows_multidex':
+                sb.append('\n')
+                sb.append('  # Could also be jetified, but jetification was\n')
+                sb.append('  # removed from the build system and 3pp prevents\n')
+                sb.append('  # custom modifications to uploaded packages.\n')
+                sb.append('  deps += [":com_android_support_multidex_java"]\n')
                 break
         }
     }

@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -49,6 +50,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * Unit tests for {@link IncognitoReauthController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class IncognitoReauthControllerTest {
     @Mock
     private Context mContextMock;

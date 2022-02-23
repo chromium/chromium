@@ -70,15 +70,12 @@ if (!limit_android_deps) {
       ":org_robolectric_shadows_multidex_java",
       ":org_robolectric_shadows_playservices_java",
       ":org_robolectric_utils_java",
-      ":org_robolectric_utils_reflector_java",
 
-      "//third_party/robolectric:android-all-4.4_r1-robolectric-r2_java",
-      "//third_party/robolectric:android-all-5.0.2_r3-robolectric-r0_java",
-      "//third_party/robolectric:android-all-6.0.1_r3-robolectric-r1_java",
-      "//third_party/robolectric:android-all-7.1.0_r7-robolectric-r1_java",
-      "//third_party/robolectric:android-all-8.0.0_r4-robolectric-r1_java",
-      "//third_party/robolectric:android-all-8.1.0-robolectric-4611349_java",
-      "//third_party/robolectric:android-all-9-robolectric-4913185-2_java",
+      # TODO: Remove 2 modification after robolectric 4.6 has landed.
+      # This is a temporary hack to force cache updating.
+      ":org_robolectric_utils_reflector2_java",
+
+      "//third_party/robolectric:robolectric_runtime_jars",
       "//third_party/robolectric:android-all-10-robolectric-5803371_java",
     ]
   }
@@ -105,19 +102,6 @@ if (!limit_android_deps) {
       ":chromium_play_services_availability_java",
       "//third_party/android_deps:robolectric_all_java",
     ]
-  }
-
-  # TODO(crbug.com/1184780) Move this back to Generated Code section once
-  # org_robolectric_shadows_multidex is updated to a new version that does not
-  # need jetify.
-  java_prebuilt("org_robolectric_shadows_multidex_java") {
-    jar_path =
-        "libs/org_robolectric_shadows_multidex/shadows-multidex-4.3.1.jar"
-    output_name = "org_robolectric_shadows_multidex"
-    enable_bytecode_checks = false
-    testonly = true
-    deps = [ ":org_robolectric_annotations_java" ]
-    bypass_platform_checks = true
   }
 }
 
@@ -393,14 +377,14 @@ java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_java") {
-  jar_path = "libs/org_ow2_asm_asm/asm-7.0.jar"
+  jar_path = "libs/org_ow2_asm_asm/asm-9.0.jar"
   output_name = "org_ow2_asm_asm"
   enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_commons_java") {
-  jar_path = "libs/org_ow2_asm_asm_commons/asm-commons-7.0.jar"
+  jar_path = "libs/org_ow2_asm_asm_commons/asm-commons-9.0.jar"
   output_name = "org_ow2_asm_asm_commons"
   enable_bytecode_checks = false
   deps = [
@@ -412,7 +396,7 @@ java_prebuilt("org_ow2_asm_asm_commons_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_tree_java") {
-  jar_path = "libs/org_ow2_asm_asm_tree/asm-tree-7.0.jar"
+  jar_path = "libs/org_ow2_asm_asm_tree/asm-tree-9.0.jar"
   output_name = "org_ow2_asm_asm_tree"
   enable_bytecode_checks = false
   deps = [ ":org_ow2_asm_asm_java" ]
@@ -420,7 +404,7 @@ java_prebuilt("org_ow2_asm_asm_tree_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_util_java") {
-  jar_path = "libs/org_ow2_asm_asm_util/asm-util-7.0.jar"
+  jar_path = "libs/org_ow2_asm_asm_util/asm-util-9.0.jar"
   output_name = "org_ow2_asm_asm_util"
   enable_bytecode_checks = false
   deps = [
@@ -479,7 +463,7 @@ java_prebuilt("com_google_auto_auto_common_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
-  jar_path = "libs/com_google_auto_value_auto_value_annotations/auto-value-annotations-1.7.jar"
+  jar_path = "libs/com_google_auto_value_auto_value_annotations/auto-value-annotations-1.7.4.jar"
   output_name = "com_google_auto_value_auto_value_annotations"
   enable_bytecode_checks = false
 
@@ -731,7 +715,7 @@ java_prebuilt("org_jetbrains_kotlinx_kotlinx_metadata_jvm_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_analysis_java") {
-  jar_path = "libs/org_ow2_asm_asm_analysis/asm-analysis-7.0.jar"
+  jar_path = "libs/org_ow2_asm_asm_analysis/asm-analysis-9.0.jar"
   output_name = "org_ow2_asm_asm_analysis"
   enable_bytecode_checks = false
 
@@ -1460,7 +1444,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_robolectric_java") {
-    jar_path = "libs/org_robolectric_robolectric/robolectric-4.3.1.jar"
+    jar_path = "libs/org_robolectric_robolectric/robolectric-4.6.1.jar"
     output_name = "org_robolectric_robolectric"
     enable_bytecode_checks = false
     testonly = true
@@ -1475,7 +1459,10 @@ if (!limit_android_deps) {
       ":org_robolectric_sandbox_java",
       ":org_robolectric_shadows_framework_java",
       ":org_robolectric_utils_java",
-      ":org_robolectric_utils_reflector_java",
+
+      # TODO: Remove 2 modification after robolectric 4.6 has landed.
+      # This is a temporary hack to force cache updating.
+      ":org_robolectric_utils_reflector2_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/bouncycastle:bouncycastle_java",
     ]
@@ -1483,8 +1470,24 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_robolectric_shadows_multidex_java") {
+    jar_path =
+        "libs/org_robolectric_shadows_multidex/shadows-multidex-4.6.1.jar"
+    output_name = "org_robolectric_shadows_multidex"
+    enable_bytecode_checks = false
+    testonly = true
+    deps = [ ":org_robolectric_annotations_java" ]
+    bypass_platform_checks = true
+
+    # Could also be jetified, but jetification was
+    # removed from the build system and 3pp prevents
+    # custom modifications to uploaded packages.
+    deps += [ ":com_android_support_multidex_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadows_playservices_java") {
-    jar_path = "libs/org_robolectric_shadows_playservices/shadows-playservices-4.3.1.jar"
+    jar_path = "libs/org_robolectric_shadows_playservices/shadows-playservices-4.6.1.jar"
     output_name = "org_robolectric_shadows_playservices"
     enable_bytecode_checks = false
     testonly = true
@@ -1497,17 +1500,16 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_utils_java") {
-    jar_path = "libs/org_robolectric_utils/utils-4.3.1.jar"
+    jar_path = "libs/org_robolectric_utils/utils-4.6.1.jar"
     output_name = "org_robolectric_utils"
     enable_bytecode_checks = false
     testonly = true
     deps = [
-      ":com_google_auto_service_auto_service_java",
+      ":com_google_guava_guava_java",
       ":javax_annotation_javax_annotation_api_java",
       ":javax_inject_javax_inject_java",
       ":org_robolectric_annotations_java",
       ":org_robolectric_pluginapi_java",
-      ":org_robolectric_utils_reflector_java",
     ]
     bypass_platform_checks = true
   }
@@ -1579,36 +1581,6 @@ if (!limit_android_deps) {
       ":android_arch_core_runtime_java",
       ":android_arch_lifecycle_common_java",
     ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("backport_util_concurrent_backport_util_concurrent_java") {
-    jar_path = "libs/backport_util_concurrent_backport_util_concurrent/backport-util-concurrent-3.1.jar"
-    output_name = "backport_util_concurrent_backport_util_concurrent"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("classworlds_classworlds_java") {
-    jar_path = "libs/classworlds_classworlds/classworlds-1.1-alpha-2.jar"
-    output_name = "classworlds_classworlds"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2153,36 +2125,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("nekohtml_nekohtml_java") {
-    jar_path = "libs/nekohtml_nekohtml/nekohtml-1.9.6.2.jar"
-    output_name = "nekohtml_nekohtml"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("nekohtml_xercesMinimal_java") {
-    jar_path = "libs/nekohtml_xercesminimal/xercesMinimal-1.9.6.2.jar"
-    output_name = "nekohtml_xercesMinimal"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("net_sf_kxml_kxml2_java") {
     jar_path = "libs/net_sf_kxml_kxml2/kxml2-2.3.0.jar"
     output_name = "net_sf_kxml_kxml2"
@@ -2198,363 +2140,6 @@ if (!limit_android_deps) {
 
     # Target needs to exclude *xmlpull* files as already included in Android SDK.
     jar_excluded_patterns = [ "*xmlpull*" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_ant_ant_java") {
-    jar_path = "libs/org_apache_ant_ant/ant-1.8.0.jar"
-    output_name = "org_apache_ant_ant"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_apache_ant_ant_launcher_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_ant_ant_launcher_java") {
-    jar_path = "libs/org_apache_ant_ant_launcher/ant-launcher-1.8.0.jar"
-    output_name = "org_apache_ant_ant_launcher"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_ant_tasks_java") {
-    jar_path = "libs/org_apache_maven_maven_ant_tasks/maven-ant-tasks-2.1.3.jar"
-    output_name = "org_apache_maven_maven_ant_tasks"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":classworlds_classworlds_java",
-      ":org_apache_ant_ant_java",
-      ":org_apache_maven_maven_artifact_java",
-      ":org_apache_maven_maven_artifact_manager_java",
-      ":org_apache_maven_maven_error_diagnostics_java",
-      ":org_apache_maven_maven_model_java",
-      ":org_apache_maven_maven_project_java",
-      ":org_apache_maven_maven_settings_java",
-      ":org_apache_maven_wagon_wagon_file_java",
-      ":org_apache_maven_wagon_wagon_http_lightweight_java",
-      ":org_apache_maven_wagon_wagon_provider_api_java",
-      ":org_codehaus_plexus_plexus_container_default_java",
-      ":org_codehaus_plexus_plexus_interpolation_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_artifact_java") {
-    jar_path = "libs/org_apache_maven_maven_artifact/maven-artifact-2.2.1.jar"
-    output_name = "org_apache_maven_maven_artifact"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_artifact_manager_java") {
-    jar_path = "libs/org_apache_maven_maven_artifact_manager/maven-artifact-manager-2.2.1.jar"
-    output_name = "org_apache_maven_maven_artifact_manager"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":backport_util_concurrent_backport_util_concurrent_java",
-      ":org_apache_maven_maven_artifact_java",
-      ":org_apache_maven_maven_repository_metadata_java",
-      ":org_apache_maven_wagon_wagon_provider_api_java",
-      ":org_codehaus_plexus_plexus_container_default_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_error_diagnostics_java") {
-    jar_path = "libs/org_apache_maven_maven_error_diagnostics/maven-error-diagnostics-2.2.1.jar"
-    output_name = "org_apache_maven_maven_error_diagnostics"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_codehaus_plexus_plexus_container_default_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_model_java") {
-    jar_path = "libs/org_apache_maven_maven_model/maven-model-2.2.1.jar"
-    output_name = "org_apache_maven_maven_model"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_plugin_registry_java") {
-    jar_path = "libs/org_apache_maven_maven_plugin_registry/maven-plugin-registry-2.2.1.jar"
-    output_name = "org_apache_maven_maven_plugin_registry"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":org_codehaus_plexus_plexus_container_default_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_profile_java") {
-    jar_path = "libs/org_apache_maven_maven_profile/maven-profile-2.2.1.jar"
-    output_name = "org_apache_maven_maven_profile"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":org_apache_maven_maven_model_java",
-      ":org_codehaus_plexus_plexus_container_default_java",
-      ":org_codehaus_plexus_plexus_interpolation_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_project_java") {
-    jar_path = "libs/org_apache_maven_maven_project/maven-project-2.2.1.jar"
-    output_name = "org_apache_maven_maven_project"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":org_apache_maven_maven_artifact_java",
-      ":org_apache_maven_maven_artifact_manager_java",
-      ":org_apache_maven_maven_model_java",
-      ":org_apache_maven_maven_plugin_registry_java",
-      ":org_apache_maven_maven_profile_java",
-      ":org_apache_maven_maven_settings_java",
-      ":org_codehaus_plexus_plexus_container_default_java",
-      ":org_codehaus_plexus_plexus_interpolation_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_repository_metadata_java") {
-    jar_path = "libs/org_apache_maven_maven_repository_metadata/maven-repository-metadata-2.2.1.jar"
-    output_name = "org_apache_maven_maven_repository_metadata"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_maven_settings_java") {
-    jar_path = "libs/org_apache_maven_maven_settings/maven-settings-2.2.1.jar"
-    output_name = "org_apache_maven_maven_settings"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":org_apache_maven_maven_model_java",
-      ":org_codehaus_plexus_plexus_container_default_java",
-      ":org_codehaus_plexus_plexus_interpolation_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_wagon_wagon_file_java") {
-    jar_path =
-        "libs/org_apache_maven_wagon_wagon_file/wagon-file-1.0-beta-6.jar"
-    output_name = "org_apache_maven_wagon_wagon_file"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_apache_maven_wagon_wagon_provider_api_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_wagon_wagon_http_lightweight_java") {
-    jar_path = "libs/org_apache_maven_wagon_wagon_http_lightweight/wagon-http-lightweight-1.0-beta-6.jar"
-    output_name = "org_apache_maven_wagon_wagon_http_lightweight"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":org_apache_maven_wagon_wagon_http_shared_java",
-      ":org_apache_maven_wagon_wagon_provider_api_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_wagon_wagon_http_shared_java") {
-    jar_path = "libs/org_apache_maven_wagon_wagon_http_shared/wagon-http-shared-1.0-beta-6.jar"
-    output_name = "org_apache_maven_wagon_wagon_http_shared"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":nekohtml_nekohtml_java",
-      ":nekohtml_xercesMinimal_java",
-      ":org_apache_maven_wagon_wagon_provider_api_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_apache_maven_wagon_wagon_provider_api_java") {
-    jar_path = "libs/org_apache_maven_wagon_wagon_provider_api/wagon-provider-api-1.0-beta-6.jar"
-    output_name = "org_apache_maven_wagon_wagon_provider_api"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [ ":org_codehaus_plexus_plexus_utils_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_codehaus_plexus_plexus_container_default_java") {
-    jar_path = "libs/org_codehaus_plexus_plexus_container_default/plexus-container-default-1.0-alpha-9-stable-1.jar"
-    output_name = "org_codehaus_plexus_plexus_container_default"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-    deps = [
-      ":classworlds_classworlds_java",
-      ":org_codehaus_plexus_plexus_utils_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_codehaus_plexus_plexus_interpolation_java") {
-    jar_path = "libs/org_codehaus_plexus_plexus_interpolation/plexus-interpolation-1.11.jar"
-    output_name = "org_codehaus_plexus_plexus_interpolation"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_codehaus_plexus_plexus_utils_java") {
-    jar_path = "libs/org_codehaus_plexus_plexus_utils/plexus-utils-1.5.15.jar"
-    output_name = "org_codehaus_plexus_plexus_utils"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2592,7 +2177,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_annotations_java") {
-    jar_path = "libs/org_robolectric_annotations/annotations-4.3.1.jar"
+    jar_path = "libs/org_robolectric_annotations/annotations-4.6.1.jar"
     output_name = "org_robolectric_annotations"
     enable_bytecode_checks = false
 
@@ -2608,7 +2193,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_junit_java") {
-    jar_path = "libs/org_robolectric_junit/junit-4.3.1.jar"
+    jar_path = "libs/org_robolectric_junit/junit-4.6.1.jar"
     output_name = "org_robolectric_junit"
     enable_bytecode_checks = false
 
@@ -2624,14 +2209,17 @@ if (!limit_android_deps) {
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_sandbox_java",
       ":org_robolectric_shadowapi_java",
-      ":org_robolectric_utils_reflector_java",
+
+      # TODO: Remove 2 modification after robolectric 4.6 has landed.
+      # This is a temporary hack to force cache updating.
+      ":org_robolectric_utils_reflector2_java",
     ]
     bypass_platform_checks = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_pluginapi_java") {
-    jar_path = "libs/org_robolectric_pluginapi/pluginapi-4.3.1.jar"
+    jar_path = "libs/org_robolectric_pluginapi/pluginapi-4.6.1.jar"
     output_name = "org_robolectric_pluginapi"
     enable_bytecode_checks = false
 
@@ -2642,17 +2230,13 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
-    deps = [
-      ":org_apache_ant_ant_java",
-      ":org_apache_maven_maven_ant_tasks_java",
-      ":org_robolectric_annotations_java",
-    ]
+    deps = [ ":org_robolectric_annotations_java" ]
     bypass_platform_checks = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
-    jar_path = "libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.3.1.jar"
+    jar_path = "libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.6.1.jar"
     output_name = "org_robolectric_plugins_maven_dependency_resolver"
     enable_bytecode_checks = false
 
@@ -2664,8 +2248,7 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":org_apache_ant_ant_java",
-      ":org_apache_maven_maven_ant_tasks_java",
+      ":com_google_guava_guava_java",
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_utils_java",
     ]
@@ -2674,7 +2257,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_resources_java") {
-    jar_path = "libs/org_robolectric_resources/resources-4.3.1.jar"
+    jar_path = "libs/org_robolectric_resources/resources-4.6.1.jar"
     output_name = "org_robolectric_resources"
     enable_bytecode_checks = false
 
@@ -2696,7 +2279,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_sandbox_java") {
-    jar_path = "libs/org_robolectric_sandbox/sandbox-4.3.1.jar"
+    jar_path = "libs/org_robolectric_sandbox/sandbox-4.6.1.jar"
     output_name = "org_robolectric_sandbox"
     enable_bytecode_checks = false
 
@@ -2716,14 +2299,17 @@ if (!limit_android_deps) {
       ":org_robolectric_annotations_java",
       ":org_robolectric_shadowapi_java",
       ":org_robolectric_utils_java",
-      ":org_robolectric_utils_reflector_java",
+
+      # TODO: Remove 2 modification after robolectric 4.6 has landed.
+      # This is a temporary hack to force cache updating.
+      ":org_robolectric_utils_reflector2_java",
     ]
     bypass_platform_checks = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadowapi_java") {
-    jar_path = "libs/org_robolectric_shadowapi/shadowapi-4.3.1.jar"
+    jar_path = "libs/org_robolectric_shadowapi/shadowapi-4.6.1.jar"
     output_name = "org_robolectric_shadowapi"
     enable_bytecode_checks = false
 
@@ -2734,14 +2320,17 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
-    deps = [ ":org_robolectric_annotations_java" ]
+    deps = [
+      ":org_robolectric_annotations_java",
+      ":org_robolectric_utils_java",
+    ]
     bypass_platform_checks = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_robolectric_shadows_framework_java") {
     jar_path =
-        "libs/org_robolectric_shadows_framework/shadows-framework-4.3.1.jar"
+        "libs/org_robolectric_shadows_framework/shadows-framework-4.6.1.jar"
     output_name = "org_robolectric_shadows_framework"
     enable_bytecode_checks = false
 
@@ -2753,14 +2342,17 @@ if (!limit_android_deps) {
     ]
     testonly = true
     deps = [
-      ":com_android_support_support_annotations_java",
+      ":com_google_auto_value_auto_value_annotations_java",
       ":org_robolectric_annotations_java",
       ":org_robolectric_pluginapi_java",
       ":org_robolectric_resources_java",
       ":org_robolectric_shadowapi_java",
       ":org_robolectric_utils_java",
-      ":org_robolectric_utils_reflector_java",
-      "//third_party/accessibility_test_framework:accessibility_test_framework_java",
+
+      # TODO: Remove 2 modification after robolectric 4.6 has landed.
+      # This is a temporary hack to force cache updating.
+      ":org_robolectric_utils_reflector2_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_monitor_java",
       "//third_party/icu4j:icu4j_java",
       "//third_party/sqlite4java:sqlite4java_java",
@@ -2769,8 +2361,8 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_robolectric_utils_reflector_java") {
-    jar_path = "libs/org_robolectric_utils_reflector/utils-reflector-4.3.1.jar"
+  java_prebuilt("org_robolectric_utils_reflector2_java") {
+    jar_path = "libs/org_robolectric_utils_reflector/utils-reflector-4.6.1.jar"
     output_name = "org_robolectric_utils_reflector"
     enable_bytecode_checks = false
 
@@ -2785,6 +2377,7 @@ if (!limit_android_deps) {
       ":org_ow2_asm_asm_commons_java",
       ":org_ow2_asm_asm_java",
       ":org_ow2_asm_asm_util_java",
+      ":org_robolectric_utils_java",
     ]
     bypass_platform_checks = true
   }

@@ -4,46 +4,19 @@
 
 import("//build/config/android/rules.gni")
 
-java_prebuilt("android-all-4.4_r1-robolectric-r2_java") {
-  enable_bytecode_checks = false
+group("robolectric_runtime_jars") {
   testonly = true
-  jar_path = "lib/android-all-4.4_r1-robolectric-r2.jar"
-}
-
-java_prebuilt("android-all-5.0.2_r3-robolectric-r0_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-5.0.2_r3-robolectric-r0.jar"
-}
-
-java_prebuilt("android-all-6.0.1_r3-robolectric-r1_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-6.0.1_r3-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-7.1.0_r7-robolectric-r1_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-7.1.0_r7-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-8.0.0_r4-robolectric-r1_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-8.0.0_r4-robolectric-r1.jar"
-}
-
-java_prebuilt("android-all-8.1.0-robolectric-4611349_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-8.1.0-robolectric-4611349.jar"
-}
-
-java_prebuilt("android-all-9-robolectric-4913185-2_java") {
-  enable_bytecode_checks = false
-  testonly = true
-  jar_path = "lib/android-all-9-robolectric-4913185-2.jar"
+  data = [
+    "//third_party/robolectric/lib/android-all-instrumented-4.4_r1-robolectric-r2-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-5.0.2_r3-robolectric-r0-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-6.0.1_r3-robolectric-r1-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-7.1.0_r7-robolectric-r1-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-8.0.0_r4-robolectric-r1-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-8.1.0-robolectric-4611349-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-9-robolectric-4913185-2-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-10-robolectric-5803371-i1.jar",
+    "//third_party/robolectric/lib/android-all-instrumented-11-robolectric-6757853-i1.jar",
+  ]
 }
 
 java_prebuilt("android-all-10-robolectric-5803371_java") {
