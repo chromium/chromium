@@ -176,12 +176,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
 #if !BUILDFLAG(IS_MAC)
     case WGPUTextureFormat_RGBA8Unorm:
 #endif
-      break;
     case WGPUTextureFormat_RGBA16Float:
-      configured_device_->InjectError(
-          WGPUErrorType_Validation,
-          "rgba16float swap chain is not yet supported");
-      return;
+      break;
     default:
       configured_device_->InjectError(WGPUErrorType_Validation,
                                       "unsupported swap chain format");

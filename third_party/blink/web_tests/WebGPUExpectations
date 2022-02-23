@@ -83,7 +83,12 @@ crbug.com/1282838 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,que
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
 # Linux: Crashes
-crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/* [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_copy.https.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_bgra8unorm_draw.https.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_premultiplied.https.html [ Skip ]
+crbug.com/1083478 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_size_different_with_back_buffer_size.https.html [ Skip ]
+
 # Mac/Win: Shifted by about half a pixel
 crbug.com/1083478 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Failure ]
 crbug.com/1083478 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_bgra8unorm_opaque.https.html [ Failure ]
