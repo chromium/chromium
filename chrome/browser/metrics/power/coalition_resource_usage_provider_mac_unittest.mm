@@ -81,3 +81,60 @@ TEST(CoalitionResourceUsageProviderTest, StartAndEndIntervals) {
   EXPECT_EQ(short_rate->interrupt_wakeups_per_second, 2.8);
   EXPECT_EQ(long_rate->interrupt_wakeups_per_second, 0.96);
 }
+
+// Test that there is no crash if `GetCoalitionResourceUsage()` returns nullptr.
+// Regression test for crbug.com/1298733
+TEST(CoalitionResourceUsageProviderTest, CoalitionResourceUsageIsNull) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  TestCoalitionResourceUsageProvider provider;
+
+  absl::optional<power_metrics::CoalitionResourceUsageRate> short_rate;
+  absl::optional<power_metrics::CoalitionResourceUsageRate> long_rate;
+
+  // Begin long interval.
+  provider.SetCoalitionResourceUsage(
+      std::make_unique<coalition_resource_usage>());
+  provider.Init();
+
+  // Begin short interval. `GetCoalitionResourceUsage()` is nullptr.
+  task_environment.FastForwardBy(base::Seconds(1));
+  provider.StartShortInterval();
+
+  // End both intervals and start long interval. `GetCoalitionResourceUsage()`
+  // is nullptr.
+  task_environment.FastForwardBy(base::Seconds(1));
+  provider.EndIntervals(&short_rate, &long_rate);
+  EXPECT_FALSE(short_rate.has_value());
+  EXPECT_FALSE(long_rate.has_value());
+  short_rate.reset();
+  long_rate.reset();
+
+  // Begin short interval.
+  task_environment.FastForwardBy(base::Seconds(1));
+  provider.SetCoalitionResourceUsage(
+      std::make_unique<coalition_resource_usage>());
+  provider.StartShortInterval();
+
+  // End both intervals and start long interval.
+  task_environment.FastForwardBy(base::Seconds(1));
+  provider.SetCoalitionResourceUsage(
+      std::make_unique<coalition_resource_usage>());
+  provider.EndIntervals(&short_rate, &long_rate);
+  EXPECT_TRUE(short_rate.has_value());
+  EXPECT_FALSE(long_rate.has_value());
+  short_rate.reset();
+  long_rate.reset();
+
+  // Begin short interval. `GetCoalitionResourceUsage()` is nullptr.
+  task_environment.FastForwardBy(base::Seconds(1));
+  provider.StartShortInterval();
+
+  // End both intervals and start long interval.
+  task_environment.FastForwardBy(base::Seconds(1));
+  provider.SetCoalitionResourceUsage(
+      std::make_unique<coalition_resource_usage>());
+  provider.EndIntervals(&short_rate, &long_rate);
+  EXPECT_FALSE(short_rate.has_value());
+  EXPECT_TRUE(long_rate.has_value());
+}
