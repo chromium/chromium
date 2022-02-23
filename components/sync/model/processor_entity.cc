@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_data.h"
@@ -32,6 +33,7 @@ std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
 
 }  // namespace
 
+// TODO(crbug.com/1296159): Add caching possibly trimmed specifics.
 std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateNew(
     const std::string& storage_key,
     const ClientTagHash& client_tag_hash,
@@ -168,6 +170,10 @@ void ProcessorEntity::RecordAcceptedUpdate(const UpdateResponseData& update) {
   metadata_.set_modification_time(
       TimeToProtoTime(update.entity.modification_time));
   UpdateSpecificsHash(update.entity.specifics);
+  if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
+    *metadata_.mutable_possibly_trimmed_base_specifics() =
+        update.entity.specifics;
+  }
 }
 
 void ProcessorEntity::RecordForcedUpdate(const UpdateResponseData& update) {
@@ -191,6 +197,9 @@ void ProcessorEntity::MakeLocalChange(std::unique_ptr<EntityData> data) {
   // it remembers specifics hash before the modifications.
   IncrementSequenceNumber(modification_time);
   UpdateSpecificsHash(data->specifics);
+  if (base::FeatureList::IsEnabled(kCacheBaseEntitySpecificsInMetadata)) {
+    *metadata_.mutable_possibly_trimmed_base_specifics() = data->specifics;
+  }
   if (!data->creation_time.is_null())
     metadata_.set_creation_time(TimeToProtoTime(data->creation_time));
   metadata_.set_modification_time(TimeToProtoTime(modification_time));
@@ -205,6 +214,7 @@ bool ProcessorEntity::Delete() {
   metadata_.set_modification_time(TimeToProtoTime(base::Time::Now()));
   metadata_.set_is_deleted(true);
   metadata_.clear_specifics_hash();
+  metadata_.clear_possibly_trimmed_base_specifics();
   // Clear any cached pending commit data.
   commit_data_.reset();
   // Return true if server might know about this entity.

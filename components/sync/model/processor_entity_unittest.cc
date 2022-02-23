@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -635,6 +637,36 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
   CommitRequestData request;
   entity->InitializeCommitRequestData(&request);
   EXPECT_EQ(kId, request.entity->id);
+}
+
+TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  const base::Time mtime = base::Time::Now();
+  UpdateResponseData update =
+      GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
+  entity->RecordAcceptedUpdate(update);
+  EXPECT_EQ(
+      entity->metadata().possibly_trimmed_base_specifics().preference().name(),
+      kName);
+  EXPECT_EQ(
+      entity->metadata().possibly_trimmed_base_specifics().preference().value(),
+      kValue1);
+}
+
+TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
+
+  std::unique_ptr<ProcessorEntity> entity = CreateNew();
+  entity->MakeLocalChange(GenerateEntityData(kHash, kName, kValue1));
+  EXPECT_EQ(
+      entity->metadata().possibly_trimmed_base_specifics().preference().name(),
+      kName);
+  EXPECT_EQ(
+      entity->metadata().possibly_trimmed_base_specifics().preference().value(),
+      kValue1);
 }
 
 }  // namespace syncer

@@ -22,6 +22,12 @@ inline constexpr base::Feature kAllowSilentTrustedVaultDeviceRegistration{
 inline constexpr base::Feature kAlwaysReceiveSendTabToSelf{
     "AlwaysReceiveSendTabToSelf", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If enabled, EntitySpecifics will be cached in EntityMetadata in order to
+// prevent data loss caused by older clients dealing with unknown proto fields
+// (introduced later).
+inline constexpr base::Feature kCacheBaseEntitySpecificsInMetadata{
+    "CacheBaseEntitySpecificsInMetadata", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Causes Sync to ignore updates encrypted with keys that have been missing for
 // too long from this client; Sync will proceed normally as if those updates
 // didn't exist.
