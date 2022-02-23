@@ -29,6 +29,10 @@ runTests([
       chrome.test.assertEq(mparchEnabled ? 6 : 5, details.frameId);
       chrome.test.assertEq(4, details.parentFrameId);
       chrome.test.assertEq('sub_frame', details.type);
+      chrome.test.assertEq('fenced_frame', details.frameType);
+      chrome.test.assertEq('active', details.documentLifecycle);
+      chrome.test.assertTrue('parentDocumentId' in details);
+      chrome.test.assertFalse('documentId' in details);
       chrome.test.assertEq(getURLFencedFrame(), details.url);
       chrome.test.assertEq(details.stage, expectedEvents.shift());
       if (expectedEvents.length == 0)
