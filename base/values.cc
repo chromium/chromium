@@ -608,6 +608,9 @@ const Value* Value::Dict::FindByDottedPath(StringPiece path) const {
     if (!splitter.HasNext()) {
       return current_value;
     }
+    if (!current_value) {
+      return nullptr;
+    }
     current_dict = current_value->GetIfDict();
     if (!current_dict) {
       return nullptr;
