@@ -7,21 +7,17 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js', 'test_utility.js']);
 /** Test fixture for the focus ring manager. */
 SwitchAccessFocusRingManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await importModule(
-          'FocusRingManager', '/switch_access/focus_ring_manager.js');
-      await importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
-      await importModule('Navigator', '/switch_access/navigator.js');
-      await importModule(
-          'SAConstants', '/switch_access/switch_access_constants.js');
-      await importModule('ActionManager', '/switch_access/action_manager.js');
+  async setUpDeferred() {
+    await importModule(
+        'FocusRingManager', '/switch_access/focus_ring_manager.js');
+    await importModule(
+        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
+    await importModule(
+        'SAConstants', '/switch_access/switch_access_constants.js');
+    await importModule('ActionManager', '/switch_access/action_manager.js');
 
-      await TestUtility.setup();
-      runTest();
-    })();
+    await TestUtility.setup();
   }
 };
 

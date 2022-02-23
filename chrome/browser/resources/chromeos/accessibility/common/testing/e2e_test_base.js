@@ -78,6 +78,22 @@ E2ETestBase = class extends testing.Test {
     `);
   }
 
+  /** @override */
+  setUp() {
+    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
+    (async () => {
+      await this.setUpDeferred();
+      runTest();
+    })();
+  }
+
+  /**
+   * An async variant of setUp.
+   * Derived classes should use importModules within this function to pull any
+   * ES6
+   */
+  async setUpDeferred() {}
+
   /**
    * Listens and waits for the first event on the given node of the given type.
    * @param {!chrome.automation.AutomationNode} node

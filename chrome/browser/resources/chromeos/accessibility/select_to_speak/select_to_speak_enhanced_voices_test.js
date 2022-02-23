@@ -40,21 +40,15 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   }
 
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
+  async setUpDeferred() {
+    await importModule(
+        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+    await importModule(
+        'SelectToSpeakConstants',
+        '/select_to_speak/select_to_speak_constants.js');
+    await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
 
-    (async () => {
-      await importModule(
-          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-      await importModule(
-          'SelectToSpeakConstants',
-          '/select_to_speak/select_to_speak_constants.js');
-      await importModule('PrefsManager', '/select_to_speak/prefs_manager.js');
-
-      selectToSpeak.prefsManager_.initPreferences();
-
-      runTest();
-    })();
+    selectToSpeak.prefsManager_.initPreferences();
   }
 
   /** @override */

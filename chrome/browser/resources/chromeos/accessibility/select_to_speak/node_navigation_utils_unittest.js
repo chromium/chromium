@@ -9,18 +9,13 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule(
-          'NodeNavigationUtils', '/select_to_speak/node_navigation_utils.js');
-      await importModule(
-          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
-      await importModule(
-          ['createMockNode', 'generateTestNodeGroup'],
-          '/select_to_speak/test_node_generator.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'NodeNavigationUtils', '/select_to_speak/node_navigation_utils.js');
+    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+    await importModule(
+        ['createMockNode', 'generateTestNodeGroup'],
+        '/select_to_speak/test_node_generator.js');
   }
 };
 

@@ -43,6 +43,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     window.doCmd = this.doCmd;
     window.doGesture = this.doGesture;
     window.Gesture = chrome.accessibilityPrivate.Gesture;
+
+    super.setUp();
   }
 
   /** @return {!MockFeedback} */

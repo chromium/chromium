@@ -8,12 +8,8 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  * Test fixture for word_utils.js.
  */
 SelectToSpeakWordUtilsUnitTest = class extends SelectToSpeakE2ETest {
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule('WordUtils', '/select_to_speak/word_utils.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule('WordUtils', '/select_to_speak/word_utils.js');
   }
 };
 

@@ -56,15 +56,10 @@ EnhancedNetworkTE2ETestBase = class extends E2ETestBase {
   }
 
   /** @override */
-  setUp() {
-    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule(
-          'EnhancedNetworkTts',
-          '/enhanced_network_tts/enhanced_network_tts.js');
-      await importModule(
-          'enhancedNetworkTts', '/enhanced_network_tts/background.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'EnhancedNetworkTts', '/enhanced_network_tts/enhanced_network_tts.js');
+    await importModule(
+        'enhancedNetworkTts', '/enhanced_network_tts/background.js');
   }
 };

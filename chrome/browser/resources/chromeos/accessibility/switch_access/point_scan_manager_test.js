@@ -7,24 +7,19 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 /** Test fixture for the point scan manager. */
 SwitchAccessPointScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
-      await importModule(
-          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
-      await importModule('SACache', '/switch_access/cache.js');
-      await importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
-      await importModule('Navigator', '/switch_access/navigator.js');
-      await importModule('SwitchAccess', '/switch_access/switch_access.js');
-      await importModule(
-          ['SwitchAccessMenuAction', 'SAConstants'],
-          '/switch_access/switch_access_constants.js');
-
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+    await importModule(
+        ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
+    await importModule('SACache', '/switch_access/cache.js');
+    await importModule(
+        'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
+    await importModule('SwitchAccess', '/switch_access/switch_access.js');
+    await importModule(
+        ['SwitchAccessMenuAction', 'SAConstants'],
+        '/switch_access/switch_access_constants.js');
   }
 };
 

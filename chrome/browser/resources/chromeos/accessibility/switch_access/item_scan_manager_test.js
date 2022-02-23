@@ -7,30 +7,24 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 /** Test fixture for the item scan manager. */
 SwitchAccessItemScanManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await importModule(
-          'BackButtonNode', '/switch_access/nodes/back_button_node.js');
-      await importModule(
-          ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
-      await importModule(
-          ['KeyboardNode', 'KeyboardRootNode'],
-          '/switch_access/nodes/keyboard_node.js');
-      await importModule(
-          'ItemScanManager', '/switch_access/item_scan_manager.js');
-      await importModule('SACache', '/switch_access/cache.js');
-      await importModule(
-          'SwitchAccessMenuAction',
-          '/switch_access/switch_access_constants.js');
-      await importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
-      await importModule('Navigator', '/switch_access/navigator.js');
-      BackButtonNode
-          .locationForTesting = {top: 10, left: 10, width: 20, height: 20};
-
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'BackButtonNode', '/switch_access/nodes/back_button_node.js');
+    await importModule(
+        ['BasicNode', 'BasicRootNode'], '/switch_access/nodes/basic_node.js');
+    await importModule(
+        ['KeyboardNode', 'KeyboardRootNode'],
+        '/switch_access/nodes/keyboard_node.js');
+    await importModule(
+        'ItemScanManager', '/switch_access/item_scan_manager.js');
+    await importModule('SACache', '/switch_access/cache.js');
+    await importModule(
+        'SwitchAccessMenuAction', '/switch_access/switch_access_constants.js');
+    await importModule(
+        'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
+    BackButtonNode
+        .locationForTesting = {top: 10, left: 10, width: 20, height: 20};
   }
 
   moveToPageContents(pageContents) {

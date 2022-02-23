@@ -6,16 +6,12 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 
 /** Test fixture for the Switch Access predicates. */
 SwitchAccessPredicateTest = class extends SwitchAccessE2ETest {
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule(
-          'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
-      await importModule('SACache', '/switch_access/cache.js');
-      await importModule(
-          'SARootNode', '/switch_access/nodes/switch_access_node.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'SwitchAccessPredicate', '/switch_access/switch_access_predicate.js');
+    await importModule('SACache', '/switch_access/cache.js');
+    await importModule(
+        'SARootNode', '/switch_access/nodes/switch_access_node.js');
   }
 };
 

@@ -7,12 +7,8 @@ GEN_INCLUDE(['../../switch_access_e2e_test_base.js', '../../test_utility.js']);
 /** Test fixture for the SAATLite generated tests. */
 SwitchAccessSAATLiteTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    const runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await TestUtility.setup();
-      runTest();
-    })();
+  async setUpDeferred() {
+    await TestUtility.setup();
   }
 };
 

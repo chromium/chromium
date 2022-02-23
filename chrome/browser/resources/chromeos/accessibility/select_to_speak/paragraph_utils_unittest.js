@@ -9,13 +9,8 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakParagraphUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule(
-          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
   }
 };
 

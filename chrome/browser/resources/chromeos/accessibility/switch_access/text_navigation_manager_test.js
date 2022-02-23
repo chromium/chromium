@@ -7,17 +7,12 @@ GEN_INCLUDE(['switch_access_e2e_test_base.js']);
 /** Text fixture for the text navigation manager. */
 SwitchAccessTextNavigationManagerTest = class extends SwitchAccessE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async () => {
-      await importModule(
-          'TextNavigationManager', '/switch_access/text_navigation_manager.js');
-      await importModule('Navigator', '/switch_access/navigator.js');
-      this.textNavigationManager = TextNavigationManager.instance;
-      this.navigationManager = Navigator.byItem;
-
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'TextNavigationManager', '/switch_access/text_navigation_manager.js');
+    await importModule('Navigator', '/switch_access/navigator.js');
+    this.textNavigationManager = TextNavigationManager.instance;
+    this.navigationManager = Navigator.byItem;
   }
 };
 

@@ -17,18 +17,13 @@ SelectToSpeakKeystrokeSelectionTest = class extends SelectToSpeakE2ETest {
   }
 
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule(
-          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
-      await importModule(
-          'SelectToSpeakConstants',
-          '/select_to_speak/select_to_speak_constants.js');
-      selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
-
-      runTest();
-    })();
+  async setUpDeferred() {
+    await importModule(
+        'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+    await importModule(
+        'SelectToSpeakConstants',
+        '/select_to_speak/select_to_speak_constants.js');
+    selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
   }
 
   /**
