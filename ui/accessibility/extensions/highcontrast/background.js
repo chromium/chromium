@@ -54,8 +54,8 @@ class Background {
    * @private
    */
   toggleSite_(url) {
-    var site = siteFromUrl(url);
-    var scheme = Storage.getSiteScheme(site);
+    const site = siteFromUrl(url);
+    let scheme = Storage.getSiteScheme(site);
     if (scheme > 0) {
       scheme = 0;
     } else if (Storage.scheme > 0) {
@@ -84,11 +84,11 @@ class Background {
       this.toggleSite_(sender.tab ? sender.tab.url : 'www.example.com');
     }
     if (request['init']) {
-      var scheme = Storage.scheme;
+      let scheme = Storage.scheme;
       if (sender.tab) {
         scheme = Storage.getSiteScheme(siteFromUrl(sender.tab.url));
       }
-      var msg = {
+      const msg = {
         'enabled': Storage.enabled,
         'scheme': scheme
       };
