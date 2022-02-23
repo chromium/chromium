@@ -91,30 +91,13 @@ DWORD HardenProcessIntegrityLevelPolicy();
 // |lockdown_default_dacl| indicates the token's default DACL should be locked
 // down to restrict what other process can open kernel resources created while
 // running under the token.
-// |saved_handles| and |saved_handles_count| reference a list of handles to
-// assign to the lowbox token. Once created token will take references to the
-// handles so they can be closed afterwards.
 // If the function succeeds, the return value is ERROR_SUCCESS. If the
 // function fails, the return value is the win32 error code corresponding to
 // the error.
 DWORD CreateLowBoxToken(HANDLE base_token,
                         TokenType token_type,
                         SECURITY_CAPABILITIES* security_capabilities,
-                        HANDLE* saved_handles,
-                        DWORD saved_handles_count,
                         base::win::ScopedHandle* token);
-
-// Create a lowbox object directory token. This is not valid prior to Windows 8.
-// This returns the Win32 error code from the operation.
-// |lowbox_sid| the SID for the LowBox.
-// |open_directory| open the directory if it already exists.
-// |directory| is the output value for the directory object.
-// If the function succeeds, the return value is ERROR_SUCCESS. If the
-// function fails, the return value is the win32 error code corresponding to
-// the error.
-DWORD CreateLowBoxObjectDirectory(const base::win::Sid& lowbox_sid,
-                                  bool open_directory,
-                                  base::win::ScopedHandle* directory);
 
 // Returns true if a low IL token can access the current desktop, false
 // otherwise.

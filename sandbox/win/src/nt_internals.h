@@ -755,43 +755,6 @@ typedef VOID(WINAPI* RtlInitUnicodeStringFunction)(IN OUT PUNICODE_STRING
 
 typedef ULONG(WINAPI* RtlNtStatusToDosErrorFunction)(NTSTATUS status);
 
-typedef NTSTATUS(WINAPI* NtCreateDirectoryObjectFunction)(
-    PHANDLE DirectoryHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes);
-
-typedef NTSTATUS(WINAPI* NtOpenDirectoryObjectFunction)(
-    PHANDLE DirectoryHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes);
-
-typedef NTSTATUS(WINAPI* NtQuerySymbolicLinkObjectFunction)(
-    HANDLE LinkHandle,
-    PUNICODE_STRING LinkTarget,
-    PULONG ReturnedLength);
-
-typedef NTSTATUS(WINAPI* NtOpenSymbolicLinkObjectFunction)(
-    PHANDLE LinkHandle,
-    ACCESS_MASK DesiredAccess,
-    POBJECT_ATTRIBUTES ObjectAttributes);
-
-#define DIRECTORY_QUERY 0x0001
-#define DIRECTORY_TRAVERSE 0x0002
-#define DIRECTORY_CREATE_OBJECT 0x0004
-#define DIRECTORY_CREATE_SUBDIRECTORY 0x0008
-#define DIRECTORY_ALL_ACCESS 0x000F
-
-typedef NTSTATUS(WINAPI* NtCreateLowBoxToken)(
-    OUT PHANDLE token,
-    IN HANDLE original_handle,
-    IN ACCESS_MASK access,
-    IN POBJECT_ATTRIBUTES object_attribute,
-    IN PSID appcontainer_sid,
-    IN DWORD capabilityCount,
-    IN PSID_AND_ATTRIBUTES capabilities,
-    IN DWORD handle_count,
-    IN PHANDLE handles);
-
 typedef NTSTATUS(WINAPI* NtSetInformationProcess)(IN HANDLE process_handle,
                                                   IN ULONG info_class,
                                                   IN PVOID process_information,

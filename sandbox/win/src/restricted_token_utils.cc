@@ -56,6 +56,12 @@ void AddSidException(std::vector<base::win::Sid>& sids,
   DCHECK(sid);
   sids.push_back(std::move(*sid));
 }
+
+typedef BOOL(WINAPI* CreateAppContainerTokenFunction)(
+    HANDLE TokenHandle,
+    PSECURITY_CAPABILITIES SecurityCapabilities,
+    PHANDLE OutToken);
+
 }  // namespace
 
 DWORD CreateRestrictedToken(
@@ -290,12 +296,7 @@ DWORD HardenProcessIntegrityLevelPolicy() {
 DWORD CreateLowBoxToken(HANDLE base_token,
                         TokenType token_type,
                         SECURITY_CAPABILITIES* security_capabilities,
-                        HANDLE* saved_handles,
-                        DWORD saved_handles_count,
                         base::win::ScopedHandle* token) {
-  NtCreateLowBoxToken CreateLowBoxToken = nullptr;
-  ResolveNTFunctionPtr("NtCreateLowBoxToken", &CreateLowBoxToken);
-
   if (base::win::GetVersion() < base::win::Version::WIN8)
     return ERROR_CALL_NOT_IMPLEMENTED;
 
@@ -304,6 +305,12 @@ DWORD CreateLowBoxToken(HANDLE base_token,
 
   if (!token)
     return ERROR_INVALID_PARAMETER;
+
+  CreateAppContainerTokenFunction CreateAppContainerToken =
+      reinterpret_cast<CreateAppContainerTokenFunction>(::GetProcAddress(
+          ::GetModuleHandle(L"kernelbase.dll"), "CreateAppContainerToken"));
+  if (!CreateAppContainerToken)
+    return ::GetLastError();
 
   base::win::ScopedHandle base_token_handle;
   if (!base_token) {
@@ -315,23 +322,16 @@ DWORD CreateLowBoxToken(HANDLE base_token,
     base_token_handle.Set(process_token);
     base_token = process_token;
   }
-  OBJECT_ATTRIBUTES obj_attr;
-  InitializeObjectAttributes(&obj_attr, nullptr, 0, nullptr, nullptr);
   HANDLE token_lowbox = nullptr;
-
-  NTSTATUS status = CreateLowBoxToken(
-      &token_lowbox, base_token, TOKEN_ALL_ACCESS, &obj_attr,
-      security_capabilities->AppContainerSid,
-      security_capabilities->CapabilityCount,
-      security_capabilities->Capabilities, saved_handles_count,
-      saved_handles_count > 0 ? saved_handles : nullptr);
-  if (!NT_SUCCESS(status))
-    return GetLastErrorFromNtStatus(status);
+  if (!CreateAppContainerToken(base_token, security_capabilities,
+                               &token_lowbox)) {
+    return ::GetLastError();
+  }
 
   base::win::ScopedHandle token_lowbox_handle(token_lowbox);
   DCHECK(token_lowbox_handle.IsValid());
 
-  // Default from NtCreateLowBoxToken is a Primary token.
+  // Default from CreateAppContainerToken is a Primary token.
   if (token_type == PRIMARY) {
     *token = std::move(token_lowbox_handle);
     return ERROR_SUCCESS;
@@ -361,41 +361,6 @@ DWORD CreateLowBoxToken(HANDLE base_token,
   }
 
   *token = std::move(token_for_sd);
-
-  return ERROR_SUCCESS;
-}
-
-DWORD CreateLowBoxObjectDirectory(const base::win::Sid& lowbox_sid,
-                                  bool open_directory,
-                                  base::win::ScopedHandle* directory) {
-  DWORD session_id = 0;
-  if (!::ProcessIdToSessionId(::GetCurrentProcessId(), &session_id))
-    return ::GetLastError();
-
-  absl::optional<std::wstring> sid_string = lowbox_sid.ToSddlString();
-  if (!sid_string)
-    return ERROR_INVALID_SID;
-
-  std::wstring directory_path =
-      base::StringPrintf(L"\\Sessions\\%d\\AppContainerNamedObjects\\%ls",
-                         session_id, sid_string->c_str());
-
-  OBJECT_ATTRIBUTES obj_attr;
-  UNICODE_STRING obj_name;
-  DWORD attributes = OBJ_CASE_INSENSITIVE;
-  if (open_directory)
-    attributes |= OBJ_OPENIF;
-
-  InitObjectAttribs(directory_path, attributes, nullptr, &obj_attr, &obj_name,
-                    nullptr);
-
-  HANDLE handle = nullptr;
-  NTSTATUS status = GetNtExports()->CreateDirectoryObject(
-      &handle, DIRECTORY_ALL_ACCESS, &obj_attr);
-
-  if (!NT_SUCCESS(status))
-    return GetLastErrorFromNtStatus(status);
-  directory->Set(handle);
 
   return ERROR_SUCCESS;
 }

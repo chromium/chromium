@@ -66,7 +66,7 @@ bool GetAppContainerImpersonationToken(
     return false;
   SecurityCapabilities security_caps(*app_container_sid, capabilities);
   return CreateLowBoxToken(initial_token, IMPERSONATION, &security_caps,
-                           nullptr, 0, impersonation_token) == ERROR_SUCCESS;
+                           impersonation_token) == ERROR_SUCCESS;
 }
 
 }  // namespace

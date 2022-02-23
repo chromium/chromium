@@ -12,7 +12,6 @@ namespace sandbox {
 struct NtExports {
   bool                                   Initialized;
   NtAllocateVirtualMemoryFunction        AllocateVirtualMemory;
-  NtCreateDirectoryObjectFunction        CreateDirectoryObject;
   NtCreateFileFunction                   CreateFile;
   NtCreateSectionFunction                CreateSection;
   NtCloseFunction                        Close;

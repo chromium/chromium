@@ -126,7 +126,6 @@ void InitGlobalNt() {
   HMODULE ntdll = ::GetModuleHandle(sandbox::kNtdllName);
   base::win::PEImage image(ntdll);
   INIT_NT(AllocateVirtualMemory);
-  INIT_NT(CreateDirectoryObject);
   INIT_NT(CreateFile);
   INIT_NT(CreateSection);
   INIT_NT(Close);

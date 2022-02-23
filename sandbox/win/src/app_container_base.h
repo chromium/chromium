@@ -90,7 +90,6 @@ class AppContainerBase final : public AppContainer {
   std::vector<base::win::Sid> capabilities_;
   std::vector<base::win::Sid> impersonation_capabilities_;
   AppContainerType type_;
-  base::win::ScopedHandle lowbox_directory_;
 };
 
 }  // namespace sandbox

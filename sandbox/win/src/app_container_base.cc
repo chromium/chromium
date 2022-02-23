@@ -356,20 +356,9 @@ ResultCode AppContainerBase::BuildLowBoxToken(
     base::win::ScopedHandle* token,
     base::win::ScopedHandle* lockdown) {
   if (type_ == AppContainerType::kLowbox) {
-    if (!lowbox_directory_.IsValid()) {
-      DWORD result =
-          CreateLowBoxObjectDirectory(package_sid_, true, &lowbox_directory_);
-      DCHECK(result == ERROR_SUCCESS);
-    }
-
-    // The order of handles isn't important in the CreateLowBoxToken call.
-    // The kernel will maintain a reference to the object directory handle.
-    HANDLE saved_handles[1] = {lowbox_directory_.Get()};
-    DWORD saved_handles_count = lowbox_directory_.IsValid() ? 1 : 0;
-
     if (CreateLowBoxToken(lockdown->Get(), PRIMARY,
-                          GetSecurityCapabilities().get(), saved_handles,
-                          saved_handles_count, token) != ERROR_SUCCESS) {
+                          GetSecurityCapabilities().get(),
+                          token) != ERROR_SUCCESS) {
       return SBOX_ERROR_CANNOT_CREATE_LOWBOX_TOKEN;
     }
 
@@ -378,7 +367,7 @@ ResultCode AppContainerBase::BuildLowBoxToken(
       return SBOX_ERROR_CANNOT_MODIFY_LOWBOX_TOKEN_DACL;
     }
   } else if (CreateLowBoxToken(nullptr, IMPERSONATION,
-                               GetSecurityCapabilities().get(), nullptr, 0,
+                               GetSecurityCapabilities().get(),
                                token) != ERROR_SUCCESS) {
     return SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN;
   }
