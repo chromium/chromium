@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/extensions/media_galleries_dialog_views.h"
+
 #include <memory>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_mock.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/media_galleries_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/media_gallery_checkbox_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/storage_monitor/storage_info.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -53,13 +54,13 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
   void PreRunTestOnMainThread() override {
     DialogBrowserTest::PreRunTestOnMainThread();
     const GURL about_blank(url::kAboutBlankURL);
-    content::WebContents* content = browser()->OpenURL(content::OpenURLParams(
-        about_blank, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-        ui::PAGE_TRANSITION_TYPED, false));
+    content::WebContents* content =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(content);
     EXPECT_CALL(controller_, WebContents())
         .WillRepeatedly(testing::Return(content));
-    content::TestNavigationManager manager(content, about_blank);
-    manager.WaitForNavigationFinished();
+    ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
+        browser(), about_blank, 1, WindowOpenDisposition::CURRENT_TAB, 0);
   }
 
   void ShowUi(const std::string& name) override {
