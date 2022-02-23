@@ -2567,10 +2567,21 @@ bool NGBoxFragmentPainter::HitTestFloatingChildItems(
           continue;
         }
 
-        // Look into descendants of all inline boxes because inline boxes do not
-        // have |HasFloatingDescendantsForPaint()| flag.
-        if (!child_box->IsInlineBox())
+        // Atomic inline is |IsPaintedAtomically|. |HitTestChildBoxFragment|
+        // handles floating descendants in the |kHitTestForeground| phase.
+        if (child_box->IsPaintedAtomically())
           continue;
+        DCHECK(child_box->IsInlineBox() || child_box->IsBlockInInline());
+
+        // If |child_box| is an inline box, look into descendants because inline
+        // boxes do not have |HasFloatingDescendantsForPaint()| flag.
+        if (!child_box->IsInlineBox()) {
+          if (child_box->HasFloatingDescendantsForPaint()) {
+            if (HitTestFloatingChildren(hit_test, *child_box, child_offset))
+              return true;
+          }
+          continue;
+        }
       }
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
     } else if (item->Type() == NGFragmentItem::kLine) {
