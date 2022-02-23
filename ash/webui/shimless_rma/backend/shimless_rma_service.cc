@@ -273,6 +273,20 @@ void ShimlessRmaService::SetDifferentOwner(SetDifferentOwnerCallback callback) {
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::SetWipeDevice(bool should_wipe_device,
+                                       SetWipeDeviceCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kWipeSelection) {
+    LOG(ERROR) << "SetWipeDevice called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  state_proto_.mutable_wipe_selection()->set_wipe_device(should_wipe_device);
+  TransitionNextStateGeneric(std::move(callback));
+}
+
 void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
     ChooseManuallyDisableWriteProtectCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kWpDisableMethod) {

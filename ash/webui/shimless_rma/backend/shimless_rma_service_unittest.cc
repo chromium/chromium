@@ -123,6 +123,9 @@ class ShimlessRmaServiceTest : public testing::Test {
         state->set_allocated_device_destination(
             new rmad::DeviceDestinationState());
         break;
+      case rmad::RmadState::kWipeSelection:
+        state->set_allocated_wipe_selection(new rmad::WipeSelectionState());
+        break;
       case rmad::RmadState::kWpDisableMethod:
         state->set_allocated_wp_disable_method(
             new rmad::WriteProtectDisableMethodState());
@@ -624,6 +627,39 @@ TEST_F(ShimlessRmaServiceTest, SetDifferentOwner) {
       [&](mojom::State state, bool can_cancel, bool can_go_back,
           rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::State::kRestock);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, SetWipeDevice) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWipeSelection, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kWipeSelection);
+        EXPECT_TRUE(state.wipe_selection().wipe_device());
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseWipeDevice);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  const bool expected_wipe_device = true;
+  shimless_rma_provider_->SetWipeDevice(
+      expected_wipe_device,
+      base::BindLambdaForTesting([&](mojom::State state, bool can_cancel,
+                                     bool can_go_back,
+                                     rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
       }));

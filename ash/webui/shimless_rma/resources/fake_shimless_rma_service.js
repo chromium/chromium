@@ -278,6 +278,15 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @param {boolean} shouldWipeDevice
+   * @return {!Promise<!StateResult>}
+   */
+  setWipeDevice(shouldWipeDevice) {
+    return this.getNextStateForMethod_(
+        'setWipeDevice', State.kChooseWipeDevice);
+  }
+
+  /**
    * @return {!Promise<!{available: boolean}>}
    */
   manualDisableWriteProtectAvailable() {

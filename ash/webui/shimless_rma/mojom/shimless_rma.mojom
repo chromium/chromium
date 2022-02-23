@@ -489,6 +489,14 @@ interface ShimlessRmaService {
           RmadErrorCode error);
 
   ///////////////////////////////////////
+  // Method for kChooseWipeDevice state.
+  //
+  // Set the RMA state to wipe or preserve the device data on RMA completion.
+  SetWipeDevice(bool should_wipe_device)
+      => (State state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
+
+  ///////////////////////////////////////
   // Methods for kChooseWriteProtectDisableMethod state.
   //
   // Choose to disabled HWWP manually e.g. by disconnecting the battery
