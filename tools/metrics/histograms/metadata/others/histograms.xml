@@ -6034,6 +6034,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Incognito.ClearBrowsingDataDialog.ActionType"
+    enum="IncognitoClearBrowsingDataDialogActionType"
+    expires_after="2022-09-01">
+  <owner>roagarwal@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Records the action taken by the user on the Incognito clear browsing data
+    dialog.
+  </summary>
+</histogram>
+
 <histogram name="IncognitoModePrefs.WindowsParentalControlsInitThread"
     enum="ThreadType" expires_after="M77">
   <obsolete>

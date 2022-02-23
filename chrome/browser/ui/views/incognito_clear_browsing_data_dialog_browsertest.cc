@@ -67,9 +67,13 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
                        TestCloseWindowsButton) {
+  base::HistogramTester histogram_tester;
   OpenDialog();
 
   GetDialogView()->AcceptDialog();
+  histogram_tester.ExpectBucketCount(
+      "Incognito.ClearBrowsingDataDialog.ActionType",
+      IncognitoClearBrowsingDataDialog::DialogActionType::kCloseIncognito, 1);
   ui_test_utils::WaitForBrowserToClose(GetIncognitoBrowser());
   ASSERT_EQ(0UL, BrowserList::GetIncognitoBrowserCount());
   ASSERT_TRUE(GetDialogView() == nullptr);
@@ -77,6 +81,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
                        TestCancelButton) {
+  base::HistogramTester histogram_tester;
   OpenDialog();
 
   base::RunLoop run_loop;
@@ -88,6 +93,9 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogBrowserTest,
       }));
 
   GetDialogView()->Cancel();
+  histogram_tester.ExpectBucketCount(
+      "Incognito.ClearBrowsingDataDialog.ActionType",
+      IncognitoClearBrowsingDataDialog::DialogActionType::kCancel, 1);
   run_loop.Run();
 }
 

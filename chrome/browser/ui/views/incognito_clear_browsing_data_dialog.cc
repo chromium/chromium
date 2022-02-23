@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 
+#include "base/metrics/histogram_functions.h"
+
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
@@ -67,6 +69,7 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
     Profile* incognito_profile,
     Type type)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
+      dialog_type_(type),
       incognito_profile_(incognito_profile) {
   DCHECK(incognito_profile_);
   DCHECK(incognito_profile_->IsIncognitoProfile());
@@ -177,6 +180,12 @@ void IncognitoClearBrowsingDataDialog::
 }
 
 void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
+  if (dialog_type_ == Type::kDefaultBubble) {
+    base::UmaHistogramEnumeration(
+        "Incognito.ClearBrowsingDataDialog.ActionType",
+        DialogActionType::kCloseIncognito);
+  }
+
   // Skipping before-unload trigger to give incognito mode users a chance to
   // quickly close all incognito windows without needing to confirm closing the
   // open forms.
@@ -186,6 +195,12 @@ void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
 }
 
 void IncognitoClearBrowsingDataDialog::OnCancelButtonClicked() {
+  if (dialog_type_ == Type::kDefaultBubble) {
+    base::UmaHistogramEnumeration(
+        "Incognito.ClearBrowsingDataDialog.ActionType",
+        DialogActionType::kCancel);
+  }
+
   CloseDialog();
 }
 

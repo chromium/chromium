@@ -27,6 +27,17 @@ class IncognitoClearBrowsingDataDialog
     kMaxValue = kHistoryDisclaimerBubble,
   };
 
+  // Represents the action type that the user can take in the dialog.
+  // Do not reorder items here because it's mirrored to UMA as
+  // IncognitoClearBrowsingDataDialogActionType. Values should be enumerated
+  // from 0. When removing items, comment them out and keep the existing numeric
+  // values stable. Don't forget to also add any new entries to the enums.xml.
+  enum class DialogActionType {
+    kCancel = 0,
+    kCloseIncognito = 1,
+    kMaxValue = kCloseIncognito,
+  };
+
   static void Show(views::View* anchor_view,
                    Profile* incognito_profile,
                    Type type);
@@ -57,6 +68,7 @@ class IncognitoClearBrowsingDataDialog
   void SetDialogForDefaultBubbleType();
   void SetDialogForHistoryDisclaimerBubbleType();
 
+  const Type dialog_type_;
   raw_ptr<Profile> incognito_profile_;
   base::OnceClosure destructor_callback_ = base::DoNothing();
 };

@@ -46134,6 +46134,11 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="4" label="Chrome - Read later"/>
 </enum>
 
+<enum name="IncognitoClearBrowsingDataDialogActionType">
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Close Incognito"/>
+</enum>
+
 <enum name="IncognitoForcedStart">
   <int value="0" label="No Incognito switch and not forced"/>
   <int value="1" label="Incognito switch but not forced"/>
