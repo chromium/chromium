@@ -5266,6 +5266,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "secondary-google-account-usage",
+    "owners": [ "rodmartin", "sinhak", "chromeos-commercial-identity@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "semantic-colors-debug-override",
     "owners": [ "calamity@chromium.org" ],
     "expiry_milestone": 109

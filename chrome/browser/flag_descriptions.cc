@@ -5230,6 +5230,12 @@ const char kScanAppSearchablePdfDescription[] =
     "Allow selecting Searchable PDF file type in Scan app"
     " with incorporation of OCR service.";
 
+const char kSecondaryGoogleAccountUsageName[] =
+    "Enable Secondary Google account usage policy.";
+const char kSecondaryGoogleAccountUsageDescription[] =
+    "Add restrictions on a managed account's usage as a secondary account on "
+    "Chrome OS.";
+
 const char kSharesheetCopyToClipboardName[] =
     "Enable copy to clipboard in the Chrome OS Sharesheet.";
 const char kSharesheetCopyToClipboardDescription[] =

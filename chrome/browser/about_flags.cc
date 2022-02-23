@@ -4550,6 +4550,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcVmBalloonPolicyName,
      flag_descriptions::kArcVmBalloonPolicyDesc, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kVmBalloonPolicy)},
+    {"secondary-google-account-usage",
+     flag_descriptions::kSecondaryGoogleAccountUsageName,
+     flag_descriptions::kSecondaryGoogleAccountUsageDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSecondaryGoogleAccountUsage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-generic-sensor-extra-classes",
      flag_descriptions::kEnableGenericSensorExtraClassesName,
