@@ -8,6 +8,8 @@
 #include <initializer_list>
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
+
 class WebStateList;
 
 namespace web {
@@ -32,7 +34,7 @@ class WebStateListRemovingIndexes {
   ~WebStateListRemovingIndexes();
 
   // Returns the number of WebState that will be closed.
-  int count() const { return static_cast<int>(indexes_.size()); }
+  int count() const;
 
   // Returns whether index is present in the list of indexes to close.
   bool Contains(int index) const;
@@ -48,8 +50,15 @@ class WebStateListRemovingIndexes {
       const web::WebState* web_state,
       int starting_index);
 
+  // Represents an empty WebStateListRemovingIndexes.
+  struct Empty {};
+
+  // Alias for the variant storing the indexes to remove. Using a variant
+  // allow not allocating for the common case of removing one element.
+  using Storage = absl::variant<Empty, int, std::vector<int>>;
+
  private:
-  std::vector<int> indexes_;
+  Storage removing_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_REMOVING_INDEXES_H_

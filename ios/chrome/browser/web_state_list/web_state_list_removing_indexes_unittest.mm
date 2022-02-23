@@ -63,6 +63,8 @@ TEST_F(WebStateListRemovingIndexesTest, Count) {
   EXPECT_EQ(WebStateListRemovingIndexes({}).count(), 0);
   EXPECT_EQ(WebStateListRemovingIndexes({1}).count(), 1);
   EXPECT_EQ(WebStateListRemovingIndexes({1, 1}).count(), 1);
+  EXPECT_EQ(WebStateListRemovingIndexes({1, 2}).count(), 2);
+  EXPECT_EQ(WebStateListRemovingIndexes({2, 1, 2, 1}).count(), 2);
 }
 
 // Tests that WebStateListRemovingIndexes correctly returns the correct

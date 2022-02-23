@@ -53,6 +53,7 @@ source_set("web_state_list") {
     "//ios/web",
     "//ios/web/public/session",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
