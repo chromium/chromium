@@ -65,6 +65,11 @@ class ExtensionDownloaderTest : public ExtensionsTest {
     return helper->downloader().url_stats_;
   }
 
+  const std::vector<ExtensionDownloaderTask>& GetDownloaderPendingTasks(
+      ExtensionDownloaderTestHelper* helper) {
+    return helper->downloader().pending_tasks_;
+  }
+
   std::string CreateUpdateManifest(const std::string& extension_id,
                                    const std::string& extension_version) {
     return "<?xml version='1.0' encoding='UTF-8'?>"
@@ -436,6 +441,54 @@ TEST_F(ExtensionDownloaderTest, TestURLStats) {
       false /* is_corrupt_reinstall */, 0 /* request_id */,
       ManifestFetchData::FetchPriority::BACKGROUND));
   EXPECT_EQ(1, stats.other_url_count);
+}
+
+// Tests edge-cases related to the update URL.
+TEST_F(ExtensionDownloaderTest, TestUpdateURLHandle) {
+  ExtensionDownloaderTestHelper helper;
+  const std::vector<ExtensionDownloaderTask>& tasks =
+      GetDownloaderPendingTasks(&helper);
+
+  // Clear pending queue to check it.
+  helper.downloader().StartAllPending(nullptr);
+  // Invalid update URL, shouldn't be added at all.
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, GURL("http://?invalid=url"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  EXPECT_EQ(0u, tasks.size());
+
+  // Clear pending queue to check it.
+  helper.downloader().StartAllPending(nullptr);
+  // HTTP Webstore URL, should be replaced with HTTPS.
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, GURL("http://clients2.google.com/service/update2/crx"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  ASSERT_EQ(1u, tasks.size());
+  EXPECT_EQ(GURL("https://clients2.google.com/service/update2/crx"),
+            tasks.rbegin()->update_url);
+
+  // Clear pending queue to check it.
+  helper.downloader().StartAllPending(nullptr);
+  // Just a custom URL, should be kept as is.
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, GURL("https://example.com"),
+      mojom::ManifestLocation::kInternal, false /* is_corrupt_reinstall */,
+      0 /* request_id */, ManifestFetchData::FetchPriority::BACKGROUND));
+  ASSERT_EQ(1u, tasks.size());
+  EXPECT_EQ(GURL("https://example.com"), tasks.rbegin()->update_url);
+
+  // Clear pending queue to check it.
+  helper.downloader().StartAllPending(nullptr);
+  // Empty URL, should be replaced with Webstore one.
+  helper.downloader().AddPendingExtension(ExtensionDownloaderTask(
+      kTestExtensionId, GURL(""), mojom::ManifestLocation::kInternal,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      ManifestFetchData::FetchPriority::BACKGROUND));
+  ASSERT_EQ(1u, tasks.size());
+  EXPECT_EQ(GURL("https://clients2.google.com/service/update2/crx"),
+            tasks.rbegin()->update_url);
 }
 
 }  // namespace extensions
