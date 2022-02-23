@@ -4,9 +4,8 @@
 
 """Library for defining chromium_tests_builder_config properties."""
 
-load("@stdlib//internal/graph.star", "graph")
-load("@stdlib//internal/luci/common.star", "kinds")
 load("./args.star", "args")
+load("./nodes.star", "nodes")
 load("//project.star", "settings")
 
 # TODO(gbeaty) Add support for PROVIDE_TEST_SPEC mirrors
@@ -381,81 +380,22 @@ builder_config = struct(
 
 # Internal details =============================================================
 
-# The kind of the nodes containing the builder config details for a builder
-_BUILDER_CONFIG_KIND = "builder_config"
+# Nodes containing the builder config details for a builder
+_BUILDER_CONFIG = nodes.create_node_type_with_builder_ref("builder_config")
 
-def _builder_config_key(bucket, builder):
-    return graph.key("@chromium", "", kinds.BUCKET, bucket, _BUILDER_CONFIG_KIND, builder)
+# Nodes representing a link to a parent builder
+_BUILDER_CONFIG_PARENT = nodes.create_link_node_type(
+    "builder_config_parent",
+    _BUILDER_CONFIG,
+    _BUILDER_CONFIG,
+)
 
-# The kind of the nodes tracking references to other builders in the builder
-# config details
-#
-# There will be multiple builder_config_ref nodes pointing at a single
-# builder_config node to allow builders to be referred to either as
-# <bucket>/<builder> or just <builder> if it is unambiguous. They will only be
-# used via a parent, with the type of the parent corresponding to the purpose of
-# the reference.
-_BUILDER_CONFIG_REF_KIND = "builder_config_ref"
-
-def _builder_config_ref_key(ref):
-    chunks = ref.split(":", 1)
-    if len(chunks) != 1:
-        fail("reference to builder in external project '{}' is not allowed here"
-            .format(chunks[0]))
-    chunks = ref.split("/", 1)
-    if len(chunks) == 1:
-        return graph.key("@chromium", "", _BUILDER_CONFIG_REF_KIND, ref)
-    return graph.key("@chromium", "", kinds.BUCKET, chunks[0], _BUILDER_CONFIG_REF_KIND, chunks[1])
-
-# The kind of the nodes representing a link to a parent builder
-#
-# Will have a single builder_config_ref node as a child and a single
-# builder_config node as a parent.
-_BUILDER_CONFIG_PARENT_KIND = "builder_config_parent"
-
-def _builder_config_parent_key(ref):
-    return graph.key("@chromium", "", _BUILDER_CONFIG_PARENT_KIND, ref)
-
-# The kind of the nodes representing a link to a mirror
-#
-# Will have a single builder_config_ref node as a child and a single
-# builder_config node as a parent.
-_BUILDER_CONFIG_MIRROR_KIND = "builder_config_mirror"
-
-def _builder_config_mirror_key(ref):
-    return graph.key("@chromium", "", _BUILDER_CONFIG_MIRROR_KIND, ref)
-
-def _follow_builder_config_ref(ref_node, context_node):
-    """Get the pointed-at builder config node for a builder config ref.
-
-    Fails if the reference is ambiguous (i.e. 'ref_node' has more than one
-    child). Such references can't be used to refer to a single builder.
-
-    Args:
-        ref_node: builder config ref node.
-        context_node: Node where this ref is used, for error messages.
-
-    Returns:
-        builder config graph node.
-    """
-    if ref_node.key.kind != _BUILDER_CONFIG_REF_KIND:
-        fail("{} is not builder_config ref".format(ref_node))
-
-    variants = graph.children(ref_node.key, _BUILDER_CONFIG_KIND)
-    if not variants:
-        fail("{} is unexpectedly unconnected".format(ref_node))
-
-    if len(variants) == 1:
-        return variants[0]
-
-    fail(
-        "ambiguous reference '{}' in {}, possible variants:\n  {}".format(
-            ref_node.key.id,
-            context_node,
-            "\n  ".join([str(v) for v in variants]),
-        ),
-        trace = context_node.trace,
-    )
+# Nodes representing a link to a mirrored builder
+_BUILDER_CONFIG_MIRROR = nodes.create_link_node_type(
+    "builder_config_mirror",
+    _BUILDER_CONFIG,
+    _BUILDER_CONFIG,
+)
 
 def _struct_to_dict(obj):
     return json.decode(json.encode(obj))
@@ -498,8 +438,7 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, 
     if builder_spec and mirrors:
         fail("only one of builder_spec or mirrors can be set")
 
-    builder_config_key = _builder_config_key(bucket, name)
-    graph.add_node(builder_config_key, props = dict(
+    builder_config_key = _BUILDER_CONFIG.add(bucket, name, props = dict(
         bucket = bucket,
         name = name,
         builder_group = builder_group,
@@ -507,32 +446,19 @@ def register_builder_config(bucket, name, builder_group, builder_spec, mirrors, 
         mirrors = mirrors,
         try_settings = _struct_to_dict(try_settings),
     ))
-    for ref in (name, "{}/{}".format(bucket, name)):
-        ref_key = _builder_config_ref_key(ref)
-        graph.add_node(ref_key, idempotent = True)
-        graph.add_edge(ref_key, builder_config_key)
 
     parent = getattr(builder_spec, "parent", None)
     if parent:
-        parent_key = _builder_config_parent_key(parent)
-        graph.add_node(parent_key, idempotent = True)
-        graph.add_edge(builder_config_key, parent_key)
-        graph.add_edge(parent_key, _builder_config_ref_key(parent))
+        _BUILDER_CONFIG_PARENT.link(builder_config_key, parent)
 
     for m in mirrors or []:
-        mirror_key = _builder_config_mirror_key(m)
-        graph.add_node(mirror_key, idempotent = True)
-        graph.add_edge(builder_config_key, mirror_key)
-        graph.add_edge(mirror_key, _builder_config_ref_key(m))
+        _BUILDER_CONFIG_MIRROR.link(builder_config_key, m)
 
 def _builder_name(node):
     return "{}/{}".format(node.props.bucket, node.props.name)
 
 def _get_parent_node(node):
-    nodes = []
-    for p in graph.children(node.key, _BUILDER_CONFIG_PARENT_KIND):
-        for r in graph.children(p.key, _BUILDER_CONFIG_REF_KIND):
-            nodes.append(_follow_builder_config_ref(r, node))
+    nodes = _BUILDER_CONFIG_PARENT.children(node.key)
 
     execution_mode = node.props.builder_spec["execution_mode"]
 
@@ -552,10 +478,7 @@ def _get_parent_node(node):
     return nodes[0]
 
 def _get_child_nodes(node):
-    nodes = []
-    for r in graph.parents(node.key, _BUILDER_CONFIG_REF_KIND):
-        for p in graph.parents(r.key, _BUILDER_CONFIG_PARENT_KIND):
-            nodes.extend(graph.parents(p.key, _BUILDER_CONFIG_KIND))
+    nodes = _BUILDER_CONFIG_PARENT.parents(node.key)
 
     execution_mode = node.props.builder_spec["execution_mode"]
 
@@ -566,24 +489,17 @@ def _get_child_nodes(node):
     return nodes
 
 def _get_mirrored_builders(node):
-    nodes = []
-    for m in graph.children(node.key, _BUILDER_CONFIG_MIRROR_KIND):
-        for r in graph.children(m.key, _BUILDER_CONFIG_REF_KIND):
-            mirror = _follow_builder_config_ref(r, node)
-            if not mirror.props.builder_spec:
-                fail("builder {} mirrors builder {} which does not have a builder spec"
-                    .format(_builder_name(node), _builder_name(mirror)))
-            nodes.append(mirror)
+    nodes = _BUILDER_CONFIG_MIRROR.children(node.key)
+
+    for mirror in nodes:
+        if not mirror.props.builder_spec:
+            fail("builder {} mirrors builder {} which does not have a builder spec"
+                .format(_builder_name(node), _builder_name(mirror)))
 
     return nodes
 
 def _get_mirroring_builders(node):
-    nodes = []
-    for r in graph.parents(node.key, _BUILDER_CONFIG_REF_KIND):
-        for m in graph.parents(r.key, _BUILDER_CONFIG_MIRROR_KIND):
-            nodes.extend(graph.parents(m.key, _BUILDER_CONFIG_KIND))
-
-    return nodes
+    return _BUILDER_CONFIG_MIRROR.parents(node.key)
 
 def _builder_id(node):
     return dict(
@@ -632,8 +548,7 @@ def _set_builder_config_property(ctx):
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
-            key = _builder_config_key(bucket_name, builder_name)
-            node = graph.node(key)
+            node = _BUILDER_CONFIG.get(bucket_name, builder_name)
             if not node:
                 continue
 
