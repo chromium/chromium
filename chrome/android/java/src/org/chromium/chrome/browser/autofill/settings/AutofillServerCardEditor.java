@@ -45,7 +45,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDelegate = new AutofillPaymentMethodsDelegate(Profile.getLastUsedRegularProfile());
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT)) {
+            mDelegate = new AutofillPaymentMethodsDelegate(Profile.getLastUsedRegularProfile());
+        }
     }
 
     @Override
@@ -73,6 +76,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             setVirtualCardEnrollmentButtonLabel(
                     mCard.getVirtualCardEnrollmentState() == VirtualCardEnrollmentState.ENROLLED);
             mVirtualCardEnrollmentButton.setOnClickListener(view -> {
+                assert mDelegate
+                        != null
+                    : "mDelegate must be initialized before making (un)enrolment calls.";
                 if (!mVirtualCardEnrollmentButtonShowsUnenroll) {
                     // TODO (crbug/1281695): Implement enroll dialog.
                     mDelegate.offerVirtualCardEnrollment(mCard.getInstrumentId());
@@ -122,7 +128,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     public void onDestroy() {
         super.onDestroy();
         // Ensure that the native AutofillPaymentMethodsDelegateMobile instance is cleaned up.
-        mDelegate.cleanup();
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT)) {
+            mDelegate.cleanup();
+        }
     }
 
     private void removeLocalCopyViews() {
