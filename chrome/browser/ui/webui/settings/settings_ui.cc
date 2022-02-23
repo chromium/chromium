@@ -275,6 +275,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enablePasswordNotes",
       base::FeatureList::IsEnabled(password_manager::features::kPasswordNotes));
 
+  html_source->AddBoolean(
+      "enableSendPasswords",
+      base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
                           base::FeatureList::IsEnabled(
