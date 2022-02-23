@@ -799,6 +799,12 @@ bool IsAXSetter(SEL selector) {
   if (ui::IsSetLike(role))
     [axAttributes addObject:@"AXARIASetSize"];
 
+  if ([[self accessibilityRole] isEqualToString:NSAccessibilityWebAreaRole]) {
+    [axAttributes addObjectsFromArray:@[
+      NSAccessibilityLoadedAttribute, NSAccessibilityLoadingProgressAttribute
+    ]];
+  }
+
   // Caret navigation and text selection attributes.
   if (!ui::IsPlatformDocument(_node->GetRole())) {
     [axAttributes addObject:NSAccessibilityFocusableAncestorAttribute];
@@ -1200,6 +1206,19 @@ bool IsAXSetter(SEL selector) {
   if (![self instanceActive])
     return nil;
   return [self getStringAttribute:ax::mojom::StringAttribute::kKeyShortcuts];
+}
+
+- (NSNumber*)AXLoaded {
+  if (![self instanceActive])
+    return nil;
+  return @(_node->GetDelegate()->GetTreeData().loaded);
+}
+
+- (NSNumber*)AXLoadingProgress {
+  if (![self instanceActive])
+    return nil;
+  double doubleValue = _node->GetDelegate()->GetTreeData().loading_progress;
+  return @(doubleValue);
 }
 
 - (id)AXOwns {

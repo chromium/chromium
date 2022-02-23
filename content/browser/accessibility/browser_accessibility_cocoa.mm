@@ -68,7 +68,6 @@ static_assert(
 namespace {
 
 // Private WebKit accessibility attributes.
-NSString* const NSAccessibilityLoadingProgressAttribute = @"AXLoadingProgress";
 NSString* const
     NSAccessibilityUIElementCountForSearchPredicateParameterizedAttribute =
         @"AXUIElementCountForSearchPredicate";
@@ -628,7 +627,6 @@ bool content::IsNSRange(id value) {
        @"insertionPointLineNumber"},
       {NSAccessibilityLanguageAttribute, @"language"},
       {NSAccessibilityLinkedUIElementsAttribute, @"linkedUIElements"},
-      {NSAccessibilityLoadingProgressAttribute, @"loadingProgress"},
       {NSAccessibilityMaxValueAttribute, @"maxValue"},
       {NSAccessibilityMinValueAttribute, @"minValue"},
       {NSAccessibilityNumberOfCharactersAttribute, @"numberOfCharacters"},
@@ -669,7 +667,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityVisibleColumnsAttribute, @"visibleColumns"},
       {NSAccessibilityVisibleRowsAttribute, @"visibleRows"},
       {NSAccessibilityWindowAttribute, @"window"},
-      {@"AXLoaded", @"loaded"},
   };
 
   NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
@@ -1130,20 +1127,6 @@ bool content::IsNSRange(id value) {
                                              kRadioGroupIds
                                    addTo:ret];
   return ret;
-}
-
-- (NSNumber*)loaded {
-  if (![self instanceActive])
-    return nil;
-  return @YES;
-}
-
-- (NSNumber*)loadingProgress {
-  if (![self instanceActive])
-    return nil;
-  BrowserAccessibilityManager* manager = _owner->manager();
-  float floatValue = manager->GetTreeData().loading_progress;
-  return @(floatValue);
 }
 
 - (NSNumber*)maxValue {
@@ -2739,10 +2722,6 @@ bool content::IsNSRange(id value) {
     ]];
     if ([self internalRole] != ax::mojom::Role::kRowHeader)
       [ret addObject:NSAccessibilityRowHeaderUIElementsAttribute];
-  } else if ([role isEqualToString:@"AXWebArea"]) {
-    [ret addObjectsFromArray:@[
-      @"AXLoaded", NSAccessibilityLoadingProgressAttribute
-    ]];
   } else if ([role isEqualToString:NSAccessibilityTabGroupRole]) {
     [ret addObject:NSAccessibilityTabsAttribute];
   } else if (_owner->GetData().IsRangeValueSupported()) {

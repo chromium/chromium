@@ -254,6 +254,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXKeyShortcutsValue) {
   RunTypedTest<kMacAttributes>("ax-key-shortcuts-value.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXLoaded) {
+  RunTypedTest<kMacAttributes>("ax-loaded.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXLoadingProgress) {
+  RunTypedTest<kMacAttributes>("ax-loading-progress.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
   RunTypedTest<kMacAttributes>("ax-math-base.html");
 }
