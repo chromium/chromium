@@ -1412,4 +1412,32 @@ ProcessedActionStatusDetailsProto& ScriptExecutor::GetLogInfo() {
   return delegate_->GetLogInfo();
 }
 
+void ScriptExecutor::RequestUserData(
+    const CollectUserDataOptions& options,
+    base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback) {
+  auto* service = delegate_->GetService();
+  DCHECK(service);
+
+  // TODO(b/218838411): Make sure we always send the OAuth token and disable
+  // the auth-less path. Enable retry options.
+  service->GetUserData(
+      options,
+      base::BindOnce(&ScriptExecutor::OnRequestUserData,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ScriptExecutor::OnRequestUserData(
+    base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback,
+    int http_status,
+    const std::string& response) {
+  if (http_status != net::HTTP_OK) {
+    std::move(callback).Run(false, GetUserDataResponseProto());
+    return;
+  }
+
+  GetUserDataResponseProto response_proto;
+  bool success = response_proto.ParseFromString(response);
+  std::move(callback).Run(success, response_proto);
+}
+
 }  // namespace autofill_assistant

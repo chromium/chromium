@@ -87,7 +87,12 @@ class CollectUserDataAction : public Action,
                    std::vector<WebsiteLoginManager::Login> logins);
   void ShowToUser();
   void OnShowToUser(UserData* user_data, UserData::FieldChange* field_change);
+  void UpdateUserData(UserData* user_data);
+  void OnRequestUserData(UserData* user_data,
+                         bool success,
+                         const GetUserDataResponseProto& response);
   void UpdateMetrics(UserData* user_data);
+  void UpdateUi();
 
   // Creates a new instance of |CollectUserDataOptions| from |proto_|.
   bool CreateOptionsFromProto();
@@ -122,6 +127,9 @@ class CollectUserDataAction : public Action,
   bool shown_to_user_ = false;
   std::unique_ptr<CollectUserDataOptions> collect_user_data_options_;
   ProcessActionCallback callback_;
+
+  // The response of the last user data request.
+  GetUserDataResponseProto last_user_data_;
 
   // Maps login choice identifiers to the corresponding login details.
   base::flat_map<std::string, std::unique_ptr<LoginDetails>> login_details_map_;

@@ -2552,6 +2552,16 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
             .Run(&user_data_, &user_model_);
       });
 
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* profile = user_data_response.add_available_contacts();
+  (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  (*profile->mutable_values())[9] = MakeAutofillEntry("johndoe@google.com");
+  auto* incomplete = user_data_response.add_available_contacts();
+  (*incomplete->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
@@ -2563,14 +2573,7 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
       MakeRequiredDataPiece(autofill::ServerFieldType::EMAIL_ADDRESS);
   collect_user_data->mutable_contact_details()->set_contact_details_name(
       kMemoryLocation);
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-  auto* profile =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
-  (*profile->mutable_values())[9] = MakeAutofillEntry("johndoe@google.com");
-  auto* incomplete =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  (*incomplete->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
@@ -2617,6 +2620,16 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
             .Run(&user_data_, &user_model_);
       });
 
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* profile = user_data_response.add_available_contacts();
+  (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  (*profile->mutable_values())[14] = MakeAutofillEntry("+1 123-456-7890");
+  *user_data_response.add_available_phone_numbers()->mutable_value() =
+      MakeAutofillEntry("+1 187-654-3210");
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
@@ -2629,14 +2642,7 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
       ->set_separate_phone_number_section(true);
   collect_user_data->mutable_contact_details()->set_phone_number_section_title(
       "Phone number");
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-  auto* profile =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  (*profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
-  (*profile->mutable_values())[14] = MakeAutofillEntry("+1 123-456-7890");
-  *collect_user_data->mutable_user_data()
-       ->add_available_phone_numbers()
-       ->mutable_value() = MakeAutofillEntry("+1 187-654-3210");
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
@@ -2711,14 +2717,10 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
             .Run(&user_data_, &user_model_);
       });
 
-  ActionProto action_proto;
-  auto* collect_user_data = action_proto.mutable_collect_user_data();
-  collect_user_data->set_request_terms_and_conditions(false);
-  collect_user_data->set_request_payment_method(true);
-  collect_user_data->set_billing_address_name("billing");
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-  auto* payment_instrument = collect_user_data->mutable_user_data()
-                                 ->add_available_payment_instruments();
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* payment_instrument =
+      user_data_response.add_available_payment_instruments();
   AddCompleteCardEntriesToMap("John Doe",
                               payment_instrument->mutable_card_values());
   payment_instrument->set_instrument_id(123456);
@@ -2726,6 +2728,15 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
   payment_instrument->set_last_four_digits("1111");
   AddCompleteAddressEntriesToMap("John Doe",
                                  payment_instrument->mutable_address_values());
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  collect_user_data->set_request_payment_method(true);
+  collect_user_data->set_billing_address_name("billing");
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
@@ -2760,14 +2771,18 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
             .Run(&user_data_, &user_model_);
       });
 
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* address = user_data_response.add_available_addresses();
+  AddCompleteAddressEntriesToMap("John Doe", address->mutable_values());
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
   collect_user_data->set_shipping_address_name("shipping");
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-  auto* address =
-      collect_user_data->mutable_user_data()->add_available_addresses();
-  AddCompleteAddressEntriesToMap("John Doe", address->mutable_values());
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
@@ -2802,19 +2817,23 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
             .Run(&user_data_, &user_model_);
       });
 
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* profile = user_data_response.add_available_contacts();
+  (*profile->mutable_values())[7] =
+      MakeAutofillEntry("John Doe", /* raw= */ true);
+  (*profile->mutable_values())[14] =
+      MakeAutofillEntry("+1 123-456-7890", /* raw= */ true);
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
   collect_user_data->mutable_contact_details()->set_request_payer_name(true);
   collect_user_data->mutable_contact_details()->set_contact_details_name(
       kMemoryLocation);
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-  auto* profile =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  (*profile->mutable_values())[7] =
-      MakeAutofillEntry("John Doe", /* raw= */ true);
-  (*profile->mutable_values())[14] =
-      MakeAutofillEntry("+1 123-456-7890", /* raw= */ true);
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(mock_personal_data_manager_, RecordUseOf).Times(0);
   EXPECT_CALL(
@@ -2850,6 +2869,47 @@ TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
             .Run(&user_data_, &user_model_);
       });
 
+  // The default selection would select Jane Doe, as she is created later (see
+  // |DefaultSelectEntriesFromProtoWithoutIdentifiers|), select John Doe by
+  // identifier instead.
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  user_data_response.set_selected_contact_identifier("selected-contact");
+  auto* contact_1 = user_data_response.add_available_contacts();
+  contact_1->set_identifier("selected-contact");
+  (*contact_1->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  auto* contact_2 = user_data_response.add_available_contacts();
+  contact_2->set_identifier("not-selected");
+  (*contact_2->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
+
+  user_data_response.set_selected_shipping_address_identifier(
+      "selected-address");
+  auto* address_1 = user_data_response.add_available_addresses();
+  address_1->set_identifier("selected-address");
+  AddCompleteAddressEntriesToMap("John Doe", address_1->mutable_values());
+  auto* address_2 = user_data_response.add_available_addresses();
+  address_2->set_identifier("not-selected");
+  AddCompleteAddressEntriesToMap("Jane Doe", address_2->mutable_values());
+
+  user_data_response.set_selected_payment_instrument_identifier(
+      "selected-instrument");
+  auto* payment_instrument_1 =
+      user_data_response.add_available_payment_instruments();
+  payment_instrument_1->set_identifier("selected-instrument");
+  AddCompleteCardEntriesToMap("John Doe",
+                              payment_instrument_1->mutable_card_values());
+  AddCompleteAddressEntriesToMap(
+      "John Doe", payment_instrument_1->mutable_address_values());
+  auto* payment_instrument_2 =
+      user_data_response.add_available_payment_instruments();
+  payment_instrument_2->set_identifier("not-selected");
+  AddCompleteCardEntriesToMap("Jane Doe",
+                              payment_instrument_2->mutable_card_values());
+  AddCompleteAddressEntriesToMap(
+      "Jane Doe", payment_instrument_2->mutable_address_values());
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
@@ -2859,50 +2919,7 @@ TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
   collect_user_data->set_shipping_address_name("shipping");
   collect_user_data->set_request_payment_method(true);
   collect_user_data->set_billing_address_name("billing");
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-
-  // The default selection would select Jane Doe, as she is created later (see
-  // |DefaultSelectEntriesFromProtoWithoutIdentifiers|), select John Doe by
-  // identifier instead.
-
-  collect_user_data->mutable_user_data()->set_selected_contact_identifier(
-      "selected-contact");
-  auto* contact_1 =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  contact_1->set_identifier("selected-contact");
-  (*contact_1->mutable_values())[7] = MakeAutofillEntry("John Doe");
-  auto* contact_2 =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  contact_2->set_identifier("not-selected");
-  (*contact_2->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
-
-  collect_user_data->mutable_user_data()
-      ->set_selected_shipping_address_identifier("selected-address");
-  auto* address_1 =
-      collect_user_data->mutable_user_data()->add_available_addresses();
-  address_1->set_identifier("selected-address");
-  AddCompleteAddressEntriesToMap("John Doe", address_1->mutable_values());
-  auto* address_2 =
-      collect_user_data->mutable_user_data()->add_available_addresses();
-  address_2->set_identifier("not-selected");
-  AddCompleteAddressEntriesToMap("Jane Doe", address_2->mutable_values());
-
-  collect_user_data->mutable_user_data()
-      ->set_selected_payment_instrument_identifier("selected-instrument");
-  auto* payment_instrument_1 = collect_user_data->mutable_user_data()
-                                   ->add_available_payment_instruments();
-  payment_instrument_1->set_identifier("selected-instrument");
-  AddCompleteCardEntriesToMap("John Doe",
-                              payment_instrument_1->mutable_card_values());
-  AddCompleteAddressEntriesToMap(
-      "John Doe", payment_instrument_1->mutable_address_values());
-  auto* payment_instrument_2 = collect_user_data->mutable_user_data()
-                                   ->add_available_payment_instruments();
-  payment_instrument_2->set_identifier("not-selected");
-  AddCompleteCardEntriesToMap("Jane Doe",
-                              payment_instrument_2->mutable_card_values());
-  AddCompleteAddressEntriesToMap(
-      "Jane Doe", payment_instrument_2->mutable_address_values());
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(
       callback_,
@@ -2938,6 +2955,34 @@ TEST_F(CollectUserDataActionTest,
             .Run(&user_data_, &user_model_);
       });
 
+  // The default selection will select Jane Doe, as she is created later.
+  GetUserDataResponseProto user_data_response;
+  user_data_response.set_locale("en-US");
+  auto* contact_1 = user_data_response.add_available_contacts();
+  (*contact_1->mutable_values())[7] = MakeAutofillEntry("John Doe");
+  auto* contact_2 = user_data_response.add_available_contacts();
+  (*contact_2->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
+
+  auto* address_1 = user_data_response.add_available_addresses();
+  AddCompleteAddressEntriesToMap("John Doe", address_1->mutable_values());
+  auto* address_2 = user_data_response.add_available_addresses();
+  AddCompleteAddressEntriesToMap("Jane Doe", address_2->mutable_values());
+
+  auto* payment_instrument_1 =
+      user_data_response.add_available_payment_instruments();
+  AddCompleteCardEntriesToMap("John Doe",
+                              payment_instrument_1->mutable_card_values());
+  AddCompleteAddressEntriesToMap(
+      "John Doe", payment_instrument_1->mutable_address_values());
+  auto* payment_instrument_2 =
+      user_data_response.add_available_payment_instruments();
+  AddCompleteCardEntriesToMap("Jane Doe",
+                              payment_instrument_2->mutable_card_values());
+  AddCompleteAddressEntriesToMap(
+      "Jane Doe", payment_instrument_2->mutable_address_values());
+  EXPECT_CALL(mock_action_delegate_, RequestUserData)
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
+
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
@@ -2947,36 +2992,7 @@ TEST_F(CollectUserDataActionTest,
   collect_user_data->set_shipping_address_name("shipping");
   collect_user_data->set_request_payment_method(true);
   collect_user_data->set_billing_address_name("billing");
-  collect_user_data->mutable_user_data()->set_locale("en-US");
-
-  // The default selection will select Jane Doe, as she is created later.
-
-  auto* contact_1 =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  (*contact_1->mutable_values())[7] = MakeAutofillEntry("John Doe");
-  auto* contact_2 =
-      collect_user_data->mutable_user_data()->add_available_contacts();
-  (*contact_2->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
-
-  auto* address_1 =
-      collect_user_data->mutable_user_data()->add_available_addresses();
-  AddCompleteAddressEntriesToMap("John Doe", address_1->mutable_values());
-  auto* address_2 =
-      collect_user_data->mutable_user_data()->add_available_addresses();
-  AddCompleteAddressEntriesToMap("Jane Doe", address_2->mutable_values());
-
-  auto* payment_instrument_1 = collect_user_data->mutable_user_data()
-                                   ->add_available_payment_instruments();
-  AddCompleteCardEntriesToMap("John Doe",
-                              payment_instrument_1->mutable_card_values());
-  AddCompleteAddressEntriesToMap(
-      "John Doe", payment_instrument_1->mutable_address_values());
-  auto* payment_instrument_2 = collect_user_data->mutable_user_data()
-                                   ->add_available_payment_instruments();
-  AddCompleteCardEntriesToMap("Jane Doe",
-                              payment_instrument_2->mutable_card_values());
-  AddCompleteAddressEntriesToMap(
-      "Jane Doe", payment_instrument_2->mutable_address_values());
+  collect_user_data->mutable_data_source();
 
   EXPECT_CALL(
       callback_,

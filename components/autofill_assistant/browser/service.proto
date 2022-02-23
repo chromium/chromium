@@ -2560,6 +2560,9 @@ message CollectUserDataProto {
     REVIEW_REQUIRED = 2;
   }
 
+  // Specifies information about the data source to be used.
+  message DataSource {}
+
   optional string prompt = 1;
   // NOTE: The action does not ask separately for billing address.
   // The billing address is associated with the credit card that was picked.
@@ -2647,6 +2650,10 @@ message CollectUserDataProto {
   // TODO(b/218838411): This way of getting data is about to be deprecated. It
   // is left in place until the backend has been adapted. Reserve after.
   optional GetUserDataResponseProto user_data = 37;
+
+  // If set, will request data from the GetUserData remote backend, rather than
+  // Chrome Autofill. Takes precedence over |user_data|.
+  optional DataSource data_source = 38;
 
   reserved 7, 10, 14, 15, 17, 26;
 }

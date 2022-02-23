@@ -89,11 +89,12 @@ void JavaService::GetNextActions(
 
 void JavaService::GetUserData(const CollectUserDataOptions& options,
                               ResponseCallback callback) {
-  // TODO(b/218838411): Mock.
-  GetUserDataResponseProto response;
-  std::string serialized_response;
-  response.SerializeToString(&serialized_response);
-  std::move(callback).Run(net::HTTP_OK, serialized_response);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto jresponse =
+      Java_AutofillAssistantTestService_getUserDataNative(env, java_service_);
+  std::string response;
+  base::android::JavaByteArrayToString(env, jresponse, &response);
+  std::move(callback).Run(net::HTTP_OK, response);
 }
 
 }  // namespace autofill_assistant

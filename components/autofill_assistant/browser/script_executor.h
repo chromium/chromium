@@ -28,6 +28,7 @@
 #include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "components/autofill_assistant/browser/web/element.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
@@ -262,6 +263,10 @@ class ScriptExecutor : public ActionDelegate,
   void MaybeShowSlowConnectionWarning() override;
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
+  void RequestUserData(
+      const CollectUserDataOptions& options,
+      base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback)
+      override;
 
  private:
   // Helper for WaitForElementVisible that keeps track of the state required to
@@ -457,6 +462,10 @@ class ScriptExecutor : public ActionDelegate,
       DocumentReadyState ready_state,
       base::TimeDelta wait_time);
   void OnResume();
+  void OnRequestUserData(
+      base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback,
+      int http_status,
+      const std::string& response);
 
   // Maybe shows the message specified in a callout, depending on the current
   // state and client settings.

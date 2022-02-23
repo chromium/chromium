@@ -431,6 +431,11 @@ class ActionDelegate {
   // gets attached to the action's response if non empty.
   virtual ProcessedActionStatusDetailsProto& GetLogInfo() = 0;
 
+  virtual void RequestUserData(
+      const CollectUserDataOptions& options,
+      base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
+          callback) = 0;
+
   virtual base::WeakPtr<ActionDelegate> GetWeakPtr() const = 0;
 
  protected:

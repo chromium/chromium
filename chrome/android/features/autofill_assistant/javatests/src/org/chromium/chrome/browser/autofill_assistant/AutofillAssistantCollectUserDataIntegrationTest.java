@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipType;
 import org.chromium.chrome.browser.autofill_assistant.proto.ClickType;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto.DataSource;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataProto.TermsAndConditionsState;
 import org.chromium.chrome.browser.autofill_assistant.proto.CollectUserDataResultProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ContactDetailsProto;
@@ -915,23 +916,26 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     @Test
     @MediumTest
     public void testEnterBackendContact() throws Exception {
-        GetUserDataResponseProto.Builder data =
-                GetUserDataResponseProto.newBuilder().setLocale("en-US").addAvailableContacts(
-                        ProfileProto.newBuilder()
-                                .putValues(7,
-                                        AutofillEntryProto.newBuilder()
-                                                .setValue("John Doe")
-                                                .build())
-                                .putValues(9,
-                                        AutofillEntryProto.newBuilder()
-                                                .setValue("johndoe@google.com")
-                                                .build()));
+        GetUserDataResponseProto userData =
+                GetUserDataResponseProto.newBuilder()
+                        .setLocale("en-US")
+                        .addAvailableContacts(
+                                ProfileProto.newBuilder()
+                                        .putValues(7,
+                                                AutofillEntryProto.newBuilder()
+                                                        .setValue("John Doe")
+                                                        .build())
+                                        .putValues(9,
+                                                AutofillEntryProto.newBuilder()
+                                                        .setValue("johndoe@google.com")
+                                                        .build()))
+                        .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
                          .setCollectUserData(
                                  CollectUserDataProto.newBuilder()
-                                         .setUserData(data)
+                                         .setDataSource(DataSource.newBuilder())
                                          .setContactDetails(
                                                  ContactDetailsProto.newBuilder()
                                                          .setContactDetailsName("contact")
@@ -979,6 +983,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.setUserData(userData);
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(
@@ -1002,7 +1007,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     @Test
     @MediumTest
     public void testShowBackendCard() throws Exception {
-        GetUserDataResponseProto.Builder data =
+        GetUserDataResponseProto userData =
                 GetUserDataResponseProto.newBuilder()
                         .setLocale("en-US")
                         .addAvailablePaymentInstruments(
@@ -1044,12 +1049,13 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                         .putAddressValues(7,
                                                 AutofillEntryProto.newBuilder()
                                                         .setValue("John Doe")
-                                                        .build()));
+                                                        .build()))
+                        .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(ActionProto.newBuilder()
                          .setCollectUserData(CollectUserDataProto.newBuilder()
-                                                     .setUserData(data)
+                                                     .setDataSource(DataSource.newBuilder())
                                                      .setRequestPaymentMethod(true)
                                                      .setBillingAddressName("billing_address")
                                                      .addSupportedBasicCardNetworks("visa")
@@ -1064,6 +1070,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.setUserData(userData);
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(allOf(withId(R.id.credit_card_number),
@@ -1078,17 +1085,19 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     @Test
     @MediumTest
     public void testEnterBackendPhoneNumber() throws Exception {
-        GetUserDataResponseProto.Builder data =
-                GetUserDataResponseProto.newBuilder().setLocale("en-US").addAvailablePhoneNumbers(
-                        PhoneNumberProto.newBuilder().setValue(
-                                AutofillEntryProto.newBuilder().setValue("+41234567890").build()));
+        GetUserDataResponseProto userData =
+                GetUserDataResponseProto.newBuilder()
+                        .setLocale("en-US")
+                        .addAvailablePhoneNumbers(PhoneNumberProto.newBuilder().setValue(
+                                AutofillEntryProto.newBuilder().setValue("+41234567890").build()))
+                        .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
                 ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
-                                        .setUserData(data)
+                                        .setDataSource(DataSource.newBuilder())
                                         .setContactDetails(
                                                 ContactDetailsProto.newBuilder()
                                                         .setContactDetailsName("contact")
@@ -1123,6 +1132,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.setUserData(userData);
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(
@@ -1144,7 +1154,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
     @Test
     @MediumTest
     public void testMergeBackendPhoneNumberIntoContact() throws Exception {
-        GetUserDataResponseProto.Builder data =
+        GetUserDataResponseProto userData =
                 GetUserDataResponseProto.newBuilder()
                         .setLocale("en-US")
                         .addAvailableContacts(
@@ -1158,14 +1168,15 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                                         .setValue("johndoe@google.com")
                                                         .build()))
                         .addAvailablePhoneNumbers(PhoneNumberProto.newBuilder().setValue(
-                                AutofillEntryProto.newBuilder().setValue("+41234567890").build()));
+                                AutofillEntryProto.newBuilder().setValue("+41234567890").build()))
+                        .build();
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add(
                 ActionProto.newBuilder()
                         .setCollectUserData(
                                 CollectUserDataProto.newBuilder()
-                                        .setUserData(data)
+                                        .setDataSource(DataSource.newBuilder())
                                         .setContactDetails(
                                                 ContactDetailsProto.newBuilder()
                                                         .setContactDetailsName("contact")
@@ -1212,6 +1223,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Collections.singletonList(script));
+        testService.setUserData(userData);
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(

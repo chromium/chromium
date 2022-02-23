@@ -207,6 +207,11 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
   MOCK_METHOD0(GetLogInfo, ProcessedActionStatusDetailsProto&());
   MOCK_CONST_METHOD0(GetElementStore, ElementStore*());
+  MOCK_METHOD2(
+      RequestUserData,
+      void(const CollectUserDataOptions& options,
+           base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
+               callback));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

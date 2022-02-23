@@ -359,11 +359,10 @@ void AddProtoDataToAutofillDataModel(
   }
 }
 
-void MergePhoneNumberIntoSelectedContact(
-    UserData* user_data,
-    UserModel* user_model,
-    const CollectUserDataOptions& options,
-    const GetUserDataResponseProto& proto_data) {
+void MergePhoneNumberIntoSelectedContact(UserData* user_data,
+                                         UserModel* user_model,
+                                         const CollectUserDataOptions& options,
+                                         const std::string& locale) {
   if (!user_data->selected_phone_number()) {
     return;
   }
@@ -383,9 +382,13 @@ void MergePhoneNumberIntoSelectedContact(
   auto selected_contact = user_data::MakeUniqueFromProfile(
       *user_data->selected_address(options.contact_details_name));
   selected_contact->SetInfo(autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-                            selected_phone_number, proto_data.locale());
+                            selected_phone_number, locale);
   user_model->SetSelectedAutofillProfile(
       options.contact_details_name, std::move(selected_contact), user_data);
+}
+
+bool ShouldUseBackendData(const CollectUserDataProto& proto) {
+  return proto.has_user_data() || proto.has_data_source();
 }
 
 }  // namespace
@@ -567,9 +570,9 @@ void CollectUserDataAction::ShowToUser() {
 
 void CollectUserDataAction::OnShowToUser(UserData* user_data,
                                          UserData::FieldChange* field_change) {
+  *field_change = UserData::FieldChange::ALL;
   // merge the new proto_ into the existing user_data. the proto_ always takes
   // precedence over the existing user_data.
-  *field_change = UserData::FieldChange::ALL;
   auto collect_user_data = proto_.collect_user_data();
   // the backend should explicitly set the terms and conditions state on every
   // new action.
@@ -652,16 +655,43 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
         profile_name, /* profile= */ nullptr, user_data);
   }
 
-  if (proto_.collect_user_data().has_user_data()) {
-    UpdateUserDataFromProto(proto_.collect_user_data().user_data(), user_data);
-  } else {
-    delegate_->GetPersonalDataManager()->AddObserver(this);
-    UpdatePersonalDataManagerProfiles(user_data);
-    UpdatePersonalDataManagerCards(user_data);
+  UpdateUserData(user_data);
+}
+
+void CollectUserDataAction::UpdateUserData(UserData* user_data) {
+  if (proto_.collect_user_data().has_data_source()) {
+    delegate_->RequestUserData(
+        *collect_user_data_options_,
+        base::BindOnce(&CollectUserDataAction::OnRequestUserData,
+                       weak_ptr_factory_.GetWeakPtr(), user_data));
+    return;
   }
 
-  UpdateMetrics(user_data);
+  if (proto_.collect_user_data().has_user_data()) {
+    OnRequestUserData(user_data, true, proto_.collect_user_data().user_data());
+    return;
+  }
 
+  delegate_->GetPersonalDataManager()->AddObserver(this);
+  UpdatePersonalDataManagerProfiles(user_data);
+  UpdatePersonalDataManagerCards(user_data);
+  UpdateMetrics(user_data);
+  UpdateUi();
+}
+
+void CollectUserDataAction::OnRequestUserData(
+    UserData* user_data,
+    bool success,
+    const GetUserDataResponseProto& response) {
+  if (success) {
+    UpdateUserDataFromProto(response, user_data);
+  }
+  UpdateMetrics(user_data);
+  UpdateUi();
+}
+
+void CollectUserDataAction::UpdateUi() {
+  const auto& collect_user_data = proto_.collect_user_data();
   if (collect_user_data.has_prompt()) {
     delegate_->SetStatusMessage(collect_user_data.prompt());
   }
@@ -704,7 +734,7 @@ void CollectUserDataAction::OnGetUserData(
   if (RequiresPhoneNumberSeparately(*collect_user_data_options_)) {
     MergePhoneNumberIntoSelectedContact(user_data, delegate_->GetUserModel(),
                                         *collect_user_data_options_,
-                                        proto_.collect_user_data().user_data());
+                                        last_user_data_.locale());
   }
   if (collect_user_data_options_->should_store_data_changes) {
     UpdateProfileAndCardUse(user_data);
@@ -792,7 +822,7 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
     collect_user_data_options_->request_payer_name =
         contact_details.request_payer_name();
     if (contact_details.request_payer_phone()) {
-      if (collect_user_data.has_user_data()) {
+      if (ShouldUseBackendData(collect_user_data)) {
         VLOG(1)
             << "Phone number must be requested separately with backend data.";
         return false;
@@ -847,7 +877,7 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
                    "details and separately";
         return false;
       }
-      if (!collect_user_data.has_user_data()) {
+      if (!ShouldUseBackendData(collect_user_data)) {
         VLOG(1)
             << "Separate phone number request is only supported with backend "
                "data";
@@ -935,11 +965,11 @@ bool CollectUserDataAction::CreateOptionsFromProto() {
 
   collect_user_data_options_->should_store_data_changes =
       !delegate_->GetWebContents()->GetBrowserContext()->IsOffTheRecord() &&
-      !collect_user_data.has_user_data();
+      !ShouldUseBackendData(collect_user_data);
   collect_user_data_options_->can_edit_contacts =
-      !collect_user_data.has_user_data();
+      !ShouldUseBackendData(collect_user_data);
   collect_user_data_options_->use_gms_core_edit_dialogs =
-      collect_user_data.has_user_data();
+      ShouldUseBackendData(collect_user_data);
 
   collect_user_data_options_->request_login_choice =
       collect_user_data.has_login_details();
@@ -1334,6 +1364,8 @@ void CollectUserDataAction::UpdateUserDataFromProto(
     const GetUserDataResponseProto& proto_data,
     UserData* user_data) {
   DCHECK(user_data != nullptr);
+
+  last_user_data_ = proto_data;
 
   if (RequiresContact(*collect_user_data_options_)) {
     user_data->available_contacts_.clear();
