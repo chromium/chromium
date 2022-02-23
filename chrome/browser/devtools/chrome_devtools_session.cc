@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
 #include "chrome/browser/devtools/protocol/cast_handler.h"
+#include "chrome/browser/devtools/protocol/emulation_handler.h"
 #include "chrome/browser/devtools/protocol/page_handler.h"
 #include "chrome/browser/devtools/protocol/security_handler.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
@@ -39,6 +40,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
           agent_host->GetWebContents(), &dispatcher_);
     }
   }
+  emulation_handler_ =
+      std::make_unique<EmulationHandler>(agent_host, &dispatcher_);
   target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
   if (channel->GetClient()->MayAttachToBrowser()) {
     browser_handler_ =

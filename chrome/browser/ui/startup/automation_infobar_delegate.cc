@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/core/infobar.h"
@@ -18,6 +19,14 @@ void AutomationInfoBarDelegate::Create() {
   std::unique_ptr<ConfirmInfoBarDelegate> delegate(
       new AutomationInfoBarDelegate());
   GlobalConfirmInfoBar::Show(std::move(delegate));
+}
+
+// static
+infobars::InfoBar* AutomationInfoBarDelegate::Create(
+    infobars::ContentInfoBarManager* infobar_manager) {
+  return infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+          new AutomationInfoBarDelegate())));
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

@@ -27,6 +27,10 @@
                 "async": ["startDesktopMirroring", "startTabMirroring"]
             },
             {
+                "domain": "Emulation",
+                "include": ["disable", "setAutomationOverride"]
+            },
+            {
                 "domain": "WindowManager"
             },
             {

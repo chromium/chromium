@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/test/test_switches.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -23,6 +24,9 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/infobar.h"
+#include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -49,8 +53,8 @@
 
 using DevToolsProtocolTest = DevToolsProtocolTestBase;
 using testing::AllOf;
-using testing::Eq;
 using testing::Contains;
+using testing::Eq;
 using testing::Not;
 
 namespace {
@@ -183,11 +187,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       content::EvalJs(other_web_contents, "logs.join(' ')");
   // mouse events might happen in the other_target if the real mouse pointer
   // happens to be over the browser window
-  EXPECT_THAT(base::SplitString(main_target_events.ExtractString(), " ",
-                                base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
-              AllOf(Contains("mouseover"), Contains("mousedown"), Contains("mousemove"),
-                    Contains("mouseup"), Contains("click"), Contains("dragenter"),
-                    Contains("keydown")));
+  EXPECT_THAT(
+      base::SplitString(main_target_events.ExtractString(), " ",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
+      AllOf(Contains("mouseover"), Contains("mousedown"), Contains("mousemove"),
+            Contains("mouseup"), Contains("click"), Contains("dragenter"),
+            Contains("keydown")));
   EXPECT_THAT(base::SplitString(other_target_events.ExtractString(), " ",
                                 base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL),
               AllOf(Not(Contains("click")), Not(Contains("dragenter")),
@@ -528,6 +533,25 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   EXPECT_EQ(security_state_issue_ids->GetListDeprecated().size(), 0u);
 
   ASSERT_FALSE(params.FindPath("visibleSecurityState.safetyTipInfo"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       AutomationOverrideShowsAndRemovesInfoBar) {
+  Attach();
+  auto* manager = infobars::ContentInfoBarManager::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  {
+    base::Value params(base::Value::Type::DICTIONARY);
+    params.SetBoolKey("enabled", true);
+    SendCommandSync("Emulation.setAutomationOverride", std::move(params));
+  }
+  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 1);
+  {
+    base::Value params(base::Value::Type::DICTIONARY);
+    params.SetBoolKey("enabled", false);
+    SendCommandSync("Emulation.setAutomationOverride", std::move(params));
+  }
+  EXPECT_EQ(static_cast<int>(manager->infobar_count()), 0);
 }
 
 class NetworkResponseProtocolTest : public DevToolsProtocolTest {

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
@@ -15,6 +16,9 @@
 class AutomationInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   static void Create();
+  static infobars::InfoBar* Create(
+      infobars::ContentInfoBarManager* infobar_manager);
+
   AutomationInfoBarDelegate(const AutomationInfoBarDelegate&) = delete;
   AutomationInfoBarDelegate& operator=(const AutomationInfoBarDelegate&) =
       delete;
