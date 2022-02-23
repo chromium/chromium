@@ -2424,7 +2424,7 @@
   {
     "name": "enable-nacl",
     "owners": [ "dschuff", "native-client-dev@googlegroups.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 128
   },
   {
     "name": "enable-navigation-predictor",
