@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_empty_state_view.h"
@@ -123,6 +124,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 @interface TabGridViewController () <DisabledTabViewControllerDelegate,
                                      GridViewControllerDelegate,
+                                     SuggestedActionsDelegate,
                                      LayoutSwitcher,
                                      UIScrollViewAccessibilityDelegate,
                                      UISearchBarDelegate,
@@ -1123,6 +1125,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       kTabGridIncognitoTabsEmptyStateIdentifier;
   viewController.theme = GridThemeDark;
   viewController.delegate = self;
+  viewController.suggestedActionsDelegate = self;
   viewController.dragDropHandler = self.incognitoTabsDragDropHandler;
   NSArray* constraints = @[
     [viewController.view.topAnchor
@@ -1154,7 +1157,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   viewController.theme = GridThemeLight;
   viewController.delegate = self;
   viewController.dragDropHandler = self.regularTabsDragDropHandler;
-
+  viewController.suggestedActionsDelegate = self;
   UIViewController* leadingSideViewController =
       self.incognitoTabsViewController
           ? self.incognitoTabsViewController
@@ -1855,10 +1858,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)searchBar:(UISearchBar*)searchBar textDidChange:(NSString*)searchText {
   [self updateScrimVisibilityForText:searchText];
-
-  [self.incognitoTabsDelegate searchItemsWithText:searchText];
-  [self.regularTabsDelegate searchItemsWithText:searchText];
-  self.remoteTabsViewController.searchTerms = searchText;
+  switch (self.currentPage) {
+    case TabGridPageIncognitoTabs:
+      [self.incognitoTabsDelegate searchItemsWithText:searchText];
+      break;
+    case TabGridPageRegularTabs:
+    case TabGridPageRemoteTabs:
+      self.regularTabsViewController.searchText = searchText;
+      [self.regularTabsDelegate searchItemsWithText:searchText];
+      self.remoteTabsViewController.searchTerms = searchText;
+      break;
+  }
 }
 
 - (void)updateScrimVisibilityForText:(NSString*)searchText {
@@ -1869,6 +1879,34 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // results.
     [self hideScrim];
   }
+}
+
+#pragma mark - SuggestedActionsDelegate
+
+- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
+                                   completion:(void (^)(size_t))completion {
+  if (self.currentPage == TabGridPageIncognitoTabs) {
+    // History retrival shouldn't be done from incognito tabs page.
+    completion(0);
+    return;
+  }
+  [self.regularTabsDelegate fetchSearchHistoryResultsCountForText:searchText
+                                                       completion:completion];
+}
+
+- (void)searchHistoryForText:(NSString*)searchText {
+  DCHECK(self.tabGridMode == TabGridModeSearch);
+  [self.delegate showHistoryFilteredBySearchText:searchText];
+}
+
+- (void)searchWebForText:(NSString*)searchText {
+  DCHECK(self.tabGridMode == TabGridModeSearch);
+  [self.delegate openSearchResultsPageForSearchText:searchText];
+}
+
+- (void)searchRecentTabsForText:(NSString*)searchText {
+  DCHECK(self.tabGridMode == TabGridModeSearch);
+  [self setCurrentPageAndPageControl:TabGridPageRemoteTabs animated:YES];
 }
 
 #pragma mark - ThumbStripSupporting

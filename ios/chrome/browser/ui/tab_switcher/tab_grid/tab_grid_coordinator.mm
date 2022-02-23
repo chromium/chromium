@@ -11,6 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/policy/policy_features.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
+#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -945,20 +947,40 @@
   }
 }
 
-#pragma mark - RecentTabsPresentationDelegate
+- (void)openSearchResultsPageForSearchText:(NSString*)searchText {
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          self.regularBrowser->GetBrowserState());
 
-- (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
+  const TemplateURL* searchURLTemplate =
+      templateURLService->GetDefaultSearchProvider();
+
+  TemplateURLRef::SearchTermsArgs searchArgs(
+      base::SysNSStringToUTF16(searchText));
+
+  GURL searchURL(searchURLTemplate->url_ref().ReplaceSearchTerms(
+      searchArgs, templateURLService->search_terms_data()));
+  [self openLinkWithURL:searchURL];
+}
+
+- (void)showHistoryFilteredBySearchText:(NSString*)searchText {
   // A history coordinator from main_controller won't work properly from the
   // tab grid. Using a local coordinator works better and we need to set
   // |loadStrategy| to YES to ALWAYS_NEW_FOREGROUND_TAB.
   self.historyCoordinator = [[HistoryCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.regularBrowser];
-  self.historyCoordinator.searchTerms = searchTerms;
+  self.historyCoordinator.searchTerms = searchText;
   self.historyCoordinator.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   self.historyCoordinator.presentationDelegate = self;
   [self.historyCoordinator start];
+}
+
+#pragma mark - RecentTabsPresentationDelegate
+
+- (void)showHistoryFromRecentTabsFilteredBySearchTerms:(NSString*)searchTerms {
+  [self showHistoryFilteredBySearchText:searchTerms];
 }
 
 - (void)showActiveRegularTabFromRecentTabs {

@@ -351,6 +351,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/start_surface:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:unit_tests",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:unit_tests",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions:unit_tests",
     "//ios/chrome/browser/ui/table_view:unit_tests",
     "//ios/chrome/browser/ui/table_view/cells:unit_tests",
     "//ios/chrome/browser/ui/tabs:unit_tests",

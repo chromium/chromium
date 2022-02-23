@@ -535,6 +535,12 @@ const char kTabsSearchDescription[] =
     "Enables the search mode in the Tab grid where users can search open tabs "
     "or recent tabs.";
 
+const char kTabsSearchRegularResultsSuggestedActionsName[] =
+    "Enable Tabs Search regular results suggested actions section";
+const char kTabsSearchRegularResultsSuggestedActionsDescription[] =
+    "Enables the suggested actions section in the regular tabs page when the "
+    "search mode is enabled.";
+
 const char kToolbarContainerName[] = "Use Toolbar Containers";
 const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "

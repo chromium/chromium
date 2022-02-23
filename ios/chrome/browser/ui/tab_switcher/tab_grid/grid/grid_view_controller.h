@@ -24,6 +24,7 @@
 @protocol IncognitoReauthCommands;
 @protocol PriceCardDataSource;
 @protocol ThumbStripCommands;
+@protocol SuggestedActionsDelegate;
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
@@ -85,12 +86,18 @@
 @property(nonatomic, readonly, getter=isGridEmpty) BOOL gridEmpty;
 // The visual look of the grid.
 @property(nonatomic, assign) GridTheme theme;
-// The current mode (normal, selection) for the grid.
+// The current mode for the grid.
 @property(nonatomic, assign) TabGridMode mode;
+// The current search text to use for filtering results when the search mode is
+// active.
+@property(nonatomic, copy) NSString* searchText;
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 // Handler for thumbstrip commands.
 @property(nonatomic, weak) id<ThumbStripCommands> thumbStripHandler;
+// Delegate for search results suggested actions.
+@property(nonatomic, weak) id<SuggestedActionsDelegate>
+    suggestedActionsDelegate;
 // Delegate is informed of user interactions in the grid UI.
 @property(nonatomic, weak) id<GridViewControllerDelegate> delegate;
 // Handles drag and drop interactions that involved the model layer.
@@ -102,7 +109,7 @@
 // YES if the selected cell is visible in the grid.
 @property(nonatomic, readonly, getter=isSelectedCellVisible)
     BOOL selectedCellVisible;
-// YES if the gid should show cell selection updates. This would be set to NO,
+// YES if the grid should show cell selection updates. This would be set to NO,
 // for example, if the grid was about to be transitioned out of.
 @property(nonatomic, assign) BOOL showsSelectionUpdates;
 // The fraction of the last item of the grid that is visible.

@@ -5643,7 +5643,12 @@
   {
     "name": "tabs-search-ios",
     "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
-    "expiry_milestone":100
+    "expiry_milestone":101
+  },
+  {
+    "name": "tabs-search-regular-results-suggested-actions-ios",
+    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
+    "expiry_milestone":101
   },
   {
       "name": "tailored-security-integration",

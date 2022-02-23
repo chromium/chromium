@@ -2854,6 +2854,9 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS" desc="Title for a suggested action presented at the end of search results to search through open tabs for the same search term.">
         Search Open Tabs
       </message>
+      <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_RECENT_TABS" desc="Title for a suggested action presented at the end of search results to search through recent tabs for the same search term.">
+        Search Recent Tabs
+      </message>
       <message name="IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB" desc="Title for a suggested action presented at the end of search results to search the web for the same search term.">
         Search on the Web
       </message>

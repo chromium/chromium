@@ -63,6 +63,12 @@
 // Tells the receiver to reset grid to contain all the items and select the
 // active item.
 - (void)resetToAllItems;
+
+// Tells the receiver to fetch the search history results count for |searchText|
+// and provide it to the |completion| block.
+- (void)fetchSearchHistoryResultsCountForText:(NSString*)searchText
+                                   completion:(void (^)(size_t))completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_GRID_COMMANDS_H_
