@@ -29,7 +29,7 @@ async function init() { // Needed in order to use top-level await.
   // the `location_ao_key` stash and we can write to it again.
   await nextValueFromServer(location_ao_ack_key);
 
-  const nested_url = generateURL("location-ancestorOrigins-inner.html",
+  const nested_url = generateURL("location-ancestorOrigins-inner.https.html",
       [location_ao_key, location_ao_ack_key, "nested"]);
 
   // Send `location.ancestorOrigins` from an iframe.

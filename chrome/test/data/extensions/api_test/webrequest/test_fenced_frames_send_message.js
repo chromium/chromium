@@ -8,11 +8,11 @@ const kExtensionPath = 'extensions/api_test/webrequest/fencedFrames';
 
 // Constants as functions, not to be called until after runTests.
 function getURLHttpSimpleLoad() {
-  return getServerURL(`${kExtensionPath}/main.html`);
+  return getServerURL(`${kExtensionPath}/main.html`, "a.test", "https");
 }
 
 function getURLFencedFrame() {
-  return getServerURL(`${kExtensionPath}/frame.html`);
+  return getServerURL(`${kExtensionPath}/frame.html`, "a.test", "https");
 }
 
 runTests([

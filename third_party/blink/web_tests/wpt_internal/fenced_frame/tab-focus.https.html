@@ -41,7 +41,7 @@
   });
 
   promise_test(async () => {
-    const frame_url = generateURL("resources/tab-focus-inner.html",
+    const frame_url = generateURL("resources/tab-focus-inner.https.html",
       [focus_ready_key, focus_changed_key, /*send_reverse_sequence=*/true]);
     document.getElementById('fenced_frame').src = frame_url;
 

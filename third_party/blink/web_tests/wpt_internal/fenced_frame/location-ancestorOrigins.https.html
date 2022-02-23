@@ -16,11 +16,11 @@ promise_test(async () => {
   // We load the top-level fenced frame in a cross-origin, so that we can
   // more-completely verify the important cross-origin
   // `location.ancestorOrigins` case.
-  const cross_origin = get_host_info().HTTP_REMOTE_ORIGIN;
+  const cross_origin = get_host_info().HTTPS_REMOTE_ORIGIN;
   const cross_origin_fenced_frame = getRemoteOriginURL(generateURL(
-      'resources/location-ancestorOrigins-inner.html',
+      'resources/location-ancestorOrigins-inner.https.html',
       [location_ao_key, location_ao_ack_key]
-  ), https=false);
+  ), https=true);
   attachFencedFrame(cross_origin_fenced_frame);
 
   // Get the result for the top-level fenced frame.

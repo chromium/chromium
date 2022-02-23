@@ -15,7 +15,7 @@ promise_test(async () => {
 
   helperFrame.contentWindow.onunload = function() {
     const fenced_frame = document.createElement("fencedframe");
-    fenced_frame.src = "resources/dummy.html";
+    fenced_frame.src = "resources/dummy.https.html";
     container.appendChild(fenced_frame);
   };
 

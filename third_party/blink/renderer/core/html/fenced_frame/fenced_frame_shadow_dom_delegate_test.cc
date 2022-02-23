@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -34,6 +35,14 @@ class FencedFrameShadowDOMDelegateTest : private ScopedFencedFramesForTest,
     params["implementation_type"] = "shadow_dom";
     enabled_feature_list_.InitAndEnableFeatureWithParameters(
         features::kFencedFrames, params);
+
+    SecurityContext& security_context =
+        GetDocument().GetFrame()->DomWindow()->GetSecurityContext();
+    security_context.SetSecurityOriginForTesting(nullptr);
+    security_context.SetSecurityOrigin(
+        SecurityOrigin::CreateFromString("https://fencedframedelegate.test"));
+    EXPECT_EQ(security_context.GetSecureContextMode(),
+              SecureContextMode::kSecureContext);
   }
 
   HTMLFencedFrameElement& FencedFrame() {

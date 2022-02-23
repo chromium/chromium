@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<meta http-equiv="Content-Security-Policy" content="fenced-frame-src 'none'">
-<title>Test Content-Security-Policy fenced-frame-src</title>
+<meta http-equiv="Content-Security-Policy" content="frame-src 'none'">
+<title>Test Content-Security-Policy fenced-frame-src falling back to frame-src</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
@@ -18,15 +18,14 @@ window.addEventListener('securitypolicyviolation', function(e) {
 
 promise_test(async () => {
   attachFencedFrame(generateURL(
-      "resources/csp-fenced-frame-src-blocked-inner.html",
+      "resources/csp-frame-src-blocked-inner.https.html",
       [key]));
   const result = await nextValueFromServer(key);
 
   const expected_blocked_uri = generateURL(
-      "resources/csp-fenced-frame-src-blocked-inner.html",
-      [key]).toString();
+      "resources/csp-frame-src-blocked-inner.https.html", [key]).toString();
   assert_equals(result, "fenced-frame-src;" + expected_blocked_uri,
                 "The fenced frame is blocked because of CSP violation");
-}, "csp-fenced-frame-src-blocked");
+}, "csp-frame-src-blocked");
 </script>
 </body>

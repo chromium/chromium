@@ -111,18 +111,24 @@ class SnapshotAXTreeFencedFrameBrowserTest : public SnapshotAXTreeBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     SnapshotAXTreeBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(embedded_test_server()->Start());
+
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(https_server());
+    ASSERT_TRUE(https_server()->Start());
   }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
                        SnapshotAccessibilityTreeFromMultipleFrames) {
   EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("fencedframe.test",
-                                              "/fenced_frames/basic.html")));
+      shell(), https_server()->GetURL("a.test", "/fenced_frames/basic.html")));
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -131,8 +137,8 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeFencedFrameBrowserTest,
   std::vector<FencedFrame*> fenced_frames = primary_rfh->GetFencedFrames();
   EXPECT_EQ(1u, fenced_frames.size());
 
-  const GURL fenced_frame_url = embedded_test_server()->GetURL(
-      "fencedframe.test", "/fenced_frames/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
   EXPECT_TRUE(ExecJs(
       primary_rfh, JsReplace("document.querySelector('fencedframe').src = $1;",
                              fenced_frame_url.spec())));

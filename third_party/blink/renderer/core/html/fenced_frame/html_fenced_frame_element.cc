@@ -187,6 +187,15 @@ void HTMLFencedFrameElement::Navigate() {
   if (url.IsEmpty())
     return;
 
+  if (!GetExecutionContext()->IsSecureContext()) {
+    GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "A fenced frame was not loaded because the page is not in a secure "
+        "context."));
+    return;
+  }
+
   frame_delegate_->Navigate(url);
 
   if (!frozen_frame_size_)

@@ -35,7 +35,7 @@
     const focus_ready_key = token();
     const focus_changed_key = token();
 
-    const frame_url = generateURL("resources/tab-focus-inner.html",
+    const frame_url = generateURL("resources/tab-focus-inner.https.html",
       [focus_ready_key, focus_changed_key, /*send_reverse_sequence=*/false]);
     document.getElementById('fenced_frame').src = frame_url;
 

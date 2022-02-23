@@ -117,6 +117,8 @@ class DeclarativeNetRequestApiFencedFrameTest
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kFencedFrames,
         {{"implementation_type", GetParam() ? "shadow_dom" : "mparch"}});
+    // Fenced frames are only allowed in secure contexts.
+    UseHttpsTestServer();
   }
 
   ~DeclarativeNetRequestApiFencedFrameTest() override = default;

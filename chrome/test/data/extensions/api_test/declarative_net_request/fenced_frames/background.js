@@ -25,7 +25,7 @@ var mparchEnabled;
 function getServerURL(host) {
   if (!testServerPort)
     throw new Error('Called getServerURL outside of runTests.');
-  return `http://${host}:${testServerPort}`;
+  return `https://${host}:${testServerPort}`;
 }
 
 function resetMatchedRules() {
@@ -77,14 +77,14 @@ var tests = [
   function testBlockRule() {
     resetMatchedRules();
 
-    const baseUrl = getServerURL('a.com') +
+    const baseUrl = getServerURL('a.test') +
           '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'blocked.html';
     const fencedFrameUrl = baseUrl + 'blocked_fenced_frame.html';
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.com'),
+          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.test'),
           method: 'GET',
           documentId: 2,
           frameId: mparchEnabled ? 5 : 4,
@@ -109,14 +109,14 @@ var tests = [
   function testAllowRule() {
     resetMatchedRules();
 
-    const baseUrl = getServerURL('a.com') +
+    const baseUrl = getServerURL('a.test') +
           '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'allow.html';
     const fencedFrameUrl = baseUrl + 'allowed_fenced_frame.html';
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.com'),
+          initiator: mparchEnabled ? kOpaqueInitiator : getServerURL('a.test'),
           method: 'GET',
           documentId: 4,
           frameId: mparchEnabled ? 7 : 5,
@@ -139,14 +139,14 @@ var tests = [
   function testAllowResourceRule() {
     resetMatchedRules();
 
-    const baseUrl = getServerURL('a.com') +
+    const baseUrl = getServerURL('a.test') +
       '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'resource1.html';
     const matchedImageUrl = baseUrl + 'icon1.png';
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: getServerURL('a.com'),
+          initiator: getServerURL('a.test'),
           method: 'GET',
           documentId: 6,
           frameId: mparchEnabled ? 9 : 6,
@@ -169,14 +169,14 @@ var tests = [
   function testBlockResourceRule() {
     resetMatchedRules();
 
-    const baseUrl = getServerURL('a.com') +
+    const baseUrl = getServerURL('a.test') +
       '/extensions/api_test/declarative_net_request/fenced_frames/';
     const url = baseUrl + 'resource2.html';
     const matchedImageUrl = baseUrl + 'icon2.png';
     navigateTab(url, (tab) => {
       const expectedRuleInfo = {
         request: {
-          initiator: getServerURL('a.com'),
+          initiator: getServerURL('a.test'),
           method: 'GET',
           documentId: 8,
           frameId: mparchEnabled ? 11 : 7,

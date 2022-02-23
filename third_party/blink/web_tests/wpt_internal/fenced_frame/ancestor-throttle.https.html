@@ -28,7 +28,7 @@ async function runTest(embed_url,
 
   // There is no API to observe whether the document in the FencedFrame loaded
   // or not. Instead, set up a timeout. If the document loads, "loaded" will be
-  // sent to the server. Otherwise "blocked" will be sent after 4 seconds.
+  // sent to the server. Otherwise "blocked" will be sent after 3 seconds.
   step_timeout(() => {
     writeValueToServer(ancestor_key, "blocked");
   }, 3000);

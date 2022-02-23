@@ -278,10 +278,14 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
             std::move(test_worklet_host_manager));
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    SetupCrossSiteRedirector(embedded_test_server());
 
-    ASSERT_TRUE(embedded_test_server()->Start());
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(https_server());
+    ASSERT_TRUE(https_server()->Start());
   }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   TestSharedStorageWorkletHostManager& test_worklet_host_manager() {
     DCHECK(test_worklet_host_manager_);
@@ -292,14 +296,15 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
   raw_ptr<TestSharedStorageWorkletHostManager> test_worklet_host_manager_ =
       nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -317,15 +322,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
       {"a JavaScript error:\nError: Failed to load ",
-       embedded_test_server()
-           ->GetURL("a.com", "/shared_storage/nonexistent_module.js")
+       https_server()
+           ->GetURL("a.test", "/shared_storage/nonexistent_module.js")
            .spec(),
        " HTTP status = 404 Not Found.\n"});
 
@@ -341,15 +346,16 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_ScriptNotFound) {
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
       {"a JavaScript error:\nError: Unexpected redirect on ",
-       embedded_test_server()
-           ->GetURL("a.com", "/server-redirect?shared_storage/simple_module.js")
+       https_server()
+           ->GetURL("a.test",
+                    "/server-redirect?shared_storage/simple_module.js")
            .spec(),
        ".\n"});
 
@@ -367,15 +373,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, AddModule_RedirectNotAllowed) {
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        AddModule_ScriptExecutionFailure) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
   std::string expected_error = base::StrCat(
       {"a JavaScript error:\nError: ",
-       embedded_test_server()
-           ->GetURL("a.com", "/shared_storage/erroneous_module.js")
+       https_server()
+           ->GetURL("a.test", "/shared_storage/erroneous_module.js")
            .spec(),
        ":6 Uncaught ReferenceError: undefinedVariable is not defined.\n"});
 
@@ -394,8 +400,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        AddModule_MultipleAddModuleFailure) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -422,8 +428,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -460,8 +466,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, RunOperation_Success) {
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunOperation_Failure_RunOperationBeforeAddModule) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -497,8 +503,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunOperation_Failure_InvalidOptionsArgument) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -523,8 +529,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunOperation_Failure_ErrorInRunOperation) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -568,8 +574,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunOperation_Failure_UnimplementedSharedStorageMethod) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -613,8 +619,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, WorkletDestroyed) {
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -636,8 +642,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, TwoWorklets) {
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                         "a.com", kPageWithBlankIframePath)));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL("a.test", kPageWithBlankIframePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -686,8 +692,8 @@ IN_PROC_BROWSER_TEST_F(
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   test_worklet_host_manager()
       .ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(true);
@@ -736,8 +742,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   test_worklet_host_manager()
       .ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(true);
@@ -783,8 +789,8 @@ IN_PROC_BROWSER_TEST_F(
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -841,8 +847,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                         "a.com", kPageWithBlankIframePath)));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL("a.test", kPageWithBlankIframePath)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -915,8 +921,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", kSimplePagePath)));
+  EXPECT_TRUE(NavigateToURL(shell(),
+                            https_server()->GetURL("a.test", kSimplePagePath)));
 
   test_worklet_host_manager()
       .ConfigureShouldDeferWorkletMessagesOnWorkletHostCreation(true);
@@ -942,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SharedStorageBrowserTest,
     RunURLSelectionOperation_FinishBeforeStartingFencedFrameNavigation) {
-  GURL main_url = embedded_test_server()->GetURL("a.com", kSimplePagePath);
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -974,12 +980,9 @@ IN_PROC_BROWSER_TEST_F(
       .GetAttachedWorkletHost()
       ->WaitForWorkletResponsesCount(2);
 
-  GURL url0 =
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title0.html");
-  GURL url1 =
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html");
-  GURL url2 =
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title2.html");
+  GURL url0 = https_server()->GetURL("a.test", "/fenced_frames/title0.html");
+  GURL url1 = https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  GURL url2 = https_server()->GetURL("a.test", "/fenced_frames/title2.html");
 
   EXPECT_EQ(6u, console_observer.messages().size());
   EXPECT_EQ("Start executing 'test-url-selection-operation'",
@@ -1015,14 +1018,14 @@ IN_PROC_BROWSER_TEST_F(
   observer.Wait(net::OK);
 
   EXPECT_EQ(
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html"),
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(
     SharedStorageBrowserTest,
     RunURLSelectionOperation_FinishAfterStartingFencedFrameNavigation) {
-  GURL main_url = embedded_test_server()->GetURL("a.com", kSimplePagePath);
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -1100,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(
   observer.Wait(net::OK);
 
   EXPECT_EQ(
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html"),
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 }
 
@@ -1108,8 +1111,8 @@ IN_PROC_BROWSER_TEST_F(
 // context in the page, but it's not valid in a new page.
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunURLSelectionOperation_URNLifetime) {
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                         "a.com", kPageWithBlankIframePath)));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL("a.test", kPageWithBlankIframePath)));
 
   RenderFrameHost* iframe =
       static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1163,13 +1166,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
   observer1.Wait(net::OK);
 
   EXPECT_EQ(
-      embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html"),
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html"),
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 
   // Navigate to a new page. Verify that the `urn_uuid` is not valid in this
   // new page.
-  GURL new_page_main_url =
-      embedded_test_server()->GetURL("a.com", kSimplePagePath);
+  GURL new_page_main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), new_page_main_url));
 
   root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1202,8 +1204,8 @@ IN_PROC_BROWSER_TEST_F(
       shell()->web_contents(),
       content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
-  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
-                                         "a.com", kPageWithBlankIframePath)));
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server()->GetURL("a.test", kPageWithBlankIframePath)));
 
   RenderFrameHost* iframe =
       static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1292,7 +1294,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,
                        RunURLSelectionOperation_WorkletReturnInvalidIndex) {
-  GURL main_url = embedded_test_server()->GetURL("a.com", kSimplePagePath);
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());

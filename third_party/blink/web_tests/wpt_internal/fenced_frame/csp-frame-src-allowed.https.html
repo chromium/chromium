@@ -11,7 +11,8 @@
 const key = token();
 
 promise_test(async () => {
-  attachFencedFrame(generateURL("resources/csp-frame-src-allowed-inner.html",
+  attachFencedFrame(generateURL(
+      "resources/csp-frame-src-allowed-inner.html",
       [key]));
   const result = await nextValueFromServer(key);
   assert_equals(result, "loaded",
