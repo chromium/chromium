@@ -187,7 +187,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
                                                prefs::kWebKitJavascriptEnabled);
 
   AddClientHintsHeadersToPrefetchNavigation(
-      resource_request->url, &(resource_request->headers), profile,
+      prefetch_origin, &(resource_request->headers), profile,
       profile->GetClientHintsControllerDelegate(),
       /*is_ua_override_on=*/false, js_enabled);
 

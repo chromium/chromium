@@ -23,10 +23,9 @@ bool PersistClientHintsHelper(const GURL& url,
 }
 
 void GetAllowedClientHintsFromSourceHelper(
-    const GURL& url,
+    const url::Origin& origin,
     const ClientHintsContainer& container,
     blink::EnabledClientHints* client_hints) {
-  const url::Origin origin = url::Origin::Create(url);
   const auto& it = container.find(origin);
   DCHECK(client_hints);
   if (it != container.end()) {

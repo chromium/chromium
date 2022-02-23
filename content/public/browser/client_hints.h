@@ -18,7 +18,7 @@ class BrowserContext;
 // with a frame. It must be a main frame navigation. |is_javascript_enabled| is
 // whether JavaScript is enabled in blink or not.
 CONTENT_EXPORT void AddClientHintsHeadersToPrefetchNavigation(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,

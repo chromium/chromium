@@ -29,7 +29,7 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
 
   // Get which client hints opt-ins were persisted on current origin.
   void GetAllowedClientHintsFromSource(
-      const GURL& url,
+      const url::Origin& origin,
       blink::EnabledClientHints* client_hints) override;
 
   bool IsJavaScriptAllowed(const GURL& url) override;

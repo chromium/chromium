@@ -54,7 +54,7 @@ class InMemoryClientHintsControllerDelegate final
                           const std::vector<network::mojom::WebClientHintsType>&
                               client_hints) override;
   void GetAllowedClientHintsFromSource(
-      const GURL& url,
+      const url::Origin& origin,
       blink::EnabledClientHints* client_hints) override;
   void SetAdditionalClientHints(
       const std::vector<network::mojom::WebClientHintsType>&) override;

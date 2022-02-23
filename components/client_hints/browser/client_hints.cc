@@ -117,12 +117,12 @@ network::NetworkQualityTracker* ClientHints::GetNetworkQualityTracker() {
 }
 
 void ClientHints::GetAllowedClientHintsFromSource(
-    const GURL& url,
+    const url::Origin& origin,
     blink::EnabledClientHints* client_hints) {
   ContentSettingsForOneType client_hints_rules;
   settings_map_->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
                                        &client_hints_rules);
-  client_hints::GetAllowedClientHintsFromSource(url, client_hints_rules,
+  client_hints::GetAllowedClientHintsFromSource(origin, client_hints_rules,
                                                 client_hints);
   for (auto hint : additional_hints_)
     client_hints->SetIsEnabled(hint, true);

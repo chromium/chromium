@@ -26,7 +26,7 @@ bool PersistClientHintsHelper(
     ClientHintsContainer* container);
 
 void GetAllowedClientHintsFromSourceHelper(
-    const GURL& url,
+    const url::Origin& origin,
     const ClientHintsContainer& container,
     blink::EnabledClientHints* client_hints);
 

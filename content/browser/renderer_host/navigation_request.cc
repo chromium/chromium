@@ -105,6 +105,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
@@ -899,34 +900,47 @@ bool IsOptedInFencedFrame(const net::HttpResponseHeaders& http_headers) {
 // Sec-CH-UA-Reduced, Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, client
 // hint from the Accept-CH cache, if it exists, for the response origin.  The
 // `client_hints` vector also has kUaReduced or kFullUserAgent removed from it
-// if the Accept-CH response header doesn't exist.
+// if the Accept-CH response header doesn't exist, and cookies are
+// un-partitioned if that feature is enabled.
 void RemoveOriginTrialHintsFromAcceptCH(
     const GURL& url,
     ClientHintsControllerDelegate* delegate,
     const network::mojom::URLResponseHead* response,
-    std::vector<network::mojom::WebClientHintsType>& client_hints) {
-  if (response && !response->parsed_headers->accept_ch) {
-    // For Chrome to continue to send Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
-    // Sec-CH-Partitioned-Cookies, the server must continue replying with:
-    //  - a valid Origin Trial token.
-    //  - Accept-CH header with Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
-    //  Sec-CH-Partitioned-Cookies as a value.
-    //
-    // Here, it did not. So it gets removed from the persisted client hints
-    // for the next request.
-    std::vector<network::mojom::WebClientHintsType> hints_to_remove = {
-        network::mojom::WebClientHintsType::kUAReduced,
-        network::mojom::WebClientHintsType::kFullUserAgent,
-        network::mojom::WebClientHintsType::kPartitionedCookies};
-    bool need_update_storage = false;
-    for (const auto& hint : hints_to_remove) {
-      if (base::Contains(client_hints, hint)) {
-        base::Erase(client_hints, hint);
-        need_update_storage = true;
-      }
+    std::vector<network::mojom::WebClientHintsType>& client_hints,
+    FrameTreeNode* frame_tree_node) {
+  // Exit early if the response isn't present or if the Accept-CH header *is*
+  // present.
+  if (!response || response->parsed_headers->accept_ch)
+    return;
+
+  // For Chrome to continue to send Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
+  // Sec-CH-Partitioned-Cookies, the server must continue replying with:
+  //  - a valid Origin Trial token.
+  //  - Accept-CH header with Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
+  //  Sec-CH-Partitioned-Cookies as a value.
+  //
+  // Here, it did not. So it gets removed from the persisted client hints
+  // for the next request.
+  std::vector<network::mojom::WebClientHintsType> hints_to_remove = {
+      network::mojom::WebClientHintsType::kUAReduced,
+      network::mojom::WebClientHintsType::kFullUserAgent,
+      network::mojom::WebClientHintsType::kPartitionedCookies};
+  bool need_update_storage = false;
+  for (const auto& hint : hints_to_remove) {
+    if (base::Contains(client_hints, hint)) {
+      base::Erase(client_hints, hint);
+      need_update_storage = true;
     }
-    if (need_update_storage) {
-      PersistAcceptCH(url, delegate, client_hints);
+  }
+  if (need_update_storage) {
+    PersistAcceptCH(url::Origin::Create(url), delegate, client_hints);
+  }
+
+  if (base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
+    if (auto* cookie_manager = frame_tree_node->current_frame_host()
+                                   ->GetStoragePartition()
+                                   ->GetCookieManagerForBrowserProcess()) {
+      cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
     }
   }
 }
@@ -1558,9 +1572,9 @@ NavigationRequest::NavigationRequest(
     if (client_hints_delegate) {
       net::HttpRequestHeaders client_hints_headers;
       AddNavigationRequestClientHintsHeaders(
-          common_params_->url, &client_hints_headers, browser_context,
-          client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
-          commit_params_->frame_policy.container_policy);
+          url::Origin::Create(common_params_->url), &client_hints_headers,
+          browser_context, client_hints_delegate, is_overriding_user_agent(),
+          frame_tree_node_, commit_params_->frame_policy.container_policy);
       headers.MergeFrom(client_hints_headers);
     }
 
@@ -4047,12 +4061,14 @@ void NavigationRequest::OnRedirectChecksComplete(
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
     net::HttpRequestHeaders client_hints_extra_headers;
-    const GURL& source_url = commit_params_->redirects.back();
+    const url::Origin& source_origin =
+        url::Origin::Create(commit_params_->redirects.back());
     const network::mojom::URLResponseHead* response_head =
         commit_params_->redirect_response.back().get();
     ParseAndPersistAcceptCHForNavigation(
-        source_url, response_head->parsed_headers, response_head->headers.get(),
-        browser_context, client_hints_delegate, frame_tree_node_);
+        source_origin, response_head->parsed_headers,
+        response_head->headers.get(), browser_context, client_hints_delegate,
+        frame_tree_node_);
     // CriticalClientHintsThrottle issues a 307 internal redirect without the
     // original headers, and we don't want to remove Sec-CH-UA-Reduced or
     // Sec-CH-UA-Full when Critical-CH is set.  This means that if the site
@@ -4062,16 +4078,17 @@ void NavigationRequest::OnRedirectChecksComplete(
     if (response_head->headers && response_head->headers->response_code() !=
                                       net::HTTP_TEMPORARY_REDIRECT) {
       std::vector<network::mojom::WebClientHintsType> client_hints =
-          LookupAcceptCHForCommit(source_url, client_hints_delegate,
+          LookupAcceptCHForCommit(source_origin, client_hints_delegate,
                                   frame_tree_node_);
-      RemoveOriginTrialHintsFromAcceptCH(source_url, client_hints_delegate,
-                                         response_head, client_hints);
+      RemoveOriginTrialHintsFromAcceptCH(commit_params_->redirects.back(),
+                                         client_hints_delegate, response_head,
+                                         client_hints, frame_tree_node_);
     }
 
     AddNavigationRequestClientHintsHeaders(
-        common_params_->url, &client_hints_extra_headers, browser_context,
-        client_hints_delegate, is_overriding_user_agent(), frame_tree_node_,
-        commit_params_->frame_policy.container_policy);
+        url::Origin::Create(common_params_->url), &client_hints_extra_headers,
+        browser_context, client_hints_delegate, is_overriding_user_agent(),
+        frame_tree_node_, commit_params_->frame_policy.container_policy);
     modified_headers.MergeFrom(client_hints_extra_headers);
     // On a redirect, unless devtools has overridden the User-Agent header, if
     // the Critical-CH header has Sec-CH-UA-Reduced, then we should send the
@@ -4467,15 +4484,16 @@ void NavigationRequest::CommitNavigation() {
         opt_in_hints_from_response;
     if (response()) {
       opt_in_hints_from_response = ParseAndPersistAcceptCHForNavigation(
-          common_params_->url, response()->parsed_headers,
+          url::Origin::Create(common_params_->url), response()->parsed_headers,
           response()->headers.get(), browser_context, client_hints_delegate,
           frame_tree_node_);
     }
-    commit_params_->enabled_client_hints = LookupAcceptCHForCommit(
-        common_params_->url, client_hints_delegate, frame_tree_node_);
-    RemoveOriginTrialHintsFromAcceptCH(common_params_->url,
-                                       client_hints_delegate, response(),
-                                       commit_params_->enabled_client_hints);
+    commit_params_->enabled_client_hints =
+        LookupAcceptCHForCommit(url::Origin::Create(common_params_->url),
+                                client_hints_delegate, frame_tree_node_);
+    RemoveOriginTrialHintsFromAcceptCH(
+        common_params_->url, client_hints_delegate, response(),
+        commit_params_->enabled_client_hints, frame_tree_node_);
   }
 
   // Generate a UKM source and track it on NavigationRequest. This will be
@@ -6624,8 +6642,8 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
       browser_context->GetClientHintsControllerDelegate();
   if (client_hints_delegate) {
     UpdateNavigationRequestClientUaHeaders(
-        common_params_->url, client_hints_delegate, is_overriding_user_agent(),
-        frame_tree_node_, &headers);
+        url::Origin::Create(common_params_->url), client_hints_delegate,
+        is_overriding_user_agent(), frame_tree_node_, &headers);
   }
   headers.SetHeader(
       net::HttpRequestHeaders::kUserAgent,

@@ -48,7 +48,7 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
   // tree node and so on). If returning true, the new name and values are added
   // to |modified_headers|.
   bool ShouldRestartWithHints(
-      const GURL& url,
+      const url::Origin& origin,
       const std::vector<network::mojom::WebClientHintsType>& hints,
       net::HttpRequestHeaders& modified_headers);
 

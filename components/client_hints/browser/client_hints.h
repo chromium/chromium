@@ -42,7 +42,7 @@ class ClientHints : public KeyedService,
   network::NetworkQualityTracker* GetNetworkQualityTracker() override;
 
   void GetAllowedClientHintsFromSource(
-      const GURL& url,
+      const url::Origin& origin,
       blink::EnabledClientHints* client_hints) override;
 
   bool IsJavaScriptAllowed(const GURL& url) override;

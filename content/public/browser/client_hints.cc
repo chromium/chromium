@@ -8,13 +8,13 @@
 namespace content {
 
 void AddClientHintsHeadersToPrefetchNavigation(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
     bool is_ua_override_on,
     bool is_javascript_enabled) {
-  AddPrefetchNavigationRequestClientHintsHeaders(url, headers, context,
+  AddPrefetchNavigationRequestClientHintsHeaders(origin, headers, context,
                                                  delegate, is_ua_override_on,
                                                  is_javascript_enabled);
 }

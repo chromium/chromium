@@ -50,7 +50,7 @@ CreateContentBrowserURLLoaderThrottles(
        base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) &&
       request.is_main_frame && net::HttpUtil::IsMethodSafe(request.method) &&
       client_hint_delegate &&
-      ShouldAddClientHints(request.url,
+      ShouldAddClientHints(url::Origin::Create(request.url),
                            FrameTreeNode::GloballyFindByID(frame_tree_node_id),
                            client_hint_delegate)) {
     throttles.push_back(std::make_unique<CriticalClientHintsThrottle>(

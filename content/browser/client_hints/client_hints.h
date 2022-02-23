@@ -26,7 +26,7 @@ class FrameTreeNode;
 // Returns whether client hints can be added for the given URL and frame. This
 // is true only if the URL is eligible and JavaScript is enabled.
 CONTENT_EXPORT bool ShouldAddClientHints(
-    const GURL& url,
+    const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate);
 
@@ -48,7 +48,7 @@ CONTENT_EXPORT double RoundKbpsToMbpsForTesting(
 // or Feature/Permission Policy) but is not currently in the client hint
 // storage.
 CONTENT_EXPORT bool AreCriticalHintsMissing(
-    const GURL& url,
+    const url::Origin& origin,
     FrameTreeNode* frame_tree_node,
     ClientHintsControllerDelegate* delegate,
     const std::vector<network::mojom::WebClientHintsType>& critical_hints);
@@ -56,14 +56,14 @@ CONTENT_EXPORT bool AreCriticalHintsMissing(
 // Updates the user agent client hint headers. This is called if the value of
 // |override_ua| changes after the NavigationRequest was created.
 CONTENT_EXPORT void UpdateNavigationRequestClientUaHeaders(
-    const GURL& url,
+    const url::Origin& origin,
     ClientHintsControllerDelegate* delegate,
     bool override_ua,
     FrameTreeNode* frame_tree_node,
     net::HttpRequestHeaders* headers);
 
 CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
@@ -75,7 +75,7 @@ CONTENT_EXPORT void AddNavigationRequestClientHintsHeaders(
 // with a frame. It must be a main frame navigation. |is_javascript_enabled| is
 // whether JavaScript is enabled in blink or not.
 CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
-    const GURL& url,
+    const url::Origin& origin,
     net::HttpRequestHeaders* headers,
     BrowserContext* context,
     ClientHintsControllerDelegate* delegate,
@@ -93,7 +93,7 @@ CONTENT_EXPORT void AddPrefetchNavigationRequestClientHintsHeaders(
 // TrialTokenValidator from the browser process, see crrev.com/c/2142580.
 CONTENT_EXPORT absl::optional<std::vector<network::mojom::WebClientHintsType>>
 ParseAndPersistAcceptCHForNavigation(
-    const GURL& url,
+    const url::Origin& origin,
     const network::mojom::ParsedHeadersPtr& parsed_headers,
     const net::HttpResponseHeaders* response_headers,
     BrowserContext* context,
@@ -103,7 +103,7 @@ ParseAndPersistAcceptCHForNavigation(
 // Persists the `hints` in the Accept-CH storage for the Origin of `url`.
 // `delegate` cannot be nullptr.
 CONTENT_EXPORT void PersistAcceptCH(
-    const GURL& url,
+    const url::Origin& origin,
     ClientHintsControllerDelegate* delegate,
     const std::vector<network::mojom::WebClientHintsType>& hints);
 
@@ -113,7 +113,7 @@ CONTENT_EXPORT void PersistAcceptCH(
 // Note that this is based on the top-level frame, and not necessarily the
 // frame being committed.
 CONTENT_EXPORT std::vector<::network::mojom::WebClientHintsType>
-LookupAcceptCHForCommit(const GURL& url,
+LookupAcceptCHForCommit(const url::Origin& origin,
                         ClientHintsControllerDelegate* delegate,
                         FrameTreeNode* frame_tree_node);
 

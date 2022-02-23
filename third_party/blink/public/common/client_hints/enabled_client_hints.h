@@ -51,10 +51,10 @@ class BLINK_COMMON_EXPORT EnabledClientHints {
   // If `type` is not a valid WebClientHintsType value, nothing is changed (no
   // client hints get enabled).
   //
-  // If `third_party_url` is not nullptr, use it to validate the Origin Trial
+  // If `third_party_url` is present, use it to validate the Origin Trial
   // token.
   void SetIsEnabled(const GURL& url,
-                    const GURL* third_party_url,
+                    const absl::optional<GURL>& third_party_url,
                     const net::HttpResponseHeaders* response_headers,
                     network::mojom::WebClientHintsType type,
                     bool should_send);

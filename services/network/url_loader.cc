@@ -1127,7 +1127,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
   // be called and the URLLoader will continue as normal.
   if (!hints.empty()) {
     accept_ch_frame_observer_->OnAcceptCHFrameReceived(
-        url_request->url(), hints, std::move(callback));
+        url::Origin::Create(url_request->url()), hints, std::move(callback));
     return net::ERR_IO_PENDING;
   }
 

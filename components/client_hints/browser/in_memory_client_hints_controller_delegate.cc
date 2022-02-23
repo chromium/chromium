@@ -52,13 +52,12 @@ void InMemoryClientHintsControllerDelegate::PersistClientHints(
 // Looks up enabled Client Hints for the URL origin, and adds additional Client
 // Hints if set.
 void InMemoryClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
-    const GURL& url,
+    const url::Origin& origin,
     blink::EnabledClientHints* client_hints) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(client_hints);
-  DCHECK(network::IsUrlPotentiallyTrustworthy(url));
+  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
 
-  const url::Origin origin = url::Origin::Create(url);
   const auto& it = accept_ch_cache_.find(origin);
   if (it != accept_ch_cache_.end()) {
     *client_hints = it->second;

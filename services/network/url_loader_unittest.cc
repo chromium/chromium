@@ -576,7 +576,7 @@ class MockAcceptCHFrameObserver : public mojom::AcceptCHFrameObserver {
   }
 
   void OnAcceptCHFrameReceived(
-      const GURL& url,
+      const url::Origin& origin,
       const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
       OnAcceptCHFrameReceivedCallback callback) override {
     called_ = true;

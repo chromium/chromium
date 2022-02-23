@@ -96,12 +96,12 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
 }
 
 bool IsOriginTrialEnabled(const GURL& url,
-                          const GURL* third_party_url,
+                          const absl::optional<GURL>& third_party_url,
                           const net::HttpResponseHeaders* response_headers,
                           base::StringPiece feature_name) {
   blink::TrialTokenValidator validator;
   base::Time now = base::Time::Now();
-  if (third_party_url == nullptr) {
+  if (!third_party_url) {
     // It's not a third-party embed request, validate the feature_name OT
     // token as normal.
     return validator.RequestEnablesFeature(url, response_headers, feature_name,
@@ -143,7 +143,7 @@ void EnabledClientHints::SetIsEnabled(const WebClientHintsType type,
 
 void EnabledClientHints::SetIsEnabled(
     const GURL& url,
-    const GURL* third_party_url,
+    const absl::optional<GURL>& third_party_url,
     const net::HttpResponseHeaders* response_headers,
     const network::mojom::WebClientHintsType type,
     const bool should_send) {

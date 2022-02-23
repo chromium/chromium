@@ -50,9 +50,10 @@ void MockClientHintsControllerDelegate::PersistClientHints(
 
 // Get which client hints opt-ins were persisted on current origin.
 void MockClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
-    const GURL& url,
+    const url::Origin& origin,
     blink::EnabledClientHints* client_hints) {
-  GetAllowedClientHintsFromSourceHelper(url, client_hints_map_, client_hints);
+  GetAllowedClientHintsFromSourceHelper(origin, client_hints_map_,
+                                        client_hints);
   for (auto hint : additional_hints_)
     client_hints->SetIsEnabled(hint, true);
 }

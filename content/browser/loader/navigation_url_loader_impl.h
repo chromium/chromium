@@ -201,7 +201,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   // network::mojom::AcceptCHFrameObserver implementation
   void OnAcceptCHFrameReceived(
-      const GURL& url,
+      const url::Origin& origin,
       const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
       OnAcceptCHFrameReceivedCallback callback) override;
   void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>

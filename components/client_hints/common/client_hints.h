@@ -7,7 +7,9 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 
-class GURL;
+namespace url {
+class Origin;
+}
 
 namespace blink {
 class EnabledClientHints;
@@ -21,7 +23,7 @@ const char kClientHintsSettingKey[] = "client_hints";
 // resource from |url|. The method updates |client_hints| with the result.
 // |client_hints_rules| contains the content settings for the client hints.
 void GetAllowedClientHintsFromSource(
-    const GURL& url,
+    const url::Origin& origin,
     const ContentSettingsForOneType& client_hints_rules,
     blink::EnabledClientHints* client_hints);
 

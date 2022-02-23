@@ -7,26 +7,27 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace client_hints {
 
 void GetAllowedClientHintsFromSource(
-    const GURL& url,
+    const url::Origin& origin,
     const ContentSettingsForOneType& client_hints_rules,
     blink::EnabledClientHints* client_hints) {
   if (client_hints_rules.empty())
     return;
 
+  const GURL& url = origin.GetURL();
+
   if (!network::IsUrlPotentiallyTrustworthy(url))
     return;
-
-  const GURL& origin = url.DeprecatedGetOriginAsURL();
 
   for (const auto& rule : client_hints_rules) {
     // Look for an exact match since persisted client hints are disabled by
     // default, and enabled only on per-host basis.
     if (rule.primary_pattern == ContentSettingsPattern::Wildcard() ||
-        !rule.primary_pattern.Matches(origin)) {
+        !rule.primary_pattern.Matches(url)) {
       continue;
     }
 

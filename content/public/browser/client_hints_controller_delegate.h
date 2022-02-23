@@ -35,7 +35,7 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
 
   // Get which client hints opt-ins were persisted on current origin.
   virtual void GetAllowedClientHintsFromSource(
-      const GURL& url,
+      const url::Origin& origin,
       blink::EnabledClientHints* client_hints) = 0;
 
   virtual bool IsJavaScriptAllowed(const GURL& url) = 0;

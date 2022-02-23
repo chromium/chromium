@@ -62,7 +62,7 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
   blink::EnabledClientHints hints;
   for (const WebClientHintsType hint :
        response_head.parsed_headers->accept_ch.value())
-    hints.SetIsEnabled(response_url, /*third_party_url=*/nullptr,
+    hints.SetIsEnabled(response_url, /*third_party_url=*/absl::nullopt,
                        response_head.headers.get(), hint, true);
 
   std::vector<WebClientHintsType> critical_hints;
@@ -76,27 +76,29 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
 
   LogCriticalCHStatus(CriticalCHRestart::kHeaderPresent);
 
+  url::Origin response_origin = url::Origin::Create(response_url);
   // TODO(crbug.com/1228536): This isn't really used, just in the other call to
   // the same function. A refactor is probably in order.
   net::HttpRequestHeaders modified_headers;
-  if (ShouldRestartWithHints(response_url, critical_hints, modified_headers)) {
+  if (ShouldRestartWithHints(response_origin, critical_hints,
+                             modified_headers)) {
     LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
     ParseAndPersistAcceptCHForNavigation(
-        response_url, response_head.parsed_headers, response_head.headers.get(),
-        context_, client_hint_delegate_,
+        response_origin, response_head.parsed_headers,
+        response_head.headers.get(), context_, client_hint_delegate_,
         FrameTreeNode::GloballyFindByID(frame_tree_node_id_));
     delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
   }
 }
 
 bool CriticalClientHintsThrottle::ShouldRestartWithHints(
-    const GURL& response_url,
+    const url::Origin& response_origin,
     const std::vector<WebClientHintsType>& hints,
     net::HttpRequestHeaders& modified_headers) {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
 
-  if (!AreCriticalHintsMissing(response_url, frame_tree_node,
+  if (!AreCriticalHintsMissing(response_origin, frame_tree_node,
                                client_hint_delegate_, hints)) {
     return false;
   }
@@ -107,7 +109,7 @@ bool CriticalClientHintsThrottle::ShouldRestartWithHints(
   // the user agent correctly.
   if (frame_tree_node) {
     AddNavigationRequestClientHintsHeaders(
-        response_url, &modified_headers, context_, client_hint_delegate_,
+        response_origin, &modified_headers, context_, client_hint_delegate_,
         frame_tree_node->navigation_request()->is_overriding_user_agent(),
         frame_tree_node,
         frame_tree_node->navigation_request()
@@ -115,7 +117,7 @@ bool CriticalClientHintsThrottle::ShouldRestartWithHints(
             .frame_policy.container_policy);
   } else {
     AddPrefetchNavigationRequestClientHintsHeaders(
-        response_url, &modified_headers, context_, client_hint_delegate_,
+        response_origin, &modified_headers, context_, client_hint_delegate_,
         /*is_ua_override_on=*/false, /*is_javascript_enabled=*/true);
   }
   client_hint_delegate_->ClearAdditionalClientHints();

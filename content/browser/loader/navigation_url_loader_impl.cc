@@ -955,7 +955,7 @@ void NavigationURLLoaderImpl::OnComplete(
 }
 
 void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
-    const GURL& url,
+    const url::Origin& origin,
     const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
     OnAcceptCHFrameReceivedCallback callback) {
   if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
@@ -985,7 +985,7 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   const std::vector<network::mojom::WebClientHintsType>& filtered_hints =
       filtered_enabled_hints.GetEnabledHints();
 
-  if (!AreCriticalHintsMissing(url, frame_tree_node, client_hint_delegate,
+  if (!AreCriticalHintsMissing(origin, frame_tree_node, client_hint_delegate,
                                filtered_hints)) {
     std::move(callback).Run(net::OK);
     return;
@@ -994,7 +994,7 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   net::HttpRequestHeaders modified_headers;
   client_hint_delegate->SetAdditionalClientHints(filtered_hints);
   AddNavigationRequestClientHintsHeaders(
-      url, &modified_headers, browser_context_, client_hint_delegate,
+      origin, &modified_headers, browser_context_, client_hint_delegate,
       frame_tree_node->navigation_request()->is_overriding_user_agent(),
       frame_tree_node,
       frame_tree_node->navigation_request()
