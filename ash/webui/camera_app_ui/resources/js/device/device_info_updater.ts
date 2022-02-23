@@ -164,7 +164,7 @@ export class DeviceInfoUpdater {
   /**
    * Gets Camera3DeviceInfo for all available video devices.
    */
-  getCamera3DevicesInfo(): Array<Camera3DeviceInfo>|null {
+  getCamera3DevicesInfo(): Camera3DeviceInfo[]|null {
     return this.camera3DevicesInfo;
   }
 }

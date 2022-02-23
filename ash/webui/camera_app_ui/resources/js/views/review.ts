@@ -57,7 +57,7 @@ export enum ButtonGroupTemplate {
  * Group of review options.
  */
 export class OptionGroup<T> {
-  readonly options: Option<T>[];
+  readonly options: Array<Option<T>>;
   readonly template: ButtonGroupTemplate;
 
   /** Constructs Options. */

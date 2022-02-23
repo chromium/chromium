@@ -85,7 +85,7 @@ interface StorageManager {
 interface Window {
   loadTimeData: {
     getBoolean(id: string): boolean; getString(id: string): string;
-    getStringF(id: string, ...args: (number|string)[]): string;
+    getStringF(id: string, ...args: Array<number|string>): string;
   }
 }
 
@@ -152,7 +152,7 @@ interface LaunchQueue {
 type LaunchConsumer = (params: LaunchParams) => void;
 
 interface LaunchParams {
-  readonly files: ReadonlyArray<FileSystemHandle>;
+  readonly files: readonly FileSystemHandle[];
 }
 
 // HTMLVideoElement.requestVideoFrameCallback, this is currently available in
@@ -196,7 +196,7 @@ interface DetectedBarcode {
   boundingBox: DOMRectReadOnly;
   rawValue: string;
   format: BarcodeFormat;
-  cornerPoints: ReadonlyArray<Point2D>;
+  cornerPoints: readonly Point2D[];
 }
 
 type BarcodeFormat =

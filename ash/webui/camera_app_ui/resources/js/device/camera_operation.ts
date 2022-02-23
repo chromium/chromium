@@ -327,7 +327,7 @@ export class OperationScheduler {
   readonly reconfigurer: Reconfigurer;
   readonly capturer: Capturer;
   private ongoingOperationType: OperationType|null = null;
-  private pendingReconfigureWaiters: CancelableEvent<boolean>[] = [];
+  private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
   public readonly photoPreferrer = new PhotoConstraintsPreferrer();
   public readonly videoPreferrer = new VideoConstraintsPreferrer();
   public readonly modes: Modes;

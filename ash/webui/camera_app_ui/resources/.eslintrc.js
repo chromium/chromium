@@ -478,6 +478,14 @@ module.exports = {
 
     // This is covered by @typescript-eslint/naming-convention.
     'camelcase': 'off',
+
+    // go/tsstyle#arrayt-type
+    '@typescript-eslint/array-type': [
+      'error',
+      {
+        'default': 'array-simple',
+      },
+    ],
   }),
   'overrides': [{
     files: ['**/*.ts'],
