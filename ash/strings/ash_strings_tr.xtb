@@ -330,6 +330,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3105917916468784889">Ekran görüntüsü al</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Öneriyi Kaldır</translation>
+<translation id="3120421559657122717">Cihaz kapatılsın mı?</translation>
 <translation id="3126069444801937830">Güncellemek için yeniden başlat</translation>
 <translation id="3139942575505304791">Çalışma Masası 1</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
@@ -350,6 +351,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> penceresi, Masa <ph name="ACTIVE_DESK" /> üzerinden Masa <ph name="TARGET_DESK" /> üzerine taşındı</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
+<translation id="3289544412142055976">Linux uygulamaları şu anda desteklenmiyor</translation>
 <translation id="3289674678944039601">Adaptör ile şarj oluyor</translation>
 <translation id="3290356915286466215">Güvenli değil</translation>
 <translation id="3294437725009624529">Misafir</translation>
@@ -697,6 +699,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5400461572260843123">Hızlı Ayarlar, Bildirim merkezine erişmek için arama + sol tuşlarına basın.</translation>
 <translation id="5426063383988017631">Ayarlar menüsü kapatıldı</translation>
 <translation id="5428899915242071344">Seçmeye başla</translation>
+<translation id="5429993543155113935">Gizli pencereler şu anda desteklenmiyor</translation>
 <translation id="5430931332414098647">Anında Tethering</translation>
 <translation id="5431318178759467895">Renk</translation>
 <translation id="5433020815079095860">Ses girişi</translation>
@@ -810,6 +813,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6166852626429024716">Cihazınızda, uygulamalarda, ayarlarda, web'de arama yapın</translation>
 <translation id="6179832488876878285">Önemli dosyalarınızı buraya sabitleyebilirsiniz. Başlamak için Dosyalar uygulamasını açın.</translation>
+<translation id="6220928844947387476">Artık aynı anda hem kendinizi hem ekranınızı kaydedebilirsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="6431865393913628856">Ekran kaydı</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
+<translation id="6449483711453944360">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor</translation>
 <translation id="6452181791372256707">Reddet</translation>
 <translation id="6453179446719226835">Dil değiştirildi</translation>
 <translation id="6459472438155181876">Ekran şuraya genişletiliyor: <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +939,7 @@ Yeni yüklenmiş</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> cihazınızı telefonunuza bağlayın</translation>
 <translation id="7026338066939101231">Azalt</translation>
 <translation id="7029814467594812963">Oturumdan çık</translation>
+<translation id="7032161822340700104">Şablon sayısı 6 ile sınırlıdır. Yeni şablon kaydetmek için bir şablonu kaldırın.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />`, Google Asistan</translation>
 <translation id="7042322267639375032">Durum alanını daralt</translation>
 <translation id="7045033600005038336">Şablon değiştirilsin mi?</translation>

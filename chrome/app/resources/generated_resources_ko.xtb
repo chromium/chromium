@@ -362,6 +362,7 @@
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
 <translation id="1367951781824006909">파일 선택</translation>
 <translation id="1369149969991017342">스위치 제어(스위치 1~2개로 컴퓨터 제어)</translation>
+<translation id="1371863479305430391">휴대전화의 알림을 보고 닫거나 답장합니다. 휴대전화의 메시지 앱을 스트리밍합니다.</translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
 <translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
@@ -412,6 +413,7 @@
 <translation id="1415708812149920388">클립 보드 읽기 액세스 거부됨</translation>
 <translation id="1415990189994829608"><ph name="EXTENSION_NAME" />(확장 프로그램 ID '<ph name="EXTENSION_ID" />')은(는) 이 세션 유형에서 허용되지 않습니다.</translation>
 <translation id="1418954524306642206">탐색하여 프린터 PPD 지정</translation>
+<translation id="1420732223884894666"><ph name="DEVICE_TYPE" />에서 휴대전화의 최근 사진 및 미디어를 봅니다.</translation>
 <translation id="1420834118113404499">미디어 라이선스</translation>
 <translation id="1420920093772172268"><ph name="TURN_ON_BLUETOOTH_LINK" />을(를) 통해 페어링 허용</translation>
 <translation id="1421934779300263861">진단 및 사용 데이터와 함께 비정상 종료 보고서를 Google에 자동으로 전송하여 Chrome 및 ChromeOS의 기능과 성능 개선에 참여합니다. 일부 합산 데이터도 Android 앱 및 Google 파트너에게 도움이 됩니다. Google 계정에 웹 및 앱 활동이 사용 설정되어 있다면 Android 데이터가 Google 계정에 저장될 수 있습니다.</translation>
@@ -448,6 +450,7 @@
 <translation id="1442851588227551435">활성 Kerberos 티켓 설정</translation>
 <translation id="1444628761356461360">기기 소유자인 <ph name="OWNER_EMAIL" />이(가) 관리하는 설정입니다.</translation>
 <translation id="144518587530125858">테마('<ph name="IMAGE_PATH" />')를 로드하지 못했습니다.</translation>
+<translation id="1448779317883494811">브러시 도구</translation>
 <translation id="1449191289887455076">할당을 확인하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />디버그 로그
@@ -628,6 +631,7 @@
 <translation id="1619879934359211038">Google Play에 연결할 수 없습니다. 네트워크 연결을 확인한 후 다시 시도해 보세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="1620307519959413822">잘못된 비밀번호입니다. 다시 시도하거나 '비밀번호 찾기'를 클릭하여 재설정하세요.</translation>
 <translation id="1620510694547887537">카메라</translation>
+<translation id="1621382140075772850">텍스트 도구</translation>
 <translation id="1621485112342885423">장바구니</translation>
 <translation id="1621729191093924223">마이크가 필요한 기능이 작동하지 않음</translation>
 <translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> 데이터가 삭제됩니다</translation>
@@ -645,6 +649,7 @@
 <translation id="163072119192489970">데이터 전송 및 수신 완료가 허용됨</translation>
 <translation id="1630768113285622200">다시 시작 및 계속</translation>
 <translation id="1632082166874334883">Google 계정에 비밀번호가 저장됨</translation>
+<translation id="1632756664321977232">자르기 도구</translation>
 <translation id="1632803087685957583">키보드 반복 속도, 단어 예측 등을 조정할 수 있습니다.</translation>
 <translation id="163309982320328737">초기 글자 폭을 최대로 설정</translation>
 <translation id="1633947793238301227">Google 어시스턴트 사용 안함</translation>
@@ -699,6 +704,7 @@
 <translation id="1682548588986054654">새 시크릿 창</translation>
 <translation id="1682867089915960590">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
 <translation id="1684279041537802716">강조 색상</translation>
+<translation id="168511795252678620">최근 사진 및 메시지 앱</translation>
 <translation id="1686550358074589746">글라이드 타이핑 사용</translation>
 <translation id="168715261339224929">어느 기기에서나 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="1688867105868176567">사이트 데이터를 삭제하시겠습니까?</translation>
@@ -1035,6 +1041,7 @@
 <translation id="2005199804247617997">기타 프로필</translation>
 <translation id="2006638907958895361"><ph name="APP" />에서 링크 열기</translation>
 <translation id="2007404777272201486">문제 신고...</translation>
+<translation id="2009590708342941694">그림 이모티콘 도구</translation>
 <translation id="2010501376126504057">호환 기기</translation>
 <translation id="2011968031299471357">메시지 수신 및 응답</translation>
 <translation id="2015232545623037616">PC와 Chromecast가 동일한 Wi-Fi 네트워크에 연결됨</translation>
@@ -1647,6 +1654,7 @@
 <translation id="2610157865375787051">절전 모드</translation>
 <translation id="2610260699262139870">실제 크기(&amp;C)</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
+<translation id="2611776654555141051">직사각형 도구</translation>
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있습니다.</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />의 데이터를 읽고 변경</translation>
@@ -2072,6 +2080,7 @@
 <translation id="3016381065346027039">로그 항목 없음</translation>
 <translation id="3016641847947582299">구성요소가 업데이트됨</translation>
 <translation id="3017079585324758401">배경</translation>
+<translation id="3019023222666709803">화살표 도구</translation>
 <translation id="3019285239893817657">하위 페이지 버튼</translation>
 <translation id="3019595674945299805">VPN 서비스</translation>
 <translation id="3020183492814296499">바로가기</translation>
@@ -2484,6 +2493,7 @@
 <translation id="346431825526753"><ph name="CUSTODIAN_EMAIL" />님이 관리하는 어린이용 계정입니다.</translation>
 <translation id="3468298837301810372">라벨</translation>
 <translation id="3468999815377931311">Android 휴대전화</translation>
+<translation id="3469583217479686109">선택 도구</translation>
 <translation id="3471876058939596279">HDMI 및 USB 타입-C 포트를 동시에 비디오용으로 사용할 수 없습니다. 다른 비디오 포트를 사용하세요.</translation>
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
@@ -2543,6 +2553,7 @@
 <translation id="3526034519184079374">사이트 데이터를 읽거나 변경할 수 없음</translation>
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3528498924003805721">바로가기 대상</translation>
+<translation id="3531383404180922673">휴대전화의 최근 사진, 미디어, 알림을 봅니다. 휴대전화의 메시지 앱을 스트리밍합니다.</translation>
 <translation id="3532273508346491126">동기화 관리</translation>
 <translation id="3532521178906420528">네트워크 연결 설정 중...</translation>
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - 오디오 음소거</translation>
@@ -2784,6 +2795,7 @@
 <translation id="3771294271822695279">동영상 파일</translation>
 <translation id="3771851622616482156">열려 있는 탭을 포함하여 이 사이트에서 로그아웃됩니다.</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
+<translation id="3774166835015494435">최근 사진 및 알림</translation>
 <translation id="3775432569830822555">SSL 서버 인증서</translation>
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3776508619697147021">사이트에서 여러 파일의 자동 다운로드를 요청할 수 있음</translation>
@@ -3747,6 +3759,7 @@
 <translation id="4780321648949301421">페이지를 다른 이름으로 저장...</translation>
 <translation id="4781443161433589743">Chrome의 가장 강력한 보안 기능으로 보호되고 있습니다.</translation>
 <translation id="4785719467058219317">이 웹사이트에 등록되지 않은 보안 키를 사용하고 있습니다.</translation>
+<translation id="4785914069240823137">자르기 취소</translation>
 <translation id="478708757211772586">'다음'을 사용하여 화면에서 앞으로 이동합니다.</translation>
 <translation id="4788092183367008521">네트워크 연결을 확인한 다음 다시 시도하세요.</translation>
 <translation id="4789550509729954245">근처의 기기가 공유 중일 때 알림 표시</translation>
@@ -5080,12 +5093,14 @@
 <translation id="6176043333338857209">보안 키와 통신하기 위해 블루투스가 일시적으로 켜집니다.</translation>
 <translation id="6178664161104547336">인증서 선택</translation>
 <translation id="6178682841350631965">로그인 데이터가 업데이트되었습니다.</translation>
+<translation id="6180510783007738939">선 도구</translation>
 <translation id="6181431612547969857">다운로드 차단됨</translation>
 <translation id="6184099524311454384">탭 검색</translation>
 <translation id="6185132558746749656">기기 위치</translation>
 <translation id="6186394437969115158">사이트에서는 일반적으로 콘텐츠나 서비스를 무료로 제공하기 위해 광고를 표시합니다. 그러나 일부 사이트는 방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려져 있습니다.</translation>
 <translation id="6188346519670155113">Chrome 브라우저 동기화 사용 설정됨</translation>
 <translation id="6190953336330058278">휴대전화 허브 앱</translation>
+<translation id="619279033188484792">휴대전화의 최근 사진, 미디어, 알림을 <ph name="DEVICE_TYPE" />에서 봅니다.</translation>
 <translation id="6195005504600220730">브라우저, OS, 기기에 관한 정보를 확인합니다.</translation>
 <translation id="6195693561221576702">이 기기는 오프라인 데모 모드에서 설정할 수 없습니다.</translation>
 <translation id="6196640612572343990">타사 쿠키 차단</translation>
@@ -5444,6 +5459,7 @@
 <translation id="6550675742724504774">옵션</translation>
 <translation id="65513682072153627">관리자가 관리하는 설정이나 기능의 경우 관리됨 아이콘이 표시됩니다</translation>
 <translation id="6551508934388063976">명령어가 없습니다. 컨트롤 키와 N을 눌러 새 창을 여세요.</translation>
+<translation id="6551606359270386381">말줄임표 도구</translation>
 <translation id="6551612971599078809">사이트에서 USB를 사용하고 있습니다.</translation>
 <translation id="6551739526055143276">Family Link로 관리됨</translation>
 <translation id="655384502888039633">사용자 <ph name="USER_COUNT" />명</translation>
@@ -6019,6 +6035,7 @@
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
 <translation id="7154130902455071009">다음으로 시작 페이지 변경: <ph name="START_PAGE" /></translation>
 <translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
+<translation id="7155352398126583949">알림 및 메시지 앱</translation>
 <translation id="7163202347044721291">활성화 코드 확인 중…</translation>
 <translation id="716640248772308851">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽을 수 있습니다.</translation>
 <translation id="7167486101654761064">해당 유형의 파일 항상 열기(&amp;A)</translation>
@@ -6081,6 +6098,7 @@
 <translation id="7228523857728654909">화면 잠금 및 로그인</translation>
 <translation id="7230222852462421043">창 복원(&amp;R)</translation>
 <translation id="7230787553283372882">텍스트 크기 맞춤설정</translation>
+<translation id="7231260028442989757">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
 <translation id="7232750842195536390">이름 변경 실패</translation>
 <translation id="723343421145275488"><ph name="VISUAL_SEARCH_PROVIDER" />로 이미지 검색</translation>
 <translation id="7234010996000898150">Linux 복원 취소 중</translation>
@@ -6438,6 +6456,7 @@
 <translation id="7602173054665172958">인쇄 관리</translation>
 <translation id="7603785829538808504">다음 사이트는 맞춤 설정을 따릅니다.</translation>
 <translation id="7605594153474022051">동기화가 작동하지 않음</translation>
+<translation id="7606248551867844312">자르기 확인</translation>
 <translation id="7606560865764296217">애니메이션 일시중지</translation>
 <translation id="7606992457248886637">인증 기관</translation>
 <translation id="7607002721634913082">일시중지됨</translation>
@@ -6542,6 +6561,7 @@
 <translation id="7691163173018300413">'Hey Google'</translation>
 <translation id="7691698019618282776">Crostini 업그레이드</translation>
 <translation id="769375405463525957">기기를 자리에 두고 일어나면 화면이 자동으로 잠깁니다. 기기 앞에 있으면 화면이 켜진 상태를 유지합니다.</translation>
+<translation id="7694246789328885917">강조표시 도구</translation>
 <translation id="7696063401938172191">'<ph name="PHONE_NAME" />'에서 다음과 같이 설정하세요.</translation>
 <translation id="7697166915480294040">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
 <translation id="769824636077131955">문서가 너무 커서 보안 확인을 진행할 수 없습니다. 인쇄할 수 있는 문서의 최대 크기는 50MB입니다.</translation>
@@ -7004,6 +7024,7 @@
 <translation id="8141725884565838206">비밀번호 관리</translation>
 <translation id="814204052173971714">{COUNT,plural, =1{동영상 1개}other{동영상 #개}}</translation>
 <translation id="8143442547342702591">잘못된 애플리케이션</translation>
+<translation id="8143475123634606318">휴대전화의 메시지 앱을 스트리밍합니다.</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>
 <translation id="8146177459103116374">이 기기에 이미 등록한 경우 <ph name="LINK2_START" />기존 사용자로 로그인<ph name="LINK2_END" />할 수 있습니다.</translation>
 <translation id="8146287226035613638">기본 언어를 추가하고 순위를 지정하세요. 가능한 경우 웹사이트가 기본 언어로 표시됩니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -7280,6 +7301,7 @@
 <translation id="8438566539970814960">검색 및 탐색 기능 개선</translation>
 <translation id="8439506636278576865">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8440630305826533614">Linux 앱</translation>
+<translation id="8445046761938045900">최근 사진, 알림, 메시지 앱</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8447409163267621480">Ctrl 또는 Alt 중 하나를 포함해야 합니다</translation>
 <translation id="8448729345478502352">화면에 표시되는 항목을 축소 또는 확대합니다.</translation>
@@ -7428,6 +7450,7 @@
 <translation id="8620436878122366504">부모님이 아직 승인하지 않았습니다.</translation>
 <translation id="8621866727807194849">컴퓨터에 유해한 소프트웨어가 있습니다. Chrome이 유해한 소프트웨어를 삭제하고, 설정을 복원하고, 확장 프로그램을 사용 중지하는 중입니다. 이 작업이 끝나면 브라우저가 다시 정상적으로 작동합니다.</translation>
 <translation id="8621979332865976405">전체 화면 공유</translation>
+<translation id="8624315169751085215">클립보드로 복사</translation>
 <translation id="8624354461147303341">할인받기</translation>
 <translation id="8624944202475729958"><ph name="PROFILE_NAME" />: <ph name="ERROR_DESCRIPTION" /></translation>
 <translation id="862542460444371744">확장 프로그램(&amp;E)</translation>
@@ -7602,6 +7625,7 @@
 <translation id="8780443667474968681">음성 검색이 사용 중지되었습니다.</translation>
 <translation id="8781834595282316166">그룹에 새 탭 추가</translation>
 <translation id="8782565991310229362">키오스크 애플리케이션 실행이 취소되었습니다.</translation>
+<translation id="8783526165720272136">메시지 앱</translation>
 <translation id="8783834180813871000">블루투스 페어링 코드를 입력하고 Return 또는 Enter 키를 누르세요.</translation>
 <translation id="8784626084144195648">비닝 평균</translation>
 <translation id="8785622406424941542">스타일러스</translation>
@@ -8012,6 +8036,7 @@
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
 <translation id="9187967020623675250">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="9188732951356337132">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
+<translation id="919679265671373777">휴대전화의 최신 사진과 미디어를 봅니다. 휴대전화의 메시지 앱을 스트리밍합니다.</translation>
 <translation id="919686179725692564">앱 백업 방법 자세히 알아보기</translation>
 <translation id="9198090666959937775">Android 휴대전화를 보안 키로 사용</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />에 있는 파일을 수정할 수 있게 됩니다.</translation>

@@ -12,6 +12,7 @@
 
         
 您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
+<translation id="1054045277222934172">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
 <translation id="1063454504051558093">使用其他密码…</translation>
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已扫描代码</translation>
@@ -182,6 +183,7 @@
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
 <translation id="2695507686909505111">网页翻译完毕</translation>
+<translation id="2700241355396984822">权限设置选项</translation>
 <translation id="2702801445560668637">阅读清单</translation>
 <translation id="2704491540504985681">下载内容</translation>
 <translation id="2704606927547763573">已复制</translation>
@@ -318,6 +320,8 @@
 <translation id="3861486700625780712">取消关注</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
 <translation id="3897092660631435901">菜单</translation>
+<translation id="3904829425754749514">贵组织已关闭同步功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
+<translation id="3905353503976611311">在网络上搜索</translation>
 <translation id="3913386780052199712">已登录 Chrome</translation>
 <translation id="3915450441834151894">网站信息</translation>
 <translation id="3922310737605261887">搜索复制的文字</translation>
@@ -347,6 +351,7 @@
 <translation id="4172051516777682613">一律显示</translation>
 <translation id="418156467088430727">在新标签页中查看离线版本</translation>
 <translation id="4181841719683918333">语言</translation>
+<translation id="4223967053752765281">贵单位关闭了登录功能。您仍可在此设备上查看自己的书签、历史记录、密码及其他设置。如果您做出更改，这些更改将不会同步到您的帐号。</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">请输入密码</translation>
 <translation id="4249955472157341256">按新近度排序</translation>
@@ -371,6 +376,7 @@
 <translation id="4469418912670346607">继续设置</translation>
 <translation id="4474494258097106883">专为 iPhone 打造</translation>
 <translation id="4476574785019001431">设置</translation>
+<translation id="448433063499977729">同步功能已关闭</translation>
 <translation id="4496373720959965247">添加标签页并在网页之间切换</translation>
 <translation id="4502566650163919158">立即检查</translation>
 <translation id="4505980578794259603">上次检查时间：<ph name="TIME" />。</translation>
@@ -489,6 +495,7 @@
 <translation id="5580834567471114021">添加到阅读清单以供日后阅读？</translation>
 <translation id="5592679540098330836">为<ph name="NAME" />开启同步</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
+<translation id="560999923643681074">编辑权限</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
 <translation id="5626245204502895507">该文件目前无法下载。</translation>
 <translation id="5631164295104953411">添加付款方式</translation>
@@ -759,6 +766,7 @@
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="7859704718976024901">浏览记录</translation>
+<translation id="7884694604461143138">在历史记录中搜索（找到了 <ph name="COUNT" /> 项结果）</translation>
 <translation id="7887198238286927132">为保护您的隐私，Chrome 不会自动填充此字段。</translation>
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
@@ -790,6 +798,7 @@
 <translation id="8076014560081431679">已保存的网站设置将不会遭到删除，并且可能会反映您的浏览习惯。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">此设置处于受管状态，点按两次可了解详情</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
+<translation id="809543534949702122">在历史记录中搜索</translation>
 <translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8114753159095730575">已可下载文件。选项位于屏幕底部附近。</translation>
@@ -811,6 +820,7 @@
 <translation id="8319076807703933069">新搜索</translation>
 <translation id="8323906514956095947">轻触并按住可查看更多的标签页选项</translation>
 <translation id="8328777765163860529">全部关闭</translation>
+<translation id="8364085047956854021">您离开“<ph name="SITE_NAME" />”后，这个网站的权限将重置为停用。</translation>
 <translation id="8378714024927312812">由贵单位管理</translation>
 <translation id="8386068868580335421">重置</translation>
 <translation id="8407669440184693619">未找到任何用于此网站的密码</translation>
@@ -897,6 +907,7 @@
 <translation id="9148126808321036104">重新登录</translation>
 <translation id="9152539721251340337">生成二维码</translation>
 <translation id="9157836665414082580">禁止显示对话框</translation>
+<translation id="9177438225260810839">在打开的标签页中搜索</translation>
 <translation id="9188680907066685419">退出受管理的帐号</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> 天前</translation>
 <translation id="9203116392574189331">Handoff</translation>

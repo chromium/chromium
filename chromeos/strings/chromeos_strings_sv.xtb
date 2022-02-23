@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Batterinivån för höger hörsnäcka på enheten är <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
+<translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3456078764689556234">Sida <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" /> har skrivits ut.</translation>
@@ -489,6 +490,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7175037578838465313">Konfigurera <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Denna <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" />. Administratörer kan fjärrkonfigurera enheten.</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
+<translation id="7212734716605298123">Firmware-uppdateringar för externa enheter</translation>
 <translation id="7216409898977639127">Mobiloperatör</translation>
 <translation id="7271040990581020067">Skannern används för närvarande. Försök igen senare.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

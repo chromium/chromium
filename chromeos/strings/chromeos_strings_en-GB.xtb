@@ -267,6 +267,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Subject alternative name match</translation>
 <translation id="4536864596629708641">IP configuration</translation>
+<translation id="4546131424594385779">Create a looping video</translation>
 <translation id="4548483925627140043">Signal not found</translation>
 <translation id="4556753742174065117">All firmware is up to date</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh battery</translation>
@@ -450,6 +451,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6566314079205407217">Multi-page scan</translation>
 <translation id="6574762126505704998">Fill</translation>
 <translation id="6575134580692778371">Not configured</translation>
+<translation id="6579509898032828423">Use this photo</translation>
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
@@ -650,6 +652,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="9062831201344759865">DNS resolution has high latency</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Use this video</translation>
 <translation id="9087578468327036362">Report this query</translation>
 <translation id="9088306295921699330">Current usage</translation>
 <translation id="9095415590198785865">Device will go to the same owner</translation>

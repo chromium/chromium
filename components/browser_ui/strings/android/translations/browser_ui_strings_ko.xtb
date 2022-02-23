@@ -176,6 +176,7 @@
 <translation id="5354152178998424783">사이트에서 저장한 <ph name="DATASIZE" />의 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(외 1개)}other{(외 #개)}}</translation>
 <translation id="5403592356182871684">이름</translation>
+<translation id="5412236728747081950">이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시합니다.</translation>
 <translation id="5438097262470833822"><ph name="WEBSITE" />의 권한이 재설정됩니다.</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> 중 <ph name="ELAPSED_TIME" /> 경과</translation>
 <translation id="5494752089476963479">방해가 되거나 사용자를 현혹하는 광고를 표시하는 사이트의 광고 차단</translation>

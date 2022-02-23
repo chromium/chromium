@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Tai nghe phải còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
+<translation id="3413935475507503304">Để tiếp tục cập nhật, hãy nhấp vào Tiếp theo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3456078764689556234">Đã in trang <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
@@ -262,6 +263,7 @@
 <translation id="4511264077854731334">Cổng</translation>
 <translation id="4521826082652183069">Khớp tên thay thế của tiêu đề</translation>
 <translation id="4536864596629708641">Cấu hình IP</translation>
+<translation id="4546131424594385779">Tạo video lặp lại</translation>
 <translation id="4548483925627140043">Không tìm thấy tín hiệu</translation>
 <translation id="4556753742174065117">Tất cả chương trình cơ sở đều đã cập nhật</translation>
 <translation id="455835558791489930">Pin <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -443,6 +445,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6566314079205407217">Chế độ quét nhiều trang</translation>
 <translation id="6574762126505704998">Toàn bộ ảnh</translation>
 <translation id="6575134580692778371">Chưa được định cấu hình</translation>
+<translation id="6579509898032828423">Dùng ảnh này</translation>
 <translation id="6596816719288285829">Địa chỉ IP</translation>
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
@@ -489,6 +492,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7175037578838465313">Định cấu hình <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> này do <ph name="MANAGER" /> quản lý. Quản trị viên có thể định cấu hình từ xa thiết bị này.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
+<translation id="7212734716605298123">Cập nhật chương trình cơ sở cho thiết bị bên ngoài</translation>
 <translation id="7216409898977639127">Nhà cung cấp dịch vụ di động</translation>
 <translation id="7271040990581020067">Máy quét đang được sử dụng. Hãy thử lại sau.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -641,6 +645,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="9062831201344759865">Quá trình phân giải DNS có độ trễ cao</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Dùng video này</translation>
 <translation id="9087578468327036362">Báo lỗi truy vấn này</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>
 <translation id="9095415590198785865">Thiết bị sẽ thuộc về cùng một chủ sở hữu</translation>

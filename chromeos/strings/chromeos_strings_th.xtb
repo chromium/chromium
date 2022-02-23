@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">อุปกรณ์มีระดับแบตเตอรี่ของหูฟังข้างขวา <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3368922792935385530">เชื่อมต่อแล้ว</translation>
 <translation id="3369013195428705271">คุณแน่ใจไหมว่าต้องการล้างประวัติการพิมพ์ทั้งหมด ทั้งนี้ ระบบจะไม่ล้างงานพิมพ์ที่กำลังดำเนินอยู่</translation>
+<translation id="3413935475507503304">คลิก "ถัดไป" เพื่อดำเนินการอัปเดตต่อ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3456078764689556234">พิมพ์แล้ว <ph name="PRINTED_PAGES" /> จาก <ph name="TOTAL_PAGES" /> หน้า</translation>
@@ -497,6 +498,7 @@
 <translation id="7175037578838465313">กำหนดค่า <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> นี้ได้รับการจัดการโดย <ph name="MANAGER" /> ผู้ดูแลระบบอาจกำหนดค่าอุปกรณ์จากระยะไกล</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
+<translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
 <translation id="7271040990581020067">เครื่องสแกนกำลังทำงานอยู่ ลองอีกครั้งในภายหลัง</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

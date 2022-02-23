@@ -223,6 +223,9 @@
 <translation id="6967962315388095737">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome బీటా కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="6989339256997917931">Google Chrome నవీకరింబడింది, కానీ మీరు దీన్ని కనీసం 30 రోజులు ఉయోగించలేరు.</translation>
 <translation id="7025800014283535195">మీరు ఇక్కడ Chrome ప్రొఫైళ్ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
+<translation id="7036251913954633326">మీరు ఈ ఖాతాను ఒకసారి మాత్రమే ఉపయోగించాలనుకుంటే, Chrome బ్రౌజర్‌లో <ph name="GUEST_LINK_BEGIN" />గెస్ట్ మోడ్‌ను<ph name="GUEST_LINK_END" /> ఉపయోగించండి. వేరెవరి కోసం అయినా మీరు ఖాతాను జోడించాలనుకుంటే, మీ <ph name="DEVICE_TYPE" />‌కు <ph name="LINK_BEGIN" />కొత్త వ్యక్తిని జోడించండి<ph name="LINK_END" />.
+
+మీరు వెబ్‌సైట్‌లు, యాప్‌లకు ఇప్పటికే ఇచ్చిన అనుమతులు ఈ ఖాతాకు వర్తించవచ్చు. మీ Google ఖాతాలను మీరు <ph name="SETTINGS_LINK_BEGIN" />సెట్టింగ్‌లు<ph name="SETTINGS_LINK_END" /> లింక్‌లో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="7062128746136194023">Chromeలో సైట్‌లు, యాప్‌లు, ఎక్స్‌టెన్షన్‌లకు సంబంధించిన అనుమతులను మీ తల్లి/తండ్రి ఆఫ్ చేశారు. ఈ <ph name="EXTENSION_TYPE_PARAMETER" />ను జోడించడానికి అనుమతి లేదు.</translation>
 <translation id="7085332316435785646">Google సర్వీస్‌లలో మరింత వ్యక్తిగతీకరించిన అనుభవం కోసం Chrome హిస్టరీని చేర్చాలో, లేదో ఎంచుకోండి</translation>
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
@@ -236,6 +239,9 @@
 <translation id="7296210096911315575">ముఖ్యమైన వినియోగ, భద్రతా సమాచారం</translation>
 <translation id="7308322188646931570">ఫైళ్లను డౌన్‌లోడ్ చేయడానికి Chromeకు నిల్వ యాక్సెస్ అవసరం</translation>
 <translation id="7339898014177206373">కొత్త విండో</translation>
+<translation id="7388770099345495132">మీరు ఈ ఖాతాను ఒకసారి మాత్రమే ఉపయోగించాలనుకుంటే, Chrome బ్రౌజర్‌లో గెస్ట్ మోడ్‌ను ఉపయోగించండి. వేరెవరి కోసం అయినా మీరు ఖాతాను జోడించాలనుకుంటే, మీ <ph name="DEVICE_TYPE" />‌కు <ph name="LINK_BEGIN" />కొత్త వ్యక్తిని జోడించండి<ph name="LINK_END" />.
+
+మీరు వెబ్‌సైట్‌లు, యాప్‌లకు ఇప్పటికే ఇచ్చిన అనుమతులు ఈ ఖాతాకు వర్తించవచ్చు. మీ Google ఖాతాలను మీరు <ph name="SETTINGS_LINK_BEGIN" />సెట్టింగ్‌లు<ph name="SETTINGS_LINK_END" /> లింక్‌లో మేనేజ్ చేయవచ్చు.</translation>
 <translation id="7398801000654795464">మీరు <ph name="USER_EMAIL_ADDRESS" />గా Chromeకు సైన్ ఇన్ చేశారు. మళ్లీ సైన్ ఇన్ చేయడానికి, దయచేసి ఇదే ఖాతాను ఉపయోగించండి.</translation>
 <translation id="7408085963519505752">Chrome OS నిబంధనలు</translation>
 <translation id="7419046106786626209">మీ డొమైన్ కోసం సింక్‌ అందుబాటులో లేనందున Chrome OS మీ డేటాను సింక్ చేయ‌లేక‌పోయింది.</translation>

@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (ಬ್ಲೂಟೂತ್‌)</translation>
 <translation id="3113926042639749131">ಸಲಹೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="3120421559657122717">ಸಾಧನವನ್ನು ಶಟ್‌ಡೌನ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3126069444801937830">ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="3139942575505304791">ಡೆಸ್ಕ್ 1</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ವಿಂಡೋವನ್ನು <ph name="ACTIVE_DESK" /> ಡೆಸ್ಕ್‌ನಿಂದ<ph name="TARGET_DESK" /> ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="3255483164551725916">ನೀವೇನು ಮಾಡಬಲ್ಲಿರಿ?</translation>
 <translation id="3269597722229482060">ಬಲ-ಕ್ಲಿಕ್</translation>
+<translation id="3289544412142055976">Linux ಆ್ಯಪ್‌ಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="3289674678944039601">ಅಡಾಪ್ಟರ್ ಮೂಲಕ ಚಾರ್ಜ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3290356915286466215">ಅಸುರಕ್ಷಿತ</translation>
 <translation id="3294437725009624529">ಅತಿಥಿ</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಅಧಿಸೂಚನೆ ಕೇಂದ್ರಕ್ಕೆ ಪ್ರವೇಶಿಸಲು ಹುಡುಕಾಟ + ಎಡಕ್ಕೆ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="5426063383988017631">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನುವನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="5428899915242071344">ಆಯ್ಕೆಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="5429993543155113935">ಅಜ್ಞಾತ ವಿಂಡೋಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5430931332414098647">ತತ್‌ಕ್ಷಣದ ಟೆಥರಿಂಗ್‌</translation>
 <translation id="5431318178759467895">ಬಣ್ಣ</translation>
 <translation id="5433020815079095860">ಆಡಿಯೊ ಇನ್‌ಪುಟ್</translation>
@@ -838,6 +841,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6431865393913628856">ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡ್</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> ನಲ್ಲಿ <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ಈವೆಂಟ್</translation>
+<translation id="6449483711453944360">Linux ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಅಜ್ಞಾತ ವಿಂಡೋಗಳು ಪ್ರಸ್ತುತ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6452181791372256707">ತಿರಸ್ಕರಿಸಿ</translation>
 <translation id="6453179446719226835">ಭಾಷೆಯನ್ನು ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> ಗೆ ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -936,6 +940,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7025533177575372252">ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ಸಾಧನವನ್ನು ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="7026338066939101231">ಇಳಿಕೆ</translation>
 <translation id="7029814467594812963">ಸೆಶನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
+<translation id="7032161822340700104">6 ಟೆಂಪ್ಲೇಟ್‌ಗಳನ್ನು ಮಾತ್ರ ಅನುಮತಿಸಲಾಗಿದೆ. ಹೊಸದನ್ನು ಉಳಿಸಲು ಟೆಂಪ್ಲೇಟ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ಅಸಿಸ್ಟೆಂಟ್</translation>
 <translation id="7042322267639375032">ಸ್ಥಿತಿ ಕ್ಷೇತ್ರವನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="7045033600005038336">ಇತ್ತೀಚಿನ ಟೆಂಪ್ಲೇಟ್ ಇದೆಯೇ?</translation>

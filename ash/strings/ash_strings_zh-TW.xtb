@@ -327,6 +327,7 @@
 <translation id="3105917916468784889">擷取螢幕畫面</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (藍牙)</translation>
 <translation id="3113926042639749131">移除建議</translation>
+<translation id="3120421559657122717">要關機嗎？</translation>
 <translation id="3126069444801937830">重新啟動即可更新</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">行動數據</translation>
@@ -347,6 +348,7 @@
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移動到桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">你會做些什麼？</translation>
 <translation id="3269597722229482060">按一下滑鼠右鍵</translation>
+<translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
 <translation id="3289674678944039601">正在透過變壓器充電</translation>
 <translation id="3290356915286466215">不安全</translation>
 <translation id="3294437725009624529">訪客</translation>
@@ -694,6 +696,7 @@
 <translation id="5400461572260843123">快速設定，按下搜尋鍵 + 向左鍵即可存取通知中心。</translation>
 <translation id="5426063383988017631">已關閉設定選單</translation>
 <translation id="5428899915242071344">開始選取</translation>
+<translation id="5429993543155113935">目前不支援無痕式視窗</translation>
 <translation id="5430931332414098647">即時網路共用</translation>
 <translation id="5431318178759467895">彩色</translation>
 <translation id="5433020815079095860">音訊輸入</translation>
@@ -834,6 +837,7 @@
 <translation id="6431865393913628856">螢幕畫面錄製</translation>
 <translation id="6445835306623867477">正在透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
 <translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
+<translation id="6449483711453944360">目前不支援 Linux 應用程式和無痕式視窗</translation>
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6453179446719226835">語言已變更</translation>
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 畫面</translation>
@@ -931,6 +935,7 @@
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結到你的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029814467594812963">結束工作階段</translation>
+<translation id="7032161822340700104">最多只能保存 6 個範本。如要儲存新範本，請先移除現有範本。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
 <translation id="7042322267639375032">收合狀態區</translation>
 <translation id="7045033600005038336">要取代範本嗎？</translation>

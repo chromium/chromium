@@ -330,6 +330,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3105917916468784889">Nasnímať obrazovku</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Odstrániť návrh</translation>
+<translation id="3120421559657122717">Chcete zariadenie vypnúť?</translation>
 <translation id="3126069444801937830">Reštartovaním vykonáte aktualizáciu</translation>
 <translation id="3139942575505304791">1. plocha</translation>
 <translation id="315116470104423982">Mobilné dátové prenosy</translation>
@@ -350,6 +351,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bolo presunuté z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Čo dokážeš?</translation>
 <translation id="3269597722229482060">Kliknúť pravým tlačidlom</translation>
+<translation id="3289544412142055976">Aplikácie pre Linux nie sú momentálne podporované</translation>
 <translation id="3289674678944039601">Nabíja sa cez adaptér</translation>
 <translation id="3290356915286466215">Nezabezpečené</translation>
 <translation id="3294437725009624529">Hosť</translation>
@@ -697,6 +699,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5400461572260843123">Rýchle nastavenia, do centra upozornení prejdete stlačením klávesa vyhľadávania + šípky doľava</translation>
 <translation id="5426063383988017631">Ponuka Nastavenia bola zavretá</translation>
 <translation id="5428899915242071344">Začať výber</translation>
+<translation id="5429993543155113935">Okná inkognito momentálne nie sú momentálne podporované.</translation>
 <translation id="5430931332414098647">Dynamický tethering</translation>
 <translation id="5431318178759467895">Farebne</translation>
 <translation id="5433020815079095860">Zvukový vstup</translation>
@@ -810,6 +813,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6166852626429024716">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete…</translation>
 <translation id="6179832488876878285">Tu si môžete pripnúť dôležité súbory. Začnite otvorením aplikácie Súbory.</translation>
+<translation id="6220928844947387476">Teraz môžete súčasne nahrať seba aj svoju obrazovku</translation>
 <translation id="622484624075952240">Dole</translation>
 <translation id="6231419273573514727">Výkonnosť periférie môže byť obmedzená</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6431865393913628856">Rekordér obrazovky</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> udalosť</translation>
+<translation id="6449483711453944360">Aplikácie pre Linux a okná inkognito nie sú momentálne podporované.</translation>
 <translation id="6452181791372256707">Odmietnuť</translation>
 <translation id="6453179446719226835">Bol zmenený jazyk.</translation>
 <translation id="6459472438155181876">Rozšírenie obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +939,7 @@ Nová inštalácia</translation>
 <translation id="7025533177575372252">Pripojte zariadenie <ph name="DEVICE_NAME" /> k svojmu telefónu</translation>
 <translation id="7026338066939101231">Zníženie</translation>
 <translation id="7029814467594812963">Ukončiť reláciu</translation>
+<translation id="7032161822340700104">Je povolených iba šesť šablón. Ak chcete uložiť novú šablónu, niektorú odstráňte.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asistent Google</translation>
 <translation id="7042322267639375032">Zbaliť stavovú oblasť</translation>
 <translation id="7045033600005038336">Chcete šablónu nahradiť?</translation>

@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1202892408424955784">Produits suivis</translation>
 <translation id="1204037785786432551">Télécharger le lien</translation>
+<translation id="1204692632633423444">Bouton d'action Chrome : <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Copier le texte du lien</translation>
 <translation id="1208340532756947324">Pour profiter de la synchronisation et d'une expérience personnalisée sur tous vos appareils, activez la synchronisation</translation>
 <translation id="1209206284964581585">Masquer pour l'instant</translation>
@@ -201,6 +202,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2172688499998841696">Les descriptions d'images sont désactivées</translation>
 <translation id="2172905120685242547">Fermer la fenêtre?</translation>
 <translation id="2175927920773552910">Code QR</translation>
+<translation id="2176767904800337188">Une carte virtuelle masque votre carte réelle pour vous protéger de fraudes potentielles. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
@@ -213,6 +215,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="SITE" /></translation>
+<translation id="2279146068164892489">Ouvrir l'application pour <ph name="APPNAME" />?</translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
 <translation id="228704530595896923">Liste d'options de partage.</translation>
 <translation id="230115972905494466">Aucun appareil compatible trouvé</translation>
@@ -330,6 +333,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2923908459366352541">Le nom est incorrect</translation>
 <translation id="2932150158123903946">Stockage de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Votre clavier restera le même</translation>
+<translation id="2936980480904111527">Les notifications de Chrome vous simplifient la vie</translation>
 <translation id="2942036813789421260">L'onglet d'aperçu est fermé</translation>
 <translation id="2946420957526726953">Mise à jour de Chrome pour se connecter à d'autres appareils en cours…</translation>
 <translation id="2951071800649516099">Ajouter des pages à votre liste de lecture pour plus tard</translation>
@@ -671,6 +675,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4961107849584082341">Traduire cette page vers n'importe quelle langue</translation>
 <translation id="4971735654804503942">Ce mode offre une protection proactive et plus rapide contre les téléchargements, les extensions et les sites Web dangereux. Il vous permet d'être averti en cas de piratage de mots de passe. Pour ce faire, les données de navigation doivent être envoyées à Google.</translation>
 <translation id="497421865427891073">Avancer</translation>
+<translation id="4987271110129728827">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur le Web.</translation>
 <translation id="4988526792673242964">Pages</translation>
 <translation id="5001388021414335527">Suivez ce site ici</translation>
 <translation id="5004416275253351869">Commandes d'activité Google</translation>
@@ -875,6 +880,7 @@ Les versions d'essai du bac à sable de confidentialité sont toujours en cours 
 <translation id="6162892189396105610">Précharge les pages que vous êtes susceptible de visiter selon Chrome.</translation>
 <translation id="6186394685773237175">Aucun mot de passe compromis n'a été trouvé</translation>
 <translation id="6192907950379606605">Obtenir les descriptions</translation>
+<translation id="620197886010707372">Ouvrir l'application pour <ph name="APPNAME" /> avec Google Play?</translation>
 <translation id="6203593061661911168">Le téléchargement commencera lorsque vous serez connecté à un réseau Wi-Fi</translation>
 <translation id="6210748933810148297">Pas <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Affichage de l'aperçu de cette page</translation>
@@ -1064,6 +1070,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
 <translation id="7196215469483532480">Explication du guide sur la confidentialité ouverte à pleine hauteur</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
+<translation id="7237045078887540010">Par votre utilisation de Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_ATOS_LINK" />. La <ph name="BEGIN_PRIVACY_LINK" />politique de confidentialité<ph name="END_PRIVACY_LINK" /> s'applique également.</translation>
 <translation id="7242755609445462077">Mise en évidence stylisée <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation dans Chrome est activée sur <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7252076891734325316">Placez votre téléphone près de l'ordinateur</translation>
@@ -1270,6 +1277,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8352996530981010042">Impossible de télécharger les réactions. Réessayez.</translation>
 <translation id="8354977102499939946">Effectuez une recherche rapide à l'aide de commandes vocales. Pour modifier ce raccourci, accédez à Paramètres.</translation>
+<translation id="8356078935982976590">Vous pourrez facilement gérer les commandes multimédias, les sessions de navigation privée, les téléchargements et plus encore</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
 <translation id="8364299278605033898">Afficher des sites Web populaires</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>
@@ -1427,6 +1435,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Dernière vérification : il y a 1 minute}one{Dernière vérification : il y a # minute}other{Dernière vérification : il y a # minutes}}</translation>
 <translation id="9204836675896933765">1 fichier restant</translation>
+<translation id="9205933215779845960">Impossible de trouver cette page. Vérifiez votre orthographe ou essayez une recherche sur <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Impossible de faire des appels</translation>
 <translation id="9212845824145208577">Impossible d'aller plus bas. Essayez de commencer plus bas sur la page.</translation>

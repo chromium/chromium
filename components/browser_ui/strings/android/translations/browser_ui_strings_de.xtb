@@ -176,6 +176,7 @@
 <translation id="5354152178998424783">Dadurch werden <ph name="DATASIZE" /> an von Websites gespeicherten Daten und Cookies gelöscht.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 weitere)}other{(+ # weitere)}}</translation>
 <translation id="5403592356182871684">Namen</translation>
+<translation id="5412236728747081950">Diese Website ruft Ihre Interessen von Chrome ab, damit sie Ihnen relevantere Werbung anzeigen kann</translation>
 <translation id="5438097262470833822">Mit dieser Option werden die Berechtigungen für <ph name="WEBSITE" /> zurückgesetzt</translation>
 <translation id="5489227211564503167">Verstrichene Zeit: <ph name="ELAPSED_TIME" /> von <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Werbung auf Websites blockieren, auf denen aufdringliche oder irreführende Werbung angezeigt wird</translation>

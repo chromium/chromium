@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">స్క్రీన్‌షాట్ తీయండి</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (బ్లూటూత్)</translation>
 <translation id="3113926042639749131">సూచనను తీసివేయండి</translation>
+<translation id="3120421559657122717">పరికరాన్ని షట్ డౌన్ చేయాలా?</translation>
 <translation id="3126069444801937830">అప్‌డేట్ చేయ‌డానికి పునఃప్రారంభించండి</translation>
 <translation id="3139942575505304791">డెస్క్ 1</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925">"<ph name="WINDOW_TITLE" />" విండో అన్నది "<ph name="ACTIVE_DESK" />" డెస్క్ నుండి "<ph name="TARGET_DESK" />" డెస్క్‌కు తరలించబడింది</translation>
 <translation id="3255483164551725916">నువ్వు ఏమి చేయగలవు?</translation>
 <translation id="3269597722229482060">కుడి క్లిక్</translation>
+<translation id="3289544412142055976">ప్రస్తుతం Linux యాప్‌లు సపోర్ట్ చేయవు</translation>
 <translation id="3289674678944039601">అడాప్టర్ ద్వారా ఛార్జ్ అవుతోంది</translation>
 <translation id="3290356915286466215">అసురక్షితమైనది</translation>
 <translation id="3294437725009624529">అతిథి</translation>
@@ -698,6 +700,7 @@
 <translation id="5400461572260843123">త్వరిత సెట్టింగ్‌లు, నోటిఫికేషన్ సెంటర్‌ను యాక్సెస్ చేయడానికి శోధన + ఎడమకు నొక్కండి.</translation>
 <translation id="5426063383988017631">సెట్టింగ్‌ల మెనూ మూసివేయబడింది</translation>
 <translation id="5428899915242071344">ఎంచుకోవడం ప్రారంభించు</translation>
+<translation id="5429993543155113935">అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
 <translation id="5430931332414098647">తక్షణ టెథెరింగ్</translation>
 <translation id="5431318178759467895">రంగు</translation>
 <translation id="5433020815079095860">ఆడియో ఇన్‌పుట్</translation>
@@ -811,6 +814,7 @@
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6166852626429024716">మీ పరికరం, యాప్‌లు, సెట్టింగ్‌లు, వెబ్‌ను వెతకండి...</translation>
 <translation id="6179832488876878285">మీ ముఖ్యమైన ఫైళ్లను మీరు ఇక్కడ పిన్ చేయవచ్చు. ప్రారంభించడానికి Files యాప్‌ను తెరవండి.</translation>
+<translation id="6220928844947387476">ఇప్పుడు మీరు మిమ్మల్ని, మీ స్క్రీన్‌ను ఒకే సమయంలో రికార్డ్ చేయవచ్చు</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">పెరిఫెరల్ పనితీరు పరిమితంగా ఉండవచ్చు</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -837,6 +841,7 @@
 <translation id="6431865393913628856">స్క్రీన్ రికార్డ్</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />లో <ph name="ROUTE_TITLE" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ఈవెంట్</translation>
+<translation id="6449483711453944360">Linux యాప్‌లు, అజ్ఞాత విండోలు ప్రస్తుత సపోర్ట్ చేయవు</translation>
 <translation id="6452181791372256707">తిరస్కరించు</translation>
 <translation id="6453179446719226835">భాష మార్చబడింది</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" />కు స్క్రీన్‌ను విస్తరిస్తోంది</translation>
@@ -935,6 +940,7 @@
 <translation id="7025533177575372252">మీ <ph name="DEVICE_NAME" />ని మీ ఫోన్‌కి కనెక్ట్ చేయండి</translation>
 <translation id="7026338066939101231">తరుగుదల</translation>
 <translation id="7029814467594812963">సెషన్ నిష్క్రమించు</translation>
+<translation id="7032161822340700104">కేవలం 6 టెంప్లేట్‌లకు మాత్రమే అనుమతి ఉంది. కొత్త టెంప్లేట్‌ను జోడించాలంటే ఒక పాత టెంప్లేట్‌ను తీసివేయాలి.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google అసిస్టెంట్</translation>
 <translation id="7042322267639375032">స్టేటస్ ప్రాంతాన్ని కుదించండి</translation>
 <translation id="7045033600005038336">టెంప్లేట్‌ను రీప్లేస్ చేయాలా?</translation>

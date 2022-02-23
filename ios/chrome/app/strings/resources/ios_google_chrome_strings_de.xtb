@@ -40,6 +40,7 @@
 <translation id="3522659714780527202">Aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chrome verwenden</translation>
 <translation id="3533694711092285624">Keine gespeicherten Passwörter. Chrome kann Ihre Passwörter prüfen, wenn Sie sie speichern.</translation>
 <translation id="3634910711516114487">Wenn Sie Chrome optimal nutzen möchten, melden Sie sich mit Ihrem Google-Konto in Chrome an</translation>
+<translation id="3655656110921623717">Das bedeutet, dass Chrome immer die mobile Website anfordert.</translation>
 <translation id="3706101708757577809">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
@@ -116,4 +117,5 @@
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Sie müssen sich dieses Passwort nicht merken. Es wird im Passwortmanager von Google für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
+<translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>
 </translationbundle>

@@ -1263,6 +1263,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">ಒಂಭತ್ತನೇ ರೋಲ್</translation>
 <translation id="4901778704868714008">ಉಳಿಸಿ...</translation>
+<translation id="4905659621780993806">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="DATE" /> ರಂದು <ph name="TIME" /> ಸಮಯಕ್ಕೆ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮರುಪ್ರಾರಂಭಿಸುತ್ತಾರೆ. ನಿಮ್ಮ ಸಾಧನ ಮರುಪ್ರಾರಂಭವಾಗುವ ಮೊದಲು ಯಾವುದೇ ತೆರೆದಿರುವ ಐಟಂಗಳನ್ನು ಉಳಿಸಿ.</translation>
 <translation id="4913987521957242411">ಮೇಲಿನ ಎಡಭಾಗದಲ್ಲಿ ತೂತು ಮಾಡಿ</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ಆ್ಯಪ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡಿ (ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವ ಅಗತ್ಯವಿಲ್ಲ)</translation>
 <translation id="4923459931733593730">ಪಾವತಿ</translation>
@@ -1675,6 +1676,7 @@
 <translation id="6290238015253830360">ನೀವು ಸಲಹೆ ನೀಡಿರುವ ಲೇಖನಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{ನಿಮ್ಮ ಸಾಧನವು ಈಗ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}=1{ನಿಮ್ಮ ಸಾಧನವು 1 ಸೆಕೆಂಡ್‌ನಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}one{ನಿಮ್ಮ ಸಾಧನವು # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}other{ನಿಮ್ಮ ಸಾಧನವು # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}}</translation>
 <translation id="6302269476990306341">Chrome ನಲ್ಲಿನ Google ಅಸಿಸ್ಟೆಂಟ್ ನಿಲ್ಲುತ್ತಿದೆ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ತಲುಪಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6312113039770857350">ವೆಬ್‌ಪುಟ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -1998,6 +2000,7 @@
 <translation id="7378627244592794276">ಬೇಡ</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">ಅನ್ವಯಿಸುವುದಿಲ್ಲ</translation>
+<translation id="7388594495505979117">{0,plural, =1{ನಿಮ್ಮ ಸಾಧನವು 1 ನಿಮಿಷದಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}one{ನಿಮ್ಮ ಸಾಧನವು # ನಿಮಿಷಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}other{ನಿಮ್ಮ ಸಾಧನವು # ನಿಮಿಷಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}}</translation>
 <translation id="7390545607259442187">ಕಾರ್ಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7392089738299859607">ವಿಳಾಸವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="7399802613464275309">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
@@ -2353,6 +2356,7 @@
 <translation id="8507227106804027148">ಕಮಾಂಡ್ ಸಾಲು</translation>
 <translation id="8508648098325802031">ಹುಡುಕಾಟದ ಐಕಾನ್</translation>
 <translation id="8511402995811232419">ಕುಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="8519753333133776369">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು HID ಸಾಧನವನ್ನು ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
 <translation id="8522552481199248698">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಸಂರಕ್ಷಿಸಲು ಮತ್ತು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲು Chrome ಸಹಾಯ ಮಾಡಬಲ್ಲದು.</translation>
 <translation id="8530813470445476232">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಕ್ಯಾಷ್ ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8533619373899488139">ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿರುವ URLಗಳ ಪಟ್ಟಿ ಮತ್ತು ಜಾರಿಗೊಳಿಸಿರುವ ಇತರ ನೀತಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು &lt;strong&gt;chrome://policy&lt;/strong&gt; ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>

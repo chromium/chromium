@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ చరిత్ర మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
+<translation id="3413935475507503304">అప్‌డేట్ చేయడాన్ని కొనసాగించడానికి, 'తర్వాత'ను క్లిక్ చేయండి.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> పేజీలలో <ph name="PRINTED_PAGES" />వ పేజీ ప్రింట్ చేయబడింది.</translation>
@@ -232,6 +233,7 @@
 <translation id="4145784616224233563">HTTP ఫైర్‌వాల్</translation>
 <translation id="4147897805161313378">Google ఫోటోలు</translation>
 <translation id="4155551848414053977">స్కానర్ ఆన్ చేయబడి ఉందని, అలాగే నెట్‌వర్క్ లేదా ప్రత్యక్ష కనెక్షన్ ద్వారా అందుబాటులో ఉందని నిర్ధారించుకోండి</translation>
+<translation id="4170180284036919717">ఫోటో తీయండి</translation>
 <translation id="4170700058716978431">విఫలమైంది</translation>
 <translation id="4176463684765177261">ఆపివేయబడింది</translation>
 <translation id="4213104098953699324">USB కీబోర్డ్</translation>
@@ -488,6 +490,7 @@
 <translation id="7175037578838465313"><ph name="NAME" />ని కాన్ఫిగర్ చేయండి</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" />, ఈ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది. అడ్మినిస్ట్రేటర్‌లు పరికరాన్ని రిమోట్‌గా కాన్ఫిగర్ చేయవచ్చు.</translation>
 <translation id="7180611975245234373">రిఫ్రెష్ చేయి</translation>
+<translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
 <translation id="7271040990581020067">స్కానర్ ప్రస్తుతం వినియోగంలో ఉంది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

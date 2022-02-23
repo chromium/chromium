@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Deze map wordt gedeeld met Linux</translation>
 <translation id="1864756863218646478">Het bestand kan niet worden gevonden.</translation>
 <translation id="1884013283844450420">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, verbinden</translation>
+<translation id="1914901738028575085">CloudReady 2.0-apparaat</translation>
 <translation id="1920670151694390848">Malayalam (transliteratie)</translation>
 <translation id="1920798810075583923">Watermeloen</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> is geformatteerd</translation>
@@ -903,6 +904,7 @@
 <translation id="8714406895390098252">Fiets</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> is geselecteerd.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
+<translation id="873847021056608403">CloudReady 2.0-apparaten</translation>
 <translation id="8743164338060742337">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, verbinden</translation>
 <translation id="8750438273876807512">Tik op een bestand en houd dit vast. Tik vervolgens op <ph name="ICON" /> en selecteer 'Vastzetten op plank' om snel toegang tot je bestanden te krijgen op de plank.</translation>
 <translation id="8787254343425541995">Proxy's voor gedeelde netwerken toestaan</translation>

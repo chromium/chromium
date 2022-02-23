@@ -176,6 +176,7 @@
 <translation id="5354152178998424783">Կայքերի պահած <ph name="DATASIZE" /> ծավալով տվյալներն ու քուքիները կջնջվեն։</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ու ևս 1)}one{(ու ևս #)}other{(ու ևս #)}}</translation>
 <translation id="5403592356182871684">Անուններ</translation>
+<translation id="5412236728747081950">Այս կայքը Chrome-ից ստանում է ձեզ հետաքրքրող թեմաների մասին տվյալներ՝ ավելի համապատասխան գովազդ ցուցադրելու համար</translation>
 <translation id="5438097262470833822">Այս կայքի (<ph name="WEBSITE" />) թույլտվությունները կզրոյացվեն</translation>
 <translation id="5489227211564503167">Անցած ժամանակը՝ <ph name="ELAPSED_TIME" />/<ph name="TOTAL_TIME" />։</translation>
 <translation id="5494752089476963479">Արգելափակել գովազդը կայքերում, որոնք հոգնեցնող կամ մոլորեցնող գովազդ են ցուցադրում</translation>

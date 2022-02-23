@@ -177,6 +177,7 @@
 <translation id="5354152178998424783">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت ذخیره کرده است پاک خواهد شد.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ۱ مورد دیگر)}one{(+ # مورد دیگر)}other{(+ # مورد دیگر)}}</translation>
 <translation id="5403592356182871684">نام‌ها</translation>
+<translation id="5412236728747081950">‏این سایت علایقتان را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="5438097262470833822">این گزینه همه اجازه‌های <ph name="WEBSITE" /> را بازنشانی خواهد کرد</translation>
 <translation id="5489227211564503167">زمان سپری‌شده: <ph name="ELAPSED_TIME" /> از <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">آگهی سایت‌هایی که آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهند، مسدود می‌شود</translation>

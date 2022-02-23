@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Úroveň batérie pravého slúchadla zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Pripojené</translation>
 <translation id="3369013195428705271">Naozaj chcete vymazať celú históriu tlače? Prebiehajúce tlačové úlohy nebudú vymazané.</translation>
+<translation id="3413935475507503304">Ak chcete pokračovať v aktualizácii, kliknite na Ďalej.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
 <translation id="3456078764689556234">Bola vytlačená <ph name="PRINTED_PAGES" />. strana z <ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +233,7 @@
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4155551848414053977">Skontrolujte, či je skener zapnutý a dostupný prostredníctvom vašej siete alebo priameho pripojenia</translation>
+<translation id="4170180284036919717">Nasnímať fotku</translation>
 <translation id="4170700058716978431">NEPODARILO SA</translation>
 <translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4213104098953699324">Klávesnica USB</translation>
@@ -489,6 +491,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7175037578838465313">Konfigurácia siete <ph name="NAME" /></translation>
 <translation id="7177485034254901881">Toto zariadenie <ph name="DEVICE_TYPE" /> spravuje <ph name="MANAGER" />. Správcovia ho môžu vzdialene konfigurovať.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
+<translation id="7212734716605298123">Aktualizácie firmvéru pre externé zariadenia</translation>
 <translation id="7216409898977639127">Poskytovateľ mobilného pripojenia</translation>
 <translation id="7271040990581020067">Skener sa momentálne používa. Skúste to neskôr.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

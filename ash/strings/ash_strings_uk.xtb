@@ -330,6 +330,7 @@
 <translation id="3105917916468784889">Зробити знімок екрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Видалити підказку</translation>
+<translation id="3120421559657122717">Завершити роботу пристрою?</translation>
 <translation id="3126069444801937830">Перезапустіть, щоб оновити</translation>
 <translation id="3139942575505304791">Робочий стіл 1</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
@@ -350,6 +351,7 @@
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
 <translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
+<translation id="3289544412142055976">Додатки Linux наразі не підтримуються</translation>
 <translation id="3289674678944039601">Заряджання через адаптер</translation>
 <translation id="3290356915286466215">Не захищено</translation>
 <translation id="3294437725009624529">Гість</translation>
@@ -697,6 +699,7 @@
 <translation id="5400461572260843123">Швидкі налаштування: натисніть клавішу пошуку + стрілку ліворуч, щоб перейти в центр сповіщень.</translation>
 <translation id="5426063383988017631">Меню налаштувань закрито</translation>
 <translation id="5428899915242071344">Почати вибір</translation>
+<translation id="5429993543155113935">Вікна в режимі анонімного перегляду наразі не підтримуються</translation>
 <translation id="5430931332414098647">Миттєва точка доступу</translation>
 <translation id="5431318178759467895">Колір</translation>
 <translation id="5433020815079095860">Аудіовхід</translation>
@@ -810,6 +813,7 @@
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166852626429024716">Шукайте на пристрої, в додатках, налаштуваннях та Інтернеті…</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
+<translation id="6220928844947387476">Тепер ви можете робити запис з екрана й веб-камери одночасно</translation>
 <translation id="622484624075952240">Донизу</translation>
 <translation id="6231419273573514727">Ефективність периферійних пристроїв може бути обмежена</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@
 <translation id="6431865393913628856">Запис відео з екрана</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, подій: <ph name="NUMBER" /></translation>
+<translation id="6449483711453944360">Додатки Linux і вікна в режимі анонімного перегляду наразі не підтримуються</translation>
 <translation id="6452181791372256707">Відхилити</translation>
 <translation id="6453179446719226835">Мову змінено</translation>
 <translation id="6459472438155181876">Розширення екрана на <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +939,7 @@
 <translation id="7025533177575372252">Під’єднайте <ph name="DEVICE_NAME" /> до телефона</translation>
 <translation id="7026338066939101231">Понизити</translation>
 <translation id="7029814467594812963">Завершити сеанс</translation>
+<translation id="7032161822340700104">Максимальна кількість шаблонів: 6. Щоб зберегти новий шаблон, видаліть старий.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
 <translation id="7042322267639375032">Згорнути панель стану</translation>
 <translation id="7045033600005038336">Замінити шаблон?</translation>

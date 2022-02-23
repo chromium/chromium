@@ -2318,6 +2318,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> popusta</translation>
 <translation id="3305389145870741612">Postupak formatiranja može potrajati nekoliko sekundi. Pričekajte.</translation>
 <translation id="3305661444342691068">Otvori PDF u Pregledu</translation>
+<translation id="3307176291962384345">Traži popuste za trgovinu <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Ova stranica je spriječena u postavljanju kolačića.</translation>
 <translation id="3308134619352333507">Gumb za skrivanje</translation>
 <translation id="3308852433423051161">Učitavanje Google asistenta...</translation>
@@ -2775,6 +2776,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3761556954875533505">Dopustiti web-lokaciji da uredi datoteke?</translation>
 <translation id="3764314093345384080">Detaljni podaci o međuverziji</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komuniciranje s USB uređajem}one{Komuniciranje s # USB uređajem}few{Komuniciranje s # USB uređaja}other{Komuniciranje s # USB uređaja}}</translation>
+<translation id="3764753550716962406">Želite li dopustiti Googleu da koristi vašu košaricu kako bi pronašao dostupne popuste?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Slanje <ph name="ATTACHMENTS" /> na uređaj <ph name="DEVICE_NAME" />}one{Slanje <ph name="ATTACHMENTS" /> na uređaj <ph name="DEVICE_NAME" />}few{Slanje <ph name="ATTACHMENTS" /> na uređaj <ph name="DEVICE_NAME" />}other{Slanje <ph name="ATTACHMENTS" /> na uređaj <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Nije bilo moguće pročitati pravila izvanmrežnog demo načina.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3207,6 +3209,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4194570336751258953">Omogući dodir umjesto klika</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4195814663415092787">Nastavite tamo gdje ste stali</translation>
+<translation id="4197917636330710075">Traži popuste za trgovine <ph name="MERCHANT_NAME" /> i <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Dodatne web lokacije</translation>
 <translation id="4200689466366162458">Prilagođene riječi</translation>
 <translation id="4200983522494130825">Nova &amp;kartica</translation>
@@ -4574,6 +4577,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5632566673632479864">Vaš račun <ph name="EMAIL" /> više nije dopušten kao primarni račun. Budući da tim računom upravlja <ph name="DOMAIN" />, vaše oznake, povijest, zaporke i druge postavke izbrisat će se s ovog uređaja.</translation>
 <translation id="5632592977009207922">Preuzimanje, preostalo je <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Mobilna mreža</translation>
+<translation id="5634446357546764049">Prikaz uspomena s vaših omiljenih putovanja i još više</translation>
 <translation id="5635312199252507107">Dopusti na određenim web-lokacijama</translation>
 <translation id="563535393368633106">Pitaj prije pristupanja (preporučeno)</translation>
 <translation id="5636996382092289526">Za upotrebu mreže <ph name="NETWORK_ID" /> možda ćete prvo morati <ph name="LINK_START" />posjetiti njezinu stranicu za prijavu<ph name="LINK_END" /> koja će se automatski otvoriti za nekoliko sekundi. Ako se to ne dogodi, mreža se ne može upotrebljavati.</translation>
@@ -4669,6 +4673,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5740709157181662145">Podrška za <ph name="DEVICE_OS" /> hardver i stabilnost</translation>
 <translation id="574104302965107104">Zrcaljenje zaslona</translation>
 <translation id="574209121243317957">Visina glasa</translation>
+<translation id="5745316408658560138">Želite li dopustiti Chromeu da traži prilagođene popuste za vaše košarice?</translation>
 <translation id="5746169159649715125">Spremi kao PDF</translation>
 <translation id="5747552184818312860">Istječe</translation>
 <translation id="5747785204778348146">Razvojni programer – nestabilno</translation>
@@ -5271,6 +5276,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6370021412472292592">Manifest nije učitan.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Pokušaj ponovo</translation>
+<translation id="6374635887697228982">Tražiti popuste?</translation>
 <translation id="6377268785556383139">Jedan rezultat za upit "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Prihvati i nastavi</translation>
 <translation id="6382616130475191723">Ima dopuštenje za čitanje i promjenu web-lokacije <ph name="SITE_NAME" /></translation>
@@ -6820,6 +6826,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7956373551960864128">Spremljeni pisači</translation>
 <translation id="7957074856830851026">Pregled informacija uređaja, kao što su serijski broj ili ID uređaja</translation>
 <translation id="7957615753207896812">Otvorite postavke tipkovnice na uređaju</translation>
+<translation id="7958437133377816580">Traži popuste za trgovine <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> i druge trgovine</translation>
 <translation id="7959074893852789871">Datoteka je sadržavala više certifikata, a neki od njih nisu uvezeni:</translation>
 <translation id="7959665254555683862">Nova anonimna &amp;kartica</translation>
 <translation id="7961015016161918242">Nikad</translation>

@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">ອຸປະກອນມີແບັດເຕີຣີຫູຟັງຂ້າງຂວາເຫຼືອ <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
+<translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
 <translation id="3456078764689556234">ພິມໜ້າ <ph name="PRINTED_PAGES" /> ຈາກທັງໝົດ <ph name="TOTAL_PAGES" />.</translation>
@@ -495,6 +496,7 @@
 <translation id="7175037578838465313">ກຳນົດຄ່າ <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ນີ້ຈັດການໂດຍ <ph name="MANAGER" />. ຜູ້ເບິ່ງແຍງລະບົບອາດຈະຕັ້ງຄ່າອຸປະກອນຈາກທາງໄກໄດ້.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
+<translation id="7212734716605298123">ອັບເດດເຟີມແວສຳລັບອຸປະກອນພາຍໃນ</translation>
 <translation id="7216409898977639127">ຜູ້ໃຫ້ບໍລິການມືຖື</translation>
 <translation id="7271040990581020067">ຕອນນີ້ມີຄົນໃຊ້ເຄື່ອງສະແກນຢູ່. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

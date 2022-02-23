@@ -135,6 +135,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1747827819627189109">Schermtoetsenbord staat aan</translation>
 <translation id="1749109475624620922">Venster <ph name="WINDOW_TITLE" /> is toegewezen aan alle bureaus</translation>
 <translation id="1750088060796401187">Er zijn maar <ph name="MAX_DESK_LIMIT" /> bureaus toegestaan. Verwijder een om een nieuw bureau toe te voegen.</translation>
+<translation id="1756833229520115364">Kan de template niet opslaan. Te veel vensters of tabbladen.</translation>
 <translation id="1761222317188459878">Netwerkverbinding aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + punt is veranderd. Als je de toets Insert wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Verplaatst naar rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
@@ -185,6 +186,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2083190527011054446">Goedenacht <ph name="GIVEN_NAME" />,</translation>
 <translation id="209965399369889474">Niet verbonden met netwerk</translation>
+<translation id="2107914222138020205">Je USB-C-kabel biedt geen ondersteuning voor Thunderbolt. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="2108303511227308752">De sneltoets Alt + Backspace is veranderd. Als je de toets Delete wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Backspace.</translation>
 <translation id="211328683600082144">MICROFOON AANZETTEN</translation>
 <translation id="2126242104232412123">Nieuw bureau</translation>
@@ -288,6 +290,8 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2865888419503095837">Netwerkinfo</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878884018241093801">Geen recente items</translation>
+<translation id="2891209721153296020">Deselecteren</translation>
+<translation id="2894949423239620203">De kabel kan invloed hebben op de prestaties</translation>
 <translation id="2903844815300039659">Verbonden met <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Schermopnamen</translation>
 <translation id="2941112035454246133">Laag</translation>
@@ -327,6 +331,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3105917916468784889">Screenshot maken</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Suggestie verwijderen</translation>
+<translation id="3120421559657122717">Apparaat uitzetten?</translation>
 <translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -347,6 +352,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">Wat kun je doen?</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
+<translation id="3289544412142055976">Linux-apps worden momenteel niet ondersteund</translation>
 <translation id="3289674678944039601">Opladen via adapter</translation>
 <translation id="3290356915286466215">Niet beveiligd</translation>
 <translation id="3294437725009624529">Gast</translation>
@@ -430,6 +436,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3708186454126126312">Eerder verbonden</translation>
+<translation id="3712317119236351467">Kan de opname niet opslaan</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
@@ -489,8 +496,10 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4112140312785995938">Achteruit zoeken</translation>
 <translation id="4114315158543974537">Phone Hub aanzetten</translation>
 <translation id="412298498316631026">venster</translation>
+<translation id="4123259114412175274">Zorg dat bluetooth aanstaat op je telefoon om je Chromebook te ontgrendelen</translation>
 <translation id="4129129681837227511">Als je meldingen op je vergrendelscherm wilt zien, ontgrendel je het scherm om de instellingen te wijzigen</translation>
 <translation id="4146833061457621061">Speel muziek</translation>
+<translation id="4165275524535002941">De kabel ondersteunt misschien geen schermen</translation>
 <translation id="4173958948577803258">D</translation>
 <translation id="4177913004758410636">{0,plural, =1{Apparaat binnen een dag updaten}other{Apparaat binnen # dagen updaten}}</translation>
 <translation id="4181841719683918333">Talen</translation>
@@ -592,6 +601,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
+<translation id="4717575069099566988">Je USB-C-kabel biedt geen ondersteuning voor USB4. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="4730374152663651037">VEELGEBRUIKT</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (links)</translation>
@@ -694,6 +704,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5400461572260843123">Snelle instellingen, druk op Zoeken + pijl-links om het meldingscentrum te openen.</translation>
 <translation id="5426063383988017631">Menu Instellingen gesloten</translation>
 <translation id="5428899915242071344">Selecteren starten</translation>
+<translation id="5429993543155113935">Incognitovensters worden momenteel niet ondersteund</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433020815079095860">Audio-invoer</translation>
@@ -730,6 +741,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5682642926269496722">De Google Assistent is niet beschikbaar voor het huidige gebruikersaccount.</translation>
 <translation id="5689633613396158040">Met Nachtverlichting kun je je scherm beter zien en lezen bij weinig licht. Tik om te wijzigen wanneer Nachtverlichting wordt aangezet of zet de functie helemaal uit.</translation>
 <translation id="5691772641933328258">Vingerafdruk niet herkend</translation>
+<translation id="5707775774148071965">Je apparaat ondersteunt een hogere datasnelheid dan je kabel. De prestaties van het apparaat kunnen beperkt zijn.</translation>
 <translation id="5710450975648804523">Niet storen staat aan</translation>
 <translation id="571295407079589142">Mobiele data staan uit</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
@@ -781,6 +793,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6022924867608035986">Tekst in zoekvak wissen</translation>
 <translation id="602472752137106327">Vensters van alle bureaus bekijken, keuzerondje geselecteerd</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
+<translation id="6027518778343897451">Er staat geen afspraak op <ph name="CURRENT_MONTH_DAY" />. Druk op Enter om Google Agenda te openen in de browser.</translation>
 <translation id="6030495522958826102">Menu verplaatst naar linksonder in het scherm.</translation>
 <translation id="6032620807120418574">Klik ergens om het volledige scherm op te nemen</translation>
 <translation id="6040071906258664830">Microfoon opnemen <ph name="STATE" /></translation>
@@ -834,6 +847,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6431865393913628856">Schermopname</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> afspraak</translation>
+<translation id="6449483711453944360">Linux-apps en incognitovensters worden momenteel niet ondersteund</translation>
 <translation id="6452181791372256707">Weigeren</translation>
 <translation id="6453179446719226835">Taal is gewijzigd</translation>
 <translation id="6459472438155181876">Scherm uitbreiden naar <ph name="DISPLAY_NAME" /></translation>
@@ -858,6 +872,7 @@ Nieuwe installatie</translation>
 <translation id="6570831796530454248">{0,plural, =1{Apparaat binnen een uur updaten}other{Apparaat binnen # uur updaten}}</translation>
 <translation id="6570902864550063460">Opladen via USB</translation>
 <translation id="6574587113394758819">Een melding van <ph name="APP_TITLE" /> is verborgen omdat weergavebeveiliging aanstaat</translation>
+<translation id="6574622320167699133">Ontgrendeld met je telefoon. Tik of klik voor toegang.</translation>
 <translation id="6578407462441924264">Naamloos</translation>
 <translation id="6585808820553845416">Sessie loopt af over <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -932,6 +947,7 @@ Nieuwe installatie</translation>
 <translation id="7025533177575372252">Koppel je <ph name="DEVICE_NAME" /> aan je telefoon</translation>
 <translation id="7026338066939101231">Lager</translation>
 <translation id="7029814467594812963">Sessie sluiten</translation>
+<translation id="7032161822340700104">Er zijn maar 6 templates toegestaan. Verwijder een template om een nieuwe op te slaan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Statusgedeelte samenvouwen</translation>
 <translation id="7045033600005038336">Template vervangen?</translation>
@@ -1031,7 +1047,9 @@ Nieuwe installatie</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7654687942625752712">Houd beide volumetoetsen 5 seconden ingedrukt om gesproken feedback uit te zetten.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
+<translation id="7660160718439869192">Je <ph name="NAME" /> is zichtbaar op apparaten die aan <ph name="EMAIL" /> zijn gekoppeld</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
+<translation id="7670953955701272011">Deze datum openen in Google Agenda</translation>
 <translation id="7671610481353807627">Apps zijn gesorteerd op kleur</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Een nieuw mobiel netwerk toevoegen</translation>
@@ -1122,6 +1140,7 @@ Nieuwe installatie</translation>
 <translation id="8236042855478648955">Tijd voor een pauze</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
+<translation id="8248728785693203669">Je USB-C-kabel sluit misschien niet goed aan op schermen</translation>
 <translation id="8255234195843591763">Reset om te updaten</translation>
 <translation id="826107067893790409">Druk op Enter om te ontgrendelen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">Verwijderen</translation>
@@ -1151,6 +1170,7 @@ Nieuwe installatie</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>
 <translation id="8433977262951327081">De sneltoets waarmee je de ballon van het menu met invoeropties op de plank toont, is gewijzigd. Gebruik <ph name="NEW_SHORTCUT" /> in plaats van <ph name="OLD_SHORTCUT" />.</translation>
+<translation id="8443879455002739353">Kopiëren</translation>
 <translation id="8444246603146515890">Bureaublad <ph name="DESK_TITILE" /> geactiveerd</translation>
 <translation id="8446884382197647889">Meer informatie</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
@@ -1218,6 +1238,7 @@ Nieuwe installatie</translation>
 <translation id="8878886163241303700">Uitgebreid scherm</translation>
 <translation id="888982883502837004">Firmware-updates zijn beschikbaar voor je apparaat. Klik om te bekijken en te updaten.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> wordt definitief verwijderd</translation>
+<translation id="8905919797434099235">(Geen titel)</translation>
 <translation id="890616557918890486">Bron wijzigen</translation>
 <translation id="8909138438987180327">Batterij op <ph name="PERCENTAGE" /> procent.</translation>
 <translation id="8921554779039049422">H+</translation>

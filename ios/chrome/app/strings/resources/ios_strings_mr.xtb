@@ -12,6 +12,7 @@
 
         
 तुमचे शोध इंजीन <ph name="DSE_NAME" /> हे आहे. लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, त्याच्या सूचना पहा.</translation>
+<translation id="1054045277222934172">तुम्ही सेटिंग्ज त्यानंतर आशय सेटिंग्ज यामधून डीफॉल्ट साइट दृश्य हे डेस्कटॉप मोडमध्ये बदलू शकता</translation>
 <translation id="1063454504051558093">दुसरा पासवर्ड वापरा...</translation>
 <translation id="1066060668811609597">सिंक व्यवस्थापित करा</translation>
 <translation id="1076421457278169141">कोड स्कॅन केला</translation>
@@ -182,6 +183,7 @@
 <translation id="2690858294534178585">कॅमेरा वापरात आहे</translation>
 <translation id="2691653761409724435">ऑफलाइन उपलब्ध नाही</translation>
 <translation id="2695507686909505111">पेज भाषांतरित केले</translation>
+<translation id="2700241355396984822">परवानग्या सेट करण्यासाठी पर्याय</translation>
 <translation id="2702801445560668637">वाचन सूची</translation>
 <translation id="2704491540504985681">डाउनलोड</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
@@ -318,6 +320,8 @@
 <translation id="3861486700625780712">अनफॉलो करा</translation>
 <translation id="3892144330757387737">तुमचा इतिहास तुम्हाला येथे सापडेल</translation>
 <translation id="3897092660631435901">मेनू</translation>
+<translation id="3904829425754749514">तुमच्या संस्थेने सिंक करणे बंद केले आहे. तुम्ही तरीही या डिव्हाइसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज पाहू शकता. तुम्ही बदल केल्यास, ते तुमच्या खात्याशी सिंक केले जाणार नाहीत.</translation>
+<translation id="3905353503976611311">वेब वर शोधा</translation>
 <translation id="3913386780052199712">Chrome मध्ये साइन इन केले</translation>
 <translation id="3915450441834151894">साइट माहिती</translation>
 <translation id="3922310737605261887">कॉपी केलेला मजकूर शोधा</translation>
@@ -347,6 +351,7 @@
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
 <translation id="418156467088430727">नवीन टॅबमध्‍ये ऑफलाइन आवृत्ती पहा</translation>
 <translation id="4181841719683918333">भाषा</translation>
+<translation id="4223967053752765281">तुमच्या संस्थेने साइन इन करणे बंद केले आहे. तुम्ही तरीही या डिव्हाइसवर तुमचे बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्ज पाहू शकता. तुम्ही बदल केल्यास, ते तुमच्या खात्याशी सिंक केले जाणार नाहीत.</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />डीफॉल्ट ब्राउझर अ‍ॅप<ph name="END_BOLD" /> वर टॅप करा</translation>
 <translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="4249955472157341256">नवीनतम यानुसार क्रमाने लावा</translation>
@@ -371,6 +376,7 @@
 <translation id="4469418912670346607">सेटअप सुरू ठेवा</translation>
 <translation id="4474494258097106883">तुमच्या iPhone साठी तयार केलेले</translation>
 <translation id="4476574785019001431">सेटिंग्ज</translation>
+<translation id="448433063499977729">सिंक बंद करण्यात आले आहे</translation>
 <translation id="4496373720959965247">टॅब जोडा आणि पेजदरम्यान स्विच करा</translation>
 <translation id="4502566650163919158">आता तपासा</translation>
 <translation id="4505980578794259603">शेवटचे तपासले <ph name="TIME" />.</translation>
@@ -490,6 +496,7 @@
 <translation id="5580834567471114021">नंतर वाचण्यासाठी वाचन सूची मध्ये जोडायचे आहे का?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> साठी सिंक सुरू करा</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
+<translation id="560999923643681074">संपादन अ‍ॅक्सेस</translation>
 <translation id="5614553682702429503">पासवर्ड सेव्ह करायचा आहे का?</translation>
 <translation id="5626245204502895507">यावेळी फाईल डाऊनलोड केली जाऊ शकली नाही.</translation>
 <translation id="5631164295104953411">पेमेंट पद्धत जोडा</translation>
@@ -761,6 +768,7 @@
 <translation id="7840771868269352570">तुम्ही निवडलेले आयटम काढून टाकले जातील.</translation>
 <translation id="7856733331829174190">डाउनलोड करता आले नाही</translation>
 <translation id="7859704718976024901">ब्राउझिंग इतिहास</translation>
+<translation id="7884694604461143138">शोध इतिहास (<ph name="COUNT" /> आढळले)</translation>
 <translation id="7887198238286927132">तुमच्या गोपनीयतेचे संरक्षण करण्‍यासाठी, Chrome हा भाग ऑटोफिल करणार नाही.</translation>
 <translation id="7911190106180361398">तुमची संस्था तुम्हाला सर्व गोष्टी सिंक करण्याची परवानगी देत नाही.</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
@@ -792,6 +800,7 @@
 <translation id="8076014560081431679">सेव्ह केलेल्या साइट सेटिंग्ज हटविल्या जाणार नाहीत आणि कदाचित आपल्या ब्राउझिंग सवयी दर्शवेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">हे सेटिंग व्यवस्थापित केले, अधिक माहितीसाठी दोनदा टॅप करा</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
+<translation id="809543534949702122">शोध इतिहास</translation>
 <translation id="8101409298456377967">तुमचे पासवर्ड तयार, सेव्ह आणि व्यवस्थापित करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजरीत्या साइन इन करू शकाल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">बंद करा</translation>
 <translation id="8114753159095730575">फाइल डाउनलोड उपलब्ध आहे. स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत.</translation>
@@ -813,6 +822,7 @@
 <translation id="8319076807703933069">नवीन शोध</translation>
 <translation id="8323906514956095947">आणखी टॅब पर्यायांसाठी स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="8328777765163860529">सर्व बंद करा</translation>
+<translation id="8364085047956854021">तुम्ही या साइटमधून बाहेर पडाल, तेव्हा "<ph name="SITE_NAME" />" संबंधित परवानग्या बंदवर रीसेट केल्या जातील.</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
 <translation id="8386068868580335421">रीसेट करा</translation>
 <translation id="8407669440184693619">या साइटसाठी पासवर्ड सापडले नाहीत</translation>
@@ -899,6 +909,7 @@
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
 <translation id="9152539721251340337">QR कोड तयार करा</translation>
 <translation id="9157836665414082580">संवाद दर्शवू नका</translation>
+<translation id="9177438225260810839">उघड्या असलेल्या टॅबमध्ये शोधा</translation>
 <translation id="9188680907066685419">व्यवस्थापित केलेल्या खात्यामधून साइन आउट करा</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> दिवसांपूर्वी</translation>
 <translation id="9203116392574189331">Handoff</translation>

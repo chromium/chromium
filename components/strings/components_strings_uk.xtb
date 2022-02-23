@@ -1273,6 +1273,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">Дев’ятий рулон</translation>
 <translation id="4901778704868714008">Зберегти…</translation>
+<translation id="4905659621780993806">Адміністратор автоматично перезапустить пристрій <ph name="DATE" /> о <ph name="TIME" />. Збережіть усі відкриті файли до цього часу.</translation>
 <translation id="4913987521957242411">Пробити отвір угорі ліворуч</translation>
 <translation id="4918221908152712722">Установіть додаток <ph name="APP_NAME" /> (його не потрібно завантажувати)</translation>
 <translation id="4923459931733593730">Оплата</translation>
@@ -1686,6 +1687,7 @@
 <translation id="6290238015253830360">Тут відображатимуться рекомендовані статті</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{Ваш пристрій зараз перезапуститься}=1{Ваш пристрій перезапуститься через 1 секунду}one{Ваш пристрій перезапуститься через # секунду}few{Ваш пристрій перезапуститься через # секунди}many{Ваш пристрій перезапуститься через # секунд}other{Ваш пристрій перезапуститься через # секунди}}</translation>
 <translation id="6302269476990306341">Припинення роботи Google Асистента в Chrome</translation>
 <translation id="6305205051461490394">Сторінка <ph name="URL" /> недоступна.</translation>
 <translation id="6312113039770857350">Веб-сторінка недоступна</translation>
@@ -2009,6 +2011,7 @@
 <translation id="7378627244592794276">Ні</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">Не застосовується</translation>
+<translation id="7388594495505979117">{0,plural, =1{Ваш пристрій перезапуститься через 1 хвилину}one{Ваш пристрій перезапуститься через # хвилину}few{Ваш пристрій перезапуститься через # хвилини}many{Ваш пристрій перезапуститься через # хвилин}other{Ваш пристрій перезапуститься через # хвилини}}</translation>
 <translation id="7390545607259442187">Підтвердити дані картки</translation>
 <translation id="7392089738299859607">Оновіть адресу</translation>
 <translation id="7399802613464275309">Перевірка безпеки</translation>
@@ -2365,6 +2368,7 @@
 <translation id="8507227106804027148">Командний рядок</translation>
 <translation id="8508648098325802031">Значок пошуку</translation>
 <translation id="8511402995811232419">Керувати файлами cookie</translation>
+<translation id="8519753333133776369">Адміністратор дозволив цей пристрій HID</translation>
 <translation id="8522552481199248698">Chrome допоможе захистити обліковий запис Google і змінити пароль.</translation>
 <translation id="8530813470445476232">Очистити історію веб-перегляду, файли cookie, кеш та інше в налаштуваннях Chrome</translation>
 <translation id="8533619373899488139">Перейдіть на сторінку &lt;strong&gt;chrome://policy&lt;/strong&gt;, щоб переглянути список заблокованих URL-адрес та інші правила, які ввімкнув ваш системний адміністратор.</translation>

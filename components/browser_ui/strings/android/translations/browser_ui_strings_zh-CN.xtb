@@ -176,6 +176,7 @@
 <translation id="5354152178998424783">此操作会清除网站存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
 <translation id="5403592356182871684">名称</translation>
+<translation id="5412236728747081950">此网站会从 Chrome 中了解您的兴趣，从而向您展示与您的需求更相符的广告</translation>
 <translation id="5438097262470833822">此选项会重置 <ph name="WEBSITE" /> 的权限</translation>
 <translation id="5489227211564503167">已播时长为 <ph name="ELAPSED_TIME" />，总时长为 <ph name="TOTAL_TIME" />。</translation>
 <translation id="5494752089476963479">禁止会展示侵扰性或误导性广告的网站显示广告</translation>

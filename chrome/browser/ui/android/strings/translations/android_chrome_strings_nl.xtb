@@ -38,6 +38,7 @@
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1202892408424955784">Gevolgde producten</translation>
 <translation id="1204037785786432551">Link downloaden</translation>
+<translation id="1204692632633423444">Chrome-actieknop: <ph name="ACTION" /></translation>
 <translation id="1206892813135768548">Linktekst kopiëren</translation>
 <translation id="1208340532756947324">Zet de synchronisatie aan om verschillende apparaten te synchroniseren en te personaliseren</translation>
 <translation id="1209206284964581585">Voorlopig verbergen</translation>
@@ -201,6 +202,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2172688499998841696">Afbeeldingsbeschrijvingen staan uit</translation>
 <translation id="2172905120685242547">Venster sluiten?</translation>
 <translation id="2175927920773552910">QR-code</translation>
+<translation id="2176767904800337188">Een virtuele kaart vermomt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="218608176142494674">Delen</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2200113223741723867">Delen van gebruiksgegevens beheren</translation>
@@ -213,6 +215,7 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
 <translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
+<translation id="2279146068164892489">App voor <ph name="APPNAME" /> openen?</translation>
 <translation id="2286841657746966508">Factuuradres</translation>
 <translation id="228704530595896923">Lijst met deelopties.</translation>
 <translation id="230115972905494466">Geen geschikte apparaten gevonden</translation>
@@ -330,6 +333,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2923908459366352541">Naam is ongeldig</translation>
 <translation id="2932150158123903946">Opslag van Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Je toetsenbord verandert niet</translation>
+<translation id="2936980480904111527">Chrome-meldingen maken het je makkelijker</translation>
 <translation id="2942036813789421260">Voorbeeldtabblad is gesloten</translation>
 <translation id="2946420957526726953">Chrome wordt geüpdatet om verbinding te maken met andere apparaten</translation>
 <translation id="2951071800649516099">Voeg pagina's aan je leeslijst toe voor later</translation>
@@ -671,6 +675,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4961107849584082341">Vertaal deze pagina in een andere taal</translation>
 <translation id="4971735654804503942">Snellere, proactieve beveiliging tegen gevaarlijke websites, downloads en extensies. Stuurt een waarschuwing over wachtwoordlekken. Vereist dat browsegegevens naar Google worden verstuurd.</translation>
 <translation id="497421865427891073">Naar voren gaan</translation>
+<translation id="4987271110129728827">Kan die pagina niet vinden. Check je spelling of voer een online zoekopdracht uit.</translation>
 <translation id="4988526792673242964">Pagina's</translation>
 <translation id="5001388021414335527">Volg deze site hier</translation>
 <translation id="5004416275253351869">Google-activiteitsopties</translation>
@@ -876,6 +881,7 @@ Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in b
 <translation id="6162892189396105610">Pagina's waarvan Chrome denkt dat je ze waarschijnlijk gaat bezoeken, worden vooraf geladen.</translation>
 <translation id="6186394685773237175">Geen gehackte wachtwoorden gevonden</translation>
 <translation id="6192907950379606605">Afbeeldingsbeschrijvingen ophalen</translation>
+<translation id="620197886010707372">App voor <ph name="APPNAME" /> openen met Google Play?</translation>
 <translation id="6203593061661911168">Download wordt gestart zodra je wifi hebt</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
@@ -1065,6 +1071,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7196215469483532480">Uitleg over privacygids is op volledige hoogte geopend</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in behandeling}other{# downloads in behandeling}}</translation>
+<translation id="7237045078887540010">Door Chrome te gebruiken, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden van Google<ph name="END_TOS_LINK" /> en met de <ph name="BEGIN_ATOS_LINK" />Aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_ATOS_LINK" />. Het <ph name="BEGIN_PRIVACY_LINK" />Privacybeleid<ph name="END_PRIVACY_LINK" /> is ook van toepassing.</translation>
 <translation id="7242755609445462077">Gestileerde markering <ph name="CURRENT_DATE" /></translation>
 <translation id="7248069434667874558">Zorg dat synchronisatie in Chrome is aangezet voor <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7252076891734325316">Houd je telefoon dicht bij de computer</translation>
@@ -1271,6 +1278,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="834313815369870491">Sites nooit vertalen</translation>
 <translation id="8352996530981010042">Kan reacties niet downloaden. Probeer het opnieuw.</translation>
 <translation id="8354977102499939946">Zoek snel met je stem. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
+<translation id="8356078935982976590">Je kunt makkelijk je mediabediening, incognitosessies, downloads en meer beheren</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads hersteld</translation>
 <translation id="8364299278605033898">Bekijk populaire websites</translation>
 <translation id="8368001212524806591">Prijs volgen</translation>
@@ -1428,6 +1436,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204836675896933765">1 bestand over</translation>
+<translation id="9205933215779845960">Kan die pagina niet vinden. Check je spelling of voer een zoekopdracht uit met <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
 <translation id="9209888181064652401">Kan niet bellen</translation>
 <translation id="9212845824145208577">Kan niet verder omlaag gaan. Probeer lager op de pagina te beginnen.</translation>

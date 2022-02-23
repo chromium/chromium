@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Dieser Ordner wird für Linux freigegeben</translation>
 <translation id="1864756863218646478">Die Datei wurde nicht gefunden.</translation>
 <translation id="1884013283844450420">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Verbinden</translation>
+<translation id="1914901738028575085">CloudReady 2.0-Gerät</translation>
 <translation id="1920670151694390848">Malayalam (Transliteration)</translation>
 <translation id="1920798810075583923">Wassermelone</translation>
 <translation id="1924372192547904021">"<ph name="DRIVE_NAME" />" wurde formatiert</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Fahrrad</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> wurde ausgewählt.</translation>
 <translation id="872537912056138402">Kroatisch</translation>
+<translation id="873847021056608403">CloudReady 2.0-Geräte</translation>
 <translation id="8743164338060742337">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von Ihrem Administrator verwaltet, Verbinden</translation>
 <translation id="8750438273876807512">Berühren und halten Sie eine Datei und tippen Sie auf <ph name="ICON" /> und wählen Sie „An Ablage anpinnen“ aus, um über die Ablage schnell auf Ihre Dateien zugreifen zu können.</translation>
 <translation id="8787254343425541995">Proxys für freigegebene Netzwerke zulassen</translation>

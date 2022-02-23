@@ -177,6 +177,7 @@
 <translation id="5354152178998424783">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez strony.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
+<translation id="5412236728747081950">Witryna korzysta z gromadzonych przez Chrome informacji o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy</translation>
 <translation id="5438097262470833822">Spowoduje to zresetowanie uprawnień witryny <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Upłynęło: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" /></translation>
 <translation id="5494752089476963479">Blokuj reklamy na stronach, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>

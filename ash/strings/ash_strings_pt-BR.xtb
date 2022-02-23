@@ -330,6 +330,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3105917916468784889">Faça uma captura de tela</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Remover sugestão</translation>
+<translation id="3120421559657122717">Desligar dispositivo?</translation>
 <translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139942575505304791">Espaço de trabalho 1</translation>
 <translation id="315116470104423982">Dados do celular</translation>
@@ -350,6 +351,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o <ph name="TARGET_DESK" /></translation>
 <translation id="3255483164551725916">O que você pode fazer?</translation>
 <translation id="3269597722229482060">Clique com o botão direito do mouse</translation>
+<translation id="3289544412142055976">No momento, não há suporte para os apps do Linux</translation>
 <translation id="3289674678944039601">Carregando pelo adaptador</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3294437725009624529">Visitante</translation>
@@ -697,6 +699,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5400461572260843123">Configurações rápidas, pressione "Pesquisa" + seta para a esquerda para acessar a central de notificações.</translation>
 <translation id="5426063383988017631">Menu de configurações fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
+<translation id="5429993543155113935">No momento, não há suporte para janelas anônimas</translation>
 <translation id="5430931332414098647">Tethering instantâneo</translation>
 <translation id="5431318178759467895">Colorido</translation>
 <translation id="5433020815079095860">Entrada de áudio</translation>
@@ -837,6 +840,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6431865393913628856">Gravação de tela</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
+<translation id="6449483711453944360">No momento, não há suporte para apps do Linux e janelas anônimas</translation>
 <translation id="6452181791372256707">Rejeitar</translation>
 <translation id="6453179446719226835">O idioma foi alterado</translation>
 <translation id="6459472438155181876">Estendendo tela para <ph name="DISPLAY_NAME" /></translation>
@@ -935,6 +939,7 @@ Nova instalação</translation>
 <translation id="7025533177575372252">Conecte seu <ph name="DEVICE_NAME" /> ao smartphone</translation>
 <translation id="7026338066939101231">Reduzir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
+<translation id="7032161822340700104">São permitidos apenas seis modelos. Remova um deles para salvar outro.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistente</translation>
 <translation id="7042322267639375032">Recolher área de status</translation>
 <translation id="7045033600005038336">Substituir modelo?</translation>

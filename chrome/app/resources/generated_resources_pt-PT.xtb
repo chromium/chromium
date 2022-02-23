@@ -105,6 +105,7 @@
 <translation id="1099383081182863812">Consegue ver o seu Chromecast na <ph name="BEGIN_LINK" />app Google Home<ph name="END_LINK" />?</translation>
 <translation id="1099962274138857708">Imagem copiada do <ph name="DEVICE_NAME" /></translation>
 <translation id="1100504063505580045">Ícone atual</translation>
+<translation id="1102790815296970136">Veja "<ph name="PERSONALIZED_MEMORY_TITLE" />" e outras memórias aqui</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1108600514891325577">&amp;Parar</translation>
 <translation id="1108938384783527433">Sincronização do histórico</translation>
@@ -263,6 +264,7 @@
 <translation id="125220115284141797">Predefinidas</translation>
 <translation id="1252987234827889034">Ocorreu um erro do perfil</translation>
 <translation id="1254593899333212300">Ligação direta à Internet</translation>
+<translation id="1258144502260926473">O seu computador contém um módulo seguro, que é utilizado para implementar várias funcionalidades de segurança essenciais no CloudReady 2.0. Visite o Centro de Ajuda do Chromebook em https://support.google.com/chromebook/?p=sm para saber mais</translation>
 <translation id="1258491128795710625">Novidades</translation>
 <translation id="1259152067760398571">A verificação de segurança foi efetuada ontem.</translation>
 <translation id="1260451001046713751">Permitir sempre pop-ups e redirecionamentos de <ph name="HOST" /></translation>
@@ -486,6 +488,7 @@
 <translation id="1481537595330271162">Ocorreu um erro ao redimensionar o disco.</translation>
 <translation id="1482626744466814421">Adicionar este separador aos marcadores…</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1484599694148543901">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o CloudReady 2.0?</translation>
 <translation id="1484979925941077974">O site está a utilizar o Bluetooth.</translation>
 <translation id="1485015260175968628">Esta pode agora:</translation>
 <translation id="1485141095922496924">Versão <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
@@ -670,6 +673,7 @@
 <translation id="1644852018355792105">Introduza a chave de acesso Bluetooth para o dispositivo <ph name="DEVICE" /></translation>
 <translation id="1645516838734033527">Para manter o seu <ph name="DEVICE_TYPE" /> protegido, o Smart Lock requer um bloqueio de ecrã no telemóvel.</translation>
 <translation id="1646982517418478057">Introduza uma palavra-passe para encriptar este certificado</translation>
+<translation id="1647408325348388858">Abrir e editar <ph name="FILE_NAME" /> nesta app Web?</translation>
 <translation id="1648528859488547844">Utilizar Wi-Fi ou redes móveis para determinar a localização</translation>
 <translation id="164936512206786300">Dessincronizar dispositivo Bluetooth</translation>
 <translation id="1651008383952180276">Tem de introduzir a mesma frase de acesso duas vezes</translation>
@@ -1130,6 +1134,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2113921862428609753">Acesso a informações sobre autoridade</translation>
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
 <translation id="2114413269775311385">Utilize esta conta com as apps Android. Pode controlar as autorizações das apps Android nas <ph name="LINK_BEGIN" />Definições de apps<ph name="LINK_END" />.</translation>
+<translation id="2114820389966440614">Veja "Destaques recentes" e outras memórias aqui</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
@@ -1364,6 +1369,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2326188115274135041">Confirme o PIN para ativar o desbloqueio automático.</translation>
 <translation id="2326931316514688470">&amp;Recarregar aplicação</translation>
 <translation id="2327492829706409234">Ativar aplicação</translation>
+<translation id="2327920026543055248">Introduza o caráter <ph name="CHARACTER" /> de <ph name="TOTAL" /></translation>
 <translation id="2328561734797404498">Reinicie o dispositivo para utilizar a app <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Quando está no Modo de navegação anónima, os sites apenas podem ver a sua atividade de navegação no site deles. Os cookies são eliminados no final da sessão de Navegação anónima.</translation>
 <translation id="2329597144923131178">Inicie sessão para aceder aos marcadores, ao histórico, às palavras-passe e a outras definições em todos os dispositivos.</translation>
@@ -1834,6 +1840,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="2791952154587244007">Ocorreu um erro. A aplicação Quiosque não poderá ser iniciada automaticamente neste dispositivo.</translation>
 <translation id="2792290659606763004">Remover aplicações para Android?</translation>
 <translation id="2792465461386711506">Ative a Sincronização do Chrome para ver separadores recentes do Chrome no telemóvel.</translation>
+<translation id="2792697226874849938">Imagem de restrição</translation>
 <translation id="2794233252405721443">Site bloqueado</translation>
 <translation id="2794522004398861033">Estabeleça ligação ao Wi-Fi ou à Ethernet para configurar o eSIM</translation>
 <translation id="2795716239552913152">Normalmente, os sites utilizam a sua localização para funcionalidades ou informações relevantes, como notícias locais ou lojas próximas.</translation>
@@ -2063,6 +2070,7 @@ Pretende pará-lo?</translation>
 <translation id="3012804260437125868">Apenas ligações seguras do mesmo site</translation>
 <translation id="3012917896646559015">Contacte o seu fabricante de hardware imediatamente para enviar o seu computador para reparação.</translation>
 <translation id="301525898020410885">O idioma é definido pela sua entidade</translation>
+<translation id="3015425363367310551">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o CloudReady 2.0? Em caso afirmativo, prima sem soltar ambas as teclas de volume durante cinco segundos.</translation>
 <translation id="3015639418649705390">Reiniciar agora</translation>
 <translation id="3016381065346027039">Sem entradas do registo</translation>
 <translation id="3016641847947582299">Componente atualizado</translation>
@@ -2185,6 +2193,7 @@ Pretende pará-lo?</translation>
 <translation id="3142562627629111859">Novo grupo</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3143754809889689516">Reproduzir desde o início</translation>
+<translation id="3144023778624018265">Sincronização das definições do CloudReady 2.0</translation>
 <translation id="3144647712221361880">Abrir link como</translation>
 <translation id="3149510190863420837">Apps do Chrome</translation>
 <translation id="3150693969729403281">Executar verificação de segurança agora</translation>
@@ -2287,6 +2296,7 @@ Pretende pará-lo?</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
 <translation id="3277691515294482687">Fazer uma cópia de segurança das minhas apps e ficheiros para a pasta Os meus ficheiros antes de atualizar o Linux.</translation>
 <translation id="3278001907972365362">A(s) sua(s) Conta(s) Google necessita(m) de atenção</translation>
+<translation id="3278800075417428224">Gerir idiomas nas definições do CouldReady 2.0</translation>
 <translation id="3279092821516760512">Os contactos selecionados podem partilhar consigo quando estiverem nas proximidades. As transferências só irão começar quando aceitar.</translation>
 <translation id="3279230909244266691">Este processo pode demorar alguns minutos. A iniciar a máquina virtual…</translation>
 <translation id="3280237271814976245">Guard&amp;ar como...</translation>
@@ -2317,6 +2327,7 @@ Pretende pará-lo?</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de desconto</translation>
 <translation id="3305389145870741612">O processo de formatação pode demorar alguns segundos. Aguarde.</translation>
 <translation id="3305661444342691068">Abrir PDF na Pré-visualização</translation>
+<translation id="3307176291962384345">Obtenha descontos para <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Esta página foi impedida de definir cookies.</translation>
 <translation id="3308134619352333507">Ocultar Botão</translation>
 <translation id="3308852433423051161">A carregar o Assistente Google...</translation>
@@ -2433,6 +2444,7 @@ Pretende pará-lo?</translation>
 <translation id="343115368966109153">Pretende transferir <ph name="FILE_NAME" />? Qualquer pessoa que utilize o dispositivo pode vê-lo.</translation>
 <translation id="3432227430032737297">Remover tudo o que é mostrado</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
+<translation id="3433507769937235446">Bloquear ao sair</translation>
 <translation id="3433621910545056227">Ups! Falha do sistema ao estabelecer o bloqueio dos atributos de hora-instalação do dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.</translation>
@@ -2454,6 +2466,7 @@ Pretende pará-lo?</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
+<translation id="3446286111407214190">Índice dos Termos do Google CloudReady 2.0</translation>
 <translation id="344630545793878684">Ler os seus dados em vários Sites</translation>
 <translation id="3446650212859500694">Este ficheiro tem conteúdo sensível</translation>
 <translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
@@ -2652,6 +2665,7 @@ Pretende pará-lo?</translation>
 <translation id="3640214691812501263">Adicionar "<ph name="EXTENSION_NAME" />" para <ph name="USER_NAME" />?</translation>
 <translation id="3640613767643722554">Ensine o Assistente a reconhecer a sua voz</translation>
 <translation id="3641456520301071208">Os sites podem solicitar a sua localização</translation>
+<translation id="3642699533549879077">Quando alguém olhar para o ecrã, receberá um alerta e o conteúdo da notificação estará oculto.</translation>
 <translation id="3645372836428131288">Mova ligeiramente para capturar uma parte diferente da impressão digital.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> recebido de <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> recebidos de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> detetado</translation>
@@ -2681,6 +2695,7 @@ Pretende pará-lo?</translation>
 <translation id="3672681487849735243">Foi detetado um erro de fábrica</translation>
 <translation id="3673097791729989571">Início de sessão alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="3673622964532248901">Não tem autorização para transmitir para este dispositivo.</translation>
+<translation id="3675511132463531771">Atualização do CloudReady 2.0 necessária</translation>
 <translation id="367645871420407123">deixe em branco se pretender definir a palavra-passe de raiz como o valor da imagem de teste predefinido.</translation>
 <translation id="3677106374019847299">Introduza o fornecedor personalizado.</translation>
 <translation id="3677911431265050325">Pedir site para dispositivos móveis</translation>
@@ -2697,6 +2712,24 @@ Pretende pará-lo?</translation>
 <translation id="3688526734140524629">Alterar canal</translation>
 <translation id="3688578402379768763">Atualizado</translation>
 <translation id="3688794912214798596">Alterar idiomas…</translation>
+<translation id="3688944113090948433"><ph name="BEGIN_H3" />Funcionalidades de depuração<ph name="END_H3" />
+      <ph name="BR" />
+      Pode ativar as funcionalidades de depuração no seu dispositivo com Chrome OS para instalar e testar código personalizado no dispositivo. Isto permite:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Remover a validação de rootfs para que possa modificar ficheiros do SO
+        <ph name="LIST_ITEM" />Ativar o acesso de SSH ao dispositivo através das chaves de teste padrão para que possa utilizar ferramentas, como o <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" />, para aceder ao dispositivo
+        <ph name="LIST_ITEM" />Ativar o arranque a partir de USB para que possa instalar uma Imagem do SO a partir de uma unidade USB
+        <ph name="LIST_ITEM" />Definir a palavra-passe de início de sessão do programador e da raiz do sistema para um valor personalizado para que possa executar manualmente a SSH no dispositivo
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Após a ativação, a maioria das funcionalidades de depuração permanece ativada mesmo depois de um powerwash ou uma limpeza dos dados num dispositivo gerido por uma empresa. Para desativar completamente todas as funcionalidades de depuração, execute o processo de recuperação do Chrome OS (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Para obter mais informações sobre as funcionalidades de depuração, consulte:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> o sistema será reiniciado durante o processo.</translation>
 <translation id="3690369331356918524">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="3691231116639905343">Apps de teclado</translation>
 <translation id="3691267899302886494"><ph name="HOST" /> pretende partilhar o seu ecrã.</translation>
@@ -2774,6 +2807,7 @@ Pretende pará-lo?</translation>
 <translation id="3761556954875533505">Permitir que o site edite ficheiros?</translation>
 <translation id="3764314093345384080">Informações de compilação detalhadas</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicar com um dispositivo USB}one{Communicate with # USB devices}other{Comunicar com # dispositivos USB}}</translation>
+<translation id="3764753550716962406">Permitir que a Google utilize o seu carrinho para encontrar descontos disponíveis?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{A enviar <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />…}one{Sending <ph name="ATTACHMENTS" /> to <ph name="DEVICE_NAME" />}other{A enviar <ph name="ATTACHMENTS" /> para <ph name="DEVICE_NAME" />…}}</translation>
 <translation id="3765246971671567135">Não foi possível ler a política do modo de demonstração offline.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -2906,6 +2940,7 @@ Pretende pará-lo?</translation>
 <translation id="3886446263141354045">O seu pedido para aceder a este site foi enviado para <ph name="NAME" />.</translation>
 <translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3888053818972567950">Ligação ao <ph name="WEB_DRIVE" /></translation>
+<translation id="3888491127874785636">Criador de imagem do sistema do CouldReady 2.0</translation>
 <translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3888586133700543064">Estas informações ajudam-nos a compreender melhor o seu problema com o Assistente. Ficam armazenadas durante, no máximo, 90 dias e o acesso está restrito às equipas de engenharia e feedback dedicadas.</translation>
 <translation id="3888900458694486810">Fechar pesquisa lateral</translation>
@@ -2997,6 +3032,7 @@ Pretende pará-lo?</translation>
 <translation id="3962119236270174787">Proteção padrão contra Websites, transferências e extensões identificados como perigosos</translation>
 <translation id="3963721102035795474">Modo de leitor</translation>
 <translation id="3964480518399667971">Desativar rede móvel</translation>
+<translation id="39650333289039736">As suas apps, definições e outras personalizações serão sincronizadas em todos os dispositivos CloudReady 2.0 com sessão iniciada na sua Conta Google.</translation>
 <translation id="3965811923470826124">Com</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Escolher outra pasta...</translation>
@@ -3108,6 +3144,7 @@ Pretende pará-lo?</translation>
 <translation id="4079140982534148664">Utilizar a verificação ortográfica avançada</translation>
 <translation id="4081242589061676262">Não é possível transmitir o ficheiro.</translation>
 <translation id="408223403876103285"><ph name="WEBSITE" /> enviou uma notificação para o seu telemóvel. Para confirmar a sua identidade, siga os passos aqui.</translation>
+<translation id="4083599409544993198">Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_FORMAT" /></translation>
 <translation id="4084682180776658562">Marcar</translation>
 <translation id="4084835346725913160">Fechar <ph name="TAB_NAME" /></translation>
 <translation id="4085270836953633510">Quando um site pretender aceder a portas de série, perguntar se tem autorização</translation>
@@ -3137,6 +3174,7 @@ Pretende pará-lo?</translation>
 <translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102906002417106771">Reiniciar para Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
+<translation id="410547683402570632">Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_FORMATS" /></translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
 <translation id="4109135793348361820">Mover a janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
@@ -3145,6 +3183,7 @@ Pretende pará-lo?</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4115002065223188701">Rede fora do alcance</translation>
 <translation id="4115378294792113321">Magenta</translation>
+<translation id="4116704186509653070">Abrir novamente</translation>
 <translation id="4117637339509843559">Modo escuro</translation>
 <translation id="4117714603282104018">Resposta tátil do touchpad</translation>
 <translation id="4118579674665737931">Reinicie o dispositivo e tente novamente.</translation>
@@ -3206,6 +3245,7 @@ Pretende pará-lo?</translation>
 <translation id="4194570336751258953">Ativar tocar para clicar</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
+<translation id="4197917636330710075">Obtenha descontos para <ph name="MERCHANT_NAME" /> e <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Sites adicionais</translation>
 <translation id="4200689466366162458">Palavras personalizadas</translation>
 <translation id="4200983522494130825">Novo &amp;separador</translation>
@@ -3361,6 +3401,7 @@ Pretende pará-lo?</translation>
 <translation id="4369121877634339065">Arraste qualquer imagem para pesquisar</translation>
 <translation id="4369215744064167350">Pedido de Website aprovado</translation>
 <translation id="4370975561335139969">O email e a palavra-passe introduzidos não coincidem.</translation>
+<translation id="4371179719793593133">As suas apps e definições serão sincronizadas em todos os dispositivos CouldReady 2.0 nos quais tenha sessão iniciada com a sua Conta Google. Para ver as opções de sincronização do navegador, aceda às <ph name="LINK_BEGIN" />definições do Chrome<ph name="LINK_END" />.</translation>
 <translation id="4373966964907728675">A transmitir ambiente de trabalho</translation>
 <translation id="4374831787438678295">Instalador para o Linux</translation>
 <translation id="4375035964737468845">Abrir ficheiros transferidos</translation>
@@ -3466,6 +3507,7 @@ Pretende pará-lo?</translation>
 <translation id="4477015793815781985">Inclua Ctrl, Alt ou ⌘.</translation>
 <translation id="4478664379124702289">Guardar Lin&amp;k Como...</translation>
 <translation id="4479424953165245642">Gerir aplicações de quiosque</translation>
+<translation id="4479481745547029647">Termos Adicionais do Google Chrome e CloudReady 2.0</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">A configurar a máquina virtual… Esta ação pode demorar alguns minutos.</translation>
 <translation id="4480590691557335796">O Chrome pode encontrar software prejudicial no seu computador e removê-lo.</translation>
@@ -3631,6 +3673,7 @@ Pretende pará-lo?</translation>
 <translation id="4638930039313743000">Ativar a depuração do adb</translation>
 <translation id="4641539339823703554">Não foi possível ao Chrome definir a hora do sistema. Verifique as horas abaixo e corrija se necessário.</translation>
 <translation id="4643612240819915418">Abrir víde&amp;o num novo separador</translation>
+<translation id="4643833688073835173">O Chromebook utiliza um sensor incorporado para detetar pessoas à frente do dispositivo. Todos os dados são processados imediatamente no seu dispositivo e, em seguida, eliminados. Os dados de sensores nunca são enviados para a Google.</translation>
 <translation id="4644205769234414680">Permitir na Navegação anónima</translation>
 <translation id="4645676300727003670">&amp;Manter</translation>
 <translation id="4646675363240786305">Portas</translation>
@@ -3644,6 +3687,7 @@ Pretende pará-lo?</translation>
 <translation id="4653405415038586100">Ocorreu um erro ao configurar o Linux.</translation>
 <translation id="4654236001025007561">Partilhe ficheiros com dispositivos Android e Chromebooks perto de si.</translation>
 <translation id="4657914796247705218">Velocidade do TrackPoint</translation>
+<translation id="4658285806588491142">Mantenha o ecrã privado</translation>
 <translation id="465878909996028221">Apenas são suportados os protocolos HTTP, HTTPS e protocolos de ficheiros para redirecionamento do navegador.</translation>
 <translation id="4659126640776004816">Quando inicia sessão na sua Conta Google, esta funcionalidade está ativada.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagem}one{# imagem(ns)}other{# imagens}}</translation>
@@ -3692,6 +3736,7 @@ Pretende pará-lo?</translation>
 <translation id="4699357559218762027">(com iniciação automática)</translation>
 <translation id="4701025263201366865">Início de sessão pelos pais</translation>
 <translation id="4701335814944566468">Visto ontem</translation>
+<translation id="4701540735981103145">Início de sessão bloqueado pelo administrador</translation>
 <translation id="4707337002099455863">Sempre em todos os sites</translation>
 <translation id="4708794300267213770">Mostrar o ecrã de bloqueio quando for ativado após a suspensão</translation>
 <translation id="4708849949179781599">Sair do <ph name="PRODUCT_NAME" /></translation>
@@ -3727,6 +3772,7 @@ Pretende pará-lo?</translation>
 <translation id="475088594373173692">Primeiro utilizador</translation>
 <translation id="4756378406049221019">Parar/atualizar</translation>
 <translation id="4756388243121344051">&amp;Histórico</translation>
+<translation id="4759202969060787081">Não abrir</translation>
 <translation id="4759238208242260848">Transferências</translation>
 <translation id="4761104368405085019">Utilizar o seu microfone</translation>
 <translation id="4762718786438001384">Espaço em disco do dispositivo criticamente baixo</translation>
@@ -3891,6 +3937,7 @@ Pretende pará-lo?</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> pretende comunicar com a extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Aceitar</translation>
+<translation id="4918134162946436591">Mostrar sobreposição da instrução</translation>
 <translation id="4921348630401250116">Síntese de voz</translation>
 <translation id="4921809350408880559">Está a ver os seus documentos recentes e sugeridos com base na sua atividade anterior de utilização do Google Drive.
         <ph name="BREAK" />
@@ -3922,6 +3969,7 @@ Pretende pará-lo?</translation>
 <translation id="4944310289250773232">Este serviço de autenticação é alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Para configurar a impressão digital, peça à criança para tocar no botão ligar/desligar. Os dados de impressões digitais da criança são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4946459324029651239">Vai obter a proteção padrão</translation>
+<translation id="4950993567860689081">A sessão é gerida pela sua organização. Os administradores podem eliminar o seu perfil e monitorizar o tráfego de rede.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{um ficheiro}one{# ficheiro(s)}other{# ficheiros}}</translation>
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953808748584563296">Avatar cor de laranja predefinido</translation>
@@ -4061,6 +4109,7 @@ Pretende pará-lo?</translation>
 <translation id="5111646998522066203">Sair do modo de navegação anónima</translation>
 <translation id="5111692334209731439">&amp;Gestor de Marcadores</translation>
 <translation id="5112577000029535889">Ferramentas &amp;do programador</translation>
+<translation id="511313294362309725">Ligue o Fast Pair</translation>
 <translation id="5113739826273394829">Se clicar neste ícone, bloqueia manualmente este <ph name="DEVICE_TYPE" />. Da próxima vez, tem de introduzir a palavra-passe para aceder.</translation>
 <translation id="51143538739122961">Insira a chave de segurança e toque na mesma.</translation>
 <translation id="5115309401544567011">Ligue o seu <ph name="DEVICE_TYPE" /> a uma fonte de alimentação.</translation>
@@ -4574,6 +4623,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5632566673632479864">A sua conta <ph name="EMAIL" /> já não é permitida como a conta principal. Como esta conta é gerida por <ph name="DOMAIN" />, os marcadores, o histórico, as palavras-passe e outras definições serão apagados deste dispositivo.</translation>
 <translation id="5632592977009207922">A transferir, resta(m) <ph name="PERCENT_REMAINING" />%…</translation>
 <translation id="563371367637259496">Móvel</translation>
+<translation id="5634446357546764049">Veja memórias das suas viagens recentes e muito mais</translation>
 <translation id="5635312199252507107">Permitir em sites específicos</translation>
 <translation id="563535393368633106">Perguntar antes de aceder (recomendado)</translation>
 <translation id="5636996382092289526">Para utilizar <ph name="NETWORK_ID" /> poderá ter primeiro de <ph name="LINK_START" />visitar a página de início de sessão da rede<ph name="LINK_END" />, que será aberta automaticamente dentro de alguns segundos. Se isso não acontecer, a rede não pode ser utilizada.</translation>
@@ -4590,6 +4640,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5648166631817621825">Últimos 7 dias</translation>
 <translation id="5651308944918885595">Deteção da funcionalidade Partilhar na proximidade</translation>
 <translation id="5653154844073528838">Tem <ph name="PRINTER_COUNT" /> impressoras guardadas.</translation>
+<translation id="5654266266024827740">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o CloudReady 2.0? Em caso afirmativo, prima a barra de espaço.</translation>
 <translation id="5655296450510165335">Inscrição de dispositivo</translation>
 <translation id="5656845498778518563">Enviar feedback para a Google</translation>
 <translation id="5657156137487675418">Mostrar todos os cookies</translation>
@@ -4669,10 +4720,12 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5740709157181662145">Estabilidade e suporte de hardware <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Espelhamento do ecrã</translation>
 <translation id="574209121243317957">Tonalidade</translation>
+<translation id="5745316408658560138">Permitir que o Chrome encontre descontos personalizados nos seus carrinhos?</translation>
 <translation id="5746169159649715125">Guardar como PDF</translation>
 <translation id="5747552184818312860">Expira</translation>
 <translation id="5747785204778348146">Programador – instável</translation>
 <translation id="5747809636523347288">Co&amp;lar e ir para <ph name="URL" /></translation>
+<translation id="5747845802829012825">Para concluir a configuração do Linux, atualize o CloudReady 2.0 e tente novamente.</translation>
 <translation id="5755022574660047665">memórias do Google Fotos</translation>
 <translation id="5756163054456765343">C&amp;entro de Ajuda</translation>
 <translation id="5757375109985023827">Selecione um separador para pré-visualizar</translation>
@@ -4799,9 +4852,12 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5883356647197510494">Bloqueou automaticamente <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Este separador está associado a um dispositivo USB.</translation>
 <translation id="5886009770935151472">Dedo 1</translation>
+<translation id="5886325049116255797">As suas preferências e atividade guardadas estarão prontas em qualquer dispositivo CouldReady 2.0 quando iniciar sessão com a sua Conta Google. Pode escolher o que pretende sincronizar nas Definições.</translation>
+<translation id="5888843733007437002">Modelos de visualização. Prima Tab para navegar.</translation>
 <translation id="5889282057229379085">Número máximo de ACs intermédias:<ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
+<translation id="5896436821193322561">Não permitir</translation>
 <translation id="5900302528761731119">Fotografia do Perfil do Google</translation>
 <translation id="590036993063074298">Detalhes da qualidade do espelhamento</translation>
 <translation id="5901069264981746702">Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -4852,6 +4908,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5939719276406088041">Não é possível criar o atalho.</translation>
 <translation id="594048410531370124">Tecla não reconhecida. Prima qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="5941153596444580863">Adicionar pessoa...</translation>
+<translation id="5941176400377813459">Ler números de série de componentes e dispositivos CloudReady 2.0.</translation>
 <translation id="5941343993301164315">Inicie sessão em <ph name="TOKEN_NAME" />.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5942779427914696408">Visibilidade do dispositivo</translation>
@@ -4864,6 +4921,24 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5950819593680344519">O Chrome não encontrou software prejudicial no seu computador • Última verificação ontem</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> pretende utilizar tipos de letra locais</translation>
 <translation id="5951624318208955736">Monitor</translation>
+<translation id="5953627503079109298"><ph name="BEGIN_H3" />Funcionalidades de depuração<ph name="END_H3" />
+      <ph name="BR" />
+      Pode ativar as funcionalidades de depuração no seu dispositivo CloudReady 2.0 para instalar e testar código personalizado no dispositivo. Isto permite:<ph name="BR" />
+      <ph name="BEGIN_LIST" />
+        <ph name="LIST_ITEM" />Remover a validação de rootfs para que possa modificar ficheiros do SO
+        <ph name="LIST_ITEM" />Ativar o acesso de SSH ao dispositivo através das chaves de teste padrão para que possa utilizar ferramentas, como o <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" />, para aceder ao dispositivo
+        <ph name="LIST_ITEM" />Ativar o arranque a partir de USB para que possa instalar uma Imagem do SO a partir de uma unidade USB
+        <ph name="LIST_ITEM" />Definir a palavra-passe de início de sessão do programador e da raiz do sistema para um valor personalizado para que possa executar manualmente a SSH no dispositivo
+      <ph name="END_LIST" />
+      <ph name="BR" />
+      Após a ativação, a maioria das funcionalidades de depuração permanece ativada mesmo depois de um powerwash ou uma limpeza dos dados num dispositivo gerido por uma empresa. Para desativar completamente todas as funcionalidades de depuração, execute o processo de recuperação do Chrome OS (https://support.google.com/chromebook/answer/1080595).
+      <ph name="BR" />
+      <ph name="BR" />
+      Para obter mais informações sobre as funcionalidades de depuração, consulte:<ph name="BR" />
+      https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-features
+      <ph name="BR" />
+      <ph name="BR" />
+      <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> o sistema será reiniciado durante o processo.</translation>
 <translation id="5955282598396714173">A sua palavra-passe expirou. Termine e inicie sessão novamente para a alterar.</translation>
 <translation id="5955304353782037793">aplicação</translation>
 <translation id="5955721306465922729">Um Website pretende abrir esta aplicação.</translation>
@@ -4956,6 +5031,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
     <ph name="BEGIN_PARAGRAPH3" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Se a definição Atividade da Web e de apps estiver ativada para a Conta Google da criança, os dados da criança podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="6052284303005792909">•</translation>
+<translation id="6052488962264772833">Escreva o código de acesso para começar a transmitir</translation>
 <translation id="6052976518993719690">Autoridade de certificação SSL</translation>
 <translation id="6053401458108962351">&amp;Limpar dados de navegação...</translation>
 <translation id="6054284857788651331">Grupo de separadores fechado recentemente</translation>
@@ -4993,6 +5069,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6078769373519310690">"<ph name="CHROME_EXTENSION_NAME" />" pretende estabelecer ligação a um dispositivo HID</translation>
 <translation id="608029822688206592">Nenhuma rede encontrada. Introduza o SIM e tente novamente.</translation>
 <translation id="6080689532560039067">Verificar a hora do sistema</translation>
+<translation id="6082877069782862752">Mapeamento de teclas</translation>
 <translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Parte de um grupo sem nome</translation>
 <translation id="6085886413119427067">Determina como associar a Websites através de uma ligação segura.</translation>
@@ -5161,6 +5238,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6254503684448816922">Chave violada</translation>
 <translation id="6254892857036829079">Perfeita</translation>
 <translation id="6257602895346497974">Ativar a sincronização</translation>
+<translation id="62586649943626337">Organize os seus separadores com grupos de separadores</translation>
 <translation id="625895209797312329">Impedir que os sites utilizem tipos de letra instalados no dispositivo</translation>
 <translation id="6262371516389954471">As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da sua Conta Google.</translation>
 <translation id="6263082573641595914">Versão de AC Microsoft</translation>
@@ -5271,6 +5349,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6370021412472292592">Não foi possível carregar manifesto.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Tentar novamente</translation>
+<translation id="6374635887697228982">Obter descontos?</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380143666419481200">Aceitar e continuar</translation>
 <translation id="6382616130475191723">Com autorização para ler e alterar <ph name="SITE_NAME" /></translation>
@@ -5537,6 +5616,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6644513150317163574">Formato de URL inválido. É necessário especificar o servidor como um nome de anfitrião quando for utilizada a autenticação SSO.</translation>
 <translation id="6644846457769259194">A atualizar o dispositivo (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6645437135153136856">O dispositivo Google Cloud Print selecionado já não é suportado. <ph name="BR" /> Experimente configurar a impressora nas definições do sistema do computador.</translation>
+<translation id="6646476869708241165">Desligue o Fast Pair</translation>
 <translation id="6647228709620733774">URL de revogação da autoridade de certificação Netscape</translation>
 <translation id="6647441008198474441">Os URLs que visitar são enviados para a Google para prever os sites que pode visitar a seguir</translation>
 <translation id="6648911618876616409">Existe uma nova atualização crítica pronta para instalação. Inicie sessão para começar.</translation>
@@ -5646,6 +5726,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6770602306803890733">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6771503742377376720">É uma autoridade de certificação</translation>
 <translation id="6775163072363532304">Os dispositivos disponíveis aparecem aqui.</translation>
+<translation id="6776729248872343918">Ative o Fast Pair</translation>
 <translation id="6777817260680419853">Redirecionamento bloqueado</translation>
 <translation id="6778737459546443941">O teu pai/a tua mãe ainda não o aprovou</translation>
 <translation id="6779092717724412415">Para criar um realce como este, selecione qualquer texto e clique com o botão direito do rato.</translation>
@@ -5703,7 +5784,9 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6813907279658683733">Ecrã inteiro</translation>
 <translation id="6817174620439930047">Perguntar sempre que um site pretender utilizar mensagens exclusivas do sistema para aceder a dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma da página a traduzir</translation>
+<translation id="6818640747323584611">Ajudar a melhorar as funcionalidades e o desempenho do CouldReady 2.0</translation>
 <translation id="6818802132960437751">Proteção antivírus incorporada</translation>
+<translation id="6819741204334296334">É necessário instalar a app com o atributo de manifesto "kiosk_only" no modo quiosque do CouldReady 2.0</translation>
 <translation id="682123305478866682">Transmitir ambiente de trabalho</translation>
 <translation id="6823174134746916417">Tocar para clicar do touchpad</translation>
 <translation id="6824564591481349393">Copiar &amp;endereço de email</translation>
@@ -5773,6 +5856,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6889957081990109136">O interruptor ainda não foi atribuído</translation>
 <translation id="6892812721183419409">Abrir link como <ph name="USER" /></translation>
 <translation id="6895032998810961280">Comunicar detalhes à Google sobre software prejudicial, definições do sistema e processos encontrados no seu computador durante esta limpeza</translation>
+<translation id="6895902329218596456"><ph name="USER_EMAIL" /> é gerido por <ph name="MANAGER" /> e o administrador bloqueou o início de sessão com uma conta secundária</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897363604023044284">Escolher sites a limpar</translation>
 <translation id="6898440773573063262">Já é possível configurar aplicações de quiosque para início automático neste dispositivo.</translation>
@@ -6160,6 +6244,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="730515362922783851">Trocar dados com qualquer dispositivo na rede local ou na Internet</translation>
 <translation id="7306521477691455105">Abra as Definições para ligar o dispositivo <ph name="USB_DEVICE_NAME" /> a <ph name="USB_VM_NAME" /></translation>
 <translation id="7307129035224081534">Em pausa</translation>
+<translation id="7307719647623535470">Gerir DNS seguro nas definições do CouldReady 2.0</translation>
 <translation id="7308643132139167865">Idiomas de Websites</translation>
 <translation id="7310598146671372464">Não é possível iniciar sessão. O servidor não suporta os tipos de encriptação Kerberos especificados. Contacte o administrador.</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
@@ -6374,6 +6459,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{Mais 1}one{Mais {NUM_DOWNLOADS}}other{Mais {NUM_DOWNLOADS}}}</translation>
 <translation id="7526989658317409655">Marcador de posição</translation>
 <translation id="7527758104894292229">Atualize-a na sua Conta Google, <ph name="ACCOUNT" /></translation>
+<translation id="7528224636098571080">Não abrir</translation>
 <translation id="7529411698175791732">Verifique a sua ligação à Internet. Se o problema continuar, experimente terminar e iniciar sessão novamente.</translation>
 <translation id="7529876053219658589">{0,plural, =1{Fechar janela de convidado}one{Close Guest}other{Fechar janelas de convidado}}</translation>
 <translation id="7530016656428373557">Taxa de descarga em Watts</translation>
@@ -6551,6 +6637,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7691163173018300413">"OK Google"</translation>
 <translation id="7691698019618282776">Atualização do Crostini</translation>
 <translation id="769375405463525957">Quando se afasta do seu dispositivo, o ecrã é automaticamente bloqueado. Quando está à frente do dispositivo, o ecrã mantém-se ativado.</translation>
+<translation id="7694052127939518600">A app Files fornece um acesso rápido aos ficheiros que guardou no Google Drive, no armazenamento externo ou no dispositivo CloudReady 2.0.</translation>
 <translation id="7694246789328885917">Ferramenta de realce</translation>
 <translation id="7696063401938172191">No seu "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Os detalhes estão ocultos durante a partilha do ecrã.</translation>
@@ -6616,6 +6703,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758450972308449809">Ajustar os limites do ecrã</translation>
 <translation id="7760004034676677601">É esta a página inicial de que estava à espera?</translation>
+<translation id="7762463735017901568">A sincronização de notificações foi desativada pelo administrador do telemóvel</translation>
 <translation id="7764225426217299476">Adicionar endereço</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> de <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -6801,6 +6889,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7935451262452051102"><ph name="PERCENT" />% concluído</translation>
 <translation id="7938594894617528435">Atualmente offline</translation>
 <translation id="7939062555109487992">Opções avançadas</translation>
+<translation id="7939321852721702336">Está a ativar as funcionalidades de depuração do CouldReady 2.0, o que vai configurar o sshd daemon e ativar o arranque a partir de unidades USB.</translation>
 <translation id="7939412583708276221">Manter na mesma</translation>
 <translation id="7942349550061667556">Vermelho</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>
@@ -6821,6 +6910,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7956373551960864128">As suas impressoras guardadas</translation>
 <translation id="7957074856830851026">Ver informações do dispositivo, como o respetivo número de série ou ID do recurso</translation>
 <translation id="7957615753207896812">Abrir definições do dispositivo do teclado</translation>
+<translation id="7958437133377816580">Obtenha descontos para <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" /> e muito mais</translation>
 <translation id="7959074893852789871">O ficheiro continha vários certificados, sendo que alguns deles não foram importados:</translation>
 <translation id="7959665254555683862">Novo &amp;separador de navegação anónima</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -6948,6 +7038,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8076492880354921740">Separadores</translation>
 <translation id="8076835018653442223">O acesso a ficheiros locais no seu dispositivo foi desativado pelo seu administrador.</translation>
 <translation id="808089508890593134">Google</translation>
+<translation id="8081623398548615289">A sua sessão é gerida por <ph name="MANAGER_NAME" />. Os administradores podem eliminar o seu perfil e monitorizar o tráfego de rede.</translation>
 <translation id="8081989000209387414">Pretende desativar a depuração do adb?</translation>
 <translation id="8082106343289440791">Sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">A desativação da depuração do adb vai repor as definições de fábrica deste <ph name="DEVICE_TYPE" />. Todos os dados locais e contas de utilizador serão apagados.</translation>
@@ -7495,6 +7586,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8665110742939124773">Introduziu um código de acesso incorreto. Tente novamente.</translation>
 <translation id="8665180165765946056">Cópia de segurança concluída</translation>
 <translation id="866611985033792019">Confiar neste certificado para identificar utilizadores de email</translation>
+<translation id="8666224701549693691">Executar testes de diagnóstico do CloudReady 2.0.</translation>
 <translation id="8666584013686199826">Perguntar quando um site pretender aceder a dispositivos USB</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> está agora em ecrã inteiro e desativou o cursor do rato.</translation>
 <translation id="8668052347555487755">Modo de cor</translation>
@@ -7547,6 +7639,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8719472795285728850">A ouvir atividades de extensões…</translation>
 <translation id="8719653885894320876">A transferência do <ph name="PLUGIN_NAME" /> falhou</translation>
 <translation id="8720200012906404956">À procura de uma rede móvel… <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="8720781020694544444">Infelizmente, o seu computador está configurado com um ID de hardware formatado incorretamente. Este facto impede que o CloudReady 2.0 faça a atualização com as últimas correções de segurança e o seu computador <ph name="BEGIN_BOLD" />pode estar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="8720816553731218127">A inicialização dos atributos de tempo de instalação expirou.</translation>
 <translation id="8722912030556880711">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de aplicações e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das aplicações e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as aplicações e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="8724405322205516354">Quando vir este ícone, utilize a sua impressão digital para identificação ou para autorizar compras.</translation>
@@ -7733,6 +7826,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8890516388109605451">Fontes</translation>
 <translation id="8890529496706615641">Não foi possível mudar o nome do perfil. Tente novamente ou contacte o operador para obter apoio técnico.</translation>
 <translation id="8892168913673237979">Está tudo pronto!</translation>
+<translation id="8893116021193670489">O seu computador contém um dispositivo de segurança com TPM (Trusted Platform Module, Módulo de plataforma fidedigna), que é utilizado para implementar várias funcionalidades de segurança essenciais no CloudReady 2.0. Visite o Centro de Ajuda do Chromebook em https://support.google.com/chromebook/?p=tpm para saber mais</translation>
 <translation id="8893801527741465188">Desinstalação concluída</translation>
 <translation id="8893928184421379330">Lamentamos, não foi possível reconhecer o aparelho <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8894761918470382415">Proteção do acesso aos dados para periféricos</translation>
@@ -7866,6 +7960,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9030855135435061269">O <ph name="PLUGIN_NAME" /> já não é suportado</translation>
 <translation id="9031549947500880805">Faça uma cópia no Google Drive. Restaure facilmente os seus dados ou troque de dispositivo em qualquer altura. A cópia de segurança inclui os dados de apps.</translation>
 <translation id="9031811691986152304">tentar novamente</translation>
+<translation id="9032097289595078011">Desative o Fast Pair</translation>
 <translation id="9033765790910064284">Continuar mesmo assim</translation>
 <translation id="9033857511263905942">C&amp;olar</translation>
 <translation id="903480517321259405">Introduza novamente o PIN</translation>
@@ -7895,6 +7990,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9063208415146866933">Erro da linha <ph name="ERROR_LINE_START" /> até <ph name="ERROR_LINE_END" />.</translation>
 <translation id="9063800855227801443">Não é possível capturar conteúdo confidencial</translation>
 <translation id="9064275926664971810">Ativar a funcionalidade de Preenchimento Automático para preencher formulários Web com um único clique</translation>
+<translation id="9064599787951583960">Ler dados e informações do dispositivo CloudReady 2.0.</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9066394310994446814">Está a ver este item com base na sua atividade anterior de utilização dos serviços Google. Pode ver os seus dados, eliminá-los e alterar as suas definições em <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
         <ph name="BREAK" />

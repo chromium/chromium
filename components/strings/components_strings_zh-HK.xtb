@@ -1263,6 +1263,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901778704868714008">儲存…</translation>
+<translation id="4905659621780993806">管理員將自動於 <ph name="DATE" /><ph name="TIME" />重新啟動你的裝置。在裝置重新啟動前，請記得儲存開啟的項目。</translation>
 <translation id="4913987521957242411">打孔 (左上方)</translation>
 <translation id="4918221908152712722">安裝「<ph name="APP_NAME" />」(無需下載)</translation>
 <translation id="4923459931733593730">付款</translation>
@@ -1676,6 +1677,7 @@
 <translation id="6290238015253830360">為您推薦的文章會在這裡顯示</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC：</translation>
+<translation id="6300452962057769623">{0,plural, =0{裝置會立即重新啟動}=1{裝置將於 1 秒後重新啟動}other{裝置將於 # 秒後重新啟動}}</translation>
 <translation id="6302269476990306341">正在停止 Chrome 的「Google 助理」</translation>
 <translation id="6305205051461490394">無法存取 <ph name="URL" />。</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
@@ -1999,6 +2001,7 @@
 <translation id="7378627244592794276">不需要</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">不適用</translation>
+<translation id="7388594495505979117">{0,plural, =1{裝置將於 1 分鐘後重新啟動}other{裝置將於 # 分鐘後重新啟動}}</translation>
 <translation id="7390545607259442187">驗證信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7399802613464275309">安全檢查</translation>
@@ -2355,6 +2358,7 @@
 <translation id="8507227106804027148">指令列</translation>
 <translation id="8508648098325802031">搜尋圖示</translation>
 <translation id="8511402995811232419">管理 Cookie</translation>
+<translation id="8519753333133776369">管理員允許使用的 HID 裝置</translation>
 <translation id="8522552481199248698">Chrome 可助您保護 Google 帳戶並變更密碼。</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>

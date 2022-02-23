@@ -176,6 +176,7 @@
 <translation id="5354152178998424783"><ph name="DATASIZE" /> data och cookies som har sparats av webbplatser rensas.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 till)}other{(+ # till)}}</translation>
 <translation id="5403592356182871684">Namn</translation>
+<translation id="5412236728747081950">Den här webbplatsen hämtar dina intressen från Chrome för att visa mer relevanta annonser för dig</translation>
 <translation id="5438097262470833822">Detta återställer behörigheter för <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Förfluten tid: <ph name="ELAPSED_TIME" /> av <ph name="TOTAL_TIME" />.</translation>
 <translation id="5494752089476963479">Blockera annonser på webbplatser där påträngande eller vilseledande annonser visas</translation>

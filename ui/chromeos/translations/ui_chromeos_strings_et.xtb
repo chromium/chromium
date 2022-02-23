@@ -106,6 +106,7 @@
 <translation id="1853795129690976061">Seda kausta jagatakse Linuxiga</translation>
 <translation id="1864756863218646478">Faili ei leitud.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, ühenda</translation>
+<translation id="1914901738028575085">CloudReady 2.0 seade</translation>
 <translation id="1920670151694390848">malajalami, transliteratsioon</translation>
 <translation id="1920798810075583923">Arbuus</translation>
 <translation id="1924372192547904021">Ketas <ph name="DRIVE_NAME" /> vormindati</translation>
@@ -902,6 +903,7 @@
 <translation id="8714406895390098252">Jalgratas</translation>
 <translation id="8719721339511222681">Valiti <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">horvaatia keel</translation>
+<translation id="873847021056608403">CloudReady 2.0 seadmed</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, võrku haldab teie administraator, ühenda</translation>
 <translation id="8750438273876807512">Puudutage pikalt faili, puudutage ikooni <ph name="ICON" /> ja tehke valik „Kinnita riiulile”, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="8787254343425541995">Lubage puhverserverid jagatud võrkudes</translation>

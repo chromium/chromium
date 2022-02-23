@@ -728,6 +728,7 @@
 <translation id="5329858041417644019">Веб-переглядачем не керує адміністратор</translation>
 <translation id="5342314432463739672">Запити на дозволи</translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
+<translation id="5368227114232678694">Щоб працювати на цьому пристрої в Інтернеті приватно, спробуйте анонімний режим</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}one{<ph name="OPEN_TABS_MANY" /> відкрита вкладка: натисніть, щоб перейти на іншу вкладку}few{<ph name="OPEN_TABS_MANY" /> відкриті вкладки: натисніть, щоб перейти на іншу вкладку}many{<ph name="OPEN_TABS_MANY" /> відкритих вкладок: натисніть, щоб перейти на іншу вкладку}other{<ph name="OPEN_TABS_MANY" /> відкритої вкладки: натисніть, щоб перейти на іншу вкладку}}</translation>
 <translation id="5375577065097716013">Пошук через Об'єктив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Дозволити лише певні сайти</translation>

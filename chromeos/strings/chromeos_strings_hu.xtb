@@ -30,6 +30,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Frissítés (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
 <translation id="1310380015393971138">Nincs hozzáférhető <ph name="NETWORK_NAME" />-hálózat</translation>
+<translation id="131421566576084655">Az adathasználat legutóbbi visszaállítási dátuma nem áll rendelkezésre</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Otthoni hálózat, nincs roaming</translation>
 <translation id="1327977588028644528">Átjáró</translation>
@@ -42,6 +43,7 @@
 <translation id="1413240736185167732">Sikertelen – Szűrőhiba</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">Rendelkezem kulcspárral</translation>
+<translation id="1435763214710588005">Minden hónapban automatikusan visszaállítja az adathasználatot a kiválasztott napon</translation>
 <translation id="1442433966118452622">Kép forrása</translation>
 <translation id="1451536289672181509">Az eszköz egy billentyűzet.</translation>
 <translation id="1459693405370120464">Időjárás</translation>
@@ -56,6 +58,7 @@
 <translation id="1565038567006703504">Nem sikerült frissíteni a következőt: <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumok</translation>
 <translation id="1572585716423026576">Beállítás háttérként</translation>
+<translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
 <translation id="1639239467298939599">Betöltés</translation>
 <translation id="1641857168437328880">Dokumentumadagoló (egyoldalas)</translation>
@@ -264,6 +267,7 @@
 <translation id="4511264077854731334">Portál</translation>
 <translation id="4521826082652183069">Tárgy alternatív neve – egyezés</translation>
 <translation id="4536864596629708641">IP-konfiguráció</translation>
+<translation id="4546131424594385779">Ismétlődő videó létrehozása</translation>
 <translation id="4548483925627140043">A jel nem található</translation>
 <translation id="4556753742174065117">Minden firmware naprakész</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-s akkumulátor</translation>
@@ -393,6 +397,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
 <translation id="594552776027197022">Véletlenszerű kulcspár generálása</translation>
 <translation id="5972388717451707488">Update Engine</translation>
+<translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
 <translation id="6037291330010597344">A szkenner dokumentumadagolója üres. Helyezzen be dokumentumokat, és próbálja újra.</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6040852767465482106">Névtelen azonosító</translation>
@@ -416,6 +421,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
+<translation id="6235460611964961764">Adathasználat manuális visszaállítása</translation>
 <translation id="6243280677745499710">Jelenleg beállított</translation>
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -445,6 +451,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="6566314079205407217">Többoldalas keresés</translation>
 <translation id="6574762126505704998">Kitöltés</translation>
 <translation id="6575134580692778371">Nincs konfigurálva</translation>
+<translation id="6579509898032828423">E fotó használata</translation>
 <translation id="6596816719288285829">IP-cím</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
 <translation id="6620487321149975369">A nyomtatási feladatok láthatók az előzmények között, ha nem távolítják el őket manuálisan</translation>
@@ -628,6 +635,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8910721771319628100">Az alapértelmezett hálózat túllépi a várakozási idő határértékét</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Sikertelen – Hiányzó tálca</translation>
+<translation id="8923267550422472772">A visszaállítás napja a hónapban</translation>
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Vezeték nélküli</translation>
@@ -644,6 +652,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="9062831201344759865">A DNS-feloldás várakozási ideje túl hosszú</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">E videó használata</translation>
 <translation id="9087578468327036362">Bejelentheti ezt a lekérdezést.</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
 <translation id="9095415590198785865">Az eszköznek ugyanaz lesz a tulajdonosa</translation>

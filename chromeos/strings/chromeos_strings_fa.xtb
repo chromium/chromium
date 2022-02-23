@@ -180,6 +180,7 @@
 <translation id="3340011300870565703">باتری هدفون توگوشی سمت راست دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">مطمئن هستید که می‌خواهید همه سابقه‌های چاپ را حذف کنید؟ کارهای چاپ شما که درحال انجام هستند حذف نخواهند شد.</translation>
+<translation id="3413935475507503304">برای به‌روزرسانی، روی «بعدی» کلیک کنید.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />٪</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3456078764689556234">صفحه <ph name="PRINTED_PAGES" /> از مجموع <ph name="TOTAL_PAGES" /> صفحه چاپ شده است.</translation>
@@ -495,6 +496,7 @@
 <translation id="7175037578838465313">پیکربندی <ph name="NAME" /></translation>
 <translation id="7177485034254901881">این <ph name="DEVICE_TYPE" /> توسط <ph name="MANAGER" /> مدیریت می‌شود. سرپرستان می‌توانند این دستگاه را ازراه‌دور پیکربندی کنند.</translation>
 <translation id="7180611975245234373">بازخوانی</translation>
+<translation id="7212734716605298123">به‌روزرسانی‌های سفت‌افزار برای دستگاه‌های خارجی</translation>
 <translation id="7216409898977639127">ارائه‌دهنده شبکه تلفن همراه</translation>
 <translation id="7271040990581020067">اسکنر درحال استفاده است. بعداً دوباره امتحان کنید.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

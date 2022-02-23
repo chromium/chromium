@@ -330,6 +330,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3105917916468784889">Skrinshot olish</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113926042639749131">Taklifni olib tashlash</translation>
+<translation id="3120421559657122717">Qurilma oʻchirilsinmi?</translation>
 <translation id="3126069444801937830">Yangilash uchun qayta ishga tushiring</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobil internet</translation>
@@ -350,6 +351,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
 <translation id="3269597722229482060">Oʻng klik</translation>
+<translation id="3289544412142055976">Linux ilovalari hozirda ishlamaydi</translation>
 <translation id="3289674678944039601">Adapter orqali quvvat olmoqda</translation>
 <translation id="3290356915286466215">Himoyalanmagan</translation>
 <translation id="3294437725009624529">Mehmon</translation>
@@ -697,6 +699,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5400461572260843123">Tezkor sozlamalar, Bildirishnomalar markazini ochish uchun “Qidiruv + Chapga strelka” tugmalarini bosing.</translation>
 <translation id="5426063383988017631">Sozlamalar menyusi yopildi</translation>
 <translation id="5428899915242071344">Matnni tanlashni boshlash</translation>
+<translation id="5429993543155113935">Inkognito oynalari ishlamaydi</translation>
 <translation id="5430931332414098647">Tezkor modem rejimi</translation>
 <translation id="5431318178759467895">Rang</translation>
 <translation id="5433020815079095860">Audio kirish</translation>
@@ -810,6 +813,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6166852626429024716">Qurilma, ilovalar va internetdan qidirish...</translation>
 <translation id="6179832488876878285">Bu yerga muhim fayllarni mahkamlash mumkin. Boshlash uchun Files ilovasini oching.</translation>
+<translation id="6220928844947387476">Endi siz bir vaqtda ekran va veb kamera tasvirlarini yozib olishingiz mumkin.</translation>
 <translation id="622484624075952240">Pastga</translation>
 <translation id="6231419273573514727">Tashqi qurilmalar samaradorligi cheklanishi mumkin</translation>
 <translation id="6237231532760393653">1X</translation>
@@ -836,6 +840,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6431865393913628856">Ekran yozuvi</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ta tadbir</translation>
+<translation id="6449483711453944360">Linux ilovalari va inkognito oynalarida ishlamaydi</translation>
 <translation id="6452181791372256707">Rad etish</translation>
 <translation id="6453179446719226835">Til sozlamalari o‘zgardi</translation>
 <translation id="6459472438155181876">Ekranni kengaytirish: <ph name="DISPLAY_NAME" /></translation>
@@ -934,6 +939,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> qurilmasini telefoningiz bilan ulang</translation>
 <translation id="7026338066939101231">Kamaytirish</translation>
 <translation id="7029814467594812963">Seansdan chiqish</translation>
+<translation id="7032161822340700104">Faqat 6 ta andozaga ruxsat berilgan. Yangisini saqlash uchun eskilarini oʻchiring.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Holat panelini yopish</translation>
 <translation id="7045033600005038336">Andoza almashtirilsinmi?</translation>

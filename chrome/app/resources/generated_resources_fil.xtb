@@ -2347,6 +2347,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> diskwento</translation>
 <translation id="3305389145870741612">Maaaring tumagal nang ilang segundo ang proseso ng pag-format. Mangyaring maghintay.</translation>
 <translation id="3305661444342691068">Buksan ang PDF sa Preview</translation>
+<translation id="3307176291962384345">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME" /></translation>
 <translation id="3308116878371095290">Naharangan ang pahinang ito mula sa pagtatakda ng cookies.</translation>
 <translation id="3308134619352333507">Itago ang Button</translation>
 <translation id="3308852433423051161">Nilo-load ang Google Assistant...</translation>
@@ -2826,6 +2827,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3761556954875533505">Payagan ang site na i-edit ang mga file?</translation>
 <translation id="3764314093345384080">Detalyadong impormasyon ng build</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kumonekta sa isang USB device}one{Kumonekta sa # USB device}other{Kumonekta sa # na USB device}}</translation>
+<translation id="3764753550716962406">Payagan ang Google na gamitin ang iyong cart para maghanap ng mga available na diskwento?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Ipinapadala ang <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}one{Ipinapadala ang <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}other{Ipinapadala ang <ph name="ATTACHMENTS" /> sa <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3765246971671567135">Hindi ma-read ang patakaran ng offline na demo mode.</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
@@ -3263,6 +3265,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4194570336751258953">Paganahin ang tap-to-click</translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4195814663415092787">Magpatuloy kung saan ka tumigil</translation>
+<translation id="4197917636330710075">Makakuha ng mga diskwento para sa <ph name="MERCHANT_NAME" /> at <ph name="MERCHANT_NAME" /></translation>
 <translation id="4198268995694216131">Mga karagdagang site</translation>
 <translation id="4200689466366162458">Mga custom na salita</translation>
 <translation id="4200983522494130825">Bagong &amp;tab</translation>
@@ -4642,6 +4645,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5632566673632479864">Hindi na pinapayagan ang iyong account na <ph name="EMAIL" /> bilang pangunahing account. Dahil pinapamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear ang iyong mga bookmark, history, password, at iba pang setting sa device na ito.</translation>
 <translation id="5632592977009207922">Nagda-download, <ph name="PERCENT_REMAINING" />% ang natitira</translation>
 <translation id="563371367637259496">Mobile</translation>
+<translation id="5634446357546764049">Tingnan ang mga alaala ng mga kamakailan mong biyahe at iba pa</translation>
 <translation id="5635312199252507107">Payagan sa mga partikular na site</translation>
 <translation id="563535393368633106">Magtanong bago mag-access (inirerekomenda)</translation>
 <translation id="5636996382092289526">Upang gamitin ang <ph name="NETWORK_ID" />, maaaring kailangan mo munang <ph name="LINK_START" />bisitahin ang pahina sa pag-sign in ng network<ph name="LINK_END" />, na awtomatikong bubukas sa loob ng ilang segundo. Kung hindi ito mangyayari, hindi magagamit ang network.</translation>
@@ -4738,6 +4742,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5740709157181662145">Suporta sa at stability ng <ph name="DEVICE_OS" /> hardware</translation>
 <translation id="574104302965107104">Pag-mirror ng display</translation>
 <translation id="574209121243317957">Pitch</translation>
+<translation id="5745316408658560138">Payagan ang Chrome na maghanap ng mga naka-personalize na diskwento sa iyong mga cart?</translation>
 <translation id="5746169159649715125">I-save bilang PDF</translation>
 <translation id="5747552184818312860">Mag-e-expire sa</translation>
 <translation id="5747785204778348146">Developer - hindi matatag</translation>
@@ -5366,6 +5371,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6370021412472292592">Hindi mai-load ang manifest.</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Subukang Muli</translation>
+<translation id="6374635887697228982">Kumuha ng mga diskwento?</translation>
 <translation id="6377268785556383139">1 resulta para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">Tanggapin at magpatuloy</translation>
 <translation id="6382616130475191723">Pinayagang basahin at baguhin ang <ph name="SITE_NAME" /></translation>
@@ -6930,6 +6936,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7956373551960864128">Mga naka-save mong printer</translation>
 <translation id="7957074856830851026">Tingnan ang impormasyon ng device, gaya ng serial number o asset ID nito</translation>
 <translation id="7957615753207896812">Buksan ang mga setting ng keyboard device</translation>
+<translation id="7958437133377816580">Makakuha ng mga diskweto para sa <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_NAME" />, at iba pa</translation>
 <translation id="7959074893852789871">Naglaman ang file ng maramihang certificate, ilan sa mga ito ang na-import:</translation>
 <translation id="7959665254555683862">Bagong Tab na Incognito</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>

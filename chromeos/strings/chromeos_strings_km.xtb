@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">ឧបករណ៍មានថ្មកាសខាងស្ដាំ <ph name="BATTERY_PERCENTAGE" />%។</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369013195428705271">តើអ្នក​ពិតជាចង់​សម្អាត​ប្រវត្តិបោះពុម្ព​ទាំងអស់​មែនឬ? ការងារ​បោះពុម្ព​របស់អ្នកដែល​កំពុងដំណើរការ​នឹងមិនត្រូវបាន​សម្អាតទេ។</translation>
+<translation id="3413935475507503304">ដើម្បីបន្តការដំឡើងកំណែ សូមចុច "បន្ទាប់"។</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
 <translation id="3456078764689556234">បានបោះពុម្ព​ទំព័រទី <ph name="PRINTED_PAGES" /> ក្នុងចំណោម <ph name="TOTAL_PAGES" />។</translation>
@@ -490,6 +491,7 @@
 <translation id="7175037578838465313">កំណត់​រចនាសម្ព័ន្ធ <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
+<translation id="7212734716605298123">ការដំឡើងកំណែកម្មវិធីបង្កប់សម្រាប់ឧបករណ៍ខាងក្រៅ</translation>
 <translation id="7216409898977639127">ក្រុមហ៊ុន​ផ្តល់សេវា​ទូរសព្ទ</translation>
 <translation id="7271040990581020067">បច្ចុប្បន្ននេះ ម៉ាស៊ីនស្កេន​កំពុងស្ថិតក្នុង​ការប្រើប្រាស់។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

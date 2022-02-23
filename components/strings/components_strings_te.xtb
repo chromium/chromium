@@ -1275,6 +1275,7 @@
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4900217275619098670">నైన్త్ రోల్</translation>
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
+<translation id="4905659621780993806">మీ అడ్మినిస్ట్రేటర్ మీ పరికరాన్ని <ph name="DATE" />న <ph name="TIME" />కు ఆటోమేటిక్‌గా రీస్టార్ట్ చేస్తారు. మీ పరికరం రీస్టార్ట్ కావడానికి ముందే, తెరిచి ఉన్న ఐటెమ్‌లు ఏవైనా ఉంటే, వాటిని సేవ్ చేయండి.</translation>
 <translation id="4913987521957242411">ఎడమవైపు ఎగువ భాగంలో రంధ్రాలు</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" />ను ఇన్‌స్టాల్ చేయండి (డౌన్‌లోడ్ చేయాల్సిన అవసరం లేదు)</translation>
 <translation id="4923459931733593730">చెల్లింపు</translation>
@@ -1688,6 +1689,7 @@
 <translation id="6290238015253830360">మీకు సూచించిన కథనాలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
+<translation id="6300452962057769623">{0,plural, =0{మీ పరికరం ఇప్పుడు రీస్టార్ట్ అవుతుంది}=1{మీ పరికరం 1 సెకనులో రీస్టార్ట్ అవుతుంది}other{మీ పరికరం # సెకన్లలో రీస్టార్ట్ అవుతుంది}}</translation>
 <translation id="6302269476990306341">Chromeలో Google అసిస్టెంట్ ఆపివేయబడుతోంది</translation>
 <translation id="6305205051461490394"><ph name="URL" />ని చేరుకోలేకపోయాము.</translation>
 <translation id="6312113039770857350">వెబ్‌పేజీ అందుబాటులో లేదు</translation>
@@ -2011,6 +2013,7 @@
 <translation id="7378627244592794276">వద్దు</translation>
 <translation id="7378810950367401542">/</translation>
 <translation id="7386364858855961704">వర్తించదు</translation>
+<translation id="7388594495505979117">{0,plural, =1{మీ పరికరం 1 నిమిషంలో రీస్టార్ట్ అవుతుంది}other{మీ పరికరం # నిమిషాలలో రీస్టార్ట్ అవుతుంది}}</translation>
 <translation id="7390545607259442187">కార్డ్‌ని నిర్ధారించండి</translation>
 <translation id="7392089738299859607">అడ్రస్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="7399802613464275309">భద్రతా చెక్-అప్</translation>
@@ -2367,6 +2370,7 @@
 <translation id="8507227106804027148">ఆదేశ పంక్తి</translation>
 <translation id="8508648098325802031">శోధన చిహ్నం</translation>
 <translation id="8511402995811232419">కుక్కీలను మేనేజ్ చేయండి</translation>
+<translation id="8519753333133776369">మీ అడ్మినిస్ట్రేటర్ అనుమతించిన HID పరికరం</translation>
 <translation id="8522552481199248698">మీ Google ఖాతాను సంరక్షించుకోవడంలో, మీ పాస్‌వర్డ్‌ను మార్చడంలో Chrome మీకు సహాయపడగలదు.</translation>
 <translation id="8530813470445476232">Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్ ఇంకా మరిన్నింటిని క్లియర్ చేయండి</translation>
 <translation id="8533619373899488139">బ్లాక్ చేయబడి ఉన్న URLల లిస్ట్‌ను, మీ సిస్టమ్ అడ్మినిస్ట్రేటర్ ద్వారా అమలు చేయబడిన ఇతర పాలసీలను చూడటానికి &lt;strong&gt;chrome://policy&lt;/strong&gt;ని సందర్శించండి.</translation>

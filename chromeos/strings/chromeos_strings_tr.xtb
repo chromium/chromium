@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Cihazın sağ kulaklık pili %<ph name="BATTERY_PERCENTAGE" /> düzeyinde.</translation>
 <translation id="3368922792935385530">Bağlı</translation>
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
+<translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3456078764689556234">Yazdırılan sayfa: <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />.</translation>
@@ -232,6 +233,7 @@
 <translation id="4145784616224233563">HTTP Güvenlik Duvarı</translation>
 <translation id="4147897805161313378">Google Fotoğraflar</translation>
 <translation id="4155551848414053977">Tarayıcının açık ve ağınız üzerinden veya doğrudan bağlantı ile kullanılabilir olduğundan emin olun</translation>
+<translation id="4170180284036919717">Fotoğraf çek</translation>
 <translation id="4170700058716978431">BAŞARISIZ</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4213104098953699324">USB klavye</translation>
@@ -489,6 +491,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> adlı ağı yapılandırın</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor. Yöneticiler bu cihazı uzaktan yapılandırabilir.</translation>
 <translation id="7180611975245234373">Yenile</translation>
+<translation id="7212734716605298123">Harici cihazlar için donanım yazılımı güncellemeleri</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>

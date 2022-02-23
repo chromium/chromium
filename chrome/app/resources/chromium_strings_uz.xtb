@@ -15,6 +15,9 @@
 <translation id="1553461853655228091">Chromium atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1625909126243026060">Chromium ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
+<translation id="1632539827495546968">Bu hisobdan bir marta foydalanish uchun Chromium brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
+
+Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="1708666629004767631">Chromium brauzerining yangi, yanada xavfsiz versiyasi chiqdi.</translation>
 <translation id="1774152462503052664">Chromium fonda ishlashiga ruxsat</translation>
 <translation id="1779356040007214683">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />‘da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
@@ -23,6 +26,9 @@
 <translation id="1881322772814446296">Siz boshqariladigan hisob bilan tizimga kirmoqdasiz va uning administratoriga Chromium profilingiz ustidan nazoratni topshirmoqdasiz. Sizning Chromium ma’lumotlaringiz, masalan, ilovalar, xatcho‘plar, tarix, parollar va boshqa sozlamalar butunlay <ph name="USER_NAME" />’ga biriktiriladi. Bu ma’lumotlarni Google hisoblari asboblar panelidan o‘chirishingiz mumkin bo‘ladi, ammo ularni boshqa hisobga biriktira olmaysiz. Mavjud Chromium ma’lumotlarini alohida saqlash uchun yangi profil yaratish imkoningiz bor. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
 <translation id="1929939181775079593">Chromium javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
+<translation id="1940680973325097484">Bu hisobdan bir marta foydalanish uchun Chromium brauzerida Mehmon rejimidan foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
+
+Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google hisoblarini <ph name="SETTINGS_LINK_BEGIN" />Sozlamalar<ph name="SETTINGS_LINK_END" /> orqali boshqarish mumkin.</translation>
 <translation id="1966382378801805537">Chromium asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi.</translation>
 <translation id="1981611865800294956">&amp;Chromium OS tizimini yangilash uchun qayta ishga tushiring</translation>
 <translation id="2008474315282236005">Bu qurilmadagi 1 elementni tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chromium brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>

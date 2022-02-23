@@ -177,6 +177,7 @@
 <translation id="3340011300870565703">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije desne slušalice.</translation>
 <translation id="3368922792935385530">Povezan</translation>
 <translation id="3369013195428705271">Želite li stvarno da obrišete svu istoriju štampanja? Zadaci štampanja koji su u toku se ne brišu.</translation>
+<translation id="3413935475507503304">Da biste nastavili sa ažuriranjem, kliknite na Dalje.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3456078764689556234">Odštampanih stranica: <ph name="PRINTED_PAGES" /> od <ph name="TOTAL_PAGES" />.</translation>
@@ -263,6 +264,7 @@
 <translation id="4511264077854731334">Portal</translation>
 <translation id="4521826082652183069">Podudaranje alternativnog naziva subjekta</translation>
 <translation id="4536864596629708641">IP konfiguracija</translation>
+<translation id="4546131424594385779">Napravite video koji se ponavlja</translation>
 <translation id="4548483925627140043">Signal nije pronađen</translation>
 <translation id="4556753742174065117">Sav firmver je ažuriran.</translation>
 <translation id="455835558791489930">Baterija od <ph name="CHARGE_VALUE" /> mAh</translation>
@@ -444,6 +446,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6566314079205407217">Skeniranje više stranica</translation>
 <translation id="6574762126505704998">Popuni</translation>
 <translation id="6575134580692778371">Nije konfigurisan</translation>
+<translation id="6579509898032828423">Koristi ovu sliku</translation>
 <translation id="6596816719288285829">IP adresa</translation>
 <translation id="6618744767048954150">U toku je</translation>
 <translation id="6620487321149975369">Zadaci štampanja će se pojaviti u istoriji ako ih ne uklonite ručno</translation>
@@ -490,6 +493,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7175037578838465313">Konfigurišite <ph name="NAME" /></translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> upravlja ovim <ph name="DEVICE_TYPE" /> uređajem. Administratori mogu da konfigurišu uređaj daljinski.</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7212734716605298123">Ažuriranja firmvera za eksterne uređaje</translation>
 <translation id="7216409898977639127">Mobilni operater</translation>
 <translation id="7271040990581020067">Skener se trenutno koristi. Probajte ponovo kasnije.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
@@ -642,6 +646,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="9062831201344759865">DNS razrešavanje ima veliko kašnjenje</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Koristi ovaj video</translation>
 <translation id="9087578468327036362">Prijavite ovaj upit</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>
 <translation id="9095415590198785865">Uređaj će preći na istog vlasnika</translation>
