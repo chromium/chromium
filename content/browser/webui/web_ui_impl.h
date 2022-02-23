@@ -74,7 +74,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void AddRequestableScheme(const char* scheme) override;
   void AddMessageHandler(std::unique_ptr<WebUIMessageHandler> handler) override;
   void RegisterMessageCallback(base::StringPiece message,
-                               MessageCallback callback) override;
+                               DeprecatedMessageCallback2 callback) override;
   void RegisterDeprecatedMessageCallback(
       base::StringPiece message,
       const DeprecatedMessageCallback& callback) override;
@@ -125,7 +125,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   void DisallowJavascriptOnAllHandlers();
 
   // A map of message name -> message handling callback.
-  std::map<std::string, MessageCallback> message_callbacks_;
+  std::map<std::string, DeprecatedMessageCallback2>
+      deprecated_message_callbacks_2_;
 
   // A map of message name -> message handling callback.
   std::map<std::string, DeprecatedMessageCallback>
