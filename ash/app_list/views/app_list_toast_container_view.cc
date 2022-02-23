@@ -94,7 +94,10 @@ void AppListToastContainerView::CreateReorderNudgeView() {
               IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE))
           .SetStyleForTabletMode(tablet_mode_)
           .SetSubtitle(l10n_util::GetStringUTF16(subtitle_message_id))
-          .SetThemingIcons(&kReorderNudgeDarkIcon, &kReorderNudgeLightIcon)
+          .SetThemingIcons(tablet_mode_ ? &kReorderNudgeDarkTabletIcon
+                                        : &kReorderNudgeDarkClamshellIcon,
+                           tablet_mode_ ? &kReorderNudgeLightTabletIcon
+                                        : &kReorderNudgeLightClamshellIcon)
           .Build());
   current_toast_ = ToastType::kReorderNudge;
 }
