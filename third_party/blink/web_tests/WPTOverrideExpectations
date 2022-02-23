@@ -46,7 +46,7 @@ external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.
 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ol [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/input-events/input-events-get-target-ranges-deleting-in-list-items.tentative.html?Delete,ul [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/input-events/input-events-get-target-ranges-during-and-after-dispatch.tentative.html [ Pass ] # wpt_use_checked_in_metadata
-external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Pass ] # wpt_use_checked_in_metadata
+external/wpt/input-events/input-events-get-target-ranges-forwarddelete.tentative.html [ Skip ]
 external/wpt/input-events/input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html?Backspace [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/input-events/input-events-get-target-ranges-joining-dl-element-and-another-list.tentative.html?Delete [ Pass ] # wpt_use_checked_in_metadata
 external/wpt/input-events/input-events-get-target-ranges-joining-dl-elements.tentative.html?Backspace [ Pass ] # wpt_use_checked_in_metadata
