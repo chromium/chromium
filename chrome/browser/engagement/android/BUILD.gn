@@ -9,12 +9,12 @@ android_library("javatests") {
   sources = [ "java/src/org/chromium/chrome/browser/engagement/SiteEngagementServiceTest.java" ]
   deps = [
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/site_engagement/content/android:java",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
   ]
