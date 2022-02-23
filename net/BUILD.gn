@@ -2217,8 +2217,6 @@ static_library("test_support") {
 
   if (is_ios) {
     deps += [ ":test_support_bundle_data" ]
-  } else {
-    public_deps += [ "//third_party/protobuf:py_proto_runtime" ]
   }
 
   if (use_nss_certs) {

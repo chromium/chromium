@@ -18,9 +18,6 @@ class FilePath;
 void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
                                 base::EnvironmentMap* map);
 
-// Return the location of the compiler-generated python protobuf.
-bool GetPyProtoPath(base::FilePath* dir);
-
 // Returns if a virtualenv is currently active.
 bool IsInPythonVirtualEnv();
 

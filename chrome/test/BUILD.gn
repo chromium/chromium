@@ -1405,6 +1405,7 @@ if (!is_android) {
       "//third_party/icu",
       "//third_party/leveldatabase",
       "//third_party/openscreen/src/cast/streaming:common",
+      "//third_party/protobuf:py_proto_runtime",
       "//third_party/webrtc_overrides:webrtc_component",
       "//third_party/widevine/cdm:buildflags",
       "//third_party/widevine/cdm:headers",
@@ -4157,6 +4158,7 @@ if (!is_android) {
         "../browser/media/wv_test_license_server_config.cc",
         "../browser/media/wv_test_license_server_config.h",
       ]
+      deps -= [ "//third_party/protobuf:py_proto_runtime" ]
 
       # TODO(crbug.com/1290597): Enable once WebRTC becomes functional.
       sources -= [
