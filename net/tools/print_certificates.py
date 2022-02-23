@@ -36,7 +36,7 @@ def read_certificates_data_from_server(hostname):
 
   sys.stderr.write("Failed getting certificates for %s:\n%s\n" % (
       hostname, result[1]))
-  return ""
+  return b""
 
 
 def read_sources_from_commandline(sources):
@@ -298,7 +298,7 @@ def process_data_with_command(command, data):
   except OSError as e:
     if e.errno == errno.ENOENT:
       sys.stderr.write("Failed to execute %s\n" % command[0])
-      return ""
+      return b""
     raise
 
   result = p.communicate(data)
@@ -308,7 +308,7 @@ def process_data_with_command(command, data):
 
   # Otherwise failed.
   sys.stderr.write("Failed: %s: %s\n" % (" ".join(command), result[1]))
-  return ""
+  return b""
 
 
 def openssl_text_pretty_printer(certificate_der, unused_certificate_number):
