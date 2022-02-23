@@ -146,7 +146,8 @@ void AppLaunchHandler::LaunchApps() {
     } else {
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&AppLaunchHandler::LaunchApp, base::Unretained(this),
+          base::BindOnce(&AppLaunchHandler::LaunchApp,
+                         GetWeakPtrAppLaunchHandler(),
                          cache->GetAppType(app_id), app_id),
           current_delay);
       current_delay += delay_;
