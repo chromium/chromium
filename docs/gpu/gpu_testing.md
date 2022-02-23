@@ -311,13 +311,11 @@ of all suites and resulting step names as of April 15th 2021:
   * `maps_tests`
 * `pixel`
   * `android_webview_pixel_skia_gold_test`
-  * `dawn_pixel_skia_gold_test`
   * `egl_pixel_skia_gold_test`
   * `gl_renderer_pixel_skia_gold_tests`
   * `pixel_skia_gold_passthrough_test`
   * `pixel_skia_gold_validating_test`
   * `pixel_tests`
-  * `skia_renderer_pixel_skia_gold_test`
   * `vulkan_pixel_skia_gold_test`
 * `power`
   * `power_measurement_test`
