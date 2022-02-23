@@ -4934,12 +4934,12 @@
   {
     "name": "query-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-country-code",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-enable-query-editing",
@@ -4949,12 +4949,12 @@
   {
     "name": "query-tiles-enable-trending",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-instant-fetch",
     "owners": [ "xingliu" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-local-ordering",
@@ -4969,7 +4969,7 @@
   {
     "name": "query-tiles-ntp",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-omnibox",
@@ -4979,22 +4979,22 @@
   {
     "name": "query-tiles-rank-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-segmentation",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-single-tier",
     "owners": [ "shaktisahu" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "query-tiles-swap-trending",
     "owners": [ "qinmin" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 120
   },
   {
     "name": "quick-answers-always-trigger-for-single-word",
