@@ -3,13 +3,21 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file. -->
 <!DOCTYPE html>
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <meta name="color-scheme" content="light dark">
   <style>
     body {
-    box-sizing: border-box;
-    margin-bottom: 40px;
-    margin-inline: 40px;
-    margin-top: 32px;
-    position: relative;
+      background-color: var(--cros-bg-color);
+      box-sizing: border-box;
+      margin-bottom: 40px;
+      margin-inline: 40px;
+      margin-top: 32px;
+      position: relative;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: var(--cros-bg-color-elevation-2);
+      }
     }
   </style>
 <head>
