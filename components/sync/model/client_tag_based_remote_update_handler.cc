@@ -158,44 +158,33 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
   // moved away into ResolveConflict().
   const std::string update_encryption_key_name = update.encryption_key_name;
   const bool update_is_tombstone = data.is_deleted();
-  if (entity && entity->IsUnsynced()) {
+  if (entity == nullptr) {
+    // Remote creation.
+    DCHECK(!data.is_deleted());
+    entity = CreateEntity(data);
+    // TODO(crbug.com/1296159): Remove this call once create flow is updated.
+    entity->RecordAcceptedUpdate(update);
+    entity_changes->push_back(EntityChange::CreateAdd(
+        entity->storage_key(), std::move(update.entity)));
+  } else if (entity->IsUnsynced()) {
+    // Conflict.
     ResolveConflict(std::move(update), entity, entity_changes,
                     storage_key_to_clear);
-  } else {
-    // Handle simple create/delete/update.
-    absl::optional<EntityChange::ChangeType> change_type;
-
-    if (entity == nullptr) {
-      entity = CreateEntity(data);
-      change_type = EntityChange::ACTION_ADD;
-    } else if (data.is_deleted()) {
-      DCHECK(!entity->metadata().is_deleted());
-      change_type = EntityChange::ACTION_DELETE;
-    } else if (!entity->MatchesData(data)) {
-      change_type = EntityChange::ACTION_UPDATE;
-    }
+  } else if (data.is_deleted()) {
+    // Remote deletion. Note that the local data cannot be already deleted,
+    // because it would have been treated as a conflict earlier above.
+    DCHECK(!entity->metadata().is_deleted());
     entity->RecordAcceptedUpdate(update);
-    // Inform the bridge about the changes if needed.
-    if (change_type) {
-      switch (change_type.value()) {
-        case EntityChange::ACTION_ADD:
-          entity_changes->push_back(EntityChange::CreateAdd(
-              entity->storage_key(), std::move(update.entity)));
-          break;
-        case EntityChange::ACTION_DELETE:
-          // The entity was deleted; inform the bridge. Note that the local data
-          // can never be deleted at this point because it would have either
-          // been acked (the add case) or pending (the conflict case).
-          entity_changes->push_back(
-              EntityChange::CreateDelete(entity->storage_key()));
-          break;
-        case EntityChange::ACTION_UPDATE:
-          // Specifics have changed, so update the bridge.
-          entity_changes->push_back(EntityChange::CreateUpdate(
-              entity->storage_key(), std::move(update.entity)));
-          break;
-      }
-    }
+    entity_changes->push_back(
+        EntityChange::CreateDelete(entity->storage_key()));
+  } else if (entity->MatchesData(data)) {
+    // Remote update that is a no-op and can be ignored.
+    entity->RecordIgnoredUpdate(update);
+  } else {
+    // Remote update.
+    entity->RecordAcceptedUpdate(update);
+    entity_changes->push_back(EntityChange::CreateUpdate(
+        entity->storage_key(), std::move(update.entity)));
   }
 
   // If the received entity has out of date encryption, we schedule another
