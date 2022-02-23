@@ -31,6 +31,10 @@ class QuickPairService : public mojom::QuickPairService {
   void Connect(mojo::PendingReceiver<mojom::FastPairDataParser>
                    fast_pair_data_parser) override;
 
+  FastPairDataParser* fast_pair_data_parser() {
+    return fast_pair_data_parser_.get();
+  }
+
  private:
   mojo::Receiver<mojom::QuickPairService> receiver_;
   std::unique_ptr<FastPairDataParser> fast_pair_data_parser_;
