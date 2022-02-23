@@ -34,11 +34,8 @@ class BaseTestServer {
  public:
   typedef std::pair<std::string, std::string> StringPair;
 
-  // Following types represent protocol schemes. See also
-  // http://www.iana.org/assignments/uri-schemes.html
   enum Type {
     TYPE_BASIC_AUTH_PROXY,
-    TYPE_HTTP,
     TYPE_WS,
     TYPE_WSS,
     TYPE_PROXY,
@@ -246,8 +243,7 @@ class BaseTestServer {
   // Holds the data sent from the server (e.g., port number).
   absl::optional<base::Value> server_data_;
 
-  // If |type_| is TYPE_HTTPS or TYPE_WSS, the TLS settings to use for the test
-  // server.
+  // If |UsingSSL(type_)|, the TLS settings to use for the test server.
   SSLOptions ssl_options_;
 
   Type type_;

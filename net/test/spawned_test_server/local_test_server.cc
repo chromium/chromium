@@ -217,8 +217,6 @@ bool LocalTestServer::AddCommandLineArguments(
 
   // Append the appropriate server type argument.
   switch (type()) {
-    case TYPE_HTTP:  // The default type is HTTP, no argument required.
-      break;
     case TYPE_WS:
     case TYPE_WSS:
       command_line->AppendArg("--websocket");

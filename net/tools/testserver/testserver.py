@@ -39,7 +39,7 @@ mod_pywebsocket.standalone.ssl = ssl
 
 import testserver_base
 
-SERVER_HTTP = 0
+SERVER_UNSET = 0
 SERVER_BASIC_AUTH_PROXY = 1
 SERVER_WEBSOCKET = 2
 SERVER_PROXY = 3
@@ -71,17 +71,12 @@ class WebSocketOptions:
         b'test:test').decode()
 
 
-class HTTPServer(testserver_base.ClientRestrictingServerMixIn,
-                 testserver_base.BrokenPipeHandlerMixIn,
-                 testserver_base.StoppableHTTPServer):
+class ThreadingHTTPServer(socketserver.ThreadingMixIn,
+                          testserver_base.ClientRestrictingServerMixIn,
+                          testserver_base.BrokenPipeHandlerMixIn,
+                          testserver_base.StoppableHTTPServer):
   """This is a specialization of StoppableHTTPServer that adds client
-  verification."""
-
-  pass
-
-
-class ThreadingHTTPServer(socketserver.ThreadingMixIn, HTTPServer):
-  """This variant of HTTPServer creates a new thread for every connection. It
+  verification and creates a new thread for every connection. It
   should only be used with handlers that are known to be threadsafe."""
 
   pass
@@ -307,14 +302,8 @@ class ServerRunner(testserver_base.TestServerRunner):
     if ip is None:
       dns_sans = [host]
 
-    if self.options.server_type == SERVER_HTTP:
-      server = HTTPServer((host, port), TestPageHandler)
-      print('HTTP server started on http://%s:%d...' %
-            (host, server.server_port))
-
-      server.data_dir = self.__make_data_dir()
-      server.file_root_url = self.options.file_root_url
-      server_data['port'] = server.server_port
+    if self.options.server_type == SERVER_UNSET:
+      raise testserver_base.OptionError('no server type specified')
     elif self.options.server_type == SERVER_WEBSOCKET:
       # TODO(toyoshim): Remove following os.chdir. Currently this operation
       # is required to work correctly. It should be fixed from pywebsocket side.
@@ -370,17 +359,23 @@ class ServerRunner(testserver_base.TestServerRunner):
 
   def add_options(self):
     testserver_base.TestServerRunner.add_options(self)
-    self.option_parser.add_option('--proxy', action='store_const',
+    self.option_parser.add_option('--proxy',
+                                  action='store_const',
                                   const=SERVER_PROXY,
-                                  default=SERVER_HTTP, dest='server_type',
+                                  default=SERVER_UNSET,
+                                  dest='server_type',
                                   help='start up a proxy server.')
-    self.option_parser.add_option('--basic-auth-proxy', action='store_const',
+    self.option_parser.add_option('--basic-auth-proxy',
+                                  action='store_const',
                                   const=SERVER_BASIC_AUTH_PROXY,
-                                  default=SERVER_HTTP, dest='server_type',
+                                  default=SERVER_UNSET,
+                                  dest='server_type',
                                   help='start up a proxy server which requires '
                                   'basic authentication.')
-    self.option_parser.add_option('--websocket', action='store_const',
-                                  const=SERVER_WEBSOCKET, default=SERVER_HTTP,
+    self.option_parser.add_option('--websocket',
+                                  action='store_const',
+                                  const=SERVER_WEBSOCKET,
+                                  default=SERVER_UNSET,
                                   dest='server_type',
                                   help='start up a WebSocket server.')
     self.option_parser.add_option('--cert-and-key-file',

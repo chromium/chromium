@@ -36,8 +36,6 @@ namespace {
 // Please keep in sync with dictionary SERVER_TYPES in testserver.py
 std::string GetServerTypeString(BaseTestServer::Type type) {
   switch (type) {
-    case BaseTestServer::TYPE_HTTP:
-      return "http";
     case BaseTestServer::TYPE_WS:
     case BaseTestServer::TYPE_WSS:
       return "ws";

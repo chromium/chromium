@@ -146,8 +146,6 @@ const base::Value& BaseTestServer::server_data() const {
 
 std::string BaseTestServer::GetScheme() const {
   switch (type_) {
-    case TYPE_HTTP:
-      return "http";
     case TYPE_WS:
       return "ws";
     case TYPE_WSS:
