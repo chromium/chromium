@@ -3746,6 +3746,9 @@ absl::optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
   target.device_name = std::move(*device_name);
   target.is_incoming = is_incoming;
   target.device_id = GetDeviceId(endpoint_id, certificate);
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+    target.for_self_share = certificate && certificate->for_self_share();
+  }
 
   ShareTargetInfo& info = GetOrCreateShareTargetInfo(target, endpoint_id);
 

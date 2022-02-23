@@ -61,7 +61,7 @@ class PrefService;
 class Profile;
 
 namespace NearbySharingServiceUnitTests {
-class NearbySharingServiceImplTest;
+class NearbySharingServiceImplTestBase;
 }
 
 // All methods should be called from the same sequence that created the service.
@@ -152,7 +152,7 @@ class NearbySharingServiceImpl
   }
 
  private:
-  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTest;
+  friend class NearbySharingServiceUnitTests::NearbySharingServiceImplTestBase;
 
   // nearby_share::mojom::NearbyShareSettingsObserver:
   void OnEnabledChanged(bool enabled) override;

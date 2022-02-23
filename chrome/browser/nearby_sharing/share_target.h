@@ -31,7 +31,8 @@ struct ShareTarget {
       bool is_incoming,
       absl::optional<std::string> full_name,
       bool is_known,
-      absl::optional<std::string> device_id);
+      absl::optional<std::string> device_id,
+      bool for_self_share);
   ShareTarget(const ShareTarget&);
   ShareTarget(ShareTarget&&);
   ShareTarget& operator=(const ShareTarget&);
@@ -59,6 +60,8 @@ struct ShareTarget {
   // True if local device has the PublicCertificate this target is advertising.
   bool is_known = false;
   absl::optional<std::string> device_id;
+  // True if the remote device is also owned by the current user.
+  bool for_self_share = false;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_SHARE_TARGET_H_

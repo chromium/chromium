@@ -18,7 +18,8 @@ ShareTarget::ShareTarget(
     bool is_incoming,
     absl::optional<std::string> full_name,
     bool is_known,
-    absl::optional<std::string> device_id)
+    absl::optional<std::string> device_id,
+    bool for_self_share)
     : device_name(std::move(device_name)),
       image_url(std::move(image_url)),
       type(type),
@@ -28,7 +29,8 @@ ShareTarget::ShareTarget(
       is_incoming(is_incoming),
       full_name(std::move(full_name)),
       is_known(is_known),
-      device_id(std::move(device_id)) {}
+      device_id(std::move(device_id)),
+      for_self_share(for_self_share) {}
 
 ShareTarget::ShareTarget(const ShareTarget&) = default;
 

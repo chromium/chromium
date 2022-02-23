@@ -199,6 +199,7 @@ NearbyShareDecryptedPublicCertificate::operator=(
   public_key_ = other.public_key_;
   id_ = other.id_;
   unencrypted_metadata_ = other.unencrypted_metadata_;
+  for_self_share_ = other.for_self_share_;
   return *this;
 }
 
